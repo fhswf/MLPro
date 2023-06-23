@@ -44,6 +44,7 @@ class LOF(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_neighbours = 10,
+                 p_sizeof_instance_list = 100,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -61,25 +62,31 @@ class LOF(AnomalyDetector):
                          **p_kwargs)
         
         self.num_neighbours = p_neighbours
+        self.sizeof_instance_list = p_sizeof_instance_list
     ## ------------------------------------------------------------------------------------------------
 
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        # Instance of the LOF algorithm
-        lof = LocalOutlierFactor(self.num_neighbors)
-
         self.data_points.append(p_inst_new)
 
-        # Perform anomaly detection
-        self.anomaly_scores = lof.fit_predict(self.data_points)
-            
-        # Determine if data point is an anomaly based on its outlier score
-        if self.anomaly_scores[-1] == -1:
-            self.counter += 1
-            handler_obj = AnomalyEventHandler()
-            event_obj = AnomalyEvent()
-            event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
-            event_obj.do_something()
+        if len(self.data_points) > self.sizeof_instance_list:
+            self.data_points.pop(0)
+
+        if len(self.data_points) >= 20:
+
+            # Instance of the LOF algorithm
+            lof = LocalOutlierFactor(self.num_neighbors)
+
+            # Perform anomaly detection
+            self.anomaly_scores = lof.fit_predict(self.data_points)
+                
+            # Determine if data point is an anomaly based on its outlier score
+            if self.anomaly_scores[-1] == -1:
+                self.counter += 1
+                handler_obj = AnomalyEventHandler()
+                event_obj = AnomalyEvent()
+                event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
+                event_obj.do_something()
 
 
 
@@ -94,6 +101,7 @@ class SVM(AnomalyDetector):
     def __init__(self,
                  p_kernel = 'rbf',
                  p_nu = 0.01,
+                 p_sizeof_instance_list = 100,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -112,23 +120,32 @@ class SVM(AnomalyDetector):
         
         self.kernel = p_kernel
         self.nu = p_nu
+        self.sizeof_instance_list = p_sizeof_instance_list
     ## ------------------------------------------------------------------------------------------------
 
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        # Instance of the LOF algorithm
-        svm = OneClassSVM(kernel=self.kernel, nu=self.nu)
-
         self.data_points.append(p_inst_new)
 
-        # Perform anomaly detection on the current data points
-        svm.fit(self.data_points)
-        self.anomaly_scores = svm.decision_function(self.data_points)
-            
-        # Determine if the data point is an anomaly based on its outlier score
-        if self.anomaly_scores[-1] < 0:
-            self.counter += 1
-            print("Anomaly detected:", p_inst_new)
+        if len(self.data_points) > self.sizeof_instance_list:
+            self.data_points.pop(0)
+
+        if len(self.data_points) >= 20:
+
+            # Instance of the LOF algorithm
+            svm = OneClassSVM(kernel=self.kernel, nu=self.nu)
+
+            # Perform anomaly detection on the current data points
+            svm.fit(self.data_points)
+            self.anomaly_scores = svm.decision_function(self.data_points)
+                
+            # Determine if the data point is an anomaly based on its outlier score
+            if self.anomaly_scores[-1] < 0:
+                self.counter += 1
+                handler_obj = AnomalyEventHandler()
+                event_obj = AnomalyEvent()
+                event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
+                event_obj.do_something()
 
 
 
@@ -143,6 +160,7 @@ class IF(AnomalyDetector):
     def __init__(self,
                  p_estimators = 100,
                  p_contamination = 0.01,
+                 p_sizeof_instance_list = 100,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -161,24 +179,33 @@ class IF(AnomalyDetector):
         
         self.num_estimators = p_estimators
         self.contamination = p_contamination
+        self.sizeof_instance_list = p_sizeof_instance_list
     ## ------------------------------------------------------------------------------------------------
 
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        # Instance of the LOF algorithm
-        isolation_forest = IsolationForest(n_estimators=self.num_estimators,
-                                           contamination=self.contamination)
-
         self.data_points.append(p_inst_new)
 
-        # Perform anomaly detection on the current data points
-        isolation_forest.fit(self.data_points)
-        self.anomaly_scores = isolation_forest.decision_function(self.data_points)
+        if len(self.data_points) > self.sizeof_instance_list:
+            self.data_points.pop(0)
 
-        # Determine if the latest data point is an anomaly based on its outlier score
-        if self.anomaly_scores[-1] < 0:
-            counter += 1
-            print("Anomaly detected:", p_inst_new)
+        if len(self.data_points) >= 20:
+
+            # Instance of the LOF algorithm
+            isolation_forest = IsolationForest(n_estimators=self.num_estimators,
+                                                contamination=self.contamination)
+
+            # Perform anomaly detection on the current data points
+            isolation_forest.fit(self.data_points)
+            self.anomaly_scores = isolation_forest.decision_function(self.data_points)
+
+            # Determine if the latest data point is an anomaly based on its outlier score
+            if self.anomaly_scores[-1] < 0:
+                self.counter += 1
+                handler_obj = AnomalyEventHandler()
+                event_obj = AnomalyEvent()
+                event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
+                event_obj.do_something()
 
 
 
