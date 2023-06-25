@@ -94,6 +94,14 @@ class Dataset(Log):
         self._settings = p_settings
 
         self._num_instances = self.__len__()
+
+
+        if self._drop_short:
+            self.num_batches = self._num_instances // self._batch_size
+        else:
+            self.num_batches = self._num_instances // self._batch_size + 1
+
+
         self._feature_space, self._label_space = self.setup_spaces()
         self._indexes_train = list(range(self._num_instances))
         self.reset(p_shuffle = self._shuffle)

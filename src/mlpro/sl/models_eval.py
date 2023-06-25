@@ -64,6 +64,7 @@ class Metric(Log):
 
         raise NotImplementedError
 
+
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed):
 
@@ -80,7 +81,10 @@ class Metric(Log):
     def compute(self, p_model):
 
         self._value = self._compute(p_model)
-        return self._value
+        metric = Element(self._metric_space)
+        metric.set_values(p_values=self._value)
+        return metric
+
 
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model):
@@ -114,6 +118,7 @@ class MetricAccuracy(Metric):
         self._metric_space = ESpace()
         self._metric_space.add_dim(Dimension(p_name_short="acc", p_name_long="Accuracy"))
         return self._metric_space
+
 
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model):

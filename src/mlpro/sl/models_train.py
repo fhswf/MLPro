@@ -16,7 +16,7 @@ This module provides training classes for supervised learning tasks.
 
 
 from mlpro.bf.data import *
-from mlpro.sl.basics import *
+from mlpro.sl import *
 
 
 
@@ -104,7 +104,7 @@ class SLScenario (Scenario):
         p_logging
         """
 
-        self._dataset = None
+        self._dataset : Dataset = None
         self._model : SLAdaptiveFunction = None
         self.ds : dict = {}
         self._metrics = []
@@ -142,7 +142,7 @@ class SLScenario (Scenario):
         logging_data = self._model.get_logging_data()
 
         for metric in self._metrics:
-            logging_data.extend(metric.compute(self._model))
+            logging_data.extend(metric.compute(self._model).get_values())
 
         if self._cycle_id >= ( self._dataset.num_batches - 1 ):
             end_of_data = True
@@ -320,19 +320,21 @@ class SLTraining (Training):
         self._test_freq = p_test_freq
 
         self._scenario : SLScenario = None
+        self._model : SLAdaptiveFunction = None
 
         Training.__init__(self, **p_kwargs)
 
         self._model:SLAdaptiveFunction = self.get_scenario().get_model()
         self.metric_variables = []
 
-        for metric in self._scenario.get_metrics():
+        for metric in self._scenario._model.get_metrics():
             dims = metric.get_output_space().get_dims()
             for dim in dims:
                 self.metric_variables.append(dim.get_name_short())
+
         self._score_metric = self._model.get_score_metric()
 
-        self._logging_space = self._model.get_logging_space()
+        self._logging_space = self._model.get_logging_set()
 
         self._eval_freq = p_eval_freq
         self._test_freq = p_test_freq
@@ -468,7 +470,7 @@ class SLTraining (Training):
             p_cycle = self._results.ds_cycle_train)
 
 
-        self._scenario.set_dataset(self._dataset_train)
+        self._scenario.get_dataset().set_mode("training")
 
         self.metric_list_train = []
         self.metric_list_eval = []
@@ -489,11 +491,11 @@ class SLTraining (Training):
 
 
         if self._mode == self.C_MODE_TRAIN:
-            self.metric_list_train.append(self._model._prev_metrics)
+            self.metric_list_train.append(self._model.calculate_metrics())
         elif self._mode == self.C_MODE_EVAL:
-            self.metric_list_eval.append(self._model._prev_metrics)
+            self.metric_list_eval.append(self._model.calculate_metrics())
         elif self._mode == self.C_MODE_TEST:
-            self.metric_list_test.append(self._model._prev_metrics)
+            self.metric_list_test.append(self._model.calculate_metrics())
 
 
 ## -------------------------------------------------------------------------------------------------

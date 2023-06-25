@@ -29,6 +29,7 @@ This module provides model classes for supervised learning tasks.
 
 
 from mlpro.bf.ml import *
+from mlpro.sl.models_eval import Metric
 
 
 
@@ -85,14 +86,15 @@ class SLAdaptiveFunction (AdaptiveFunction):
                   p_output_space : MSpace,
                   p_output_elem_cls=Element,
                   p_threshold=0,
-                  p_ada : bool = True, 
-                  p_buffer_size : int = 0, 
-                  p_name: str = None, 
-                  p_range_max: int = Async.C_RANGE_PROCESS, 
-                  p_autorun = Task.C_AUTORUN_NONE, 
-                  p_class_shared=None, 
+                  p_ada : bool = True,
+                  p_buffer_size : int = 0,
+                  p_metrics : list[Metric] = (),
+                  p_name: str = None,
+                  p_range_max: int = Async.C_RANGE_PROCESS,
+                  p_autorun = Task.C_AUTORUN_NONE,
+                  p_class_shared=None,
                   p_visualize: bool = False, 
-                  p_logging=Log.C_LOG_ALL, 
+                  p_logging=Log.C_LOG_ALL,
                   **p_par ):
 
         super().__init__( p_input_space = p_input_space,
@@ -111,8 +113,9 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
+        self._metrics        = p_metrics
         self._sl_model       = self._setup_model()
-
+        self._logging_set    = self._setup_logging_set()
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
@@ -126,6 +129,24 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_logging_set(self) -> Set :
+
+        return Set()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_logging_set(self) -> Set:
+
+        return self._logging_set
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_logging_data(self) -> list :
+
+        return []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -314,12 +335,10 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def get_metrics(self) -> list:
-        pass
+
+        return self._metrics
 
 
-## -------------------------------------------------------------------------------------------------
-    def get_log_params(self) -> list:
-        pass
 
 
 
