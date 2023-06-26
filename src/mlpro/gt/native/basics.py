@@ -451,29 +451,28 @@ class GTCoalition (GTPlayer):
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
 
-        strategy = GTStrategy()
+        if self.get_coaltion_strategy != 4:
 
-        for pl in self._coop_players:
-            strategy_pl     = pl.compute_strategy(p_payoff)
-            strategy_elem   = strategy_pl.get_elem(pl.get_id())
-            strategy.add_elem(pl.get_id(), strategy_elem)
+            for pl in self._coop_players:
+                if pl == 0:
+                    strategy_pl = pl.compute_strategy(p_payoff).get_sorted_values()
+                else:
+                    if self.get_coaltion_strategy == 0:
+                        strategy_pl = (strategy_pl * pl + pl.compute_strategy(p_payoff).get_sorted_values()) / (pl + 1)
+                    elif self.get_coalition_strategy == 1:
+                        strategy_pl += pl.compute_strategy(p_payoff).get_sorted_values()
+                    elif self.get_coalition_strategy == 2:
+                        strategy_pl = np.minimum(strategy_pl, pl.compute_strategy(p_payoff).get_sorted_values())
+                    elif self.get_coalition_strategy == 3:
+                        strategy_pl = np.maximum(strategy_pl, pl.compute_strategy(p_payoff).get_sorted_values())
 
-        if self.get_coaltion_strategy == 0:
-            return strategy
+            coalition_strategy = GTStrategy(self.get_id(), Element(self.get_strategy_space), strategy_pl)
+
         else:
-            arr = strategy.get_sorted_values()
 
-            if self.get_coaltion_strategy == 1:
-                value = arr.mean()
-            elif self.get_coaltion_strategy == 2:
-                value = arr.sum()
-            elif self.get_coaltion_strategy == 3:
-                value = arr.min()
-            elif self.get_coaltion_strategy == 4:
-                value = arr.max()
-
-            coalition_strategy = GTStrategy(self.get_id(), Element(self.get_strategy_space), value)
-            return coalition_strategy
+            coalition_strategy = self._custom_coalition_strategy(p_payoff)
+        
+        return coalition_strategy
 
 
 ## -------------------------------------------------------------------------------------------------
