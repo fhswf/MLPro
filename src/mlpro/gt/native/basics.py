@@ -783,6 +783,12 @@ class GTGame (Scenario):
                             p_ds_payoffs:GTDataStoring = None):
         self._ds_strategies = p_ds_strategies
         self._ds_payoffs    = p_ds_payoffs
+
+
+## -------------------------------------------------------------------------------------------------
+    def is_zerosum(self) -> bool:
+        # to be added
+        raise NotImplementedError
     
 
 
