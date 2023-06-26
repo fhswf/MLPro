@@ -200,9 +200,9 @@ class Dataset(Log):
         labels = self._label_space[p_index]
 
         if self._output_cls == Element:
-            feature_obj = self._output_cls.__init__(self._feature_space)
+            feature_obj = self._output_cls(self._feature_space)
             feature_obj.set_values(features)
-            label_obj = self._output_cls.__init__(self._label_space)
+            label_obj = self._output_cls(self._label_space)
             label_obj.set_values(labels)
 
         else:
@@ -259,13 +259,15 @@ class Dataset(Log):
 class SASDataset(Dataset):
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_state_fpath,
                  p_action_fpath,
-                 p_episode_length,
                  p_feature_space : ESpace,
                  p_label_space : ESpace,
+                 p_episode_col = 'Episode ID',
+                 p_delimiter = '\t',
+                 p_drop_columns = ('Episode ID', 'Cycle', 'Day', 'Second', 'Microsecond'),
                  p_batch_size : int = 1,
                  p_drop_short : bool = False,
                  p_shuffle : bool = False,
@@ -275,19 +277,71 @@ class SASDataset(Dataset):
                  p_logging = Log.C_LOG_ALL
                  ):
 
-        Dataset.__init__(self,
-                         p_feature_dataset = None,
-                         p_label_dataset = None,
-                         p_feature_space=p_feature_space,
-                         p_label_space=p_label_space,
-                         p_batch_size=p_batch_size,
-                         p_eval_split=p_eval_split,
-                         p_test_split=p_test_split,
-                         p_shuffle=p_shuffle,
-                         p_drop_short=p_drop_short,
-                         p_settings=p_settings,
-                         p_logging=p_logging)
 
-        self._states = pd.read_csv(p_state_fpath, delimiter='\t')
-        self._actions = pd.read_csv(p_action_fpath, delimiter='\t')
-        self._episode_length = p_episode_length
+        feature_dataset, label_dataset = self._setup_dataset(state_fpath=p_state_fpath,
+            action_fpath=p_action_fpath,
+            drop_columns=p_drop_columns,
+            episode_col=p_episode_col,
+            delimiter=p_delimiter)
+
+
+        Dataset.__init__(self,
+            p_feature_dataset = feature_dataset,
+            p_label_dataset = label_dataset,
+            p_feature_space=p_feature_space,
+            p_label_space=p_label_space,
+            p_batch_size=p_batch_size,
+            p_eval_split=p_eval_split,
+            p_test_split=p_test_split,
+            p_shuffle=p_shuffle,
+            p_drop_short=p_drop_short,
+            p_settings=p_settings,
+            p_logging=p_logging)
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_dataset(self,
+                       state_fpath: str,
+                       action_fpath: str,
+                       drop_columns: list,
+                       episode_col: int,
+                       delimiter='\t'):
+
+        # Fetching states without dropping columns
+        self._states = pd.read_csv(filepath_or_buffer=state_fpath, delimiter=delimiter)
+
+        # Finding the episode change ids
+        episodes_entry_change = self._states[episode_col].diff()
+        episode_idx = episodes_entry_change[episodes_entry_change.ne(0)]
+
+        # Drop the columns
+        self._states.drop(columns=drop_columns, axis=0)
+
+        # Fetch actions and drop the columns
+        self._actions = pd.read_csv(filepath_or_buffer=action_fpath, delimiter=delimiter).drop(columns=drop_columns,
+            axis=1)
+
+        # Create input df, with state and action
+        input = pd.concat([self._states, self._actions], axis=1, copy=True).iloc[:-1]
+        # Drop rows at episode change
+        input = input.drop(labels=episode_idx[1:]).values
+        # Create output df
+        output = self._states.iloc[1:]
+        # Drop rows at episode change
+        output = output.drop(labels=episode_idx[1:]).values
+
+        return input, output
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_data(self, p_index):
+
+        features = self._feature_dataset.iloc[p_index].values
+        feature_obj = self._output_cls(self._feature_space).set_values(features)
+
+        labels = self._states.iloc[p_index+1].values
+        label_obj = self._output_cls(self._label_space).set_values(labels)
+
+        return feature_obj, label_obj
