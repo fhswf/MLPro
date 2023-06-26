@@ -11,10 +11,11 @@
 ## -- 2023-06-26  1.0.2     SY       - Update solver configuration methods
 ## --                                - Add is_zerosum(), _is_bestresponse() in class GTGame
 ## --                                - Adjust _get_evaluation() in class GTGame
+## --                                - Enhancement of GTStrategy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-06-26)
+Ver. 1.0.2 (2023-06-26)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -346,11 +347,11 @@ class GTCoalition (GTPlayer):
     C_NAME  = ''
 
     C_COALITION_STRATEGY    = None
-    C_COALITION_CONCATENATE = 0
-    C_COALITION_MEAN        = 1
-    C_COALITION_SUM         = 2
-    C_COALITION_MIN         = 3
-    C_COALITION_MAX         = 4
+    C_COALITION_MEAN        = 0
+    C_COALITION_SUM         = 1
+    C_COALITION_MIN         = 2
+    C_COALITION_MAX         = 3
+    C_COALITION_CUSTOM      = 4
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -473,6 +474,12 @@ class GTCoalition (GTPlayer):
 
             coalition_strategy = GTStrategy(self.get_id(), Element(self.get_strategy_space), value)
             return coalition_strategy
+
+
+## -------------------------------------------------------------------------------------------------
+    def _custom_coalition_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+
+        raise NotImplementedError
 
 
 
