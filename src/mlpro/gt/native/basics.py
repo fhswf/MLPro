@@ -760,13 +760,19 @@ class GTGame (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_evaluation(self, p_player_ids:Union[str, list]=None, p_coalition_id=None) -> Union[float, list]:
+    def _get_evaluation(self,
+                        p_player_ids:Union[str, list]=None,
+                        p_coalition_id=None) -> tuple[Union[float,list],
+                                                      Union[bool, list],
+                                                      Union[float,list]]:
         
         if (p_player_ids is None) and (p_coalition_id is None):
             raise ParamError("p_player_ids and p_coalition_id are both none! Either of them needs to be defined.")
 
+        best_response = self._is_bestresponse(p_player_ids, p_coalition_id)
+
         if p_player_ids is not None:
-            return self._payoff.get_payoff(self._strategies.get_sorted_values(), p_player_ids)
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), p_player_ids), best_response
         else:
             if isinstance(self._model, GTCompetition):
                 ids = self._model.get_coalition(p_coalition_id)
@@ -774,7 +780,7 @@ class GTGame (Scenario):
             else:
                 pl_ids = self._model.get_players()
 
-            return self._payoff.get_payoff(self._strategies.get_sorted_values(), pl_ids)
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), pl_ids), best_response
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -787,6 +793,14 @@ class GTGame (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def is_zerosum(self) -> bool:
+        # to be added
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _is_bestresponse(self,
+                         p_player_ids:Union[str, list]=None,
+                         p_coalition_id=None) -> tuple[Union[bool, list], Union[float,list]]:
         # to be added
         raise NotImplementedError
     
