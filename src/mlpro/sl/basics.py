@@ -30,6 +30,7 @@ This module provides model classes for supervised learning tasks.
 
 from mlpro.bf.ml import *
 from mlpro.sl.models_eval import Metric
+from typing import List
 
 
 
@@ -88,7 +89,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
                   p_threshold=0,
                   p_ada : bool = True,
                   p_buffer_size : int = 0,
-                  p_metrics : list[Metric] = (),
+                  p_metrics : List[Metric] = (),
                   p_name: str = None,
                   p_range_max: int = Async.C_RANGE_PROCESS,
                   p_autorun = Task.C_AUTORUN_NONE,

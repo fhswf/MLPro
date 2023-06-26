@@ -18,7 +18,7 @@ This module provides dataset classes for supervised learning tasks.
 from mlpro.bf.math import *
 from mlpro.bf.events import *
 import random
-
+import pandas as pd
 
 
 
@@ -57,19 +57,25 @@ class Dataset(Log):
     C_CLS_LS = list
 
 ## -------------------------------------------------------------------------------------------------
+    def __iter__(self, p_seed = 0):
+
+        self.reset(p_seed)
+        return self
+
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_feature_space : ESpace,
                  p_label_space : ESpace,
-                 p_output_cls : C_CLS_ELEM,
-                 p_data_class : type,
-                 p_feature_dataset,
-                 p_label_dataset,
-                 p_batch_size : int,
-                 p_drop_short : bool,
-                 p_shuffle : bool,
-                 p_eval_split : float,
-                 p_test_split : float,
-                 p_settings,
+                 p_output_cls = C_CLS_ELEM,
+                 p_feature_dataset = None,
+                 p_label_dataset = None,
+                 p_batch_size : int = 1,
+                 p_drop_short : bool = False,
+                 p_shuffle : bool = False,
+                 p_eval_split : float = 0.3,
+                 p_test_split : float = 0.1,
+                 p_settings = None,
                  p_logging = Log.C_LOG_ALL):
 
 
@@ -77,7 +83,6 @@ class Dataset(Log):
         self._feature_space = p_feature_space
         self._label_space = p_label_space
         self._output_cls = p_output_cls
-        self._data_class = p_data_class
         self._feature_dataset = p_feature_dataset
         self._label_dataset = p_label_dataset
         self._batch_size = p_batch_size
@@ -111,13 +116,6 @@ class Dataset(Log):
         self._feature_space, self._label_space = self.setup_spaces()
         self._indexes_train = list(range(self._num_instances))
         self.reset(p_shuffle = self._shuffle)
-
-
-## -------------------------------------------------------------------------------------------------
-    def __iter__(self, p_seed = 0):
-
-        self.reset(p_seed)
-        return self
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -174,15 +172,16 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_shuffle = None, p_seed = None, p_epoch = 0):
 
-        if p_shuffle:
-            if not self._split:
-                self._indexes = list(range(self._num_instances))
+        if not self._split:
+            self._indexes.clear()
+            self._indexes.extend(self._indexes_train.copy())
+            if p_shuffle:
                 random.shuffle(self._indexes)
 
-            else:
-                random.shuffle(self._indexes_train)
-                random.shuffle(self._indexes_eval)
-                random.shuffle(self._indexes_eval)
+        elif self._split and p_shuffle:
+            random.shuffle(self._indexes_train)
+            random.shuffle(self._indexes_eval)
+            random.shuffle(self._indexes_eval)
 
 
         return self._reset(p_seed=p_seed, p_shuffle=p_shuffle, p_epoch=p_epoch)
@@ -239,9 +238,9 @@ class Dataset(Log):
 
         if self._output_cls == Element:
             for index in indexes:
-                val = self.get_data(index)
-                feature_values.append(val[0].get_values())
-                label_values.append(val[1].get_values())
+                vals = self.get_data(index)
+                feature_values.append(vals[0].get_values())
+                label_values.append(vals[1].get_values())
             feature_batch = BatchElement(self._feature_space).set_values(feature_values)
             label_batch = BatchElement(self._label_space).set_values(label_values)
 
@@ -249,3 +248,46 @@ class Dataset(Log):
             raise ParamError("This output class is not yet supported for this dataset")
 
         return feature_batch, label_batch
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SASDataset(Dataset):
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_state_fpath,
+                 p_action_fpath,
+                 p_episode_length,
+                 p_feature_space : ESpace,
+                 p_label_space : ESpace,
+                 p_batch_size : int = 1,
+                 p_drop_short : bool = False,
+                 p_shuffle : bool = False,
+                 p_eval_split : float = 0.3,
+                 p_test_split : float = 0.1,
+                 p_settings = None,
+                 p_logging = Log.C_LOG_ALL
+                 ):
+
+        Dataset.__init__(self,
+                         p_feature_dataset = None,
+                         p_label_dataset = None,
+                         p_feature_space=p_feature_space,
+                         p_label_space=p_label_space,
+                         p_batch_size=p_batch_size,
+                         p_eval_split=p_eval_split,
+                         p_test_split=p_test_split,
+                         p_shuffle=p_shuffle,
+                         p_drop_short=p_drop_short,
+                         p_settings=p_settings,
+                         p_logging=p_logging)
+
+        self._states = pd.read_csv(p_state_fpath, delimiter='\t')
+        self._actions = pd.read_csv(p_action_fpath, delimiter='\t')
+        self._episode_length = p_episode_length
