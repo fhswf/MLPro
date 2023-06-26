@@ -91,6 +91,12 @@ class GTPayoffMatrix (TStamp):
     def _call_mapping(self, p_input:Element) -> Element:
         
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def best_response_values(self, p_player_ids:Union[str, list]) -> Union[float, list]:
+        # to be added
+        raise NotImplementedError
         
         
 
