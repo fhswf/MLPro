@@ -311,23 +311,26 @@ class GTPlayer (GTSolver):
 ## -------------------------------------------------------------------------------------------------
     def switch_solver(self):
 
-        if self._random_solver:
-            rnd             = random.randint(0, self._num_solvers-1)
-            self._solver    = self._list_solvers[rnd]
+        if len(self._list_solvers) == 1:
+            self.log(self.C_LOG_TYPE_I, 'Player %s is keeping the same solver %s'%(self._id, self._solver.get_id()))
         else:
-            if self._idx_solvers == self._num_solvers:
-                self._idx_solvers = 0
-            self._solver    = self._list_solvers[self._idx_solvers]
-            self._idx_solvers += 1
+            if self._random_solver:
+                rnd             = random.randint(0, self._num_solvers-1)
+                self._solver    = self._list_solvers[rnd]
+            else:
+                if self._idx_solvers == self._num_solvers:
+                    self._idx_solvers = 0
+                self._solver    = self._list_solvers[self._idx_solvers]
+                self._idx_solvers += 1
 
-        GTSolver.__init__(self,
-                          p_strategy_space = self._solver.get_strategy_space(),
-                          p_id = self._solver.get_id(),
-                          p_visualize = self._visualize,
-                          p_logging = self._logging,
-                          **self._param)
-        
-        self.log(self.C_LOG_TYPE_I, 'Player %s is switching to solver %s'%(self._id, self._solver.get_id()))
+            GTSolver.__init__(self,
+                            p_strategy_space = self._solver.get_strategy_space(),
+                            p_id = self._solver.get_id(),
+                            p_visualize = self._visualize,
+                            p_logging = self._logging,
+                            **self._param)
+            
+            self.log(self.C_LOG_TYPE_I, 'Player %s is switching to solver %s'%(self._id, self._solver.get_id()))
 
 
 
