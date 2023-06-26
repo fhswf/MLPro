@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2023-06-26T13:29:12.236Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.5.0 Chrome/112.0.5615.204 Electron/24.5.1 Safari/537.36" etag="vN0NcAjVK_dktBUEI7gb" version="21.5.0" type="device">
+<mxfile host="Electron" modified="2023-06-26T13:34:37.179Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.5.0 Chrome/112.0.5615.204 Electron/24.5.1 Safari/537.36" etag="LjVkkNnss9PQKhNEKplb" version="21.5.0" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="4023" dy="2779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
@@ -291,7 +291,7 @@
         <mxCell id="B3U6xe70-WNpAOuPaKyA-47" value="__init__( p_function:Function = None,&#xa;               p_player_ids:list = None )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;strokeColor=none;dashed=1;" parent="B3U6xe70-WNpAOuPaKyA-44" vertex="1">
           <mxGeometry y="69" width="280" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="B3U6xe70-WNpAOuPaKyA-48" value="get_payoff(&#xa;    p_strategies:Union[np.ndarray, int, str, float],&#xa;    p_player_ids:Union[str, list] = None&#xa;    ): Union[float, list]." style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="B3U6xe70-WNpAOuPaKyA-44" vertex="1">
+        <mxCell id="B3U6xe70-WNpAOuPaKyA-48" value="get_payoff(&#xa;    p_strategies:np.ndarray,&#xa;    p_player_ids:Union[str, list] = None&#xa;    ): Union[float, list]." style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="B3U6xe70-WNpAOuPaKyA-44" vertex="1">
           <mxGeometry y="109" width="280" height="74" as="geometry" />
         </mxCell>
         <mxCell id="B3U6xe70-WNpAOuPaKyA-49" value="call_mapping( p_input:Element ): Element" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="B3U6xe70-WNpAOuPaKyA-44" vertex="1">

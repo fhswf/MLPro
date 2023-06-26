@@ -52,7 +52,7 @@ class GTPayoffMatrix (TStamp):
 
 ## -------------------------------------------------------------------------------------------------
     def get_payoff(self,
-                   p_strategies:Union[np.ndarray, int, str, float],
+                   p_strategies:np.ndarray,
                    p_player_ids:Union[str, list]=None) -> Union[float, list]:
         
         if self._function is not None:
