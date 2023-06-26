@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2023-06-26T13:02:00.325Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.5.0 Chrome/112.0.5615.204 Electron/24.5.1 Safari/537.36" etag="SxhSQcEssNZAa2ZqGb8M" version="21.5.0" type="device">
+<mxfile host="Electron" modified="2023-06-26T13:05:39.410Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.5.0 Chrome/112.0.5615.204 Electron/24.5.1 Safari/537.36" etag="EpRxF5h63vz-ZEyUGBul" version="21.5.0" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="4023" dy="2779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
@@ -95,7 +95,7 @@
         <mxCell id="B3U6xe70-WNpAOuPaKyA-8" value="_run_cycle()" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="B3U6xe70-WNpAOuPaKyA-3" vertex="1">
           <mxGeometry y="200" width="260" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="B3U6xe70-WNpAOuPaKyA-9" value="_get_evaluation(&#xa;    p_player_ids:Union[str, list] = None,&#xa;    p_coalition_id = None&#xa;    ): Union[float, list]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#FF0000;" parent="B3U6xe70-WNpAOuPaKyA-3" vertex="1">
+        <mxCell id="B3U6xe70-WNpAOuPaKyA-9" value="_get_evaluation(&#xa;    p_player_ids:Union[str, list] = None,&#xa;    p_coalition_id = None&#xa;    ): Union[float, list]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="B3U6xe70-WNpAOuPaKyA-3" vertex="1">
           <mxGeometry y="226" width="260" height="74" as="geometry" />
         </mxCell>
         <mxCell id="B3U6xe70-WNpAOuPaKyA-129" value="connect_data_logger(&#xa;    p_ds_strategies:GTDataStoring = None,&#xa;    p_ds_payoffs:GTDataStoring = None )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="B3U6xe70-WNpAOuPaKyA-3" vertex="1">

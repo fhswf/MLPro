@@ -9,7 +9,8 @@
 ## -- 2023-06-02  1.0.0     SY       Release of first version
 ## -- 2023-06-15  1.0.1     SY       Add solver configuration methods in GTTraining
 ## -- 2023-06-26  1.0.2     SY       - Update solver configuration methods
-## --                                - Add is_zerosum() in class GTGame
+## --                                - Add is_zerosum(), _is_bestresponse() in class GTGame
+## --                                - Adjust _get_evaluation() in class GTGame
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -762,17 +763,15 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _get_evaluation(self,
                         p_player_ids:Union[str, list]=None,
-                        p_coalition_id=None) -> tuple[Union[float,list],
-                                                      Union[bool, list],
-                                                      Union[float,list]]:
+                        p_coalition_id=None) -> Union[float,list]:
         
         if (p_player_ids is None) and (p_coalition_id is None):
             raise ParamError("p_player_ids and p_coalition_id are both none! Either of them needs to be defined.")
 
-        best_response = self._is_bestresponse(p_player_ids, p_coalition_id)
+        self._is_bestresponse(p_player_ids, p_coalition_id)
 
         if p_player_ids is not None:
-            return self._payoff.get_payoff(self._strategies.get_sorted_values(), p_player_ids), best_response
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), p_player_ids)
         else:
             if isinstance(self._model, GTCompetition):
                 ids = self._model.get_coalition(p_coalition_id)
@@ -780,7 +779,7 @@ class GTGame (Scenario):
             else:
                 pl_ids = self._model.get_players()
 
-            return self._payoff.get_payoff(self._strategies.get_sorted_values(), pl_ids), best_response
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), pl_ids)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -800,8 +799,9 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _is_bestresponse(self,
                          p_player_ids:Union[str, list]=None,
-                         p_coalition_id=None) -> tuple[Union[bool, list], Union[float,list]]:
+                         p_coalition_id=None):
         # to be added
+        # print regarding best respone (y/n) and deviation to best response
         raise NotImplementedError
     
 
