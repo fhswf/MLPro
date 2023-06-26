@@ -324,7 +324,7 @@ class SLTraining (Training):
 
         Training.__init__(self, **p_kwargs)
 
-        self._model:SLAdaptiveFunction = self.get_scenario().get_model()
+        self._model: SLAdaptiveFunction = self.get_scenario()._model
         self.metric_variables = []
 
         for metric in self._scenario._model.get_metrics():
@@ -332,6 +332,7 @@ class SLTraining (Training):
             for dim in dims:
                 self.metric_variables.append(dim.get_name_short())
 
+        # For hpt
         self._score_metric = self._model.get_score_metric()
 
         self._logging_space = self._model.get_logging_set()
@@ -339,8 +340,6 @@ class SLTraining (Training):
         self._eval_freq = p_eval_freq
         self._test_freq = p_test_freq
         self._epoch_id = 0
-
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -358,7 +357,8 @@ class SLTraining (Training):
             self._results._ds_list.append(results.ds_epoch)
 
         if self._collect_cycles:
-            variables = self._logging_space.extend(self.metric_variables)
+            variables = [i.get_name_long() for i in self._logging_space.get_dims()]
+            variables.extend(self.metric_variables)
             results.ds_cycles_train = SLDataStoring(p_variables=variables)
             self._results._ds_list.append(results.ds_cycles_train)
 

@@ -19,7 +19,7 @@ Ver. 1.2.2 (2023-06-20)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
-
+import torch
 
 from mlpro.sl.pool.afct.pytorch import *
 from mlpro.sl import *
@@ -450,8 +450,12 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             
             torch.manual_seed(self._sampling_seed)
             self._loss    = self._calc_loss(outputs, torch.squeeze(target))
-            
+
             self._optimize(self._loss)
+
+            if isinstance(self._loss, torch.Tensor):
+                self._loss = self._loss.item()
+
             self._sampling_seed += 1
             
         return True

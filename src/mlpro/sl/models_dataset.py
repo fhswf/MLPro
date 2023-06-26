@@ -50,11 +50,17 @@ class Dataset(Log):
     C_MODE_EVAL = 2
     C_MODE_TEST = 3
 
+    C_CLS_ELEM = Element
+
+    # to be implemented
+    C_CLS_ARR = np.array
+    C_CLS_LS = list
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_feature_space : ESpace,
                  p_label_space : ESpace,
-                 p_output_cls : type,
+                 p_output_cls : C_CLS_ELEM,
                  p_data_class : type,
                  p_feature_dataset,
                  p_label_dataset,
@@ -194,7 +200,16 @@ class Dataset(Log):
         features = self._feature_dataset[p_index]
         labels = self._label_space[p_index]
 
-        return features, labels
+        if self._output_cls == Element:
+            feature_obj = self._output_cls.__init__(self._feature_space)
+            feature_obj.set_values(features)
+            label_obj = self._output_cls.__init__(self._label_space)
+            label_obj.set_values(labels)
+
+        else:
+            raise ParamError("The output class is not yet supported for this item")
+
+        return feature_obj, label_obj
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -217,6 +232,20 @@ class Dataset(Log):
 
         indexes = self._indexes[0:self._batch_size]
         del self._indexes[0:self._batch_size]
-        batch = [(self._feature_dataset[i], self._label_dataset[i]) for i in indexes]
 
-        return batch
+        feature_values = []
+        label_values = []
+
+
+        if self._output_cls == Element:
+            for index in indexes:
+                val = self.get_data(index)
+                feature_values.append(val[0].get_values())
+                label_values.append(val[1].get_values())
+            feature_batch = BatchElement(self._feature_space).set_values(feature_values)
+            label_batch = BatchElement(self._label_space).set_values(label_values)
+
+        else:
+            raise ParamError("This output class is not yet supported for this dataset")
+
+        return feature_batch, label_batch
