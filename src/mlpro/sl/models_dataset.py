@@ -120,7 +120,12 @@ class Dataset(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __next__(self):
+        """
 
+        Returns
+        -------
+
+        """
         if self._mode == self.C_FETCH_BATCH:
             return self.get_next_batch()
         else:
@@ -129,19 +134,42 @@ class Dataset(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __getitem__(self, p_index):
+        """
 
+        Parameters
+        ----------
+        p_index
+
+        Returns
+        -------
+
+        """
         return self.get_data(p_index)
 
 
 ## -------------------------------------------------------------------------------------------------
     def __len__(self):
+        """
 
+        Returns
+        -------
+
+        """
         return len(self._feature_dataset)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _set_mode(self, p_mode):
+        """
 
+        Parameters
+        ----------
+        p_mode
+
+        Returns
+        -------
+
+        """
         if p_mode == self.C_MODE_TRAIN:
             self._indexes = self._indexes_train.copy()
         if p_mode == self.C_MODE_EVAL:
@@ -153,13 +181,23 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
+        """
 
+        Returns
+        -------
+
+        """
 
         return None, None
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_split(self):
+        """
 
+        Returns
+        -------
+
+        """
         if self._eval_split is not None:
             self._indexes_eval = self._indexes_train[0:int(self._eval_split * len(self._indexes_train))]
             del self._indexes_train[0:int(self._eval_split * len(self._indexes_train))]
@@ -171,7 +209,18 @@ class Dataset(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_shuffle = None, p_seed = None, p_epoch = 0):
+        """
 
+        Parameters
+        ----------
+        p_shuffle
+        p_seed
+        p_epoch
+
+        Returns
+        -------
+
+        """
         if not self._split:
             self._indexes.clear()
             self._indexes.extend(self._indexes_train.copy())
@@ -189,13 +238,33 @@ class Dataset(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed, p_shuffle = False, p_epoch = 0):
+        """
 
+        Parameters
+        ----------
+        p_seed
+        p_shuffle
+        p_epoch
+
+        Returns
+        -------
+
+        """
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_data(self, p_index):
+        """
 
+        Parameters
+        ----------
+        p_index
+
+        Returns
+        -------
+
+        """
         features = self._feature_dataset[p_index]
         labels = self._label_space[p_index]
 
@@ -213,6 +282,7 @@ class Dataset(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_next(self):
+
         # Return an Instance with first 'batch size' features and corresponding labels as a single label
         raise NotImplementedError
 
@@ -220,7 +290,12 @@ class Dataset(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_next_batch(self):
+        """
 
+        Returns
+        -------
+
+        """
         if self._drop_short:
             if 2*self._batch_size > len(self._indexes):
                 self._last_batch = True
@@ -277,6 +352,25 @@ class SASDataset(Dataset):
                  p_logging = Log.C_LOG_ALL
                  ):
 
+        """
+
+        Parameters
+        ----------
+        p_state_fpath
+        p_action_fpath
+        p_feature_space
+        p_label_space
+        p_episode_col
+        p_delimiter
+        p_drop_columns
+        p_batch_size
+        p_drop_short
+        p_shuffle
+        p_eval_split
+        p_test_split
+        p_settings
+        p_logging
+        """
 
         feature_dataset, label_dataset = self._setup_dataset(state_fpath=p_state_fpath,
             action_fpath=p_action_fpath,
@@ -306,8 +400,22 @@ class SASDataset(Dataset):
                        state_fpath: str,
                        action_fpath: str,
                        drop_columns: list,
-                       episode_col: int,
+                       episode_col: str,
                        delimiter='\t'):
+        """
+
+        Parameters
+        ----------
+        state_fpath
+        action_fpath
+        drop_columns
+        episode_col
+        delimiter
+
+        Returns
+        -------
+
+        """
 
         # Fetching states without dropping columns
         self._states = pd.read_csv(filepath_or_buffer=state_fpath, delimiter=delimiter)
@@ -337,7 +445,16 @@ class SASDataset(Dataset):
 
 ## -------------------------------------------------------------------------------------------------
     def get_data(self, p_index):
+        """
 
+        Parameters
+        ----------
+        p_index
+
+        Returns
+        -------
+
+        """
         features = self._feature_dataset.iloc[p_index].values
         feature_obj = self._output_cls(self._feature_space).set_values(features)
 
