@@ -8,10 +8,11 @@
 ## -- 2023-03-30  0.0.0     SY       Creation
 ## -- 2023-06-02  1.0.0     SY       Release of first version
 ## -- 2023-06-15  1.0.1     SY       Add solver configuration methods in GTTraining
+## -- 2023-06-26  1.0.2     SY       Update solver configuration methods
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-06-15)
+Ver. 1.0.1 (2023-06-26)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
