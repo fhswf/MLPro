@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.gt.pool.boards
-## -- Module  : multicartpole
+## -- Module  : multicartpole.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,10 +12,11 @@
 ## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -- 2023-04-12  1.1.1     SY       Refactoring 
 ## -- 2023-05-11  1.1.2     SY       Refactoring
+## -- 2023-06-27  1.1.3     SY       Refactoring module name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-05-11)
+Ver. 1.1.3 (2023-06-27)
 
 This module provides game board classes based on the Multi-CartPole environment
 of the reinforcement learning pool.
