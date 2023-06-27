@@ -1,8 +1,8 @@
-## -----------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : BGLP_GT
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.gt.pool.boards
+## -- Module  : bglp
+## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-06-07  0.0.0     SY       Creation
@@ -13,10 +13,11 @@
 ## -- 2021-11-29  1.0.4     SY       Enable batch production scenario
 ## -- 2023-04-12  1.0.5     SY       Refactoring 
 ## -- 2023-05-11  1.0.6     SY       Refactoring
+## -- 2023-06-27  1.0.7     SY       Refactoring module name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2023-05-11)
+Ver. 1.0.7 (2023-06-27)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP)
 following GT interface. This module provides game board classed based on BGLP
