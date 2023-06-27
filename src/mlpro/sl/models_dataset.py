@@ -159,7 +159,7 @@ class Dataset(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_mode(self, p_mode):
+    def set_mode(self, p_mode):
         """
 
         Parameters

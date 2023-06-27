@@ -90,6 +90,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
                   p_ada : bool = True,
                   p_buffer_size : int = 0,
                   p_metrics : List[Metric] = (),
+                  p_score_metric = None,
                   p_name: str = None,
                   p_range_max: int = Async.C_RANGE_PROCESS,
                   p_autorun = Task.C_AUTORUN_NONE,
@@ -115,8 +116,10 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
         self._metrics        = p_metrics
+        self._score_metric   = p_score_metric or p_metrics[0]
         self._sl_model       = self._setup_model()
         self._logging_set    = self._setup_logging_set()
+
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
@@ -130,6 +133,16 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_input_space(self):
+        return self._input_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_output_space(self):
+        return self._output_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -340,7 +353,10 @@ class SLAdaptiveFunction (AdaptiveFunction):
         return self._metrics
 
 
+## -------------------------------------------------------------------------------------------------
+    def get_score_metric(self):
 
+        return self._score_metric
 
 
 

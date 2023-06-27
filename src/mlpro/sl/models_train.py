@@ -311,7 +311,17 @@ class SLTraining (Training):
                  p_eval_freq = 0,
                  p_test_freq = 0,
                  **p_kwargs):
+        """
 
+        Parameters
+        ----------
+        p_collect_epoch_scores
+        p_collect_mappings
+        p_collect_cycles
+        p_eval_freq
+        p_test_freq
+        p_kwargs
+        """
         self._collect_epoch_scores = p_collect_epoch_scores
         self._collect_mappings = p_collect_mappings
         self._collect_cycles = p_collect_cycles
@@ -357,7 +367,7 @@ class SLTraining (Training):
             self._results._ds_list.append(results.ds_epoch)
 
         if self._collect_cycles:
-            variables = [i.get_name_long() for i in self._logging_space.get_dims()]
+            variables = [i.get_name_short() for i in self._logging_space.get_dims()]
             variables.extend(self.metric_variables)
             results.ds_cycles_train = SLDataStoring(p_variables=variables)
             self._results._ds_list.append(results.ds_cycles_train)
@@ -374,11 +384,11 @@ class SLTraining (Training):
         if self._collect_mappings:
             variables = []
             for dim in self._model.get_input_space().get_dims():
-                variables.append(dim.get_name_long())
+                variables.append(dim.get_name_short())
             for dim in self._model.get_output_space().get_dims():
-                variables.append(dim.get_name_long())
+                variables.append(dim.get_name_short())
             for dim in self._model.get_output_space().get_dims():
-                variables.append("pred"+dim.get_name_long())
+                variables.append("pred"+dim.get_name_short())
 
             results.ds_mapping_train = SLDataStoring(p_variables=variables)
             if self._eval_freq > 0:
@@ -470,20 +480,12 @@ class SLTraining (Training):
             p_cycle = self._results.ds_cycle_train)
 
 
-        self._scenario.get_dataset().set_mode("training")
+        self._scenario.get_dataset().set_mode(Dataset.C_MODE_TRAIN)
 
         self.metric_list_train = []
         self.metric_list_eval = []
         self.metric_list_test = []
 
-
-
-## -------------------------------------------------------------------------------------------------
-    def setup_dataset(self):
-
-        dataset = self._scenario.get_dataset()
-
-        dataset.setup()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -523,7 +525,7 @@ class SLTraining (Training):
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_EVAL
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycle_eval)
-        self._scenario.get_dataset().set_mode("evaluation")
+        self._scenario.get_dataset().set_mode(Dataset.C_MODE_EVAL)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -532,7 +534,7 @@ class SLTraining (Training):
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_TEST
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycle_test)
-        self._scenario.get_dataset().set_mode("test")
+        self._scenario.get_dataset().set_mode(Dataset.C_MODE_TEST)
 
 
 
