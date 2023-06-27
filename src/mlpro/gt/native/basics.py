@@ -209,7 +209,7 @@ class GTPayoffMatrix (TStamp):
     def zero_sum(self) -> bool:
         
         if self._function is not None:
-            best_payoff = self._function.zero_sum()
+            return self._function.zero_sum()
         else:
             return self._call_zero_sum()
 
