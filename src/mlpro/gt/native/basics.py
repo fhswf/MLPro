@@ -92,6 +92,16 @@ class GTFunction:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _best_response(self, p_element_id:str) -> float:
+
+        if self._elem_ids is None:
+            raise ParamError("self._elem_ids is None! Please instantiate this or use __call__() method!")
+               
+        idx = self._elem_ids.index(p_element_id)
+        return np.max(self._payoff_map[idx])
+
+
+## -------------------------------------------------------------------------------------------------
     def __call__(self, p_element_id:str, p_strategies:GTStrategy) -> float:
 
         if self._elem_ids is None:
@@ -135,9 +145,7 @@ class GTPayoffMatrix (TStamp):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_payoff(self,
-                   p_strategies:GTStrategy,
-                   p_element_id:str) -> float:
+    def get_payoff(self, p_strategies:GTStrategy, p_element_id:str) -> float:
 
         return self.call_mapping(p_element_id, p_strategies)
 
@@ -158,8 +166,25 @@ class GTPayoffMatrix (TStamp):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def best_response_values(self, p_element_id:str) -> float:
-        # to be added
+    def best_response_value(self, p_strategies:GTStrategy, p_element_id:str) -> float:
+
+        payoff = self.get_payoff(p_strategies, p_element_id)
+        if self._function is not None:
+            best_payoff = self._function._best_response()
+        else:
+            best_payoff = self._call_best_response(p_element_id)
+
+        if payoff < best_payoff:
+            self.log(self.C_LOG_TYPE_I, 'Player/Coalition %s has not the best response!'%(p_element_id))
+            return payoff-best_payoff
+        else:
+            self.log(self.C_LOG_TYPE_I, 'Player/Coalition %s has the best response!'%(p_element_id))
+            return 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def _call_best_response(self, p_element_id:str) -> float:
+        
         raise NotImplementedError
 
 
@@ -831,15 +856,15 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _get_evaluation(self, p_coalition_id:str, p_coalition:GTCoalition) -> Union[float,list]:
         
-        self._is_bestresponse(p_coalition_id, p_coalition)
-
         if p_coalition.get_coalition_strategy() == p_coalition.C_COALITION_CONCATENATE:
             players_ids = p_coalition.get_players_ids()
             payoff = []
             for id in players_ids:
                 payoff.append(self._payoff.get_payoff(self._strategies, id))
+                self._is_bestresponse(p_coalition_id, p_coalition)
             return payoff
         else:
+            self._is_bestresponse(p_coalition_id, p_coalition)
             return self._payoff.get_payoff(self._strategies, p_coalition_id)
 
 
@@ -858,15 +883,16 @@ class GTGame (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _is_bestresponse(self, p_coalition_id:str, p_coalition:GTCoalition):
+    def _is_bestresponse(self, p_coalition_id:str, p_coalition:GTCoalition) -> Union[list, float]:
 
         if p_coalition.get_coalition_strategy() == p_coalition.C_COALITION_CONCATENATE:
             players_ids = p_coalition.get_players_ids()
-            payoff = []
+            br_values = []
             for id in players_ids:
-                payoff.append(self._payoff.best_response_values(id))
+                br_values.append(self._payoff.best_response_value(self._strategies, id))
+            return br_values
         else:
-            self._payoff.best_response_values(p_coalition_id)
+            return self._payoff.best_response_value(self._strategies, p_coalition_id)
     
 
 
