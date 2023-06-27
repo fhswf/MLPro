@@ -92,13 +92,28 @@ class GTFunction:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _best_response(self, p_element_id:str) -> float:
+    def best_response(self, p_element_id:str) -> float:
 
         if self._elem_ids is None:
             raise ParamError("self._elem_ids is None! Please instantiate this or use __call__() method!")
                
         idx = self._elem_ids.index(p_element_id)
         return np.max(self._payoff_map[idx])
+
+
+## -------------------------------------------------------------------------------------------------
+    def zero_sum(self) -> bool:
+
+        for pl in range(self._num_players):
+            if pl == 0:
+                payoff = self._payoff_map[pl]
+            else:
+                payoff += self._payoff_map[pl]
+        
+        if np.count_nonzero(payoff) > 0:
+            return False
+        else:
+            return True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -170,7 +185,7 @@ class GTPayoffMatrix (TStamp):
 
         payoff = self.get_payoff(p_strategies, p_element_id)
         if self._function is not None:
-            best_payoff = self._function._best_response()
+            best_payoff = self._function.best_response()
         else:
             best_payoff = self._call_best_response(p_element_id)
 
@@ -184,6 +199,21 @@ class GTPayoffMatrix (TStamp):
 
 ## -------------------------------------------------------------------------------------------------
     def _call_best_response(self, p_element_id:str) -> float:
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def zero_sum(self) -> bool:
+        
+        if self._function is not None:
+            best_payoff = self._function.zero_sum()
+        else:
+            return self._call_zero_sum()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _call_zero_sum(self) -> bool:
         
         raise NotImplementedError
 
