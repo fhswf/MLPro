@@ -111,12 +111,12 @@ class SLAdaptiveFunction (AdaptiveFunction):
                           p_visualize = p_visualize,
                           p_logging = p_logging,
                           **p_par )                  
-        
+
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
         self._metrics        = p_metrics
-        self._score_metric   = p_score_metric or p_metrics[0]
+        self._score_metric   = p_score_metric or p_metrics[0] if len(p_metrics) != 0 else None
         self._sl_model       = self._setup_model()
         self._logging_set    = self._setup_logging_set()
 
