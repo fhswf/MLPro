@@ -101,16 +101,16 @@ class GTFunction:
                 raise ParamError("The number of elements in p_dim_elems and p_elem_ids does not match!")
                
         idx = self._elem_ids.index(p_element_id)
-        el_matrix = self._payoff_map[idx]
+        payoff = self._payoff_map[idx]
 
         el_strategy = []
         for el in self._elem_ids:
             el_strategy.append(np.array(p_strategies.get_elem(el).get_values()))
 
         for pl in range(self._num_players):
-            el_matrix = np.dot(el_matrix, el_strategy[-(pl+1)])
+            payoff = np.dot(payoff, el_strategy[-(pl+1)])
 
-        return el_matrix
+        return payoff
 
 
 
