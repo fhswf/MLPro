@@ -52,6 +52,7 @@ class GTStrategy (Action):
 
 ## -------------------------------------------------------------------------------------------------
     def get_player_ids(self) -> list:
+
         return self.get_agent_ids()
 
 
@@ -130,7 +131,8 @@ class GTFunction:
 
         el_strategy = []
         for el in self._elem_ids:
-            el_strategy.append(np.array(p_strategies.get_elem(el).get_values()))
+            val = p_strategies.get_elem(el).get_values()
+            el_strategy.append(np.array([ i/sum(val) for i in val ]))
 
         for pl in range(self._num_players):
             payoff = np.dot(payoff, el_strategy[-(pl+1)])
