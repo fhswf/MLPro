@@ -56,44 +56,41 @@ class Dataset(Log):
     C_CLS_ARR = np.array
     C_CLS_LS = list
 
-## -------------------------------------------------------------------------------------------------
-    def __iter__(self, p_seed = 0):
-
-        self.reset(p_seed)
-        return self
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_feature_space : ESpace,
-                 p_label_space : ESpace,
                  p_output_cls = C_CLS_ELEM,
                  p_feature_dataset = None,
                  p_label_dataset = None,
                  p_batch_size : int = 1,
                  p_drop_short : bool = False,
                  p_shuffle : bool = False,
-                 p_eval_split : float = 0.3,
-                 p_test_split : float = 0.1,
+                 p_eval_split : float = None,
+                 p_test_split : float = None,
                  p_settings = None,
                  p_logging = Log.C_LOG_ALL):
 
 
         Log.__init__(self, p_logging = p_logging)
-        self._feature_space = p_feature_space
-        self._label_space = p_label_space
         self._output_cls = p_output_cls
         self._feature_dataset = p_feature_dataset
         self._label_dataset = p_label_dataset
         self._batch_size = p_batch_size
 
         if self._batch_size > 1:
-            self._mode = self.C_FETCH_BATCH
+            self._fetch_mode = self.C_FETCH_BATCH
+        else:
+            self._fetch_mode = self.C_FETCH_SINGLE
 
         self._shuffle = p_shuffle
         self._drop_short = p_drop_short
         self._eval_split = p_eval_split
         self._test_split = p_test_split
+
+        self._num_instances = self.__len__()
+
+        self._indexes_train = list(range(self._num_instances))
+        self._indexes = self._indexes_train.copy()
 
         if self._eval_split is None and self._test_split is None:
             self._split = False
@@ -104,7 +101,6 @@ class Dataset(Log):
 
         self._settings = p_settings
 
-        self._num_instances = self.__len__()
 
 
         if self._drop_short:
@@ -114,8 +110,14 @@ class Dataset(Log):
 
 
         self._feature_space, self._label_space = self.setup_spaces()
-        self._indexes_train = list(range(self._num_instances))
         self.reset(p_shuffle = self._shuffle)
+
+
+## -------------------------------------------------------------------------------------------------
+    def __iter__(self, p_seed = 0):
+
+        self.reset(p_seed)
+        return self
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -126,7 +128,7 @@ class Dataset(Log):
         -------
 
         """
-        if self._mode == self.C_FETCH_BATCH:
+        if self._fetch_mode == self.C_FETCH_BATCH:
             return self.get_next_batch()
         else:
             return self.get_next()
@@ -266,7 +268,7 @@ class Dataset(Log):
 
         """
         features = self._feature_dataset[p_index]
-        labels = self._label_space[p_index]
+        labels = self._label_dataset[p_index]
 
         if self._output_cls == Element:
             feature_obj = self._output_cls(self._feature_space)
@@ -284,8 +286,23 @@ class Dataset(Log):
     def get_next(self):
 
         # Return an Instance with first 'batch size' features and corresponding labels as a single label
-        raise NotImplementedError
+        if len(self._indexes) == 1:
+            self._last_batch = True
 
+        elif len(self._indexes) == 0:
+            raise Error("End of Data. Please watch the _last_batch attribute.")
+
+        index = self._indexes[0]
+        del self._indexes[0]
+
+        val = self.get_data(index)
+
+        feature_element = Element(self._feature_space)
+        feature_element.set_values(val[0].get_values())
+        label_element = Element(self._label_space)
+        label_element.set_values(val[1].get_values())
+
+        return feature_element, label_element
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -296,16 +313,24 @@ class Dataset(Log):
         -------
 
         """
-        if self._drop_short:
-            if 2*self._batch_size > len(self._indexes):
-                self._last_batch = True
+        if self._last_batch:
+            indexes = self._indexes
+            self._indexes.clear()
+
+        elif len(self._indexes) == 0:
+            raise Error("End of Data. Please watch the _last_batch attribute.")
 
         else:
-            if self._batch_size > len(self._indexes):
-                self._last_batch = True
+            if self._drop_short:
+                if 2*self._batch_size > len(self._indexes):
+                    self._last_batch = True
 
-        indexes = self._indexes[0:self._batch_size]
-        del self._indexes[0:self._batch_size]
+            else:
+                if self._batch_size > len(self._indexes):
+                    self._last_batch = True
+
+            indexes = self._indexes[0:self._batch_size]
+            del self._indexes[0:self._batch_size]
 
         feature_values = []
         label_values = []
@@ -338,11 +363,11 @@ class SASDataset(Dataset):
     def __init__(self,
                  p_state_fpath,
                  p_action_fpath,
-                 p_feature_space : ESpace,
-                 p_label_space : ESpace,
+                 p_state_space : ESpace,
+                 p_action_space : ESpace,
                  p_episode_col = 'Episode ID',
                  p_delimiter = '\t',
-                 p_drop_columns = ('Episode ID', 'Cycle', 'Day', 'Second', 'Microsecond'),
+                 p_drop_columns = ['Episode ID', 'Cycle', 'Day', 'Second', 'Microsecond'],
                  p_batch_size : int = 1,
                  p_drop_short : bool = False,
                  p_shuffle : bool = False,
@@ -379,11 +404,15 @@ class SASDataset(Dataset):
             delimiter=p_delimiter)
 
 
+        self._state_space = p_state_space
+        self._action_space = p_action_space
+
+        # feature_space, label_space = self.setup_spaces()
+
+
         Dataset.__init__(self,
             p_feature_dataset = feature_dataset,
             p_label_dataset = label_dataset,
-            p_feature_space=p_feature_space,
-            p_label_space=p_label_space,
             p_batch_size=p_batch_size,
             p_eval_split=p_eval_split,
             p_test_split=p_test_split,
@@ -393,6 +422,30 @@ class SASDataset(Dataset):
             p_logging=p_logging)
 
 
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup_spaces(self):
+        """
+
+        Parameters
+        ----------
+        p_state_space
+        p_action_space
+
+        Returns
+        -------
+
+        """
+
+        label_space = self._state_space.copy()
+
+        for dim in self._action_space.get_dims():
+            self._state_space.add_dim(dim)
+
+        feature_space = self._state_space.copy(p_new_dim_ids=True)
+
+        return feature_space, label_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -422,43 +475,43 @@ class SASDataset(Dataset):
 
         # Finding the episode change ids
         episodes_entry_change = self._states[episode_col].diff()
-        episode_idx = episodes_entry_change[episodes_entry_change.ne(0)]
+        episode_idx = episodes_entry_change[episodes_entry_change.ne(0)].index-1
 
         # Drop the columns
-        self._states.drop(columns=drop_columns, axis=0)
+        self._states = self._states.drop(columns=drop_columns, axis=0)
 
         # Fetch actions and drop the columns
         self._actions = pd.read_csv(filepath_or_buffer=action_fpath, delimiter=delimiter).drop(columns=drop_columns,
-            axis=1)
+            axis=0)
 
         # Create input df, with state and action
-        input = pd.concat([self._states, self._actions], axis=1, copy=True).iloc[:-1]
+        input = pd.concat([self._states, self._actions], axis=1, copy=True).iloc[:-1].reset_index(drop=True)
         # Drop rows at episode change
-        input = input.drop(labels=episode_idx[1:]).values
+        input = input.drop(labels=episode_idx[1:])
         # Create output df
-        output = self._states.iloc[1:]
+        output = self._states.iloc[1:].reset_index(drop=True)
         # Drop rows at episode change
-        output = output.drop(labels=episode_idx[1:]).values
+        output = output.drop(labels=episode_idx[1:])
 
         return input, output
 
 
-## -------------------------------------------------------------------------------------------------
-    def get_data(self, p_index):
-        """
-
-        Parameters
-        ----------
-        p_index
-
-        Returns
-        -------
-
-        """
-        features = self._feature_dataset.iloc[p_index].values
-        feature_obj = self._output_cls(self._feature_space).set_values(features)
-
-        labels = self._states.iloc[p_index+1].values
-        label_obj = self._output_cls(self._label_space).set_values(labels)
-
-        return feature_obj, label_obj
+# ## -------------------------------------------------------------------------------------------------
+#     def get_data(self, p_index):
+#         """
+#
+#         Parameters
+#         ----------
+#         p_index
+#
+#         Returns
+#         -------
+#
+#         """
+#         features = self._feature_dataset.iloc[p_index].values
+#         feature_obj = self._output_cls(self._feature_space).set_values(features)
+#
+#         labels = self._states.iloc[p_index+1].values
+#         label_obj = self._output_cls(self._label_space).set_values(labels)
+#
+#         return feature_obj, label_obj
