@@ -8,14 +8,15 @@
 ## -- 2023-03-30  0.0.0     SY       Creation
 ## -- 2023-06-02  1.0.0     SY       Release of first version
 ## -- 2023-06-15  1.0.1     SY       Add solver configuration methods in GTTraining
-## -- 2023-06-27  1.0.2     SY       - Update solver configuration methods
+## -- 2023-06-28  1.0.3     SY       - Update solver configuration methods
 ## --                                - Add is_zerosum(), _is_bestresponse() in class GTGame
 ## --                                - Adjust _get_evaluation() in class GTGame
 ## --                                - Enhancement of GTStrategy
+## --                                - Add TransferFunction as another option on GTFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-06-27)
+Ver. 1.0.3 (2023-06-28)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -26,6 +27,7 @@ from mlpro.bf.systems import *
 from mlpro.bf.ml import *
 from mlpro.bf.mt import *
 from mlpro.bf.math import *
+from mlpro.bf.physics import *
 from typing import Union
         
         
@@ -63,22 +65,37 @@ class GTStrategy (Action):
 ## -------------------------------------------------------------------------------------------------
 class GTFunction:
 
-    C_TYPE          = 'GTFunction'
+    C_TYPE                  = 'GTFunction'
+
+    C_FUNCTION_TYPE         = None
+    C_FUNC_PAYOFF_MATRIX    = 0
+    C_FUNC_TRANSFER_FCTS    = 1
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_dim_elems:list):
+    def __init__(self, p_func_type:int, p_dim_elems:list=None):
         
-        self._num_players   = len(p_dim_elems.shape)
-        
-        dim_elems           = [self._num_players]
-        dim_elems.extend(p_dim_elems)
-        self._payoff_map    = np.zeros(dim_elems)
+        self.C_FUNCTION_TYPE = p_func_type
 
-        self._setup_function()
+        if self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
+
+            if p_dim_elems is None:
+                raise ParamError("p_dim_elems is not defined!")
+            
+            self._num_players   = len(p_dim_elems.shape)
+            dim_elems           = [self._num_players]
+            dim_elems.extend(p_dim_elems)
+
+            self._payoff_map    = np.zeros(dim_elems)
+            self._setup_payoff_matrix()
+        
+        elif self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
+
+            self._payoff_map    = {}
+            self._setup_transfer_functions()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_function(self):
+    def _setup_payoff_matrix(self):
 
         raise NotImplementedError
 
@@ -93,51 +110,92 @@ class GTFunction:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _setup_transfer_functions(self):
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _add_transfer_function(self, p_idx:int, p_transfer_fct:TransferFunction):
+
+        self._payoff_map[p_idx] = p_transfer_fct
+
+
+## -------------------------------------------------------------------------------------------------
     def best_response(self, p_element_id:str) -> float:
 
-        if self._elem_ids is None:
-            raise ParamError("self._elem_ids is None! Please instantiate this or use __call__() method!")
-               
-        idx = self._elem_ids.index(p_element_id)
-        return np.max(self._payoff_map[idx])
+        if self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
+
+            return 0
+        
+        elif self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
+
+            if self._elem_ids is None:
+                raise ParamError("self._elem_ids is None! Please instantiate this or use __call__() method!")
+                
+            idx = self._elem_ids.index(p_element_id)
+            return np.max(self._payoff_map[idx])
 
 
 ## -------------------------------------------------------------------------------------------------
     def zero_sum(self) -> bool:
 
-        for pl in range(self._num_players):
-            if pl == 0:
-                payoff = self._payoff_map[pl]
-            else:
-                payoff += self._payoff_map[pl]
-        
-        if np.count_nonzero(payoff) > 0:
+        if self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
+
             return False
-        else:
-            return True
+        
+        elif self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
+
+            for pl in range(self._num_players):
+                if pl == 0:
+                    payoff = self._payoff_map[pl]
+                else:
+                    payoff += self._payoff_map[pl]
+            
+            if np.count_nonzero(payoff) > 0:
+                return False
+            else:
+                return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def __call__(self, p_element_id:str, p_strategies:GTStrategy) -> float:
 
-        if self._elem_ids is None:
-            self._elem_ids = p_strategies.get_elem_ids()
+        if self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
 
-            if self._num_players != len(self._elem_ids):
-                raise ParamError("The number of elements in p_dim_elems and p_elem_ids does not match!")
-               
-        idx = self._elem_ids.index(p_element_id)
-        payoff = self._payoff_map[idx]
+            if self._elem_ids is None:
+                self._elem_ids = p_strategies.get_elem_ids()
 
-        el_strategy = []
-        for el in self._elem_ids:
-            val = p_strategies.get_elem(el).get_values()
-            el_strategy.append(np.array([ i/sum(val) for i in val ]))
+                if self._num_players != len(self._elem_ids):
+                    raise ParamError("The number of elements in p_dim_elems and p_elem_ids does not match!")
+                
+            idx     = self._elem_ids.index(p_element_id)
+            payoff  = self._payoff_map[idx]
 
-        for pl in range(self._num_players):
-            payoff = np.dot(payoff, el_strategy[-(pl+1)])
+            el_strategy = []
+            for el in self._elem_ids:
+                val = p_strategies.get_elem(el).get_values()
+                el_strategy.append(np.array([ i/sum(val) for i in val ]))
 
-        return payoff
+            for pl in range(self._num_players):
+                payoff = np.dot(payoff, el_strategy[-(pl+1)])
+
+            return payoff
+
+        elif self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
+
+            if self._elem_ids is None:
+                self._elem_ids = p_strategies.get_elem_ids()
+                
+            idx = self._elem_ids.index(p_element_id)
+            tf  = self._payoff_map[idx]
+
+            el_strategy = []
+            for el in self._elem_ids:
+                val = p_strategies.get_elem(el).get_values()
+                el_strategy.append(np.array([ i/sum(val) for i in val ]))
+
+            return tf(el_strategy)
 
 
 
