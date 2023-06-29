@@ -26,9 +26,7 @@ https://scikit-learn.org
 
 from mlpro.wrappers.sklearn.basics import *
 from mlpro.oa.streams.basics import Instance, List
-from mlpro.oa.streams.tasks.anomalydetectors import AnomalyDetector
-from mlpro.oa.streams.tasks.anomalydetectors import AnomalyEventHandler
-from mlpro.oa.streams.tasks.anomalydetectors import AnomalyEvent
+from mlpro.oa.streams.tasks.anomalydetectors import *
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.svm import OneClassSVM
 from sklearn.ensemble import IsolationForest
@@ -82,11 +80,10 @@ class LOF(AnomalyDetector):
                 
             # Determine if data point is an anomaly based on its outlier score
             if self.anomaly_scores[-1] == -1:
-                self.counter += 1
-                handler_obj = AnomalyEventHandler()
-                event_obj = AnomalyEvent()
-                event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
-                event_obj.raise_anomaly(self.data_points, self.anomaly_scores, self.counter)
+                event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1])                )
+                handler = self.myhandler
+                self.register_event_handler(event_obj.C_NAME, handler)
+                self._raise_event(event_obj.C_NAME, event_obj)
 
 
 
@@ -142,10 +139,10 @@ class SVM(AnomalyDetector):
             # Determine if the data point is an anomaly based on its outlier score
             if self.anomaly_scores[-1] < 0:
                 self.counter += 1
-                handler_obj = AnomalyEventHandler()
-                event_obj = AnomalyEvent()
-                event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
-                event_obj.raise_anomaly()
+                event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1]) 
+                handler = self.myhandler
+                self.register_event_handler(event_obj.C_NAME, handler)
+                self._raise_event(event_obj.C_NAME, event_obj)
 
 
 
@@ -202,11 +199,9 @@ class IF(AnomalyDetector):
             # Determine if the latest data point is an anomaly based on its outlier score
             if self.anomaly_scores[-1] < 0:
                 self.counter += 1
-                handler_obj = AnomalyEventHandler()
-                event_obj = AnomalyEvent()
-                event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
-                event_obj.raise_anomaly()
-
-
+                event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1]) 
+                handler = self.myhandler
+                self.register_event_handler(event_obj.C_NAME, handler)
+                self._raise_event(event_obj.C_NAME, event_obj)
 
 

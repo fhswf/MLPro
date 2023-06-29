@@ -31,7 +31,7 @@ class AnomalyDetector(OATask):
     C_TYPE          = 'Anomaly Detector'
     C_EVENT_ANOMALY = 'ANOMALY'
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
@@ -50,7 +50,6 @@ class AnomalyDetector(OATask):
                          **p_kwargs)
         
         self.data_points = []
-        self.anomaly_scores = None
         self.counter = 0
         self.anomaly_scores = []
 
@@ -59,46 +58,7 @@ class AnomalyDetector(OATask):
     def _run(self, p_inst_new: list, p_inst_del: list):
         pass
 
-
-
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
-# Custom class that inherits event management functionalities from MLPro's class EventManager
-class AnomalyEvent (EventManager):
-
-    C_NAME          = 'Event class'
-
-    C_EVENT_OWN     = 'ANOMALY'
-
-    def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging)
- 
-
-    def raise_anomaly(self, data_points, anomaly_scores, counter):
-        eventobj = Event(p_raising_object=self, p_par1='Anomaly detected')
-        self._raise_event(self.C_EVENT_OWN, eventobj)
-        self.anomaly_characteristics(data_points, anomaly_scores, counter)
-
-
-    def anomaly_characteristics(self, data_points, anomaly_scores, counter):
-            
-            count = 0
-            for x in anomaly_scores:
-                if x < 0:
-                    count += 1
-            
-            frequency = len(data_points)/count
-
-
-
-## ---------------------------------------------------------
-## ---------------------------------------------------------
-# Custom event handler class
-class AnomalyEventHandler (Log):
-
-    C_TYPE          = 'Event handler'
-    C_NAME          = 'Anomaly-Event handler'
-
+    ## ---------------------------------------------------------------------------------
     def myhandler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
         self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
@@ -107,17 +67,102 @@ class AnomalyEventHandler (Log):
 
 ## -------------------------------------------------------------------------
 ## -------------------------------------------------------------------------
+class AnomalyDetectorCB(AnomalyDetector):
+
+    C_TYPE = 'Cluster based Anomaly Detector'
+
+
+    ## ------------------------------------------------------------------------
+    def __init__(self,
+                 p_name:str = None,
+                 p_range_max = StreamTask.C_RANGE_THREAD,
+                 p_ada : bool = True,
+                 p_duplicate_data : bool = False,
+                 p_visualize : bool = False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+
+        super().__init__(p_name = p_name,
+                         p_range_max = p_range_max,
+                         p_ada = p_ada,
+                         p_duplicate_data = p_duplicate_data,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging,
+                         **p_kwargs)
+        
+        self.data_points = []
+        self.counter = 0
+        self.anomaly_scores = []
+
+
+    ## -------------------------------------------------------------------------
+    def _run(self, p_inst_new: list, p_inst_del: list):
+        pass
+
+
+    ## --------------------------------------------------------------------------
+    def hdl_cluster_updates(p_event_id: str, p_event_object: Event):
+        pass
+
+
+## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------
+class AnomalyEvent (Event):
+
+    C_TYPE     = 'Event'
+
+    C_NAME     = 'Anomaly'
+
+    def __init__(self, p_raising_object, **p_kwargs):
+        pass
+
+
+## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------
+class PointAnomaly (AnomalyEvent):
+
+    C_NAME      = 'Point Anomaly'
+
+    def __init__(self, p_raising_object, p_deviation, **p_kwargs):
+        pass
+
+
+## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------
+class GroupAnomaly (AnomalyEvent):
+
+    C_NAME      = 'Group Anomaly'
+
+    def __init__(self, p_raising_object, p_mean, p_mean_deviation, **p_kwargs):
+        pass
+
+
+## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------
+class ContextualAnomaly (AnomalyEvent):
+
+    C_NAME      = 'Contextual Anomaly'
+
+    def __init__(self, p_raising_object, **p_kwargs):
+        pass
+
+
+## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------
 class DriftEvent (AnomalyEvent):
 
-    C_NAME          = 'Drift Anomaly'
+    C_NAME      = 'Drift'
 
-    C_EVENT_OWN     = 'DRIFT'
+    def __init__(self, p_raising_object, p_deviation, **p_kwargs):
+        pass
 
-    def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging)
- 
 
-    def do_something(self, data_points, anomaly_scores, counter):
-        eventobj = Event(p_raising_object=self, p_par1='Drift detected')
-        self._raise_event(self.C_EVENT_OWN, eventobj)
+## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------
+class DriftEventCB (DriftEvent):
+
+    C_NAME      = 'Cluster based Drift'
+
+    def __init__(self, p_raising_object, p_deviation, **p_kwargs):
+        pass
 
