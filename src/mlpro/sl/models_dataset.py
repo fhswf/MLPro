@@ -234,7 +234,7 @@ class Dataset(Log):
             random.shuffle(self._indexes_eval)
             random.shuffle(self._indexes_eval)
 
-
+        self._last_batch = False
         return self._reset(p_seed=p_seed, p_shuffle=p_shuffle, p_epoch=p_epoch)
 
 
@@ -302,7 +302,7 @@ class Dataset(Log):
         label_element = Element(self._label_space)
         label_element.set_values(val[1].get_values())
 
-        return feature_element, label_element
+        return [(feature_element, label_element)]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ class Dataset(Log):
         else:
             raise ParamError("This output class is not yet supported for this dataset")
 
-        return feature_batch, label_batch
+        return [(feature_batch, label_batch)]
 
 
 
@@ -487,11 +487,11 @@ class SASDataset(Dataset):
         # Create input df, with state and action
         input = pd.concat([self._states, self._actions], axis=1, copy=True).iloc[:-1].reset_index(drop=True)
         # Drop rows at episode change
-        input = input.drop(labels=episode_idx[1:])
+        input = input.drop(labels=episode_idx[1:]).values
         # Create output df
         output = self._states.iloc[1:].reset_index(drop=True)
         # Drop rows at episode change
-        output = output.drop(labels=episode_idx[1:])
+        output = output.drop(labels=episode_idx[1:]).values
 
         return input, output
 

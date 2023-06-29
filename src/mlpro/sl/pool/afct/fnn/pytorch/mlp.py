@@ -444,7 +444,8 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         self._sl_model.train()
         
         for input, target in p_dataset:
-            
+            input = torch.tensor(input.get_values(), dtype=torch.float)
+            target = torch.tensor(target.get_values(), dtype=torch.float)
             torch.manual_seed(self._sampling_seed)
             outputs = self.forward(torch.squeeze(input))
             
@@ -480,7 +481,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         BatchSize   = p_input.shape[0]
         output      = self._sl_model(p_input)   
         ids_        = self.get_hyperparam().get_dim_ids()
-        output      = output.reshape(BatchSize, int(self.get_hyperparam().get_value(ids_[1])))
+        # output      = output.reshape(BatchSize, int(self.get_hyperparam().get_value(ids_[1])))
         
         return output
 

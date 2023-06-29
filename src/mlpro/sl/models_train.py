@@ -39,13 +39,14 @@ class SLDataStoring(DataStoring):
 
         self.space = p_variables
 
-        self.variables = [self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC]
+        self.variables = [self.C_VAR_CYCLE]
 
         self.var_space = []
         for dim in self.space:
             self.var_space.append(dim)
 
         self.variables.extend(self.var_space)
+        self.current_epoch = 0
 
         DataStoring.__init__(self,p_variables=self.variables)
 
@@ -119,7 +120,7 @@ class SLScenario (Scenario):
 
         # TODO: Check if i need a cycle limit specific to models
 
-        self.connect_dataloggers()
+        self.connect_datalogger()
         # raise NotImplementedError
 
         if self._dataset is None:
@@ -137,12 +138,13 @@ class SLScenario (Scenario):
         data = self._dataset.get_next()
         adapted = self._model.adapt(p_dataset = data)
 
-        output = self._model(data[0])
-        mapping = (data[0], data[1], output)
+        output = self._model(data[0][0])
+        mapping = [*data[0][0].get_values(), *data[0][1].get_values(), *output.get_values()]
         logging_data = self._model.get_logging_data()
 
-        for metric in self._metrics:
-            logging_data.extend(metric.compute(self._model).get_values())
+
+        metric_values = self._model.calculate_metrics(p_data = data).get_values()
+        logging_data.extend(metric_values)
 
         if self._cycle_id >= ( self._dataset.num_batches - 1 ):
             end_of_data = True
@@ -178,7 +180,7 @@ class SLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def connect_dataloggers(self, p_mapping = None, p_cycle = None):
+    def connect_datalogger(self, p_mapping = None, p_cycle = None):
 
         self.ds_mappings = p_mapping
         self.ds_cycles = p_cycle
@@ -197,6 +199,11 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot(self):
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self):
+        return timedelta(0,0,0)
 
 
 
@@ -267,7 +274,7 @@ class SLTrainingResults(TrainingResults):
 
 ## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename = 'summary.csv') -> bool:
-        if not TrainingResults.save(self, p_path = p_filename):
+        if not TrainingResults.save(self, p_path = p_path, p_filename = p_filename):
             return False
 
         if self.ds_epoch is not None:
@@ -308,6 +315,7 @@ class SLTraining (Training):
                  p_collect_epoch_scores = True,
                  p_collect_mappings = True,
                  p_collect_cycles = True,
+                 p_num_epoch = 1,
                  p_eval_freq = 0,
                  p_test_freq = 0,
                  **p_kwargs):
@@ -329,18 +337,18 @@ class SLTraining (Training):
         self._eval_freq = p_eval_freq
         self._test_freq = p_test_freq
 
+        self._num_epochs = p_num_epoch
+        self._cycles_epoch = 0
+
         self._scenario : SLScenario = None
         self._model : SLAdaptiveFunction = None
 
         Training.__init__(self, **p_kwargs)
 
         self._model: SLAdaptiveFunction = self.get_scenario()._model
-        self.metric_variables = []
 
-        for metric in self._scenario._model.get_metrics():
-            dims = metric.get_output_space().get_dims()
-            for dim in dims:
-                self.metric_variables.append(dim.get_name_short())
+        self.metric_space = self._model.get_metric_space()
+
 
         # For hpt
         self._score_metric = self._model.get_score_metric()
@@ -350,6 +358,9 @@ class SLTraining (Training):
         self._eval_freq = p_eval_freq
         self._test_freq = p_test_freq
         self._epoch_id = 0
+        self._epoch_train = False
+        self._epoch_test = False
+        self._epoch_eval = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -359,43 +370,45 @@ class SLTraining (Training):
 
         results = Training._init_results(self)
 
-        self._results._ds_list = []
-
+        results._ds_list = []
+        metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
         if self._collect_epoch_scores:
-            variables = self.metric_variables
+            variables = metric_variables
             results.ds_epoch = SLDataStoring(variables)
-            self._results._ds_list.append(results.ds_epoch)
+            results._ds_list.append(results.ds_epoch)
 
         if self._collect_cycles:
             variables = [i.get_name_short() for i in self._logging_space.get_dims()]
-            variables.extend(self.metric_variables)
+            variables.extend(metric_variables)
             results.ds_cycles_train = SLDataStoring(p_variables=variables)
-            self._results._ds_list.append(results.ds_cycles_train)
+            results._ds_list.append(results.ds_cycles_train)
 
             if self._eval_freq > 0:
                 results.ds_cycles_eval = SLDataStoring(p_variables=variables)
-                self._results._ds_list.append(results.ds_cycles_eval)
+                results._ds_list.append(results.ds_cycles_eval)
 
             if self._test_freq > 0:
                 results.ds_cycles_test = SLDataStoring(p_variables=variables)
-                self._results._ds_list.append(results.ds_cycles_test)
+                results._ds_list.append(results.ds_cycles_test)
 
 
         if self._collect_mappings:
             variables = []
             for dim in self._model.get_input_space().get_dims():
-                variables.append(dim.get_name_short())
+                variables.append("input "+dim.get_name_short())
             for dim in self._model.get_output_space().get_dims():
-                variables.append(dim.get_name_short())
+                variables.append("target "+dim.get_name_short())
             for dim in self._model.get_output_space().get_dims():
-                variables.append("pred"+dim.get_name_short())
+                variables.append("pred "+dim.get_name_short())
 
             results.ds_mapping_train = SLDataStoring(p_variables=variables)
+            results._ds_list.append(results.ds_mapping_train)
             if self._eval_freq > 0:
                 results.ds_mapping_eval = SLDataStoring(p_variables=variables)
+                results._ds_list.append(results.ds_mapping_eval)
             if self._test_freq > 0:
                 results.ds_mapping_test = SLDataStoring(p_variables=variables)
-
+                results._ds_list.append(results.ds_mapping_test)
 
         self._scenario.connect_datalogger(p_mapping = results.ds_mapping_train, p_cycle = results.ds_cycles_train)
 
@@ -416,22 +429,21 @@ class SLTraining (Training):
         self._cycles_epoch += 1
 
         if adapted:
-            self._results.num_adaptatios += 1
+            self._results.num_adaptations += 1
 
         self._update_epoch()
 
         if end_of_data:
 
-
             if self._mode == self.C_MODE_TRAIN:
-                self._results.num_train_epochs += 1
+                self._results.num_epochs_train += 1
 
             elif self._mode == self.C_MODE_EVAL:
-                self._results.num_eval_epochs += 1
+                self._results.num_epochs_eval += 1
                 self._epoch_eval = False
 
             elif self._mode == self.C_MODE_TEST:
-                self._results.num_test_epochs += 1
+                self._results.num_epochs_test += 1
                 self._epoch_test = False
 
             if self._epoch_eval:
@@ -453,6 +465,9 @@ class SLTraining (Training):
             self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
             eof_training = True
 
+        elif self._epoch_id > 0 and self._epoch_id == self._num_epochs:
+            self.log(self.C_LOG_TYPE_W, 'Epoch limit ', str(self._num_epochs), ' reached')
+            eof_training = True
 
         return eof_training
 
@@ -466,18 +481,19 @@ class SLTraining (Training):
 
         self._scenario.get_dataset().reset(self._epoch_id)
 
-        if self._epoch_id % self._eval_freq == 0:
-            self._epoch_eval = True
+        if self._eval_freq:
+            if self._epoch_id % self._eval_freq == 0:
+                self._epoch_eval = True
 
-        if self._epoch_id % self._test_freq == 0:
-            self._epoch_test = True
+        if self._test_freq:
+            if self._epoch_id % self._test_freq == 0:
+                self._epoch_test = True
 
         for ds in self._results._ds_list:
             ds.add_epoch(self._epoch_id)
 
-
         self._scenario.connect_datalogger(p_mapping = self._results.ds_mapping_train,
-            p_cycle = self._results.ds_cycle_train)
+                                          p_cycle = self._results.ds_cycles_train)
 
 
         self._scenario.get_dataset().set_mode(Dataset.C_MODE_TRAIN)
@@ -493,11 +509,11 @@ class SLTraining (Training):
 
 
         if self._mode == self.C_MODE_TRAIN:
-            self.metric_list_train.append(self._model.calculate_metrics())
+            self.metric_list_train.append(self._model.get_current_metrics().get_values())
         elif self._mode == self.C_MODE_EVAL:
-            self.metric_list_eval.append(self._model.calculate_metrics())
+            self.metric_list_eval.append(self._model.get_current_metrics().get_values())
         elif self._mode == self.C_MODE_TEST:
-            self.metric_list_test.append(self._model.calculate_metrics())
+            self.metric_list_test.append(self._model.get_current_metrics().get_values())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -508,13 +524,20 @@ class SLTraining (Training):
         score_eval = np.nanmean(self.metric_list_eval, dtype=float, axis=0)
         score_val = np.nanmean(self.metric_list_test, dtype=float, axis=0)
 
-        score = [*score_train, *score_eval, *score_val]
-        self._results.ds_epoch.memorize_row(p_data=score)
+        try:
+            score = [*score_train, *score_eval, score_val]
+        except:
+            score = [score_val, score_eval, score_val]
 
-        score_metric_value = score_eval[self.metric_variables.index(self._score_metric.get_state_space().get_dims()[0].get_name_long())]
 
-        if self._results.highscore < score_metric_value:
-            self._results.highscore = score_metric_value
+        self._results.ds_epoch.memorize_row(self._scenario.get_cycle_id(), p_data=score)
+        metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
+
+        if self._score_metric:
+            score_metric_value = score_eval[metric_variables.index(self._score_metric.get_state_space().get_dims()[0].get_name_short())]
+
+            if self._results.highscore < score_metric_value:
+                self._results.highscore = score_metric_value
 
         self._cycles_epoch = 0
 

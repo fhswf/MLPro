@@ -89,7 +89,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
                   p_threshold=0,
                   p_ada : bool = True,
                   p_buffer_size : int = 0,
-                  p_metrics : List[Metric] = (),
+                  p_metrics : List[Metric] = [],
                   p_score_metric = None,
                   p_name: str = None,
                   p_range_max: int = Async.C_RANGE_PROCESS,
@@ -116,7 +116,21 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
         self._metrics        = p_metrics
-        self._score_metric   = (p_score_metric) or (p_metrics[0] if len(p_metrics) != 0 else None)
+
+        self._score_metric   = p_score_metric or p_metrics[0] if len(p_metrics) != 0 else None
+        if (self._score_metric is not None) and (self._score_metric not in self._metrics):
+            self._metrics.insert(0, self._score_metric)
+
+        # self.metric_variables = []
+        self._metric_space = ESpace()
+
+        for metric in self._metrics:
+            dims = metric.get_output_space().get_dims()
+            for dim in dims:
+                self._metric_space.add_dim(dim.copy())
+
+        self._metric_values = Element(self._metric_space)
+
         self._sl_model       = self._setup_model()
         self._logging_set    = self._setup_logging_set()
 
@@ -358,6 +372,28 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
         return self._score_metric
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_metric_space(self) -> ESpace:
+
+        return self._metric_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def calculate_metrics(self, p_data) -> Element:
+
+        val = []
+        for metric in self._metrics:
+            val.append(metric.compute(self, p_data))
+
+        self._metric_values = Element(self._metric_space)
+        self._metric_values.set_values(val)
+        return self._metric_values
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_current_metrics(self):
+        return self._metric_values
 
 
 
