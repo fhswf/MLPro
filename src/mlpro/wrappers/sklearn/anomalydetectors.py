@@ -81,7 +81,7 @@ class LOF(AnomalyDetector):
             # Determine if data point is an anomaly based on its outlier score
             if self.anomaly_scores[-1] == -1:
                 event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1])
-                handler = self.myhandler
+                handler = self.event_handler
                 self.register_event_handler(event_obj.C_NAME, handler)
                 self._raise_event(event_obj.C_NAME, event_obj)
 
@@ -140,7 +140,7 @@ class SVM(AnomalyDetector):
             if self.anomaly_scores[-1] < 0:
                 self.counter += 1
                 event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1]) 
-                handler = self.myhandler
+                handler = self.event_handler
                 self.register_event_handler(event_obj.C_NAME, handler)
                 self._raise_event(event_obj.C_NAME, event_obj)
 
@@ -200,7 +200,7 @@ class IF(AnomalyDetector):
             if self.anomaly_scores[-1] < 0:
                 self.counter += 1
                 event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1]) 
-                handler = self.myhandler
+                handler = self.event_handler
                 self.register_event_handler(event_obj.C_NAME, handler)
                 self._raise_event(event_obj.C_NAME, event_obj)
 
