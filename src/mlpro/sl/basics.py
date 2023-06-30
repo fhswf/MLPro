@@ -317,15 +317,10 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
         self.log(self.C_LOG_TYPE_I, 'Adaptation started')
 
-        input = p_dataset[0]
-        target = p_dataset[1]
 
         if self._adaptivity:
             adapted = self._adapt_offline(p_dataset)
 
-        output = self.map(p_dataset[0])
-
-        self._last_mapping = (input, target, output)
 
         return adapted
 

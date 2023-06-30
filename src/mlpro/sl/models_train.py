@@ -13,7 +13,7 @@ Ver. 0.0.0 (2023-06-13)
 
 This module provides training classes for supervised learning tasks.
 """
-
+import warnings
 
 from mlpro.bf.data import *
 from mlpro.sl import *
@@ -138,24 +138,32 @@ class SLScenario (Scenario):
         data = self._dataset.get_next()
         adapted = self._model.adapt(p_dataset = data)
 
-        output = self._model(data[0][0])
-        mapping = [*data[0][0].get_values(), *data[0][1].get_values(), *output.get_values()]
-        logging_data = self._model.get_logging_data()
-
-
-        metric_values = self._model.calculate_metrics(p_data = data).get_values()
-        logging_data.extend(metric_values)
 
         if self._cycle_id >= ( self._dataset.num_batches - 1 ):
             end_of_data = True
+
         else:
             end_of_data = False
 
-        if self.ds_cycles is not None:
-            self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
+            for input, target in data:
 
-        if self.ds_mappings is not None:
-            self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= mapping)
+                output = self._model(input)
+                mapping = [*input.get_values(), *target.get_values(), *output.get_values()]
+                logging_data = self._model.get_logging_data()
+
+                metric_values = self._model.calculate_metrics(p_data = (input, target)).get_values()
+                for met_val in metric_values:
+                    logging_data.append(met_val.get_values())
+
+                if self.ds_cycles is not None:
+                    self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
+
+                if self.ds_mappings is not None:
+                    self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= mapping)
+
+
+
+
 
         # get success from the model
         # Future implementation to terminate a training based on a goal criterion
@@ -177,6 +185,9 @@ class SLScenario (Scenario):
 
         if self._visualize:
             self._model.init_plot()
+
+        for metric in self._metrics:
+            metric.reset(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -465,7 +476,7 @@ class SLTraining (Training):
             self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
             eof_training = True
 
-        elif self._epoch_id > 0 and self._epoch_id-1 == self._num_epochs:
+        elif eof_epoch and self._epoch_id > 0 and self._epoch_id == self._num_epochs:
             self.log(self.C_LOG_TYPE_W, 'Epoch limit ', str(self._num_epochs), ' reached')
             eof_training = True
 
@@ -508,12 +519,13 @@ class SLTraining (Training):
     def _update_epoch(self):
 
 
-        if self._mode == self.C_MODE_TRAIN:
-            self.metric_list_train.append(self._model.get_current_metrics().get_values())
-        elif self._mode == self.C_MODE_EVAL:
-            self.metric_list_eval.append(self._model.get_current_metrics().get_values())
-        elif self._mode == self.C_MODE_TEST:
-            self.metric_list_test.append(self._model.get_current_metrics().get_values())
+        for met_val in self._model.get_current_metrics().get_values():
+            if self._mode == self.C_MODE_TRAIN:
+                self.metric_list_train.append(met_val.get_values())
+            elif self._mode == self.C_MODE_EVAL:
+                self.metric_list_train.append(met_val.get_values())
+            elif self._mode == self.C_MODE_TEST:
+                self.metric_list_train.append(met_val.get_values())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -534,8 +546,13 @@ class SLTraining (Training):
         metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
 
         if self._score_metric:
-            score_metric_value = score_eval[metric_variables.index(self._score_metric.get_state_space().get_dims()[0].get_name_short())]
+            try:
+                score_metric_value = score_eval[metric_variables.index(self._score_metric.get_output_space().get_dims()[0].get_name_short())]
+            except:
+                score_metric_value = score_eval
 
+            if self._results.highscore is None:
+                self._results.highscore = -(np.inf)
             if self._results.highscore < score_metric_value:
                 self._results.highscore = score_metric_value
 

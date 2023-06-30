@@ -26,7 +26,7 @@ from mlpro.sl.basics import *
 from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
 import torch.nn as nn
 import torch.optim as opt
-
+from mlpro.sl.models_eval import *
 
 
 
@@ -50,14 +50,14 @@ mydataset = SASDataset(p_state_fpath=path_state,
 
 
 
-
 myMLP = PyTorchMLP(p_input_space=mydataset._feature_space,
                    p_output_space=mydataset._label_space,
                    p_num_hidden_layers = 3,
-                   p_activation_fct = nn.ReLU,
-                   p_output_activation_fct=nn.ReLU,
+                   p_activation_fct = nn.LeakyReLU,
+                   p_output_activation_fct=nn.LeakyReLU,
                    p_optimizer = opt.Adam,
                    p_batch_size = 200,
+                   p_metrics= [MetricAccuracy(p_threshold=100)],
                    p_learning_rate = 0.001,
                    p_hidden_size = 128,
                    p_loss_fct = nn.MSELoss,
@@ -75,7 +75,7 @@ class MLPSLScenario(SLScenario):
 
 
 training = SLTraining(p_scenario_cls = MLPSLScenario,
-                      p_cycle_limit = 100000,
+                      p_cycle_limit = 10000,
                       p_num_epoch=2,
                       p_logging = Log.C_LOG_WE,
                       p_path = str(Path.home()))
@@ -84,10 +84,19 @@ training = SLTraining(p_scenario_cls = MLPSLScenario,
 
 training.run()
 
-plots = DataPlotting(p_data=training.get_results().ds_mapping_train, p_printing={'input th1':[True, 0, -1],
-                                                                                 'input th2':[True, 0 , -1],
-                                                                          'pred th1': [True, 0, -1],
-                                                                                 'pred th2': [True, 0, -1]})
+plots = DataPlotting(p_data=training.get_results().ds_mapping_train,
+                     p_printing={'input w1':[True, 0, -1],
+                                'input th2':[True, 0 , -1],
+                                'pred th1': [True, 0, -1],
+                                'pred th2': [True, 0, -1]},
+                     p_type=DataPlotting.C_PLOT_TYPE_EP,
+                     p_window = 1)
 plots.get_plots()
 plots.save_plots(p_path = training.get_training_path(),
                  p_format = 'jpg')
+
+acc_plot = DataPlotting(p_data=training.get_results().ds_cycles_train,
+                        p_printing={'acc':[True, 0, -1]},
+                        p_type=DataPlotting.C_PLOT_TYPE_EP,
+                        p_window=100)
+acc_plot.get_plots()

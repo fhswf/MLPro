@@ -16,6 +16,7 @@ This module provides SL metrics classes for supervised learning tasks.
 import numpy as np
 
 from mlpro.bf.math import *
+import warnings
 
 
 
@@ -54,8 +55,8 @@ class Metric(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-        Log.__init__(self)
+    def __init__(self,p_logging):
+        Log.__init__(self, p_logging)
         self._value = None
         self._metric_space = self._setup_metric_space()
 
@@ -75,7 +76,10 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed):
 
-        self._value = self._reset(p_seed)
+        try:
+            self._value = self._reset(p_seed)
+        except:
+            warnings.warn("Could not reset " + self.C_NAME + ".")
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -113,7 +117,7 @@ class MetricAccuracy(Metric):
                  p_threshold = 0,
                  p_logging = Log.C_LOG_ALL):
 
-        Metric.__init__(p_logging)
+        Metric.__init__(self, p_logging)
         self._threshold = p_threshold
         self._mappings_good = 0
         self._mappings_total = 0
@@ -130,15 +134,20 @@ class MetricAccuracy(Metric):
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
 
-        input, target = p_data
+        input = p_data[0]
+        target = p_data[1]
+
 
         output = p_model(input)
 
-        distance = output.get_related_set().distance(target, output)
-        self._mappings_total += 1
 
-        if distance > self._threshold:
-            self._mappings_good += 1
+
+        for i in range(0, len(target.get_values()) if isinstance(input, BatchElement) else 1):
+            distance = output.get_related_set().distance(target, output)
+            self._mappings_total += 1
+
+            if distance < self._threshold:
+                self._mappings_good += 1
 
         acc =  self._mappings_good/self._mappings_total
 
