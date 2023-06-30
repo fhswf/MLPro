@@ -85,5 +85,9 @@ training = SLTraining(p_scenario_cls = MLPSLScenario,
 training.run()
 
 plots = DataPlotting(p_data=training.get_results().ds_mapping_train, p_printing={'input th1':[True, 0, -1],
-                                                                          'target th1': [True, 0, -1]})
+                                                                                 'input th2':[True, 0 , -1],
+                                                                          'pred th1': [True, 0, -1],
+                                                                                 'pred th2': [True, 0, -1]})
 plots.get_plots()
+plots.save_plots(p_path = training.get_training_path(),
+                 p_format = 'jpg')
