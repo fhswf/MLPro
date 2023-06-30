@@ -465,7 +465,7 @@ class SLTraining (Training):
             self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
             eof_training = True
 
-        elif self._epoch_id > 0 and self._epoch_id == self._num_epochs:
+        elif self._epoch_id > 0 and self._epoch_id-1 == self._num_epochs:
             self.log(self.C_LOG_TYPE_W, 'Epoch limit ', str(self._num_epochs), ' reached')
             eof_training = True
 
@@ -540,6 +540,7 @@ class SLTraining (Training):
                 self._results.highscore = score_metric_value
 
         self._cycles_epoch = 0
+        self._scenario.reset(self._epoch_id)
 
 
 ## -------------------------------------------------------------------------------------------------

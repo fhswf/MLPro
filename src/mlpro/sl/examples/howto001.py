@@ -20,6 +20,7 @@ from mlpro.sl.models_dataset import SASDataset
 from mlpro.sl.models_train import *
 from pathlib import Path
 import os
+from mlpro.bf.plot import DataPlotting
 from mlpro.rl.pool.envs.doublependulum import *
 from mlpro.sl.basics import *
 from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
@@ -45,7 +46,7 @@ mydataset = SASDataset(p_state_fpath=path_state,
                         p_state_space=state_space,
                         p_action_space=action_space,
                        p_batch_size=300,
-                       p_logging=Log.C_LOG_NOTHING)
+                       p_logging=Log.C_LOG_WE)
 
 
 
@@ -60,7 +61,7 @@ myMLP = PyTorchMLP(p_input_space=mydataset._feature_space,
                    p_learning_rate = 0.001,
                    p_hidden_size = 128,
                    p_loss_fct = nn.MSELoss,
-                   p_logging = Log.C_LOG_NOTHING)
+                   p_logging = Log.C_LOG_WE)
 
 class MLPSLScenario(SLScenario):
 
@@ -76,9 +77,13 @@ class MLPSLScenario(SLScenario):
 training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_cycle_limit = 100000,
                       p_num_epoch=2,
-                      p_logging = Log.C_LOG_NOTHING,
+                      p_logging = Log.C_LOG_WE,
                       p_path = str(Path.home()))
 
 
 
 training.run()
+
+plots = DataPlotting(p_data=training.get_results().ds_mapping_train, p_printing={'input th1':[True, 0, -1],
+                                                                          'target th1': [True, 0, -1]})
+plots.get_plots()
