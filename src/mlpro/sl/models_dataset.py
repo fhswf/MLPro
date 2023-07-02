@@ -128,10 +128,7 @@ class Dataset(Log):
         -------
 
         """
-        if self._fetch_mode == self.C_FETCH_BATCH:
-            return self.get_next_batch()
-        else:
-            return self.get_next()
+        return self.get_next()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -281,9 +278,16 @@ class Dataset(Log):
 
         return feature_obj, label_obj
 
-
 ## -------------------------------------------------------------------------------------------------
     def get_next(self):
+
+        if self._fetch_mode == self.C_FETCH_BATCH:
+            return self.get_next_batch()
+        else:
+            return self.get_next()
+
+## -------------------------------------------------------------------------------------------------
+    def get_next_instance(self):
 
         # Return an Instance with first 'batch size' features and corresponding labels as a single label
         if len(self._indexes) == 1:
@@ -341,8 +345,10 @@ class Dataset(Log):
                 vals = self.get_data(index)
                 feature_values.append(vals[0].get_values())
                 label_values.append(vals[1].get_values())
-            feature_batch = BatchElement(self._feature_space).set_values(feature_values)
-            label_batch = BatchElement(self._label_space).set_values(label_values)
+            feature_batch = BatchElement(self._feature_space)
+            feature_batch.set_values(feature_values)
+            label_batch = BatchElement(self._label_space)
+            label_batch.set_values(label_values)
 
         else:
             raise ParamError("This output class is not yet supported for this dataset")

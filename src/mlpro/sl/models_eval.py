@@ -111,7 +111,7 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
 class MetricAccuracy(Metric):
 
-
+    C_NAME = 'ACC'
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_threshold = 0,
@@ -167,11 +167,11 @@ class MetricAccuracy(Metric):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MSEMetric(Metric):
-
+    C_NAME = 'MSE'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-        Metric.__init__(self)
+    def __init__(self, p_logging):
+        Metric.__init__(self, p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -186,11 +186,11 @@ class MSEMetric(Metric):
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
 
-        inputs, targets = p_data[0].get_values(), p_data[1].get_values()
+        inputs, targets = p_data[0], p_data[1].get_values()
 
         outputs = p_model(inputs).get_values()
 
-        mse = np.mean([np.square(np.array(outputs[i]) - np.array(inputs[i])) for i in range(len(inputs))])
+        mse = np.mean([np.square(np.array(outputs[i]) - np.array(targets[i])) for i in range(len(targets))])
 
         return mse
 

@@ -32,8 +32,8 @@ from mlpro.sl.models_eval import *
 
 path = str(Path.home()) + os.sep
 
-path_state = path + 'Results-2\env_states.csv'
-path_action = path + 'Results-2\\agent_actions.csv'
+path_state = path + 'data3\env_states.csv'
+path_action = path + 'data3\\agent_actions.csv'
 
 
 dp = DoublePendulumS4()
@@ -57,14 +57,15 @@ myMLP = PyTorchMLP(p_input_space=mydataset._feature_space,
                    p_output_activation_fct=nn.LeakyReLU,
                    p_optimizer = opt.Adam,
                    p_batch_size = 200,
-                   p_metrics= [MetricAccuracy(p_threshold=100)],
+                   # p_metrics= [MSEMetric(p_loggin
+                   p_metrics=[MSEMetric(p_logging=Log.C_LOG_NOTHING), MetricAccuracy(p_threshold=50, p_logging=Log.C_LOG_NOTHING)],
                    p_learning_rate = 0.001,
                    p_hidden_size = 128,
                    p_loss_fct = nn.MSELoss,
                    p_logging = Log.C_LOG_WE)
 
 class MLPSLScenario(SLScenario):
-
+    C_NAME = 'DP'
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
         self._model = myMLP
@@ -75,8 +76,8 @@ class MLPSLScenario(SLScenario):
 
 
 training = SLTraining(p_scenario_cls = MLPSLScenario,
-                      p_cycle_limit = 10000,
-                      p_num_epoch=2,
+                      p_cycle_limit = 1000000,
+                      p_num_epoch=200,
                       p_logging = Log.C_LOG_WE,
                       p_path = str(Path.home()))
 
@@ -96,7 +97,7 @@ plots.save_plots(p_path = training.get_training_path(),
                  p_format = 'jpg')
 
 acc_plot = DataPlotting(p_data=training.get_results().ds_cycles_train,
-                        p_printing={'acc':[True, 0, -1]},
+                        p_printing={'MSE':[True, 0, -1], 'acc' : [True, 0, -1]},
                         p_type=DataPlotting.C_PLOT_TYPE_EP,
-                        p_window=100)
+                        p_window=1)
 acc_plot.get_plots()

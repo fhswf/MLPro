@@ -17,10 +17,11 @@
 ## -- 2023-04-09  3.0.3     SY        Refactoring
 ## -- 2023-05-03  3.0.4     SY        Updating sampling method
 ## -- 2023-06-20  3.0.5     LSB       Updating the sampling method
+## -- 2023-07-02  3.0.6     LSB       Refactoring the postproc and preproc methods
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.5 (2023-06-20)
+Ver. 3.0.6 (2023-07-02)
 
 This a helper module for supervised learning models using PyTorch. 
 """
@@ -202,7 +203,8 @@ class PyTorchHelperFunctions():
         """
 
         # Convert p_input from Element to Tensor
-        input = torch.Tensor(np.array([p_input.get_values()]))
+        # input = torch.Tensor(np.array([p_input.get_values()]))
+        input = torch.Tensor(np.array(p_input.get_values()))
 
         # Preprocessing Data if needed
         try:
@@ -266,7 +268,7 @@ class PyTorchHelperFunctions():
             output = p_output
 
         # Convert output from Tensor to a list
-        output = output.detach().flatten().tolist()
+        output = output.detach().squeeze().tolist()
 
         return output
 

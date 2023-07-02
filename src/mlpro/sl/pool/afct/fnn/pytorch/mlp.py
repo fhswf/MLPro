@@ -444,8 +444,13 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         self._sl_model.train()
         
         for input, target in p_dataset:
-            input = torch.tensor(input.get_values(), dtype=torch.float)
-            target = torch.tensor(target.get_values(), dtype=torch.float)
+
+            try:
+                input = torch.tensor(input.get_values(), dtype=torch.float)
+                target = torch.tensor(target.get_values(), dtype=torch.float)
+            except:
+                pass
+
             torch.manual_seed(self._sampling_seed)
             outputs = self.forward(torch.squeeze(input))
             

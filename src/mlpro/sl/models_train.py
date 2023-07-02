@@ -108,7 +108,6 @@ class SLScenario (Scenario):
         self._dataset : Dataset = None
         self._model : SLAdaptiveFunction = None
         self.ds : dict = {}
-        self._metrics = []
 
 
         Scenario.__init__(self,
@@ -126,7 +125,9 @@ class SLScenario (Scenario):
         if self._dataset is None:
             raise ImplementationError("Please bind your SL dataset to the _dataset attribute in the _setup method.")
 
+
         self._metrics = self._model.get_metrics()
+
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
@@ -139,10 +140,11 @@ class SLScenario (Scenario):
         adapted = self._model.adapt(p_dataset = data)
 
 
-        if self._cycle_id >= ( self._dataset.num_batches - 1 ):
+        if self.get_dataset()._last_batch:
             end_of_data = True
 
         else:
+
             end_of_data = False
 
             for input, target in data:
@@ -154,12 +156,13 @@ class SLScenario (Scenario):
                 metric_values = self._model.calculate_metrics(p_data = (input, target)).get_values()
                 for met_val in metric_values:
                     logging_data.append(met_val.get_values())
-
+                if self.get_cycle_id() == 0:
+                    self.log(Log.C_LOG_WE, *[self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
                 if self.ds_cycles is not None:
                     self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
 
-                if self.ds_mappings is not None:
-                    self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= mapping)
+                #if self.ds_mappings is not None:
+                 #    self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= mapping)
 
 
 
