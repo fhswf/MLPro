@@ -11,11 +11,12 @@
 ## -- 2023-03-28  1.2.0     SY       - Add _complete_state, _reduce_state due to new class Persistent
 ## --                                - Update _map
 ## -- 2023-05-03  1.2.1     SY       Updating _adapt_offline method
-## -- 2023-06-21  1.2.2     LSB       Updating _adapt_offline method
+## -- 2023-06-21  1.2.2     LSB      Updating _adapt_offline method
+## -- 2023-07-04  1.2.3     LSB      Refactoring _complete_state for path conflict
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2023-06-20)
+Ver. 1.2.3 (2023-07-04)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
@@ -505,9 +506,14 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
 ## -------------------------------------------------------------------------------------------------
     def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
-        
-        load_model      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt')
-        load_optim      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_optimizer.pt')
+        try:
+            load_model = torch.load(p_path + p_os_sep + p_filename_stub + '_model.pt')
+        except:
+            load_model      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt')
+        try:
+            load_optim = torch.load(p_path + p_os_sep + p_filename_stub + '_optimizer.pt')
+        except:
+            load_optim      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_optimizer.pt')
         self._sl_model  = self._setup_model()
         self._sl_model.load_state_dict(load_model)
         self._optimizer.load_state_dict(load_optim)
