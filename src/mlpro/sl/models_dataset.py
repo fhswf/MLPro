@@ -16,6 +16,7 @@ This module provides dataset classes for supervised learning tasks.
 
 
 from mlpro.bf.math import *
+from mlpro.bf.math.normalizers import NormalizerMinMax
 from mlpro.bf.events import *
 import random
 import pandas as pd
@@ -67,6 +68,7 @@ class Dataset(Log):
                  p_shuffle : bool = False,
                  p_eval_split : float = None,
                  p_test_split : float = None,
+                 p_normalize: bool = True,
                  p_settings = None,
                  p_logging = Log.C_LOG_ALL):
 
@@ -76,6 +78,7 @@ class Dataset(Log):
         self._feature_dataset = p_feature_dataset
         self._label_dataset = p_label_dataset
         self._batch_size = p_batch_size
+        self._last_batch = False
 
         if self._batch_size > 1:
             self._fetch_mode = self.C_FETCH_BATCH
@@ -110,6 +113,11 @@ class Dataset(Log):
 
 
         self._feature_space, self._label_space = self.setup_spaces()
+
+        # if p_normalize:
+        #     self._normalizer = NormalizerMinMax()
+        #     self._normalizer.update_parameters()
+
         self.reset(p_shuffle = self._shuffle)
 
 
@@ -284,7 +292,7 @@ class Dataset(Log):
         if self._fetch_mode == self.C_FETCH_BATCH:
             return self.get_next_batch()
         else:
-            return self.get_next()
+            return self.get_next_instance()
 
 ## -------------------------------------------------------------------------------------------------
     def get_next_instance(self):
@@ -330,7 +338,7 @@ class Dataset(Log):
                     self._last_batch = True
 
             else:
-                if self._batch_size > len(self._indexes):
+                if self._batch_size >= len(self._indexes):
                     self._last_batch = True
 
             indexes = self._indexes[0:self._batch_size]
@@ -377,8 +385,8 @@ class SASDataset(Dataset):
                  p_batch_size : int = 1,
                  p_drop_short : bool = False,
                  p_shuffle : bool = False,
-                 p_eval_split : float = 0.3,
-                 p_test_split : float = 0.1,
+                 p_eval_split : float = 0,
+                 p_test_split : float = 0,
                  p_settings = None,
                  p_logging = Log.C_LOG_ALL
                  ):
@@ -410,8 +418,8 @@ class SASDataset(Dataset):
             delimiter=p_delimiter)
 
 
-        self._state_space = p_state_space
-        self._action_space = p_action_space
+        self._state_space = p_state_space.copy(True)
+        self._action_space = p_action_space.copy(True)
 
         # feature_space, label_space = self.setup_spaces()
 

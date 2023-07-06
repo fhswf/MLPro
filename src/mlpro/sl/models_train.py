@@ -77,6 +77,7 @@ class SLDataStoring(DataStoring):
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLScenario (Scenario):
@@ -109,7 +110,6 @@ class SLScenario (Scenario):
         self._model : SLAdaptiveFunction = None
         self.ds : dict = {}
 
-
         Scenario.__init__(self,
                           p_mode = p_mode,
                           p_ada = p_ada,
@@ -139,7 +139,6 @@ class SLScenario (Scenario):
         data = self._dataset.get_next()
         adapted = self._model.adapt(p_dataset = data)
 
-
         if self.get_dataset()._last_batch:
             end_of_data = True
 
@@ -150,19 +149,32 @@ class SLScenario (Scenario):
             for input, target in data:
 
                 output = self._model(input)
-                mapping = [*input.get_values(), *target.get_values(), *output.get_values()]
                 logging_data = self._model.get_logging_data()
+                # mapping = [*input.get_values(), *target.get_values(), *output.get_values()]
+
 
                 metric_values = self._model.calculate_metrics(p_data = (input, target)).get_values()
+
                 for met_val in metric_values:
                     logging_data.append(met_val.get_values())
+
                 if self.get_cycle_id() == 0:
                     self.log(Log.C_LOG_WE, *[self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
+
                 if self.ds_cycles is not None:
                     self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
 
-                #if self.ds_mappings is not None:
-                 #    self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= mapping)
+                if self.ds_mappings is not None:
+                    if isinstance(output, BatchElement):
+                        for i,val in enumerate(output.get_values()):
+                            ip = input.get_values()[i]
+                            tg = target.get_values()[i]
+                            op = val
+                            self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= [*ip, *tg, *op])
+                    else:
+                        self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data=[*input.get_values(),
+                                                                                              *target.get_values(),
+                                                                                              *output.get_values()])
 
 
 
