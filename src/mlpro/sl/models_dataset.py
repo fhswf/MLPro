@@ -114,9 +114,21 @@ class Dataset(Log):
 
         self._feature_space, self._label_space = self.setup_spaces()
 
-        # if p_normalize:
-        #     self._normalizer = NormalizerMinMax()
-        #     self._normalizer.update_parameters()
+        # Must be shifted to a different module later specific for data preprocessing
+        if p_normalize:
+            self._normalize = True
+            feature_min_boundaries = np.rint(np.min(self._feature_dataset, axis=0))
+            feature_max_boundaries = np.rint(np.max(self._feature_dataset, axis=0))
+            feature_boundaries = np.stack((feature_min_boundaries, feature_max_boundaries), axis=1)
+            self._normalizer_feature_data = NormalizerMinMax()
+            self._normalizer_feature_data.update_parameters(p_boundaries=feature_boundaries)
+            label_min_boundaries = np.rint(np.min(self._label_dataset, axis=0))
+            label_max_boundaries = np.rint(np.max(self._label_dataset, axis=0))
+            label_boundaries = np.stack((label_min_boundaries, label_max_boundaries), axis=1)
+            self._normalizer_label_data = NormalizerMinMax()
+            self._normalizer_label_data.update_parameters(p_boundaries=label_boundaries)
+        else:
+            self._normalize = False
 
         self.reset(p_shuffle = self._shuffle)
 
@@ -272,8 +284,12 @@ class Dataset(Log):
         -------
 
         """
-        features = self._feature_dataset[p_index]
-        labels = self._label_dataset[p_index]
+        if self._normalize:
+            features = self._normalizer_feature_data.normalize(p_data=self._feature_dataset[p_index])
+            labels = self._normalizer_label_data.normalize(p_data=self._label_dataset[p_index])
+        else:
+            features = self._feature_dataset[p_index]
+            labels = self._label_dataset[p_index]
 
         if self._output_cls == Element:
             feature_obj = self._output_cls(self._feature_space)

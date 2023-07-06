@@ -159,7 +159,7 @@ class SLScenario (Scenario):
                     logging_data.append(met_val.get_values())
 
                 if self.get_cycle_id() == 0:
-                    self.log(Log.C_LOG_WE, *[self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
+                    self.log(Log.C_LOG_WE, *['\t'+self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
 
                 if self.ds_cycles is not None:
                     self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
