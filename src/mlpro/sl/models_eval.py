@@ -25,7 +25,12 @@ import warnings
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MetricValue(Element):
+    """
 
+    Parameters
+    ----------
+    p_space
+    """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_space):
@@ -37,11 +42,25 @@ class MetricValue(Element):
 
 ## -------------------------------------------------------------------------------------------------
     def set_epoch(self, p_epoch):
+        """
+
+        Parameters
+        ----------
+        p_epoch
+
+        """
         self._epoch = p_epoch
 
 
 ## -------------------------------------------------------------------------------------------------
     def cycle(self, p_cycle):
+        """
+
+        Parameters
+        ----------
+        p_cycle
+
+        """
         self._cycle = p_cycle
 
 
@@ -52,6 +71,12 @@ class MetricValue(Element):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Metric(Log):
+    """
+
+    Parameters
+    ----------
+    p_logging
+    """
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -63,19 +88,35 @@ class Metric(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_metric_space(self) -> ESpace:
+        """
 
+        Returns
+        -------
+
+        """
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_output_space(self) -> ESpace:
+        """
 
+        Returns
+        -------
+
+        """
         return self._metric_space
 
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed):
+        """
 
+        Parameters
+        ----------
+        p_seed
+
+        """
         try:
             self._value = self._reset(p_seed)
         except:
@@ -84,13 +125,32 @@ class Metric(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
+        """
 
+        Parameters
+        ----------
+        p_seed
+
+        Returns
+        -------
+
+        """
         return 0
 
 
 ## -------------------------------------------------------------------------------------------------
     def compute(self, p_model, p_data):
+        """
 
+        Parameters
+        ----------
+        p_model
+        p_data
+
+        Returns
+        -------
+
+        """
         self._value = self._compute(p_model, p_data)
         metric = MetricValue(self._metric_space)
         metric.set_values(p_values=self._value)
@@ -99,7 +159,17 @@ class Metric(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
+        """
 
+        Parameters
+        ----------
+        p_model
+        p_data
+
+        Returns
+        -------
+
+        """
         raise NotImplementedError
 
 
@@ -110,6 +180,13 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MetricAccuracy(Metric):
+    """
+
+    Parameters
+    ----------
+    p_threshold
+    p_logging
+    """
 
     C_NAME = 'ACC'
 ## -------------------------------------------------------------------------------------------------
@@ -125,7 +202,12 @@ class MetricAccuracy(Metric):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_metric_space(self) -> ESpace:
+        """
 
+        Returns
+        -------
+
+        """
         self._metric_space = ESpace()
         self._metric_space.add_dim(Dimension(p_name_short="acc", p_name_long="Accuracy"))
         return self._metric_space
@@ -133,7 +215,17 @@ class MetricAccuracy(Metric):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
+        """
 
+        Parameters
+        ----------
+        p_model
+        p_data
+
+        Returns
+        -------
+
+        """
         input = p_data[0]
         target = p_data[1]
 
@@ -156,7 +248,16 @@ class MetricAccuracy(Metric):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
+        """
 
+        Parameters
+        ----------
+        p_seed
+
+        Returns
+        -------
+
+        """
         self._mappings_total = 0
         self._mappings_good = 0
 
@@ -167,16 +268,28 @@ class MetricAccuracy(Metric):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MSEMetric(Metric):
+    """
+
+    Parameters
+    ----------
+    p_logging
+    """
     C_NAME = 'MSE'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging):
+
         Metric.__init__(self, p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_metric_space(self) -> ESpace:
+        """
 
+        Returns
+        -------
+
+        """
         space = ESpace()
         space.add_dim(Dimension(p_name_short='MSE', p_name_long='Mean Squared Error', p_base_set=Dimension.C_BASE_SET_R))
 
@@ -185,7 +298,17 @@ class MSEMetric(Metric):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
+        """
 
+        Parameters
+        ----------
+        p_model
+        p_data
+
+        Returns
+        -------
+
+        """
         inputs, targets = p_data[0], p_data[1].get_values()
 
         outputs = p_model(inputs).get_values()
