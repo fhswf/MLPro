@@ -190,11 +190,14 @@ class Dataset(Log):
 
         """
         if p_mode == self.C_MODE_TRAIN:
+            self._last_batch = False
             self._indexes = self._indexes_train.copy()
         if p_mode == self.C_MODE_EVAL:
             self._indexes = self._indexes_eval.copy()
+            self._last_batch = False
         if p_mode == self.C_MODE_TEST:
             self._indexes = self._indexes_test.copy()
+            self._last_batch = False
 
 
 ## -------------------------------------------------------------------------------------------------

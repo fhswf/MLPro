@@ -56,6 +56,7 @@ class MLPSLScenario(SLScenario):
                         p_state_space=state_space,
                         p_action_space=action_space,
                        p_batch_size=100,
+                       p_eval_split=0.3,
                        p_logging=Log.C_LOG_WE)
 
 
@@ -70,7 +71,7 @@ class MLPSLScenario(SLScenario):
                                  # p_metrics= [MSEMetric(p_loggin
                                  p_metrics=[MSEMetric(p_logging=Log.C_LOG_NOTHING),
                                             MetricAccuracy(p_threshold=50, p_logging=Log.C_LOG_NOTHING)],
-                                 p_learning_rate=0.001,
+                                 p_learning_rate=0.0001,
                                  p_hidden_size=128,
                                  p_loss_fct=nn.MSELoss,
                                  p_logging=Log.C_LOG_WE)
@@ -96,9 +97,10 @@ else:
 
 training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_cycle_limit = cycle_limit,
-                      p_num_epoch=10,
+                      p_num_epoch=5,
                       p_logging = Log.C_LOG_WE,
-                      p_path = path)
+                      p_path = path,
+                      p_eval_freq=1)
 
 
 

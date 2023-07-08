@@ -399,7 +399,13 @@ class SLTraining (Training):
         results._ds_list = []
         metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
         if self._collect_epoch_scores:
-            variables = metric_variables
+            variables = metric_variables[:]
+            if self._eval_freq > 0:
+                for i in range(len(variables)):
+                    variables.append("Eval "+ variables[i])
+            if self._test_freq > 0:
+                for i in range(len(variables)):
+                    variables.append("Test " + variables[i])
             results.ds_epoch = SLDataStoring(variables)
             results._ds_list.append(results.ds_epoch)
 
@@ -460,7 +466,7 @@ class SLTraining (Training):
         self._update_epoch()
 
         if end_of_data:
-
+            self.get_scenario().reset(self.get_scenario().get_cycle_id())
             if self._mode == self.C_MODE_TRAIN:
                 self._results.num_epochs_train += 1
 
@@ -533,14 +539,15 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _update_epoch(self):
 
-
+        current_metrics = []
         for met_val in self._model.get_current_metrics().get_values():
-            if self._mode == self.C_MODE_TRAIN:
-                self.metric_list_train.append(met_val.get_values())
-            elif self._mode == self.C_MODE_EVAL:
-                self.metric_list_train.append(met_val.get_values())
-            elif self._mode == self.C_MODE_TEST:
-                self.metric_list_train.append(met_val.get_values())
+            current_metrics.append(met_val.get_values())
+        if self._mode == self.C_MODE_TRAIN:
+            self.metric_list_train.append(current_metrics)
+        elif self._mode == self.C_MODE_EVAL:
+            self.metric_list_eval.append(current_metrics)
+        elif self._mode == self.C_MODE_TEST:
+            self.metric_list_eval.append(current_metrics)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -548,31 +555,36 @@ class SLTraining (Training):
 
 
         score_train = np.nanmean(self.metric_list_train, dtype=float, axis=0)
-        score_eval = np.nanmean(self.metric_list_eval, dtype=float, axis=0)
-        score_val = np.nanmean(self.metric_list_test, dtype=float, axis=0)
-
+        if self.metric_list_eval:
+            score_eval = np.nanmean(self.metric_list_eval, dtype=float, axis=0)
+        else:
+            score_eval = []
+        if self.metric_list_test:
+            score_val = np.nanmean(self.metric_list_test, dtype=float, axis=0)
+        else:
+            score_val = []
         try:
-            score = [*score_train, *score_eval, score_val]
+            score = np.concatenate((score_train, score_eval, score_val), axis=0).flatten()
         except:
-            score = [score_val, score_eval, score_val]
+            score = [score_train, score_eval, score_val]
 
 
         self._results.ds_epoch.memorize_row(self._scenario.get_cycle_id(), p_data=score)
         metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
-
         if self._score_metric:
             try:
                 score_metric_value = score_eval[metric_variables.index(self._score_metric.get_output_space().get_dims()[0].get_name_short())]
             except:
                 score_metric_value = score_eval
 
+
             if self._results.highscore is None:
                 self._results.highscore = -(np.inf)
-            if self._results.highscore < score_metric_value:
-                self._results.highscore = score_metric_value
+            if score_metric_value:
+                if self._results.highscore < score_metric_value:
+                    self._results.highscore = score_metric_value
 
         self._cycles_epoch = 0
-        self._scenario.reset(self._epoch_id)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -580,7 +592,7 @@ class SLTraining (Training):
         
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_EVAL
-        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycle_eval)
+        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycles_eval)
         self._scenario.get_dataset().set_mode(Dataset.C_MODE_EVAL)
 
 
@@ -589,7 +601,7 @@ class SLTraining (Training):
 
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_TEST
-        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycle_test)
+        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycles_test)
         self._scenario.get_dataset().set_mode(Dataset.C_MODE_TEST)
 
 
