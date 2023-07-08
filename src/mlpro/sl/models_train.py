@@ -25,13 +25,15 @@ from mlpro.sl import *
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLDataStoring(DataStoring):
+    """
 
+    Parameters
+    ----------
+    p_variables
+    """
 
     C_VAR0 = "Epoch ID"
     C_VAR_CYCLE = "Cycle ID"
-    C_VAR_DAY = "Day"
-    C_VAR_SEC = "Second"
-    C_VAR_MICROSEC = "Microsecond"
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -54,6 +56,14 @@ class SLDataStoring(DataStoring):
 ## -------------------------------------------------------------------------------------------------
     def memorize_row(self, p_cycle_id, p_data):
 
+        """
+
+        Parameters
+        ----------
+        p_cycle_id
+        p_data
+
+        """
 
         self.memorize(self.C_VAR_CYCLE, self.current_epoch, p_cycle_id)
 
@@ -64,11 +74,25 @@ class SLDataStoring(DataStoring):
 
 ## -------------------------------------------------------------------------------------------------
     def get_variables(self):
+        """
+
+        Returns
+        -------
+
+        """
         return self.variables
 
 
 ## -------------------------------------------------------------------------------------------------
     def add_epoch(self, p_epoch_id):
+
+        """
+
+        Parameters
+        ----------
+        p_epoch_id
+
+        """
         self.add_frame(p_frame_id=p_epoch_id)
         self.current_epoch = p_epoch_id
 
@@ -83,6 +107,15 @@ class SLDataStoring(DataStoring):
 class SLScenario (Scenario):
     """
     To be designed.
+
+    Parameters
+    ----------
+    p_mode
+    p_ada
+    p_cycle_limit
+    p_visualize
+    p_logging
+
     """
 
     C_TYPE = 'SL-Scenario'
@@ -95,20 +128,10 @@ class SLScenario (Scenario):
                  p_cycle_limit: int = 0,
                  p_visualize: bool = True,
                  p_logging=Log.C_LOG_ALL):
-        """
-
-        Parameters
-        ----------
-        p_mode
-        p_ada
-        p_cycle_limit
-        p_visualize
-        p_logging
-        """
 
         self._dataset : Dataset = None
         self._model : SLAdaptiveFunction = None
-        self.ds : dict = {}
+        # self.ds : dict = {}
 
         Scenario.__init__(self,
                           p_mode = p_mode,
@@ -132,6 +155,9 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
 
+        """
+
+        """
         # Check if the first run
         success = False
         error = False
@@ -191,13 +217,31 @@ class SLScenario (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
+        """
 
+        Parameters
+        ----------
+        p_mode
+        p_ada
+        p_visualize
+        p_logging
+
+        Returns
+        -------
+
+        """
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
+        """
 
+        Parameters
+        ----------
+        p_seed
+
+        """
         if self._visualize:
             self._model.init_plot()
 
@@ -208,27 +252,55 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def connect_datalogger(self, p_mapping = None, p_cycle = None):
 
+        """
+
+        Parameters
+        ----------
+        p_mapping
+        p_cycle
+
+        """
         self.ds_mappings = p_mapping
         self.ds_cycles = p_cycle
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_dataset(self):
+
+        """
+
+        Returns
+        -------
+
+        """
         return self._dataset
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot(self):
+
+        """
+
+        """
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot(self):
+
+        """
+
+        """
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_latency(self):
+
+        """
+
+
+        """
         return timedelta(0,0,0)
 
 
@@ -238,6 +310,16 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLTrainingResults(TrainingResults):
+
+    """
+
+    Parameters
+    ----------
+    p_scenario
+    p_run
+    p_cycle_id
+    p_logging
+    """
 
     C_NAME = "SL"
 
@@ -281,6 +363,10 @@ class SLTrainingResults(TrainingResults):
 
 ## -------------------------------------------------------------------------------------------------
     def close(self):
+
+        """
+
+        """
         TrainingResults.close(self)
 
         self.add_custom_result(self.C_CPAR_NUM_EPOCH_TRAIN, self.num_epochs_train)
@@ -290,6 +376,12 @@ class SLTrainingResults(TrainingResults):
 
 ## -------------------------------------------------------------------------------------------------
     def _log_results(self):
+
+        """
+
+
+        """
+
         TrainingResults._log_results(self)
 
         self.log(Log.C_LOG_WE, "Training Epochs:", self.num_epochs_train)
@@ -300,6 +392,19 @@ class SLTrainingResults(TrainingResults):
 
 ## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename = 'summary.csv') -> bool:
+
+        """
+
+        Parameters
+        ----------
+        p_path
+        p_filename
+
+        Returns
+        -------
+
+        """
+
         if not TrainingResults.save(self, p_path = p_path, p_filename = p_filename):
             return False
 
@@ -328,7 +433,15 @@ class SLTrainingResults(TrainingResults):
 ## -------------------------------------------------------------------------------------------------
 class SLTraining (Training):
     """
-    To be designed.
+
+    Parameters
+    ----------
+    p_collect_epoch_scores
+    p_collect_mappings
+    p_collect_cycles
+    p_eval_freq
+    p_test_freq
+    p_kwargs
     """
 
     C_NAME = 'SL'
@@ -345,17 +458,8 @@ class SLTraining (Training):
                  p_eval_freq = 0,
                  p_test_freq = 0,
                  **p_kwargs):
-        """
 
-        Parameters
-        ----------
-        p_collect_epoch_scores
-        p_collect_mappings
-        p_collect_cycles
-        p_eval_freq
-        p_test_freq
-        p_kwargs
-        """
+
         self._collect_epoch_scores = p_collect_epoch_scores
         self._collect_mappings = p_collect_mappings
         self._collect_cycles = p_collect_cycles
@@ -391,7 +495,12 @@ class SLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> TrainingResults:
+        """
 
+        Returns
+        -------
+
+        """
         Training._init_results(self)
 
         results = Training._init_results(self)
@@ -451,6 +560,12 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self) -> bool:
 
+        """
+
+        Returns
+        -------
+
+        """
         eof_training = False
         eof_epoch = False
 
@@ -507,6 +622,10 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _init_epoch(self):
 
+        """
+
+
+        """
         self._epoch_id += 1
         self._mode = self.C_MODE_TRAIN
         self._model.switch_adaptivity(p_ada = True)
@@ -539,6 +658,9 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _update_epoch(self):
 
+        """
+
+        """
         current_metrics = []
         for met_val in self._model.get_current_metrics().get_values():
             current_metrics.append(met_val.get_values())
@@ -553,7 +675,9 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _close_epoch(self):
 
+        """
 
+        """
         score_train = np.nanmean(self.metric_list_train, dtype=float, axis=0)
         if self.metric_list_eval:
             score_eval = np.nanmean(self.metric_list_eval, dtype=float, axis=0)
@@ -571,6 +695,7 @@ class SLTraining (Training):
 
         self._results.ds_epoch.memorize_row(self._scenario.get_cycle_id(), p_data=score)
         metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
+
         if self._score_metric:
             try:
                 score_metric_value = score_eval[metric_variables.index(self._score_metric.get_output_space().get_dims()[0].get_name_short())]
@@ -589,7 +714,10 @@ class SLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_eval(self):
-        
+
+        """
+
+        """
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_EVAL
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycles_eval)
@@ -599,6 +727,9 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _init_test(self):
 
+        """
+
+        """
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_TEST
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycles_test)

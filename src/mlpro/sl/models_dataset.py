@@ -136,6 +136,16 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     def __iter__(self, p_seed = 0):
 
+        """
+
+        Parameters
+        ----------
+        p_seed
+
+        Returns
+        -------
+
+        """
         self.reset(p_seed)
         return self
 
@@ -308,6 +318,12 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     def get_next(self):
 
+        """
+
+        Returns
+        -------
+
+        """
         if self._fetch_mode == self.C_FETCH_BATCH:
             return self.get_next_batch()
         else:
@@ -316,6 +332,12 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     def get_next_instance(self):
 
+        """
+
+        Returns
+        -------
+
+        """
         # Return an Instance with first 'batch size' features and corresponding labels as a single label
         if len(self._indexes) == 1:
             self._last_batch = True
@@ -390,6 +412,25 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SASDataset(Dataset):
+    """
+
+    Parameters
+    ----------
+    p_state_fpath
+    p_action_fpath
+    p_state_space
+    p_action_space
+    p_episode_col
+    p_delimiter
+    p_drop_columns
+    p_batch_size
+    p_drop_short
+    p_shuffle
+    p_eval_split
+    p_test_split
+    p_settings
+    p_logging
+    """
 
 
     ## -------------------------------------------------------------------------------------------------
@@ -409,26 +450,6 @@ class SASDataset(Dataset):
                  p_settings = None,
                  p_logging = Log.C_LOG_ALL
                  ):
-
-        """
-
-        Parameters
-        ----------
-        p_state_fpath
-        p_action_fpath
-        p_feature_space
-        p_label_space
-        p_episode_col
-        p_delimiter
-        p_drop_columns
-        p_batch_size
-        p_drop_short
-        p_shuffle
-        p_eval_split
-        p_test_split
-        p_settings
-        p_logging
-        """
 
         feature_dataset, label_dataset = self._setup_dataset(state_fpath=p_state_fpath,
             action_fpath=p_action_fpath,
