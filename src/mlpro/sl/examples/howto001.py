@@ -97,7 +97,7 @@ else:
 
 training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_cycle_limit = cycle_limit,
-                      p_num_epoch=5,
+                      p_num_epoch=3,
                       p_logging = Log.C_LOG_WE,
                       p_path = path,
                       p_eval_freq=1)

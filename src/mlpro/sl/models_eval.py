@@ -77,13 +77,23 @@ class Metric(Log):
     ----------
     p_logging
     """
+    C_OBJECTIVE_MINIMIZE = -1
+    C_OBJECTIVE_MAXIMIZE = 1
 
+    C_OBJECTIVE = C_OBJECTIVE_MAXIMIZE
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,p_logging):
+
         Log.__init__(self, p_logging)
-        self._value = None
+
         self._metric_space = self._setup_metric_space()
+
+        if self.C_OBJECTIVE == self.C_OBJECTIVE_MINIMIZE:
+            self._score = np.inf
+        else:
+            self._score = np.inf*(-1)
+        self._highscore = -(np.inf)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -118,7 +128,8 @@ class Metric(Log):
 
         """
         try:
-            self._value = self._reset(p_seed)
+            self._score = self._reset(p_seed)
+            self._highscore = (-1)*(np.inf)
         except:
             warnings.warn("Could not reset " + self.C_NAME + ".")
 
@@ -135,7 +146,12 @@ class Metric(Log):
         -------
 
         """
-        return 0
+        if self.C_OBJECTIVE == self.C_OBJECTIVE_MINIMIZE:
+            self._score = np.inf
+        else:
+            self._score = np.inf * (-1)
+
+        return self._score
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -151,9 +167,19 @@ class Metric(Log):
         -------
 
         """
-        self._value = self._compute(p_model, p_data)
+        value = self._compute(p_model, p_data)
         metric = MetricValue(self._metric_space)
-        metric.set_values(p_values=self._value)
+        metric.set_values(p_values=value)
+
+        if self.C_OBJECTIVE == self.C_OBJECTIVE_MINIMIZE:
+            self._score = -(self._update_score(p_value=value))
+
+        elif self.C_OBJECTIVE == self.C_OBJECTIVE_MAXIMIZE:
+            self._score = self._update_score(p_value=value)
+
+        if self._highscore<self._score:
+            self._highscore = self._score
+
         return metric
 
 
@@ -173,6 +199,43 @@ class Metric(Log):
         raise NotImplementedError
 
 
+## -------------------------------------------------------------------------------------------------
+    def _update_score(self, p_value) -> float:
+        """
+
+        Parameters
+        ----------
+        p_value
+
+        Returns
+        -------
+
+        """
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_current_score(self):
+        """
+
+        Returns
+        -------
+
+        """
+        return self._score
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_current_highscore(self):
+        """
+
+        Returns
+        -------
+
+        """
+        return self._highscore
+
+
 
 
 
@@ -189,6 +252,10 @@ class MetricAccuracy(Metric):
     """
 
     C_NAME = 'ACC'
+
+    C_OBJECTIVE = Metric.C_OBJECTIVE_MAXIMIZE
+
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_threshold = 0,
@@ -198,6 +265,9 @@ class MetricAccuracy(Metric):
         self._threshold = p_threshold
         self._mappings_good = 0
         self._mappings_total = 0
+        self._num_instances = 0
+        self._sum = 0
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -258,8 +328,31 @@ class MetricAccuracy(Metric):
         -------
 
         """
+        self._num_instances = 0
+        self._sum = 0
         self._mappings_total = 0
         self._mappings_good = 0
+        return 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_score(self, p_value) -> float:
+
+        """
+
+        Parameters
+        ----------
+        p_value
+
+        Returns
+        -------
+
+        """
+        self._sum += p_value
+        self._num_instances += 1
+
+        return self._sum / self._num_instances
+
 
 
 
@@ -276,10 +369,14 @@ class MSEMetric(Metric):
     """
     C_NAME = 'MSE'
 
+    C_OBJECTIVE = Metric.C_OBJECTIVE_MINIMIZE
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging):
 
         Metric.__init__(self, p_logging)
+        self._num_instances = 0
+        self._sum = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -294,6 +391,13 @@ class MSEMetric(Metric):
         space.add_dim(Dimension(p_name_short='MSE', p_name_long='Mean Squared Error', p_base_set=Dimension.C_BASE_SET_R))
 
         return space
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+
+        self._num_instances = 0
+        return -np.inf
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -317,3 +421,21 @@ class MSEMetric(Metric):
 
         return mse
 
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_score(self, p_value) -> float:
+        """
+
+        Parameters
+        ----------
+        p_value
+
+        Returns
+        -------
+
+        """
+        self._sum += p_value
+        self._num_instances += 1
+
+        return self._sum/self._num_instances

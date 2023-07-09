@@ -578,10 +578,10 @@ class SLTraining (Training):
         if adapted:
             self._results.num_adaptations += 1
 
-        self._update_epoch()
 
         if end_of_data:
-            self.get_scenario().reset(self.get_scenario().get_cycle_id())
+            self._update_scores()
+            self.get_scenario().reset(p_seed=self._epoch_id)
             if self._mode == self.C_MODE_TRAIN:
                 self._results.num_epochs_train += 1
 
@@ -649,27 +649,30 @@ class SLTraining (Training):
 
         self._scenario.get_dataset().set_mode(Dataset.C_MODE_TRAIN)
 
-        self.metric_list_train = []
-        self.metric_list_eval = []
-        self.metric_list_test = []
+        self._train_epoch_scores = [None for i in range(len(self.metric_space.get_dims()))]
+        self._test_epoch_scores = [None for i in range(len(self.metric_space.get_dims()))]
+        self._eval_epoch_scores = [None for i in range(len(self.metric_space.get_dims()))]
 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_epoch(self):
+    def _update_scores(self):
 
         """
 
         """
         current_metrics = []
-        for met_val in self._model.get_current_metrics().get_values():
-            current_metrics.append(met_val.get_values())
+        for metric in self._model.get_metrics():
+            current_metrics.append(metric.get_current_score())
         if self._mode == self.C_MODE_TRAIN:
-            self.metric_list_train.append(current_metrics)
-        elif self._mode == self.C_MODE_EVAL:
-            self.metric_list_eval.append(current_metrics)
+            self._train_epoch_scores = current_metrics
+            self._train_highscore = self._score_metric.get_current_highscore()
         elif self._mode == self.C_MODE_TEST:
-            self.metric_list_eval.append(current_metrics)
+            self._test_epoch_scores = current_metrics
+            self._test_highscore = self._score_metric.get_current_highscore()
+        elif self._mode == self.C_MODE_EVAL:
+            self._eval_epoch_scores = current_metrics
+            self._eval_highscore = self._score_metric.get_current_highscore()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -678,37 +681,14 @@ class SLTraining (Training):
         """
 
         """
-        score_train = np.nanmean(self.metric_list_train, dtype=float, axis=0)
-        if self.metric_list_eval:
-            score_eval = np.nanmean(self.metric_list_eval, dtype=float, axis=0)
-        else:
-            score_eval = []
-        if self.metric_list_test:
-            score_val = np.nanmean(self.metric_list_test, dtype=float, axis=0)
-        else:
-            score_val = []
-        try:
-            score = np.concatenate((score_train, score_eval, score_val), axis=0).flatten()
-        except:
-            score = [score_train, score_eval, score_val]
+
+        score = [*self._train_epoch_scores, *self._eval_epoch_scores, *self._test_epoch_scores]
 
 
         self._results.ds_epoch.memorize_row(self._scenario.get_cycle_id(), p_data=score)
-        metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
-
-        if self._score_metric:
-            try:
-                score_metric_value = score_eval[metric_variables.index(self._score_metric.get_output_space().get_dims()[0].get_name_short())]
-            except:
-                score_metric_value = score_eval
 
 
-            if self._results.highscore is None:
-                self._results.highscore = -(np.inf)
-            if score_metric_value:
-                if self._results.highscore < score_metric_value:
-                    self._results.highscore = score_metric_value
-
+        self._results.highscore = self._eval_highscore
         self._cycles_epoch = 0
 
 
