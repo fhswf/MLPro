@@ -177,9 +177,6 @@ class Metric(Log):
         elif self.C_OBJECTIVE == self.C_OBJECTIVE_MAXIMIZE:
             self._score = self._update_score(p_value=value)
 
-        if self._highscore<self._score:
-            self._highscore = self._score
-
         return metric
 
 
@@ -233,6 +230,10 @@ class Metric(Log):
         -------
 
         """
+
+        if self._highscore<self._score:
+            self._highscore = self._score
+
         return self._highscore
 
 
@@ -397,6 +398,7 @@ class MSEMetric(Metric):
     def _reset(self, p_seed):
 
         self._num_instances = 0
+        self._sum = 0
         return -np.inf
 
 

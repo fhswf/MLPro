@@ -185,7 +185,7 @@ class SLScenario (Scenario):
                     logging_data.append(met_val.get_values())
 
                 if self.get_cycle_id() == 0:
-                    self.log(Log.C_LOG_WE, *['\t'+self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
+                    self.log(Log.C_LOG_TYPE_I, 'Current Metrics',*['\t'+self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
 
                 if self.ds_cycles is not None:
                     self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
@@ -501,9 +501,10 @@ class SLTraining (Training):
         -------
 
         """
-        Training._init_results(self)
 
         results = Training._init_results(self)
+
+        results.num_cycles_test = 0
 
         results._ds_list = []
         metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
@@ -575,31 +576,77 @@ class SLTraining (Training):
         success, error, timeout, limit, adapted, end_of_data = self._scenario.run_cycle()
         self._cycles_epoch += 1
 
+        if self._mode == self.C_MODE_TRAIN:
+            self._counter_train_cycles += 1
+
+        elif self._mode == self.C_MODE_EVAL:
+            self._counter_eval_cycles += 1
+
+        if self._mode == self.C_MODE_TEST:
+            self._results.num_cycles_test += 1
+            self._counter_test_cycles += 1
+
+
         if adapted:
             self._results.num_adaptations += 1
 
 
         if end_of_data:
+
+
             self._update_scores()
             self.get_scenario().reset(p_seed=self._epoch_id)
+
+
             if self._mode == self.C_MODE_TRAIN:
                 self._results.num_epochs_train += 1
+                for i, dim in enumerate(self.metric_space.get_dims()):
+                    self.log(Log.C_LOG_WE, dim.get_name_long(), self._train_epoch_scores[i])
+
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+                self.log(self.C_LOG_TYPE_W, '-- Training epoch', self._epoch_id, 'finished after',
+                             str(self._counter_train_cycles), 'cycles')
+                self.log(self.C_LOG_TYPE_W, '-- Training cycles finished:', self._results.num_cycles_train + 1)
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
+
+
 
             elif self._mode == self.C_MODE_EVAL:
+                for i, dim in enumerate(self.metric_space.get_dims()):
+                    self.log(Log.C_LOG_WE, dim.get_name_long(), self._eval_epoch_scores[i])
                 self._results.num_epochs_eval += 1
                 self._epoch_eval = False
 
+
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+                self.log(self.C_LOG_TYPE_W, '-- Evaluation epoch', self._epoch_id, 'finished after',
+                     str(self._counter_eval_cycles), 'cycles')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
+
+
+
             elif self._mode == self.C_MODE_TEST:
+                for i, dim in enumerate(self.metric_space.get_dims()):
+                    self.log(Log.C_LOG_WE, dim.get_name_long(),':\t' , self._test_epoch_scores[i])
                 self._results.num_epochs_test += 1
                 self._epoch_test = False
+
+
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+                self.log(self.C_LOG_TYPE_W, '-- Test epoch', self._epoch_id, 'finished after',
+                         str(self._counter_test_cycles), 'cycles')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
+
 
             if self._epoch_eval:
                 self._mode = self.C_MODE_EVAL
                 self._init_eval()
 
+
             elif self._epoch_test:
                 self._mode = self.C_MODE_TEST
                 self._init_test()
+
 
             else:
                 eof_epoch = True
@@ -626,8 +673,22 @@ class SLTraining (Training):
 
 
         """
+        self._counter_train_cycles = 0
+        self._counter_eval_cycles = 0
+        self._counter_test_cycles = 0
+
+        if self._epoch_id == 0:
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+            self.log(self.C_LOG_TYPE_W, '-- Training period started...')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
+
         self._epoch_id += 1
         self._mode = self.C_MODE_TRAIN
+
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+        self.log(self.C_LOG_TYPE_W, '-- Training epoch', self._epoch_id, 'started...')
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
+
         self._model.switch_adaptivity(p_ada = True)
 
         self._scenario.get_dataset().reset(self._epoch_id)
@@ -687,8 +748,8 @@ class SLTraining (Training):
 
         self._results.ds_epoch.memorize_row(self._scenario.get_cycle_id(), p_data=score)
 
-
-        self._results.highscore = self._eval_highscore
+        if self._eval_freq > 0:
+            self._results.highscore = self._eval_highscore
         self._cycles_epoch = 0
 
 
@@ -698,6 +759,9 @@ class SLTraining (Training):
         """
 
         """
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+        self.log(self.C_LOG_TYPE_W, '-- Evaluation epoch', self._epoch_id, 'started...')
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_EVAL
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycles_eval)
@@ -710,6 +774,9 @@ class SLTraining (Training):
         """
 
         """
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+        self.log(self.C_LOG_TYPE_W, '-- Test epoch', self._epoch_id, 'started...')
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_TEST
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycles_test)
