@@ -55,7 +55,7 @@ class MLPSLScenario(SLScenario):
                         p_action_fpath=path_action,
                         p_state_space=state_space,
                         p_action_space=action_space,
-                       p_batch_size=100,
+                       p_batch_size=50,
                        p_eval_split=0.3,
                        p_logging=Log.C_LOG_WE)
 
@@ -80,13 +80,15 @@ class MLPSLScenario(SLScenario):
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
     cycle_limit = 100000
+    num_epochs  = 50
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
     plotting    = True
 else:
     # 2.2 Parameters for internal unit test
-    cycle_limit = 10
+    cycle_limit = 10000
+    num_epochs  = 2
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None
@@ -97,7 +99,7 @@ else:
 
 training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_cycle_limit = cycle_limit,
-                      p_num_epoch=3,
+                      p_num_epoch=num_epochs,
                       p_logging = Log.C_LOG_WE,
                       p_path = path,
                       p_eval_freq=1)
@@ -109,23 +111,23 @@ training.run()
 
 
 
+#
+# plots = DataPlotting(p_data=training.get_results().ds_mapping_train,
+#                      p_printing={'input w1':[True, 0, -1],
+#                                 'input th2':[True, 0 , -1],
+#                                 'pred th1': [True, 0, -1],
+#                                 'pred th2': [True, 0, -1]},
+#                      p_type=DataPlotting.C_PLOT_TYPE_EP,
+#                      p_window = 1)
+# plots.get_plots()
+# plots.save_plots(p_path = training.get_training_path(),
+#                  p_format = 'jpg')
 
-plots = DataPlotting(p_data=training.get_results().ds_mapping_train,
-                     p_printing={'input w1':[True, 0, -1],
-                                'input th2':[True, 0 , -1],
-                                'pred th1': [True, 0, -1],
-                                'pred th2': [True, 0, -1]},
-                     p_type=DataPlotting.C_PLOT_TYPE_EP,
-                     p_window = 1)
-plots.get_plots()
-plots.save_plots(p_path = training.get_training_path(),
-                 p_format = 'jpg')
-
-acc_plot = DataPlotting(p_data=training.get_results().ds_cycles_train,
+acc_plot = DataPlotting(p_data=training.get_results().ds_epoch,
                         p_printing={'MSE':[True, 0, -1], 'acc' : [True, 0, -1]},
                         p_type=DataPlotting.C_PLOT_TYPE_EP,
                         p_window=1)
-# acc_plot.get_plots()
+acc_plot.get_plots()
 
 scenario_f_name = training.get_scenario().get_filename()
 print(scenario_f_name)

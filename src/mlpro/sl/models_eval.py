@@ -171,11 +171,7 @@ class Metric(Log):
         metric = MetricValue(self._metric_space)
         metric.set_values(p_values=value)
 
-        if self.C_OBJECTIVE == self.C_OBJECTIVE_MINIMIZE:
-            self._score = -(self._update_score(p_value=value))
-
-        elif self.C_OBJECTIVE == self.C_OBJECTIVE_MAXIMIZE:
-            self._score = self._update_score(p_value=value)
+        self._score = self._update_score(p_value=value)
 
         return metric
 
@@ -230,9 +226,14 @@ class Metric(Log):
         -------
 
         """
+        if self.C_OBJECTIVE == self.C_OBJECTIVE_MINIMIZE:
+            if self._highscore<(-(self._score)):
+                self._highscore = -self._score
 
-        if self._highscore<self._score:
-            self._highscore = self._score
+        elif self.C_OBJECTIVE == self.C_OBJECTIVE_MAXIMIZE:
+            if self._highscore<self._score:
+                self._highscore = self._score
+
 
         return self._highscore
 

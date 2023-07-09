@@ -452,8 +452,8 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_collect_epoch_scores = True,
-                 p_collect_mappings = True,
-                 p_collect_cycles = True,
+                 p_collect_mappings = False,
+                 p_collect_cycles = False,
                  p_num_epoch = 1,
                  p_eval_freq = 0,
                  p_test_freq = 0,
@@ -601,7 +601,7 @@ class SLTraining (Training):
             if self._mode == self.C_MODE_TRAIN:
                 self._results.num_epochs_train += 1
                 for i, dim in enumerate(self.metric_space.get_dims()):
-                    self.log(Log.C_LOG_WE, dim.get_name_long(), self._train_epoch_scores[i])
+                    self.log(Log.C_LOG_WE, dim.get_name_short(), ':\t', self._train_epoch_scores[i])
 
                 self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Training epoch', self._epoch_id, 'finished after',
@@ -613,7 +613,7 @@ class SLTraining (Training):
 
             elif self._mode == self.C_MODE_EVAL:
                 for i, dim in enumerate(self.metric_space.get_dims()):
-                    self.log(Log.C_LOG_WE, dim.get_name_long(), self._eval_epoch_scores[i])
+                    self.log(Log.C_LOG_WE, dim.get_name_short(), ':\t', self._eval_epoch_scores[i])
                 self._results.num_epochs_eval += 1
                 self._epoch_eval = False
 
@@ -627,7 +627,7 @@ class SLTraining (Training):
 
             elif self._mode == self.C_MODE_TEST:
                 for i, dim in enumerate(self.metric_space.get_dims()):
-                    self.log(Log.C_LOG_WE, dim.get_name_long(),':\t' , self._test_epoch_scores[i])
+                    self.log(Log.C_LOG_WE, dim.get_name_short(),':\t' , self._test_epoch_scores[i])
                 self._results.num_epochs_test += 1
                 self._epoch_test = False
 

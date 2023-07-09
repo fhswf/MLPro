@@ -205,11 +205,14 @@ class SLAdaptiveFunction (AdaptiveFunction):
             A set of data for offline learning
         """
 
+        # if self._adaptivity:
+        #     self._set_adapted(self._adapt(p_input, p_output, p_dataset))
+        # else:
+        #     self._set_adapted(False)
+        adapted = Model.adapt(self, p_input=p_input, p_output = p_output, p_dataset=p_dataset)
 
-        self._set_adapted(self._adapt(p_input, p_output, p_dataset))
 
-
-        return self.get_adapted()
+        return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
