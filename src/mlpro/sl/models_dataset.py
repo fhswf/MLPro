@@ -240,7 +240,7 @@ class Dataset(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_shuffle = None, p_seed = None, p_epoch = 0):
+    def reset(self, p_shuffle = False, p_seed = None, p_epoch = 0):
         """
 
         Parameters
@@ -256,10 +256,10 @@ class Dataset(Log):
         if not self._split:
             self._indexes.clear()
             self._indexes.extend(self._indexes_train.copy())
-            if p_shuffle:
+            if p_shuffle or self._shuffle:
                 random.shuffle(self._indexes)
 
-        elif self._split and p_shuffle:
+        elif self._split and (p_shuffle or self._shuffle):
             random.shuffle(self._indexes_train)
             random.shuffle(self._indexes_eval)
             random.shuffle(self._indexes_eval)
@@ -445,6 +445,7 @@ class SASDataset(Dataset):
                  p_batch_size : int = 1,
                  p_drop_short : bool = False,
                  p_shuffle : bool = False,
+                 p_normalize:bool = False,
                  p_eval_split : float = 0,
                  p_test_split : float = 0,
                  p_settings = None,
@@ -471,6 +472,7 @@ class SASDataset(Dataset):
             p_eval_split=p_eval_split,
             p_test_split=p_test_split,
             p_shuffle=p_shuffle,
+            p_normalize=p_normalize,
             p_drop_short=p_drop_short,
             p_settings=p_settings,
             p_logging=p_logging)

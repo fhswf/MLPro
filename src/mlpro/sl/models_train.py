@@ -250,7 +250,7 @@ class SLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def connect_datalogger(self, p_mapping = None, p_cycle = None):
+    def connect_datalogger(self, p_mapping:DataStoring = None, p_cycle:DataStoring = None):
 
         """
 
@@ -449,11 +449,16 @@ class SLTraining (Training):
 
     C_CLS_RESULTS = SLTrainingResults
 
+    C_TEST_SCORE = 'Test'
+    C_TRAIN_SCORE = 'Train'
+    C_EVAL_SCORE = 'Evaluation'
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_collect_epoch_scores = True,
                  p_collect_mappings = False,
                  p_collect_cycles = False,
+                 p_maximize_score = C_TRAIN_SCORE,
                  p_num_epoch = 1,
                  p_eval_freq = 0,
                  p_test_freq = 0,
@@ -475,15 +480,16 @@ class SLTraining (Training):
 
         Training.__init__(self, **p_kwargs)
 
-        self._model: SLAdaptiveFunction = self.get_scenario()._model
+        if self._hpt is None:
+            self._model: SLAdaptiveFunction = self.get_scenario()._model
 
-        self.metric_space = self._model.get_metric_space()
+            self.metric_space = self._model.get_metric_space()
 
 
         # For hpt
-        self._score_metric = self._model.get_score_metric()
+            self._score_metric = self._model.get_score_metric()
 
-        self._logging_space = self._model.get_logging_set()
+            self._logging_space = self._model.get_logging_set()
 
         self._eval_freq = p_eval_freq
         self._test_freq = p_test_freq
@@ -491,6 +497,7 @@ class SLTraining (Training):
         self._epoch_train = False
         self._epoch_test = False
         self._epoch_eval = False
+        self._maximize_score = p_maximize_score
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -691,7 +698,7 @@ class SLTraining (Training):
 
         self._model.switch_adaptivity(p_ada = True)
 
-        self._scenario.get_dataset().reset(self._epoch_id)
+        self._scenario.get_dataset().reset(p_seed=self._epoch_id)
 
         if self._eval_freq:
             if self._epoch_id % self._eval_freq == 0:
@@ -748,8 +755,22 @@ class SLTraining (Training):
 
         self._results.ds_epoch.memorize_row(self._scenario.get_cycle_id(), p_data=score)
 
-        if self._eval_freq > 0:
-            self._results.highscore = self._eval_highscore
+        if self._maximize_score == self.C_TRAIN_SCORE:
+            self._results.highscore = self._train_highscore
+
+        elif self._maximize_score == self.C_EVAL_SCORE:
+            if self._eval_freq > 0:
+                self._results.highscore = self._eval_highscore
+            else:
+                raise ImplementationError("Evaluation frequency must be greater than zero "
+                                          "for Evaluation score maximization")
+        elif self._maximize_score == self.C_TEST_SCORE:
+            if self._test_freq > 0:
+                self._results.highscore = self._eval_highscore
+            else:
+                raise ImplementationError("Test frequency must be greater than zero "
+                                          "for Test score maximization")
+
         self._cycles_epoch = 0
 
 
