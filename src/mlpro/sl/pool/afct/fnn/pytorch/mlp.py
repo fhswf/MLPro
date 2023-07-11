@@ -497,6 +497,8 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         
         torch.save(p_state['_sl_model'].state_dict(),
                    p_path + p_os_sep + p_filename_stub + '_model.pt')
+        # print(p_state['_sl_model'].state_dict())
+
         torch.save(p_state['_optimizer'].state_dict(),
                    p_path + p_os_sep + p_filename_stub + '_optimizer.pt')
         
@@ -510,6 +512,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             load_model = torch.load(p_path + p_os_sep + p_filename_stub + '_model.pt')
         except:
             load_model      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt')
+        # print(load_model)
         try:
             load_optim = torch.load(p_path + p_os_sep + p_filename_stub + '_optimizer.pt')
         except:

@@ -15,8 +15,11 @@ This module provides training classes for supervised learning tasks.
 """
 import warnings
 
+import matplotlib.pyplot as plt
+
 from mlpro.bf.data import *
 from mlpro.sl import *
+from mlpro.bf.plot import DataPlotting
 
 
 
@@ -96,6 +99,63 @@ class SLDataStoring(DataStoring):
         self.add_frame(p_frame_id=p_epoch_id)
         self.current_epoch = p_epoch_id
 
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SLDataPlotting(DataPlotting):
+    C_PLOT_TYPE_MULTI_VARIABLE = 'Multi Var'
+    ## -------------------------------------------------------------------------------------------------
+    def get_plots(self):
+        """
+        A function to plot data.
+        """
+
+        if self.type == 'Cyclic':
+            self.plots_type_cy()
+        elif self.type == 'Episodic':
+            self.plots_type_ep()
+        elif self.type == 'Episodic Mean':
+            self.plots_type_ep_mean()
+        elif self.type == 'Multi Var':
+            self.plots_type_multi_variable()
+
+
+    def plots_type_multi_variable(self):
+        """
+        A function to plot data per frame by extending the cyclic plots in one plot.
+        """
+
+        labels = []
+        fig = plt.figure(figsize=self.figsize)
+        for var in self.printing.keys():
+            data = []
+            indexes = []
+            plt.title('custom multi-variable plot')
+            plt.grid(True, which='both', axis = 'both')
+            for fr in range(len(self.data.memory_dict[var])):
+                fr_id = self.data.frame_id[var][fr]
+                data.extend(self.data.get_values(var, fr_id))
+            labels.append(var)
+            indexes = list(range(len(data)))
+            while True:
+                if None in data:
+                    index = data.index(None)
+                    del data[index]
+                    del indexes[index]
+                    continue
+                else:
+                    break
+            plt.plot(indexes, data)
+        plt.legend(labels, bbox_to_anchor=(1, 0.5), loc="center left")
+        self.plots[0].append('Multi-Variable')
+        self.plots[1].append(fig)
+
+
+        plt.show()
 
 
 
