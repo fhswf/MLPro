@@ -140,7 +140,7 @@ class SLDataPlotting(DataPlotting):
                 fr_id = self.data.frame_id[var][fr]
                 data.extend(self.data.get_values(var, fr_id))
             labels.append(var)
-            indexes = list(range(len(data)))
+            indexes = list(range(1, len(data)+1))
             while True:
                 if None in data:
                     index = data.index(None)

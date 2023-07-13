@@ -29,7 +29,7 @@ import torch.optim as opt
 from mlpro.sl.models_eval import *
 
 
-
+#
 path = str(Path.home()) + os.sep
 
 path_state = path + 'data3\env_states.csv'
@@ -56,15 +56,15 @@ class MLPSLScenario(SLScenario):
                         p_state_space=state_space,
                         p_action_space=action_space,
                         p_batch_size=40,
-                        p_eval_split=0.2,
-                        p_shuffle=True,
+                        p_eval_split=0.5,
+                        p_shuffle=False,
                         p_logging=Log.C_LOG_WE)
 
 
         return PyTorchMLP(p_input_space=self._dataset._feature_space,
                                  p_output_space=self._dataset._label_space,
                                  p_output_elem_cls=BatchElement,
-                                 p_num_hidden_layers=3,
+                                 p_num_hidden_layers=10,
                                  p_activation_fct=nn.LeakyReLU,
                                  p_output_activation_fct=nn.LeakyReLU,
                                  p_optimizer=opt.Adam,
@@ -79,8 +79,8 @@ class MLPSLScenario(SLScenario):
 
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit = 1000000
-    num_epochs  = 4
+    cycle_limit = 10000000000
+    num_epochs  = 500
     logging     = Log.C_LOG_WE
     visualize   = True
     path        = str(Path.home())
@@ -102,8 +102,8 @@ training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_num_epoch=num_epochs,
                       p_logging = logging,
                       p_path = path,
-                      p_eval_freq=2,
-                      p_collect_cycles=False)
+                      p_eval_freq=50,
+                      p_collect_mappings=False)
 
 
 
@@ -119,31 +119,54 @@ acc_plot.get_plots()
 acc_plot.save_plots(p_path = training.get_training_path(),
                     p_format = 'jpg')
 
-
+#
 
 scenario_f_name = training.get_scenario().get_filename()
 scenario_path = training.get_scenario()._get_path()
 scenario = MLPSLScenario.load(p_filename=scenario_f_name, p_path=scenario_path)
-
+#
 model = scenario.get_model()
 model.switch_adaptivity(False)
 model._output_elem_cls = Element
+# dataset = SASDataset(p_state_fpath=path_state,
+#                         p_action_fpath=path_action,
+#                         p_state_space=state_space,
+#                         p_action_space=action_space,
+#                         p_batch_size=8,
+#                         p_eval_split=0.2,
+#                         p_shuffle=True,
+#                         p_logging=Log.C_LOG_WE)
+# model = PyTorchMLP(p_input_space=dataset._feature_space,
+#                                  p_output_space=dataset._label_space,
+#                                  p_output_elem_cls=BatchElement,
+#                                  p_num_hidden_layers=3,
+#                                  p_activation_fct=nn.LeakyReLU,
+#                                  p_output_activation_fct=nn.LeakyReLU,
+#                                  p_optimizer=opt.Adam,
+#                                  p_batch_size=200,
+#                                  p_metrics=[MSEMetric(p_logging=Log.C_LOG_NOTHING),
+#                                             MetricAccuracy(p_threshold=10, p_logging=Log.C_LOG_NOTHING)],
+#                                  p_learning_rate=0.0001,
+#                                  p_hidden_size=256,
+#                                  p_loss_fct=nn.MSELoss,
+#                                  p_logging=Log.C_LOG_WE)
 
 
-
-
+# model.load(p_filename="PyTorchMLP[430d45d9-4b3d-4257-8849-495623b7929a].pkl", p_path="C:\\Users\\Baheti\\Best Results\\Result - 1153\\2023-07-12  08.08.57 Training SL\\scenario\\model")
+# model._output_elem_cls = Element
 class InferenceScenario(SLScenario):
 
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
-        self._dataset = SASDataset(p_state_fpath=path_state,
-                                   p_action_fpath=path_action,
+        self._dataset = SASDataset(p_state_fpath="C:\\Users\\Baheti\\results-6\\env_states.csv",
+                                   p_action_fpath="C:\\Users\\Baheti\\results-6\\agent_actions.csv",
                                    p_state_space=state_space,
                                    p_action_space=action_space,
                                    p_batch_size=1,
                                    p_shuffle=False,
                                    p_normalize = False,
                                    p_logging=Log.C_LOG_NOTHING)
+
 
 
 
@@ -185,7 +208,7 @@ plot2 = SLDataPlotting(p_data=new_training.get_results().ds_mapping_train,
                         p_type=SLDataPlotting.C_PLOT_TYPE_MULTI_VARIABLE,
                         p_window=1)
 plot2.get_plots()
-plot2.save_plots(p_path = training.get_training_path(),
+plot2.save_plots(p_path = new_training.get_training_path(),
                     p_format = 'jpg')
 
 # acc_plot = DataPlotting(p_data=new_scenario.get_results().ds_mapping_train,
