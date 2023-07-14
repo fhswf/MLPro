@@ -107,8 +107,31 @@ class SLDataStoring(DataStoring):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLDataPlotting(DataPlotting):
+
     C_PLOT_TYPE_MULTI_VARIABLE = 'Multi Var'
-    ## -------------------------------------------------------------------------------------------------
+    C_PLOT_STYLE_SCATTER = 'Scatter'
+    C_PLOT_STYLE_LINE = 'Line'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_data: DataStoring, p_type=DataPlotting.C_PLOT_TYPE_EP, p_window=100,
+                 p_showing=True, p_printing=None, p_figsize=(7, 7), p_color="darkblue",
+                 p_window_type='same', p_names = [None], p_style = C_PLOT_STYLE_LINE):
+
+        DataPlotting.__init__(self,
+                              p_data = p_data,
+                              p_type=p_type,
+                              p_window=p_window,
+                              p_showing=p_showing,
+                              p_printing=p_printing,
+                              p_figsize=p_figsize,
+                              p_color=p_color,
+                              p_window_type=p_window_type)
+
+        self._names = p_names
+        self._style = p_style
+
+## -------------------------------------------------------------------------------------------------
     def get_plots(self):
         """
         A function to plot data.
@@ -124,6 +147,7 @@ class SLDataPlotting(DataPlotting):
             self.plots_type_multi_variable()
 
 
+## -------------------------------------------------------------------------------------------------
     def plots_type_multi_variable(self):
         """
         A function to plot data per frame by extending the cyclic plots in one plot.
@@ -134,7 +158,7 @@ class SLDataPlotting(DataPlotting):
         for var in self.printing.keys():
             data = []
             indexes = []
-            plt.title('custom multi-variable plot')
+            plt.title(self._names[0])
             plt.grid(True, which='both', axis = 'both')
             for fr in range(len(self.data.memory_dict[var])):
                 fr_id = self.data.frame_id[var][fr]
@@ -151,7 +175,7 @@ class SLDataPlotting(DataPlotting):
                     break
             plt.plot(indexes, data)
         plt.legend(labels, bbox_to_anchor=(1, 0.5), loc="center left")
-        self.plots[0].append('Multi-Variable')
+        self.plots[0].append(self._names[0])
         self.plots[1].append(fig)
 
 
@@ -179,6 +203,10 @@ class SLScenario (Scenario):
     """
 
     C_TYPE = 'SL-Scenario'
+    C_NAME = 'Unnamed'
+
+    C_FNAME_MAPPING = 'Mappings'
+    C_FNAME_CYCLES = 'Cycles'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -186,12 +214,23 @@ class SLScenario (Scenario):
                  p_mode=Mode.C_MODE_SIM,
                  p_ada: bool = True,
                  p_cycle_limit: int = 0,
+                 p_collect_mappings = False,
+                 p_collect_cycles = False,
+                 p_path = None,
+                 p_get_mapping_plots = False,
+                 p_get_metric_plots = False,
+                 p_save_plots = False,
                  p_visualize: bool = True,
                  p_logging=Log.C_LOG_ALL):
 
         self._dataset : Dataset = None
         self._model : SLAdaptiveFunction = None
-        # self.ds : dict = {}
+        self._collect_mapping = p_collect_mappings
+        self._collect_cycles = p_collect_cycles
+        self._mapping_plots = p_get_mapping_plots
+        self._metric_plots = p_get_metric_plots
+        self.data_plotters = []
+        self.save_plots = p_save_plots
 
         Scenario.__init__(self,
                           p_mode = p_mode,
@@ -210,6 +249,10 @@ class SLScenario (Scenario):
 
 
         self._metrics = self._model.get_metrics()
+
+        if self._collect_cycles or self._collect_mapping:
+            self._setup_datalogging()
+            self._path = self._gen_root_path(p_path=p_path)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -263,14 +306,22 @@ class SLScenario (Scenario):
                                                                                               *output.get_values()])
 
 
-
-
-
         # get success from the model
         # Future implementation to terminate a training based on a goal criterion
 
         # Error computations such as Stagnation, etc.
         # Future implementation to terminate a training based on an undesirable criterion
+
+        # To be shifted in lower levels of scenario classes
+        if end_of_data or (self.get_cycle_id()>=(self._cycle_limit-1)):
+
+            for dp in self.data_plotters:
+                dp.get_plots()
+                if self.save_plots:
+                    dp.save_plots(p_path=self._path, p_format='jpg')
+
+            if self._collect_cycles or self._collect_mapping:
+                self.save(p_path=self._path)
 
         return success, error, adapted, end_of_data
 
@@ -310,7 +361,7 @@ class SLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def connect_datalogger(self, p_mapping:DataStoring = None, p_cycle:DataStoring = None):
+    def connect_datalogger(self, p_mapping:SLDataStoring = None, p_cycle:SLDataStoring = None):
 
         """
 
@@ -362,6 +413,76 @@ class SLScenario (Scenario):
 
         """
         return timedelta(0,0,0)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _gen_root_path(self, p_path = None):
+        if p_path is None: return None
+
+        now = datetime.now()
+        ts = '%04d-%02d-%02d  %02d.%02d.%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
+        root_path = p_path + str(os.sep) + ts + ' ' + self.C_TYPE + ' ' + self.C_NAME
+        root_path.replace(str(os.sep) + str(os.sep), str(os.sep))
+        os.mkdir(root_path)
+        return root_path
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
+
+        Scenario._reduce_state(self, p_state=p_state, p_path=p_path, p_filename_stub=p_filename_stub, p_os_sep=p_os_sep)
+
+        p_state['data_plotters'] = None
+
+        if self._collect_mapping:
+            p_state['ds_mappings'].save_data(p_path=p_path, p_filename=self.C_FNAME_CYCLES, p_delimiter='\t')
+            p_state['ds_mappings'] = None
+
+        if self._collect_cycles:
+            p_state['ds_cycles'].save_data(p_path=p_path, p_filename=self.C_FNAME_MAPPING, p_delimiter='\t')
+            p_state['ds_cycles'] = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_datalogging(self):
+
+
+        self._save = True
+        variables = []
+        if self._collect_mapping:
+            for dim in self._model.get_input_space().get_dims():
+                variables.append('input '+dim.get_name_short())
+            for dim in self._model.get_output_space().get_dims():
+                variables.append('target '+dim.get_name_short())
+            for dim in self._model.get_output_space().get_dims():
+                variables.append('pred '+dim.get_name_short())
+            self.ds_mappings = SLDataStoring(p_variables=variables)
+            self.ds_mappings.add_frame(p_frame_id=0)
+        if self._mapping_plots:
+            for dim in self._model.get_output_space().get_dims():
+                self.data_plotters.append(SLDataPlotting(p_data=self.ds_mappings,
+                                                         p_type=SLDataPlotting.C_PLOT_TYPE_MULTI_VARIABLE,
+                                                         p_printing={'target '+dim.get_name_short():[True, 0, -1],
+                                                                     'pred '+dim.get_name_short() : [True, 0, -1]},
+                                                         p_names=[dim.get_name_short()]))
+        logging_variables = []
+        if self._collect_cycles:
+            for dim in self._model.get_logging_set().get_dims():
+                logging_variables.append(dim.get_name_short())
+            for dim in self._model.get_metric_space().get_dims():
+                logging_variables.append(dim.get_name_short())
+            self.ds_cycles = SLDataStoring(p_variables=logging_variables)
+            self.ds_cycles.add_frame(p_frame_id=0)
+
+        if self._metric_plots:
+            printing = {}
+            for logging_variable in logging_variables:
+                printing[logging_variable] = [True, 0, -1]
+            self.data_plotters.append(SLDataPlotting(p_data=self.ds_cycles,
+                                                     p_type=SLDataPlotting.C_PLOT_TYPE_EP,
+                                                     p_printing=printing,
+                                                     p_names=logging_variables))
+
 
 
 
