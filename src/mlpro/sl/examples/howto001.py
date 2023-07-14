@@ -80,7 +80,7 @@ class MLPSLScenario(SLScenario):
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
     cycle_limit = 100
-    num_epochs  = 300
+    num_epochs  = 2
     logging     = Log.C_LOG_WE
     visualize   = True
     path        = str(Path.home())
@@ -102,29 +102,18 @@ training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_num_epoch=num_epochs,
                       p_logging = logging,
                       p_path = path,
-                      p_eval_freq=10,
-                      p_collect_mappings=False)
+                      p_eval_freq=1,
+                      p_collect_mappings=False,
+                      p_plot_epoch_scores=True)
 
 
 
 training.run()
 
 
-acc_plot = SLDataPlotting(p_data=training.get_results().ds_epoch,
-                        p_printing={'MSE':[True, 0, -1],
-                                    'Eval MSE' : [True, 0, -1]},
-                        p_type=SLDataPlotting.C_PLOT_TYPE_MULTI_VARIABLE,
-                        p_window=1)
-acc_plot.get_plots()
-acc_plot.save_plots(p_path = training.get_training_path(),
-                    p_format = 'jpg')
+scenario = MLPSLScenario.load(p_filename=training.get_scenario().get_filename(),
+                              p_path=training.get_scenario()._get_path())
 
-#
-
-scenario_f_name = training.get_scenario().get_filename()
-scenario_path = training.get_scenario()._get_path()
-scenario = MLPSLScenario.load(p_filename=scenario_f_name, p_path=scenario_path)
-#
 model = scenario.get_model()
 model.switch_adaptivity(False)
 model._output_elem_cls = Element

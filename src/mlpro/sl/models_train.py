@@ -541,6 +541,8 @@ class SLTrainingResults(TrainingResults):
         self.ds_mapping_train = None
         self.ds_mapping_eval = None
         self.ds_mapping_test = None
+        self.data_plotters = []
+
 
 ## -------------------------------------------------------------------------------------------------
     def close(self):
@@ -568,7 +570,6 @@ class SLTrainingResults(TrainingResults):
         self.log(Log.C_LOG_WE, "Training Epochs:", self.num_epochs_train)
         self.log(Log.C_LOG_WE, "Evaluation Epochs:", self.num_epochs_eval)
         self.log(Log.C_LOG_WE, "Test Epochs:", self.num_epochs_test)
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -603,7 +604,9 @@ class SLTrainingResults(TrainingResults):
             self.ds_mapping_eval.save_data(p_path, self.C_FNAME_EVAL_MAP)
         if self.ds_mapping_test is not None:
             self.ds_mapping_test.save_data(p_path, self.C_FNAME_TEST_MAP)
-
+        for dp in self.data_plotters:
+            dp.get_plots()
+            dp.save_plots(p_path = p_path, p_format = 'jpg')
 
 
 
@@ -639,7 +642,10 @@ class SLTraining (Training):
                  p_collect_epoch_scores = True,
                  p_collect_mappings = False,
                  p_collect_cycles = False,
-                 p_maximize_score = C_TRAIN_SCORE,
+                 p_plot_epoch_scores = False,
+                 p_plot_mappings = False,
+                 p_plot_cycles = False,
+                 p_maximize_score = C_EVAL_SCORE,
                  p_num_epoch = 1,
                  p_eval_freq = 0,
                  p_test_freq = 0,
@@ -649,6 +655,10 @@ class SLTraining (Training):
         self._collect_epoch_scores = p_collect_epoch_scores
         self._collect_mappings = p_collect_mappings
         self._collect_cycles = p_collect_cycles
+
+        self._plot_epoch_score = p_plot_epoch_scores
+        self._plot_mappings = p_plot_mappings
+        self._plot_cycle = p_plot_cycles
 
         self._eval_freq = p_eval_freq
         self._test_freq = p_test_freq
@@ -706,6 +716,29 @@ class SLTraining (Training):
                     variables.append("Test " + variables[i])
             results.ds_epoch = SLDataStoring(variables)
             results._ds_list.append(results.ds_epoch)
+
+
+            if self._plot_epoch_score:
+                if (not self._eval_freq) and (not self._test_freq):
+                    printing = {}
+                    for var in variables:
+                        printing[var] = [True, 0, -1]
+                    results.data_plotters.append(SLDataPlotting(p_data=results.ds_epoch,
+                                                                p_type=SLDataPlotting.C_PLOT_TYPE_EP,
+                                                                p_printing=printing,
+                                                                p_names=list(printing.keys())))
+                else:
+                    for var in metric_variables:
+                        printing = {var : [True, 0 -1]}
+                        if ("Eval "+var) in variables:
+                            printing["Eval "+var] = [True, 0, -1]
+                        if ("Test "+var) in variables:
+                            printing["Test "+var] = [True, 0, -1]
+
+                        results.data_plotters.append(SLDataPlotting(p_data=results.ds_epoch,
+                                                                    p_type=SLDataPlotting.C_PLOT_TYPE_MULTI_VARIABLE,
+                                                                    p_printing=printing,
+                                                                    p_names=[var]))
 
         if self._collect_cycles:
             variables = [i.get_name_short() for i in self._logging_space.get_dims()]
