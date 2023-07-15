@@ -6,17 +6,18 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-13  0.0.0     LSB      Creation
+## -- 2023-07-15  1.0.0     LSB      Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-06-13)
+Ver. 1.0.0 (2023-07-15)
 
 This module provides training classes for supervised learning tasks.
 """
+
+
 import warnings
-
 import matplotlib.pyplot as plt
-
 from mlpro.bf.data import *
 from mlpro.sl import *
 from mlpro.bf.plot import DataPlotting

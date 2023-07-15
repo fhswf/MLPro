@@ -61,6 +61,8 @@ class Dataset(Log):
             The logging level of the Dataset.
 
     """
+    C_TYPE = 'Dataset'
+
     C_FETCH_SINGLE = 0
     C_FETCH_BATCH = 1
 

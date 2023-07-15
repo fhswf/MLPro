@@ -330,7 +330,7 @@ class MetricAccuracy(Metric):
             The output space of the metric.
         """
         metric_space = ESpace()
-        metric_space.add_dim(Dimension(p_name_short="acc", p_name_long="Accuracy"))
+        metric_space.add_dim(Dimension(p_name_short="ACC", p_name_long="Accuracy"))
         return metric_space
 
 
