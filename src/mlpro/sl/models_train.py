@@ -20,6 +20,8 @@ import matplotlib.pyplot as plt
 from mlpro.bf.data import *
 from mlpro.sl import *
 from mlpro.bf.plot import DataPlotting
+from mlpro.bf import *
+from mlpro.bf.ml import *
 
 
 
@@ -29,10 +31,12 @@ from mlpro.bf.plot import DataPlotting
 ## -------------------------------------------------------------------------------------------------
 class SLDataStoring(DataStoring):
     """
+    Custom data storing class for Supervised Learning.
 
     Parameters
     ----------
-    p_variables
+    p_variables:
+        List of variables for the data storing.
     """
 
     C_VAR0 = "Epoch ID"
@@ -60,11 +64,14 @@ class SLDataStoring(DataStoring):
     def memorize_row(self, p_cycle_id, p_data):
 
         """
+        Memorize a row in the Data Storing Object.
 
         Parameters
         ----------
-        p_cycle_id
-        p_data
+        p_cycle_id:int
+            Cycle Id.
+        p_data:
+            Data to be stored.
 
         """
 
@@ -78,11 +85,14 @@ class SLDataStoring(DataStoring):
 ## -------------------------------------------------------------------------------------------------
     def get_variables(self):
         """
+        Get the variables for this data storing object.
 
         Returns
         -------
-
+        variables: list
+            List of variables for the data storing object.
         """
+
         return self.variables
 
 
@@ -90,10 +100,12 @@ class SLDataStoring(DataStoring):
     def add_epoch(self, p_epoch_id):
 
         """
+        Add epoch to the data storing object. Adds a frame with a new epoch ID.
 
         Parameters
         ----------
-        p_epoch_id
+        p_epoch_id: int
+            Epoch id for which a new frame is to be added.
 
         """
         self.add_frame(p_frame_id=p_epoch_id)
@@ -189,15 +201,32 @@ class SLDataPlotting(DataPlotting):
 ## -------------------------------------------------------------------------------------------------
 class SLScenario (Scenario):
     """
-    To be designed.
+    This is custom Scenario Class specialised for Supervised Learning.
 
     Parameters
     ----------
     p_mode
-    p_ada
-    p_cycle_limit
-    p_visualize
+        Mode of the Scenario
+    p_ada: bool
+        Whether the scenario is adaptive or not. Default is True.
+    p_cycle_limit: int
+        The number of cycles for which the scenario needs to be run.
+    p_collect_mappings:bool
+        Whether the mappings from the scenario run shall be collected.
+    p_collect_cycles:bool
+        Whether the model scores foreach cycle shall be collected.
+    p_path:str
+        Path to which the scenario shall be saved.
+    p_get_mapping_plots: bool
+        Whether the mapping plots shall be generated and saved.
+    p_get_metric_plots:bool
+        Whether the metric plots shall be generated and saved.
+    p_save_plots:bool
+        Whether the plots shall be saved or not.
+    p_visualize: bool
+        Switch for visualization.
     p_logging
+        Log level for the scenario.
 
     """
 
@@ -256,10 +285,10 @@ class SLScenario (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
-
+        """
+        Runs a single cycle of the Supervised Learning Scenario.
         """
 
-        """
         # Check if the first run
         success = False
         error = False
@@ -328,16 +357,19 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         """
+        Setup the scenario in this method. Please rewrite this method to assign the dataset to self._dataset
+        attribute and return a model.
 
         Parameters
         ----------
-        p_mode
-        p_ada
-        p_visualize
-        p_logging
-
-        Returns
-        -------
+        p_mode:
+            Mode for the simulation.
+        p_ada: bool
+            Adaptivity switch.
+        p_visualize: bool
+            Visualization switch.
+        p_logging:
+            Log level to be set.
 
         """
         raise NotImplementedError
@@ -346,10 +378,13 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
+        Custom reset method, to reset the SLScenario. Resets the Metrics and re-initializes the
+        visualization if True.
 
         Parameters
         ----------
-        p_seed
+        p_seed: int
+            Seed for the purpose of reproducibility.
 
         """
         if self._visualize:
@@ -363,13 +398,18 @@ class SLScenario (Scenario):
     def connect_datalogger(self, p_mapping:SLDataStoring = None, p_cycle:SLDataStoring = None):
 
         """
+        Connect the datastoring objects to the scenario.
 
         Parameters
         ----------
-        p_mapping
-        p_cycle
+        p_mapping:
+            Datastoring object for collecting Mappings.
+
+        p_cycle:
+            Datastoring object for collecting model scores for each cycle.
 
         """
+
         self.ds_mappings = p_mapping
         self.ds_cycles = p_cycle
 
@@ -378,11 +418,14 @@ class SLScenario (Scenario):
     def get_dataset(self):
 
         """
+        Get the dataset assigned to the scenario.
 
         Returns
         -------
-
+        Dataset:
+            Dataset object assigned to the scenario.
         """
+
         return self._dataset
 
 
@@ -390,8 +433,9 @@ class SLScenario (Scenario):
     def _init_plot(self):
 
         """
-
+        Initializes the plot.
         """
+
         pass
 
 
@@ -399,8 +443,9 @@ class SLScenario (Scenario):
     def _update_plot(self):
 
         """
-
+        Updates the plot.
         """
+
         pass
 
 
@@ -408,14 +453,28 @@ class SLScenario (Scenario):
     def get_latency(self):
 
         """
-
-
+        Gets the latency of the Scenario.
         """
+
         return timedelta(0,0,0)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _gen_root_path(self, p_path = None):
+        """
+        Generates the root path, in case data is to be saved.
+
+        Parameters
+        ----------
+        p_path: str
+            destination Path for saving the data
+
+        Returns
+        -------
+        root_path:str
+            The root path generated.
+        """
+
         if p_path is None: return None
 
         now = datetime.now()
@@ -428,7 +487,21 @@ class SLScenario (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
+        """
+        Reduces the state of the object, before pickling, to avoid saving complex/incompatible/unnecessary objects.
 
+        Parameters
+        ----------
+        p_state:dict
+            State dict of the object.
+        p_path:str
+            Path where the object is to be saved.
+        p_os_sep:str
+            The path separator for the particular Operating system.
+        p_filename_stub:str
+            Filename stub (filename without extension) for the file
+
+        """
         Scenario._reduce_state(self, p_state=p_state, p_path=p_path, p_filename_stub=p_filename_stub, p_os_sep=p_os_sep)
 
         p_state['data_plotters'] = None
@@ -444,7 +517,10 @@ class SLScenario (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_datalogging(self):
+        """
+        Setup the data storing objects for SLScenario, in case data is to be collected.
 
+        """
 
         self._save = True
         variables = []
@@ -490,15 +566,19 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLTrainingResults(TrainingResults):
-
     """
+    The custom training results object specialised for Supervised Learning Training.
 
     Parameters
     ----------
-    p_scenario
-    p_run
-    p_cycle_id
-    p_logging
+    p_scenario: Scnenario
+        The scenario for the training.
+    p_run:
+        The training run, in case of Hyperparameter Tuning.
+    p_cycle_id:
+        The cycle id of the training.
+    p_logging:
+        Log level for the Results.
     """
 
     C_NAME = "SL"
@@ -545,10 +625,10 @@ class SLTrainingResults(TrainingResults):
 
 ## -------------------------------------------------------------------------------------------------
     def close(self):
-
+        """
+        Close the results object by logging the results in the console.
         """
 
-        """
         TrainingResults.close(self)
 
         self.add_custom_result(self.C_CPAR_NUM_EPOCH_TRAIN, self.num_epochs_train)
@@ -558,12 +638,9 @@ class SLTrainingResults(TrainingResults):
 
 ## -------------------------------------------------------------------------------------------------
     def _log_results(self):
-
         """
-
-
+        Custom method to log the training results, with additional results to be logged.
         """
-
         TrainingResults._log_results(self)
 
         self.log(Log.C_LOG_WE, "Training Epochs:", self.num_epochs_train)
@@ -575,15 +652,19 @@ class SLTrainingResults(TrainingResults):
     def save(self, p_path, p_filename = 'summary.csv') -> bool:
 
         """
+        Save the training results.
 
         Parameters
         ----------
-        p_path
-        p_filename
+        p_path:str
+            Path where the results shall be saved.
+        p_filename:str
+            Filename to store the results.
 
         Returns
         -------
-
+        bool
+            True if saved successfully.
         """
 
         if not TrainingResults.save(self, p_path = p_path, p_filename = p_filename):
@@ -615,16 +696,37 @@ class SLTrainingResults(TrainingResults):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLTraining (Training):
+
     """
+    Custom training class specialised for Supervised Learning.
 
     Parameters
     ----------
-    p_collect_epoch_scores
-    p_collect_mappings
-    p_collect_cycles
-    p_eval_freq
-    p_test_freq
-    p_kwargs
+    p_collect_epoch_scores:bool
+        Whether epoch scores shall be collected.
+    p_collect_mappings:bool
+        Whether mappings shall be collected.
+    p_collect_cycles:bool
+        Whether cycle scores shall be collected.
+    p_plot_epoch_scores:
+        Whether epoch scores shall be plotted.
+    p_plot_mappings:
+        Whether mappings shall be plotted.
+    p_plot_cycles:
+        Whether cycle score shall be plotted.
+    p_maximize_score:
+        Which schore is to be maximized. Valid values are:
+        C_TRAIN_SCORE: Training Score
+        C_EVAL_SCORE: Evaluation Score
+        C_TEST_SCORE: Test Score
+    p_num_epoch:
+        Number of epochs.
+    p_eval_freq:
+        Evaluatio  frequency.
+    p_test_freq:
+        Test frequency.
+    p_kwargs:
+        Additional Training Parameters.
     """
 
     C_NAME = 'SL'
@@ -649,7 +751,6 @@ class SLTraining (Training):
                  p_eval_freq = 0,
                  p_test_freq = 0,
                  **p_kwargs):
-
 
         self._collect_epoch_scores = p_collect_epoch_scores
         self._collect_mappings = p_collect_mappings
@@ -693,10 +794,12 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> TrainingResults:
         """
+        Initialize the training results object, in this case SLTrainingResults.
 
         Returns
         -------
-
+        results: TrainingResults
+            The SLTraining Results object created.
         """
 
         results = Training._init_results(self)
@@ -782,11 +885,14 @@ class SLTraining (Training):
     def _run_cycle(self) -> bool:
 
         """
+        Run one training cycle.
 
         Returns
         -------
-
+        bool
+            True if the training is finished.
         """
+
         eof_training = False
         eof_epoch = False
 
@@ -890,9 +996,9 @@ class SLTraining (Training):
     def _init_epoch(self):
 
         """
-
-
+        Initializes the epoch.
         """
+
         self._counter_train_cycles = 0
         self._counter_eval_cycles = 0
         self._counter_test_cycles = 0
@@ -940,7 +1046,7 @@ class SLTraining (Training):
     def _update_scores(self):
 
         """
-
+        Update the scores of the Model during the training.
         """
         current_metrics = []
         for metric in self._model.get_metrics():
@@ -960,7 +1066,7 @@ class SLTraining (Training):
     def _close_epoch(self):
 
         """
-
+        Close the epoch and update the highscore.
         """
 
         score = [*self._train_epoch_scores, *self._eval_epoch_scores, *self._test_epoch_scores]
@@ -991,7 +1097,7 @@ class SLTraining (Training):
     def _init_eval(self):
 
         """
-
+        Inintialize evaluation epoch.
         """
         self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_W, '-- Evaluation epoch', self._epoch_id, 'started...')
@@ -1006,7 +1112,7 @@ class SLTraining (Training):
     def _init_test(self):
 
         """
-
+        Initialize the test epoch.
         """
         self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_W, '-- Test epoch', self._epoch_id, 'started...')
