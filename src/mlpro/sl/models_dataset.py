@@ -464,7 +464,7 @@ class Dataset(Log):
         elif self._batch_size >= len(self._indexes):
             self._last_batch = True
             self.log(Log.C_LOG_TYPE_I, "Last batch being delivered.")
-            indexes = self._indexes
+            indexes = self._indexes[:]
             self._indexes.clear()
 
 

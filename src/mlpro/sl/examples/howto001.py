@@ -22,7 +22,7 @@ from pathlib import Path
 from mlpro.rl.pool.envs.doublependulum import *
 from mlpro.sl.pool.afct.fnn.pytorch.mlp import *
 from mlpro.sl import *
-from torch.optim import optimizer as opt
+import torch.optim as opt
 import torch.nn as nn
 
 
@@ -84,8 +84,8 @@ class MLPSLScenario(SLScenario):
 # 5. Preparing parameters for Demo and Unit Test modes.
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit = 100000
-    num_epochs  = 25
+    cycle_limit = 1000000
+    num_epochs  = 50
     logging     = Log.C_LOG_WE
     visualize   = True
     path        = str(Path.home())
