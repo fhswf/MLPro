@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-18  0.0.0     LSB      Creation
+## -- 2023-07-15  1.0.0     LSB      Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-06-13)
+Ver. 1.0.0 (2023-07-15)
 
 This module provides dataset classes for supervised learning tasks.
 """
@@ -30,19 +31,35 @@ class Dataset(Log):
 
 
     """
+    This class serves as the base class for the Dataset Models in MLPro, that can include the native datasets,
+    third party datasets and custom datasets. This class provides functionality to pre-process, setup and load the
+    data from the datasets based on provided configurations.
 
-    Parameters
-    ----------
-    p_input_space
-    p_output_space
-    p_output_cls
-    p_data_class
-    p_feature_dataset
-    p_label_dataset
-    p_batch_size
-    p_drop_short
-    p_shuffle
-    p_logging
+        Parameters
+        ----------
+        p_output_cls:
+            The output class from the dataset, default is Element.
+        p_feature_dataset:
+            The feature Dataset as an array.
+        p_label_dataset:
+            The label Dataset as an array.
+        p_batch_size:int
+            Batch Size to deliver the data.
+        p_drop_short:bool
+            Whether the final batch shall be dropped in case of insufficient data.
+        p_shuffle:bool
+            If the data shall be shuffled before delivery.
+        p_eval_split:float
+            The amount of data to be separated for evaluation, as a factor of 1.
+        p_test_split:float
+            The amount of data to be separated for evaluation, as a factor of 1.
+        p_normalize:bool
+            Whether the data shall be normalized or not.
+        p_settings:
+            Additional Dataset specific settings.
+        p_logging:
+            The logging level of the Dataset.
+
     """
     C_FETCH_SINGLE = 0
     C_FETCH_BATCH = 1
@@ -80,6 +97,7 @@ class Dataset(Log):
         self._batch_size = p_batch_size
         self._last_batch = False
 
+        # 1. Setup the mode of data delivery
         if self._batch_size > 1:
             self._fetch_mode = self.C_FETCH_BATCH
         else:
@@ -90,11 +108,12 @@ class Dataset(Log):
         self._eval_split = p_eval_split
         self._test_split = p_test_split
 
+        # 2. Setup the meta-data (Shall be a different function? In cases when custom meta-data needs to be included)
         self._num_instances = self.__len__()
-
         self._indexes_train = list(range(self._num_instances))
         self._indexes = self._indexes_train.copy()
 
+        # 3. Split the dataset
         if self._eval_split is None and self._test_split is None:
             self._split = False
         else:
@@ -105,15 +124,18 @@ class Dataset(Log):
         self._settings = p_settings
 
 
-
+        # Calculating the number of batches
         if self._drop_short:
             self.num_batches = self._num_instances // self._batch_size
         else:
             self.num_batches = self._num_instances // self._batch_size + 1
 
 
+        # 5. Setting up the feature and label spaces
         self._feature_space, self._label_space = self.setup_spaces()
 
+
+        # 6. Setting up the normalizers
         # Must be shifted to a different module later specific for data preprocessing
         if p_normalize:
             self._normalize = True
@@ -130,6 +152,7 @@ class Dataset(Log):
         else:
             self._normalize = False
 
+        # 7. Reset the dataset
         self.reset(p_shuffle = self._shuffle)
 
 
@@ -137,51 +160,62 @@ class Dataset(Log):
     def __iter__(self, p_seed = 0):
 
         """
+        This returns the dataset object as an iterator.
 
         Parameters
         ----------
-        p_seed
+        p_seed:int
+            Seed to reset the data.
 
         Returns
         -------
-
+        Dataset (Iterator)
+            Dataset as an iterator
         """
-        self.reset(p_seed)
+        self.reset(self._shuffle, p_seed)
         return self
 
 
 ## -------------------------------------------------------------------------------------------------
     def __next__(self):
         """
+        This method enables to iterate over the dataset as a Python Iterator Object.
 
         Returns
         -------
-
+            Returns next data instance from the dataset.
         """
+
         return self.get_next()
 
 
 ## -------------------------------------------------------------------------------------------------
     def __getitem__(self, p_index):
         """
+        Gets the data instance from the dataset at a given instance.
 
         Parameters
         ----------
-        p_index
+        p_index: int
+            Index of the data.
 
         Returns
         -------
-
+        Returns the instance at the given index.
         """
+
         return self.get_data(p_index)
 
 
 ## -------------------------------------------------------------------------------------------------
     def __len__(self):
         """
+        Returns the length of the Dataset. By default returns the length of the Feature Dataset.
 
         Returns
         -------
+        int
+            Length of the dataset.
 
         """
         return len(self._feature_dataset)
@@ -190,15 +224,18 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     def set_mode(self, p_mode):
         """
+        Sets the mode of the dataset.
 
         Parameters
         ----------
-        p_mode
-
-        Returns
-        -------
+        p_mode:
+            Mode to be set. Valid values are:
+            C_MODE_TRAIN: Training Mode
+            C_MODE_EVAL: Evaluation Mode
+            C_MODE_TEST: Testing Mode
 
         """
+
         if p_mode == self.C_MODE_TRAIN:
             self._last_batch = False
             self._indexes = self._indexes_train.copy()
@@ -214,22 +251,26 @@ class Dataset(Log):
     @staticmethod
     def setup_spaces():
         """
+        This is a static custom method to return the feature and label space of the dataset.
 
         Returns
         -------
-
+        Feature Space, Label Space
+            A tuple of feature and label space, respectively.
         """
 
         return None, None
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_split(self):
-        """
-
-        Returns
-        -------
 
         """
+        The method to split the dataset. This method is called during the instantiation of the class. By defualt the
+        dataset is split by dividing the dataset as per the factors given. For custom applications, please rewrite
+        the method.
+
+        """
+
         if self._eval_split is not None:
             self._indexes_eval = self._indexes_train[0:int(self._eval_split * len(self._indexes_train))]
             del self._indexes_train[0:int(self._eval_split * len(self._indexes_train))]
@@ -240,19 +281,26 @@ class Dataset(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_shuffle = False, p_seed = None, p_epoch = 0):
+    def reset(self, p_shuffle = False, p_seed = None, **p_kwargs):
         """
+        Reset the dataset. Shuffles the indexes of the dataset in case they are to be shuffled.
+        Additionally it calls the custom reset method in case of custom implementations.
 
         Parameters
         ----------
-        p_shuffle
-        p_seed
-        p_epoch
+        p_shuffle: bool
+            Whether the dataset shall be shuffled.
+        p_seed: int
+            Seed for the purpose of reproducibility.
+        p_kwargs: dict
+            Additional key worded arguments for custom reset.
 
         Returns
         -------
+        Returns the value returned by the custom reset method.
 
         """
+
         if not self._split:
             self._indexes.clear()
             self._indexes.extend(self._indexes_train.copy())
@@ -265,21 +313,23 @@ class Dataset(Log):
             random.shuffle(self._indexes_eval)
 
         self._last_batch = False
-        return self._reset(p_seed=p_seed, p_shuffle=p_shuffle, p_epoch=p_epoch)
+        return self._reset(p_seed=p_seed, p_shuffle=p_shuffle, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed, p_shuffle = False, p_epoch = 0):
+    def _reset(self, p_seed, p_shuffle = False, **p_kwargs):
         """
+        Custom reset method for the dataset.
 
         Parameters
         ----------
-        p_seed
-        p_shuffle
-        p_epoch
+        p_seed: int
+            Seed for the purpose of reproducibility.
+        p_shuffle: bool
+            Whether the dataset shall be reshuffled.
+        p_kwargs: dict
+            Additional key worded arguments for custom reset.
 
-        Returns
-        -------
 
         """
         pass
@@ -288,14 +338,16 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     def get_data(self, p_index):
         """
+        Get a data instance from the dataset at the given instance.
 
         Parameters
         ----------
-        p_index
+        p_index: int
+            Index from which the data shall be fetched.
 
         Returns
         -------
-
+            The data instance at the given instance.
         """
         if self._normalize:
             features = self._normalizer_feature_data.normalize(p_data=self._feature_dataset[p_index])
@@ -315,14 +367,16 @@ class Dataset(Log):
 
         return feature_obj, label_obj
 
+
 ## -------------------------------------------------------------------------------------------------
     def get_next(self):
 
         """
+        Gets the next data instance from the list of indexes prepared for data delivery to a scnenario.
 
         Returns
         -------
-
+        Next data instance.
         """
         if self._fetch_mode == self.C_FETCH_BATCH:
             return self.get_next_batch()
@@ -333,11 +387,15 @@ class Dataset(Log):
     def get_next_instance(self):
 
         """
+        Returns a next single instance as a tuple of feature and label object.
 
         Returns
         -------
-
+        [(feature_element, label_element)]
+            Returns a tuple of feature and label object. This is wrapped in a list for compatibility with iterating
+            behaviour, and to keep it conformative with a batch delivery.
         """
+
         # Return an Instance with first 'batch size' features and corresponding labels as a single label
         if len(self._indexes) == 1:
             self._last_batch = True
@@ -350,9 +408,9 @@ class Dataset(Log):
 
         val = self.get_data(index)
 
-        feature_element = Element(self._feature_space)
+        feature_element = BatchElement(self._feature_space)
         feature_element.set_values([val[0].get_values()])
-        label_element = Element(self._label_space)
+        label_element = BatchElement(self._label_space)
         label_element.set_values([val[1].get_values()])
 
         return [(feature_element, label_element)]
@@ -361,11 +419,14 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
     def get_next_batch(self):
         """
+        Gets the next batch of data from the dataset for a scenario.
 
         Returns
         -------
-
+        [(feature_objects, label_objects)]
+            A tuple of feature objects and label objects, equal to the batch size, wrapped into a list.
         """
+
         if self._last_batch:
             indexes = self._indexes
             self._indexes.clear()
@@ -413,23 +474,40 @@ class Dataset(Log):
 ## -------------------------------------------------------------------------------------------------
 class SASDataset(Dataset):
     """
+    A custom dataset model class, that creates a dataset based on the historical state and action
+    data generated by a training run of an MLPro Environment.
 
     Parameters
     ----------
-    p_state_fpath
-    p_action_fpath
-    p_state_space
-    p_action_space
-    p_episode_col
-    p_delimiter
-    p_drop_columns
-    p_batch_size
-    p_drop_short
-    p_shuffle
-    p_eval_split
-    p_test_split
-    p_settings
-    p_logging
+    p_state_fpath: str
+        Path+name of the csv file with record of states of the system.
+    p_action_fpath: str
+        Path+name of the csv file with record of actions performed on the system.
+    p_state_space:ESpace
+        State space of the system.
+    p_action_space:ESpace
+        Action space of the system.
+    p_episode_col:str
+        The name of the column that contains the episode information, so that the data before and after the end
+        of episode can be handled.
+    p_delimiter: str
+        The delimiter for the CSV file. Default is '\t'.
+    p_drop_columns: list['str']
+        List of names of columns to be discarded from the dataset.
+    p_batch_size: int
+        Batch size of the data to be delivered in a scenario.
+    p_drop_short: bool
+        Whether the last batch shall be dropped in case of insufficient data.
+    p_shuffle: bool
+        Whether the data shall be shuffled before delivery.
+    p_eval_split: float
+        The amount of data to split for the purpose of evaluation, as a factor of 1.
+    p_test_split: float
+        The amount of data to be split for the purpose of testing, as a factor of 1.
+    p_settings:
+        Additional Settings for custom applications.
+    p_logging:
+        Log level for the dataset.
     """
 
 
@@ -483,15 +561,12 @@ class SASDataset(Dataset):
 ## -------------------------------------------------------------------------------------------------
     def setup_spaces(self):
         """
-
-        Parameters
-        ----------
-        p_state_space
-        p_action_space
+        Set's up the feature and label spaces of the dataset. Not a static method in this case.
 
         Returns
         -------
-
+        feature_space, label_space: (ESpace, ESpace)
+            A tuple of feature and label space of the dataset.
         """
 
         label_space = self._state_space.copy()
@@ -512,14 +587,20 @@ class SASDataset(Dataset):
                        episode_col: str,
                        delimiter='\t'):
         """
+        Sets up the dataset. The CSV files are read and processed to generate the feature and label dataset.
 
         Parameters
         ----------
-        state_fpath
-        action_fpath
-        drop_columns
-        episode_col
-        delimiter
+        state_fpath:str
+            Path + Name for the CSV file with states data.
+        action_fpath:str
+            Path + Name for the CSV file with action data.
+        drop_columns: List[str]
+            List of columns to be discarded from the dataset.
+        episode_col: str
+            The name of the column that contains the episode information.
+        delimiter: str
+            Delimiter for the CSV files. Default is '\t'
 
         Returns
         -------
@@ -551,23 +632,3 @@ class SASDataset(Dataset):
 
         return input, output
 
-
-# ## -------------------------------------------------------------------------------------------------
-#     def get_data(self, p_index):
-#         """
-#
-#         Parameters
-#         ----------
-#         p_index
-#
-#         Returns
-#         -------
-#
-#         """
-#         features = self._feature_dataset.iloc[p_index].values
-#         feature_obj = self._output_cls(self._feature_space).set_values(features)
-#
-#         labels = self._states.iloc[p_index+1].values
-#         label_obj = self._output_cls(self._label_space).set_values(labels)
-#
-#         return feature_obj, label_obj

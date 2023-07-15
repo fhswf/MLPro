@@ -6,45 +6,48 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-18  0.0.0     LSB      Creation
+## -- 2023-07-15  1.0.0     LSB      Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-06-13)
+Ver. 1.0.0 (2023-07-15)
 
 This module provides dataset classes for supervised learning tasks.
 """
 
 
 
-# from mlpro.sl.models_dataset import SASDataset
-from mlpro.sl.models_train import *
+# 1. Importing necessary packages
 from pathlib import Path
 from mlpro.rl.pool.envs.doublependulum import *
-from mlpro.sl.basics import *
-from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
+from mlpro.sl.pool.afct.fnn.pytorch.mlp import *
+from mlpro.sl import *
+from torch.optim import optimizer as opt
 import torch.nn as nn
-import torch.optim as opt
-from mlpro.sl.models_eval import *
 
 
-#
+# 2. Setting Path for offline dataset resources (CSV files in this case).
 path = str(Path.home()) + os.sep
-
 path_state = path + 'data3\env_states.csv'
 path_action = path + 'data3\\agent_actions.csv'
 
 
+# 3. Getting the state and action space of the Double Pendulum Environment
 dp = DoublePendulumS4()
 state_space,action_space = dp.setup_spaces()
 
 
 
-print([i.get_name_long() for i in state_space.get_dims()])
 
 
-
+# 4. Setting up Demo Scenario
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class MLPSLScenario(SLScenario):
+
     C_NAME = 'DP'
+
+## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
 
@@ -76,10 +79,13 @@ class MLPSLScenario(SLScenario):
                                  p_logging=Log.C_LOG_WE)
 
 
+
+
+# 5. Preparing parameters for Demo and Unit Test modes.
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
     cycle_limit = 100000
-    num_epochs  = 15
+    num_epochs  = 25
     logging     = Log.C_LOG_WE
     visualize   = True
     path        = str(Path.home())
@@ -95,7 +101,7 @@ else:
 
 
 
-
+# 6. Instantiating the Training Class
 training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_cycle_limit = cycle_limit,
                       p_num_epoch=num_epochs,
@@ -106,19 +112,32 @@ training = SLTraining(p_scenario_cls = MLPSLScenario,
                       p_plot_epoch_scores=True)
 
 
-
+# 7. Running the training
 training.run()
 
 
+# 8. Reloading the scenario from saved results of previous training
 scenario = MLPSLScenario.load(p_filename=training.get_scenario().get_filename(),
                               p_path=training.get_scenario()._get_path())
 
+# 9. Getting the model from the Scenario
+# Get the model
 model = scenario.get_model()
+# Switch off the adaptivity of the model
 model.switch_adaptivity(False)
 
 
+
+
+
+
+# 10. Setting up an Inference Scenario
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class InferenceScenario(SLScenario):
+
     C_NAME = 'Inference'
+
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
         self._dataset = SASDataset(p_state_fpath=path+str(os.sep)+"results-8\\env_states.csv",
@@ -138,10 +157,12 @@ class InferenceScenario(SLScenario):
         return model
 
 
-
+# 11. Instantiating the scenario
 new_scenario = InferenceScenario(p_path=path,
                                  p_collect_mappings=True,
                                  p_cycle_limit=300,
                                  p_get_mapping_plots=True,
                                  p_save_plots=True)
+
+# 12. Running the scenario
 new_scenario.run()
