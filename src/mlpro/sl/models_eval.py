@@ -6,15 +6,18 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-18  0.0.0     LSB      Creation
+## -- 2023-07-15  1.0.0     LSB      Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-06-13)
+Ver. 1.0.0 (2023-07-15)
 
 This module provides SL metrics classes for supervised learning tasks.
 """
-import numpy as np
 
+
+
+import numpy as np
 from mlpro.bf.math import *
 import warnings
 
@@ -26,10 +29,13 @@ import warnings
 ## -------------------------------------------------------------------------------------------------
 class MetricValue(Element):
     """
+    This is a custom element class to Store the Metric Values of a Model, with
+    additional information about the Epoch and the Cylcle.
 
     Parameters
     ----------
-    p_space
+    p_space: The output space of the Metric.
+
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -43,24 +49,30 @@ class MetricValue(Element):
 ## -------------------------------------------------------------------------------------------------
     def set_epoch(self, p_epoch):
         """
+        Set the epoch value to the Metric Element.
 
         Parameters
         ----------
-        p_epoch
+        p_epoch:int
+            The epoch number.
 
         """
+
         self._epoch = p_epoch
 
 
 ## -------------------------------------------------------------------------------------------------
-    def cycle(self, p_cycle):
+    def set_cycle(self, p_cycle):
         """
+        Set the cycle id of the metric element.
 
         Parameters
         ----------
-        p_cycle
+        p_cycle:int
+            The cycle id to be set.
 
         """
+
         self._cycle = p_cycle
 
 
@@ -72,11 +84,14 @@ class MetricValue(Element):
 ## -------------------------------------------------------------------------------------------------
 class Metric(Log):
     """
+    This class serves as the base class for metric computation for a supervised learning model.
 
     Parameters
     ----------
-    p_logging
+    p_logging:
+        Log level for the metric.
     """
+
     C_OBJECTIVE_MINIMIZE = -1
     C_OBJECTIVE_MAXIMIZE = 1
 
@@ -97,12 +112,15 @@ class Metric(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_metric_space(self) -> ESpace:
+    @staticmethod
+    def _setup_metric_space() -> ESpace:
         """
+        Setup the metric Space.
 
         Returns
         -------
-
+        ESpace
+            The output space of the metric.
         """
         raise NotImplementedError
 
@@ -110,26 +128,32 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def get_output_space(self) -> ESpace:
         """
+        Get the output space of the metric.
 
         Returns
         -------
-
+        ESpace
+            The output space of the metric.
         """
+
         return self._metric_space
 
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed):
         """
+        Reset the score and highscore of the metric to default value based on the objective. Calls custom _reset
+        method for custom applications.
 
         Parameters
         ----------
-        p_seed
+        p_seed: Seed for the purpose of reproducibility.
 
         """
         try:
             self._score = self._reset(p_seed)
-            self._highscore = (-1)*(np.inf)
+            # Shifted out to constructor
+            # self._highscore = (-1)*(np.inf)
         except:
             warnings.warn("Could not reset " + self.C_NAME + ".")
 
@@ -137,13 +161,18 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
+        Custom reset method. Please set the current score of the metric in this method, in case reimplemented for
+        custom applications.
 
         Parameters
         ----------
-        p_seed
+        p_seed: int
+            Seed for the purpose of reproducibility.
 
         Returns
         -------
+        score: float
+            The score after reset.
 
         """
         if self.C_OBJECTIVE == self.C_OBJECTIVE_MINIMIZE:
@@ -157,15 +186,20 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def compute(self, p_model, p_data):
         """
+        Compute the current metric of the model based on the data provided. Calls the custom _compute method for
+        custom applications.
 
         Parameters
         ----------
-        p_model
-        p_data
+        p_model:
+            model for which the metric is to be calculated.
+        p_data:
+            Data, based on which the metric shall be calculated.
 
         Returns
         -------
-
+        Metric: MetricElement
+            The current metric value as a Metric Element.
         """
         value = self._compute(p_model, p_data)
         metric = MetricValue(self._metric_space)
@@ -179,11 +213,14 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
         """
+        Custom method to compute the metric.
 
         Parameters
         ----------
-        p_model
-        p_data
+        p_model:
+            Model for which the metric is to be calculated.
+        p_data:
+            Data, based on which the metric is to be calculated.
 
         Returns
         -------
@@ -195,10 +232,11 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def _update_score(self, p_value) -> float:
         """
+        Update the current score of the metric.
 
         Parameters
         ----------
-        p_value
+        p_value: the current value of the metric.
 
         Returns
         -------
@@ -210,10 +248,12 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def get_current_score(self):
         """
+        Gets the current score of the metric.
 
         Returns
         -------
-
+        score
+            The current score, since last reset.
         """
         return self._score
 
@@ -221,10 +261,12 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
     def get_current_highscore(self):
         """
+        Get the current highscore of the metric.
 
         Returns
         -------
-
+        float
+            Current highscore of the metric.
         """
         if self.C_OBJECTIVE == self.C_OBJECTIVE_MINIMIZE:
             if self._highscore<(-(self._score)):
@@ -246,11 +288,15 @@ class Metric(Log):
 ## -------------------------------------------------------------------------------------------------
 class MetricAccuracy(Metric):
     """
+    This is Accuracy Metric Object. Calculates the accuracy of Supervised Learning model based on the number of
+    correct mappings to total mappings.
 
     Parameters
     ----------
-    p_threshold
-    p_logging
+    p_threshold:
+        Threshold for categorizing a good mapping. Default is zero.
+    p_logging:
+        Log level for the Metric.
     """
 
     C_NAME = 'ACC'
@@ -273,31 +319,41 @@ class MetricAccuracy(Metric):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_metric_space(self) -> ESpace:
+    @staticmethod
+    def _setup_metric_space() -> ESpace:
         """
+        Setup the output space of the metric.
 
         Returns
         -------
-
+        metric_space:ESpace
+            The output space of the metric.
         """
-        self._metric_space = ESpace()
-        self._metric_space.add_dim(Dimension(p_name_short="acc", p_name_long="Accuracy"))
-        return self._metric_space
+        metric_space = ESpace()
+        metric_space.add_dim(Dimension(p_name_short="acc", p_name_long="Accuracy"))
+        return metric_space
 
 
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
         """
+        Custom compute method for the accuracy metric. Calculates the accuracy of the model.
 
         Parameters
         ----------
-        p_model
-        p_data
+        p_model:
+            The model for which the accuracy is to be calculated.
+
+        p_data:
+            The data based on which the accuracy is to be calculated.
 
         Returns
         -------
+        acc: MetricValue
+            The calculated accuracy of the model, based on the given data, as an MetricValue element.
 
         """
+
         input = p_data[0]
         target = p_data[1]
 
@@ -321,15 +377,20 @@ class MetricAccuracy(Metric):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
+        Custom reset method for the accuracy metric object.
 
         Parameters
         ----------
-        p_seed
+        p_seed:int
+            Seed for the purposes of reproducibility.
 
         Returns
         -------
+        0
+            Zero as the default score of the metric.
 
         """
+
         self._num_instances = 0
         self._sum = 0
         self._mappings_total = 0
@@ -341,14 +402,16 @@ class MetricAccuracy(Metric):
     def _update_score(self, p_value) -> float:
 
         """
+        Update the score of the accuracy metric based on moving mean.
 
         Parameters
         ----------
-        p_value
+        p_value:
+            current metric value.
 
         Returns
         -------
-
+            Returns the current score of the metric.
         """
         self._sum += p_value
         self._num_instances += 1
@@ -364,10 +427,13 @@ class MetricAccuracy(Metric):
 ## -------------------------------------------------------------------------------------------------
 class MSEMetric(Metric):
     """
+    This is a pool metric class for calculating the Mean Squared Error. Mean Squared error is as the name suggests
+    mean of the squared sum of difference of model predictions from the target output.
 
     Parameters
     ----------
-    p_logging
+    p_logging:
+        Log level of the Metric.
     """
     C_NAME = 'MSE'
 
@@ -383,12 +449,16 @@ class MSEMetric(Metric):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_metric_space(self) -> ESpace:
+
         """
+        Setup the output space of the metric.
 
         Returns
         -------
-
+        metric_space:ESpace
+            The output space of the metric.
         """
+
         space = ESpace()
         space.add_dim(Dimension(p_name_short='MSE', p_name_long='Mean Squared Error', p_base_set=Dimension.C_BASE_SET_R))
 
@@ -397,7 +467,20 @@ class MSEMetric(Metric):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
+        """
+        Custom reset method for the MSE metric object.
 
+        Parameters
+        ----------
+        p_seed:int
+            Seed for the purposes of reproducibility.
+
+        Returns
+        -------
+        0
+            Zero as the default score of the metric.
+
+        """
         self._num_instances = 0
         self._sum = 0
         return -np.inf
@@ -406,14 +489,21 @@ class MSEMetric(Metric):
 ## -------------------------------------------------------------------------------------------------
     def _compute(self, p_model, p_data):
         """
+        Custom compute method for the MSE metric. Calculates the Mean squared error based on the current mapping of
+        the model.
 
         Parameters
         ----------
-        p_model
-        p_data
+        p_model:
+            The model for which the MSE is to be calculated.
+
+        p_data:
+            The data based on which the MSE is to be calculated.
 
         Returns
         -------
+        acc: MetricValue
+            The calculated MSE of the model, based on the given data, as an MetricValue element.
 
         """
         inputs, targets = p_data[0], p_data[1].get_values()
@@ -429,14 +519,16 @@ class MSEMetric(Metric):
 ## -------------------------------------------------------------------------------------------------
     def _update_score(self, p_value) -> float:
         """
+        Update the score of the MSE metric based on moving mean.
 
         Parameters
         ----------
-        p_value
+        p_value:
+            current metric value.
 
         Returns
         -------
-
+            Returns the current score of the metric.
         """
         self._sum += p_value
         self._num_instances += 1
