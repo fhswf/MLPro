@@ -297,26 +297,26 @@ class SLScenario (Scenario):
         adapted = self._model.adapt(p_dataset = data)
 
         if self.get_dataset()._last_batch:
+            self.log(Log.C_LOG_TYPE_I, "End of Data reached.")
             end_of_data = True
 
         else:
 
             end_of_data = False
 
+            self.log(Log.C_LOG_TYPE_I, "Computing the metrics")
+
             for input, target in data:
 
                 output = self._model(input)
                 logging_data = self._model.get_logging_data()
-                # mapping = [*input.get_values(), *target.get_values(), *output.get_values()]
-
 
                 metric_values = self._model.calculate_metrics(p_data = (input, target)).get_values()
 
                 for met_val in metric_values:
                     logging_data.append(met_val.get_values())
 
-                if self.get_cycle_id() == 0:
-                    self.log(Log.C_LOG_TYPE_I, 'Current Metrics',*['\t'+self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
+                self.log(Log.C_LOG_TYPE_I, 'Current Metrics',*['\t'+self._metrics[i].get_name() +":\t"+ str(metric_values[i].get_values()) for i in range(len(self._metrics))])
 
                 if self.ds_cycles is not None:
                     self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
@@ -524,6 +524,8 @@ class SLScenario (Scenario):
 
         self._save = True
         variables = []
+
+        # 1. Creating data storing for Mappings
         if self._collect_mapping:
             for dim in self._model.get_input_space().get_dims():
                 variables.append('input '+dim.get_name_short())
@@ -541,6 +543,7 @@ class SLScenario (Scenario):
                                                                      'pred '+dim.get_name_short() : [True, 0, -1]},
                                                          p_names=[dim.get_name_short()]))
         logging_variables = []
+        # 2. Creating data storing for Cycle Scores
         if self._collect_cycles:
             for dim in self._model.get_logging_set().get_dims():
                 logging_variables.append(dim.get_name_short())
@@ -549,6 +552,7 @@ class SLScenario (Scenario):
             self.ds_cycles = SLDataStoring(p_variables=logging_variables)
             self.ds_cycles.add_frame(p_frame_id=0)
 
+        # 3. Creating data plotting objects
         if self._metric_plots:
             printing = {}
             for logging_variable in logging_variables:
@@ -771,16 +775,13 @@ class SLTraining (Training):
 
         Training.__init__(self, **p_kwargs)
 
+        # For hpt
         if self._hpt is None:
             self._model: SLAdaptiveFunction = self.get_scenario()._model
-
             self.metric_space = self._model.get_metric_space()
-
-
-        # For hpt
             self._score_metric = self._model.get_score_metric()
-
             self._logging_space = self._model.get_logging_set()
+
 
         self._eval_freq = p_eval_freq
         self._test_freq = p_test_freq
@@ -808,6 +809,7 @@ class SLTraining (Training):
 
         results._ds_list = []
         metric_variables = [i.get_name_short() for i in self.metric_space.get_dims()]
+        # 1. Creating data storing objects for Epoch scores
         if self._collect_epoch_scores:
             variables = metric_variables[:]
             if self._eval_freq > 0:
@@ -819,7 +821,7 @@ class SLTraining (Training):
             results.ds_epoch = SLDataStoring(variables)
             results._ds_list.append(results.ds_epoch)
 
-
+            # 1.1 Creating data plotting objects for Epoch Scores
             if self._plot_epoch_score:
                 if (not self._eval_freq) and (not self._test_freq):
                     printing = {}
@@ -842,6 +844,7 @@ class SLTraining (Training):
                                                                     p_printing=printing,
                                                                     p_names=[var]))
 
+        # 2. Creating data storing objects for cycle data
         if self._collect_cycles:
             variables = [i.get_name_short() for i in self._logging_space.get_dims()]
             variables.extend(metric_variables)
@@ -856,7 +859,7 @@ class SLTraining (Training):
                 results.ds_cycles_test = SLDataStoring(p_variables=variables)
                 results._ds_list.append(results.ds_cycles_test)
 
-
+        # 3. Creating data storing objects for mappings
         if self._collect_mappings:
             variables = []
             for dim in self._model.get_input_space().get_dims():
@@ -875,6 +878,7 @@ class SLTraining (Training):
                 results.ds_mapping_test = SLDataStoring(p_variables=variables)
                 results._ds_list.append(results.ds_mapping_test)
 
+        # 4. Connect data loggers
         self._scenario.connect_datalogger(p_mapping = results.ds_mapping_train, p_cycle = results.ds_cycles_train)
 
 
@@ -896,9 +900,11 @@ class SLTraining (Training):
         eof_training = False
         eof_epoch = False
 
+        # 1. New epoch
         if self._cycles_epoch == 0:
             self._init_epoch()
 
+        # 2. Run one SLScenario cycle
         success, error, timeout, limit, adapted, end_of_data = self._scenario.run_cycle()
         self._cycles_epoch += 1
 
@@ -918,8 +924,6 @@ class SLTraining (Training):
 
 
         if end_of_data:
-
-
             self._update_scores()
             self.get_scenario().reset(p_seed=self._epoch_id)
 
@@ -1019,10 +1023,12 @@ class SLTraining (Training):
 
         self._scenario.get_dataset().reset(p_seed=self._epoch_id)
 
+        # Check if this is also an evaluation epoch
         if self._eval_freq:
             if self._epoch_id % self._eval_freq == 0:
                 self._epoch_eval = True
 
+        # Check if this is also a training epoch
         if self._test_freq:
             if self._epoch_id % self._test_freq == 0:
                 self._epoch_test = True

@@ -237,12 +237,15 @@ class Dataset(Log):
         """
 
         if p_mode == self.C_MODE_TRAIN:
+            self.log(Log.C_LOG_TYPE_I, "Dataset mode set to Training.")
             self._last_batch = False
             self._indexes = self._indexes_train.copy()
         if p_mode == self.C_MODE_EVAL:
+            self.log(Log.C_LOG_TYPE_I, "Dataset mode set to Evaluation.")
             self._indexes = self._indexes_eval.copy()
             self._last_batch = False
         if p_mode == self.C_MODE_TEST:
+            self.log(Log.C_LOG_TYPE_I, "Dataset mode set to Testing.")
             self._indexes = self._indexes_test.copy()
             self._last_batch = False
 
@@ -279,6 +282,7 @@ class Dataset(Log):
             self._indexes_test = self._indexes_train[0:int(self._test_split * len(self._indexes_train))]
             del self._indexes_train[0:int(self._test_split * len(self._indexes_train))]
 
+        self.log(Log.C_LOG_TYPE_I, "Dataset Split.")
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_shuffle = False, p_seed = None, **p_kwargs):
@@ -300,21 +304,26 @@ class Dataset(Log):
         Returns the value returned by the custom reset method.
 
         """
-
+        # Shuffle the entire indices
         if not self._split:
             self._indexes.clear()
             self._indexes.extend(self._indexes_train.copy())
             if p_shuffle or self._shuffle:
                 random.shuffle(self._indexes)
 
+        # Shuffle each split
         elif self._split and (p_shuffle or self._shuffle):
             random.shuffle(self._indexes_train)
-            random.shuffle(self._indexes_eval)
-            random.shuffle(self._indexes_eval)
+            if self._eval_split:
+                random.shuffle(self._indexes_eval)
+            if self._test_split:
+                random.shuffle(self._indexes_test)
 
         self._last_batch = False
-        return self._reset(p_seed=p_seed, p_shuffle=p_shuffle, **p_kwargs)
+        ret_val = self._reset(p_seed=p_seed, p_shuffle=p_shuffle, **p_kwargs)
+        self.log(Log.C_LOG_TYPE_I, "Dataset is reset.")
 
+        return ret_val
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed, p_shuffle = False, **p_kwargs):
@@ -349,6 +358,7 @@ class Dataset(Log):
         -------
             The data instance at the given instance.
         """
+        # 1. Fetch feature and label data and normalize if needed
         if self._normalize:
             features = self._normalizer_feature_data.normalize(p_data=self._feature_dataset[p_index])
             labels = self._normalizer_label_data.normalize(p_data=self._label_dataset[p_index])
@@ -356,6 +366,7 @@ class Dataset(Log):
             features = self._feature_dataset[p_index]
             labels = self._label_dataset[p_index]
 
+        # 2. Create specific output object, based on the output class
         if self._output_cls == Element:
             feature_obj = self._output_cls(self._feature_space)
             feature_obj.set_values(features)
@@ -397,15 +408,22 @@ class Dataset(Log):
         """
 
         # Return an Instance with first 'batch size' features and corresponding labels as a single label
+        self.log(Log.C_LOG_TYPE_I, "Getting next Instance.")
+
+        # 1. Check if last batch
         if len(self._indexes) == 1:
             self._last_batch = True
+            self.log(Log.C_LOG_TYPE_I, "Last Instance to be delivered.")
 
+        # 2. Check if no indexes remaining
         elif len(self._indexes) == 0:
             raise Error("End of Data. Please watch the _last_batch attribute.")
 
+        # 3. Assign next instance
         index = self._indexes[0]
         del self._indexes[0]
 
+        # 4. Get data from that instance, and deliver as BatchElements
         val = self.get_data(index)
 
         feature_element = BatchElement(self._feature_space)
@@ -426,30 +444,37 @@ class Dataset(Log):
         [(feature_objects, label_objects)]
             A tuple of feature objects and label objects, equal to the batch size, wrapped into a list.
         """
+        self.log(Log.C_LOG_TYPE_I, "Getting next batch of data.")
 
-        if self._last_batch:
+        # 1. Check if last instance
+        if len(self._indexes) == 0:
+            raise Error("End of Data. Please watch the _last_batch attribute.")
+
+        # 2. Check if last batch
+        if self._drop_short:
+            if 2*self._batch_size > len(self._indexes):
+                self._last_batch = True
+                self.log("Last batch being delivered.")
+                indexes = self._indexes[0:self._batch_size]
+                del self._indexes[0:self._batch_size]
+
+
+        elif self._batch_size >= len(self._indexes):
+            self._last_batch = True
+            self.log(Log.C_LOG_TYPE_I, "Last batch being delivered.")
             indexes = self._indexes
             self._indexes.clear()
 
-        elif len(self._indexes) == 0:
-            raise Error("End of Data. Please watch the _last_batch attribute.")
 
         else:
-            if self._drop_short:
-                if 2*self._batch_size > len(self._indexes):
-                    self._last_batch = True
-
-            else:
-                if self._batch_size >= len(self._indexes):
-                    self._last_batch = True
-
             indexes = self._indexes[0:self._batch_size]
             del self._indexes[0:self._batch_size]
+
 
         feature_values = []
         label_values = []
 
-
+        # 3. Get values and deliver them as BatchElement
         if self._output_cls == Element:
             for index in indexes:
                 vals = self.get_data(index)
@@ -460,8 +485,10 @@ class Dataset(Log):
             label_batch = BatchElement(self._label_space)
             label_batch.set_values(label_values)
 
+
         else:
             raise ParamError("This output class is not yet supported for this dataset")
+
 
         return [(feature_batch, label_batch)]
 
@@ -530,6 +557,7 @@ class SASDataset(Dataset):
                  p_logging = Log.C_LOG_ALL
                  ):
 
+        # 1. Setup feature and label dataset from the csv files
         feature_dataset, label_dataset = self._setup_dataset(state_fpath=p_state_fpath,
             action_fpath=p_action_fpath,
             drop_columns=p_drop_columns,
