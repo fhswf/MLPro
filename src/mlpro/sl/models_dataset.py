@@ -287,7 +287,7 @@ class Dataset(Log):
         self.log(Log.C_LOG_TYPE_I, "Dataset Split.")
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_shuffle = False, p_seed = None, **p_kwargs):
+    def reset(self, p_seed = None, p_shuffle = False, **p_kwargs):
         """
         Reset the dataset. Shuffles the indexes of the dataset in case they are to be shuffled.
         Additionally it calls the custom reset method in case of custom implementations.
