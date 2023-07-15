@@ -16,11 +16,9 @@ This module provides dataset classes for supervised learning tasks.
 
 
 
-from mlpro.sl.models_dataset import SASDataset
+# from mlpro.sl.models_dataset import SASDataset
 from mlpro.sl.models_train import *
 from pathlib import Path
-import os
-from mlpro.bf.plot import DataPlotting
 from mlpro.rl.pool.envs.doublependulum import *
 from mlpro.sl.basics import *
 from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
@@ -55,6 +53,7 @@ class MLPSLScenario(SLScenario):
                         p_action_fpath=path_action,
                         p_state_space=state_space,
                         p_action_space=action_space,
+                        p_normalize=True,
                         p_batch_size=16,
                         p_eval_split=0.5,
                         p_shuffle=False,
@@ -65,8 +64,8 @@ class MLPSLScenario(SLScenario):
                                  p_output_space=self._dataset._label_space,
                                  p_output_elem_cls=BatchElement,
                                  p_num_hidden_layers=3,
-                                 p_activation_fct=nn.LeakyReLU,
-                                 p_output_activation_fct=nn.LeakyReLU,
+                                 p_activation_fct=nn.LeakyReLU(0.5),
+                                 p_output_activation_fct=nn.LeakyReLU(1),
                                  p_optimizer=opt.Adam,
                                  p_batch_size=200,
                                  p_metrics=[MSEMetric(p_logging=Log.C_LOG_NOTHING),
@@ -79,8 +78,8 @@ class MLPSLScenario(SLScenario):
 
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit = 100
-    num_epochs  = 2
+    cycle_limit = 100000
+    num_epochs  = 15
     logging     = Log.C_LOG_WE
     visualize   = True
     path        = str(Path.home())
@@ -116,21 +115,19 @@ scenario = MLPSLScenario.load(p_filename=training.get_scenario().get_filename(),
 
 model = scenario.get_model()
 model.switch_adaptivity(False)
-model._output_elem_cls = Element
-
 
 
 class InferenceScenario(SLScenario):
-    C_NAME = 'Inference Scenario'
+    C_NAME = 'Inference'
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
-        self._dataset = SASDataset(p_state_fpath="C:\\Users\\Baheti\\results-8\\env_states.csv",
-                                   p_action_fpath="C:\\Users\\Baheti\\results-8\\agent_actions.csv",
+        self._dataset = SASDataset(p_state_fpath=path+str(os.sep)+"results-8\\env_states.csv",
+                                   p_action_fpath=path+str(os.sep)+"results-8\\agent_actions.csv",
                                    p_state_space=state_space,
                                    p_action_space=action_space,
                                    p_batch_size=1,
                                    p_shuffle=False,
-                                   p_normalize = False,
+                                   p_normalize = True,
                                    p_logging=Log.C_LOG_NOTHING)
 
 
@@ -142,5 +139,9 @@ class InferenceScenario(SLScenario):
 
 
 
-new_scenario = InferenceScenario(p_path=path, p_collect_mappings=True, p_cycle_limit=300, p_get_mapping_plots=True, p_save_plots=True)
+new_scenario = InferenceScenario(p_path=path,
+                                 p_collect_mappings=True,
+                                 p_cycle_limit=300,
+                                 p_get_mapping_plots=True,
+                                 p_save_plots=True)
 new_scenario.run()

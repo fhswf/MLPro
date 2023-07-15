@@ -351,9 +351,9 @@ class Dataset(Log):
         val = self.get_data(index)
 
         feature_element = Element(self._feature_space)
-        feature_element.set_values(val[0].get_values())
+        feature_element.set_values([val[0].get_values()])
         label_element = Element(self._label_space)
-        label_element.set_values(val[1].get_values())
+        label_element.set_values([val[1].get_values()])
 
         return [(feature_element, label_element)]
 

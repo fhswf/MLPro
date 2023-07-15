@@ -13,10 +13,11 @@
 ## -- 2023-05-03  1.2.1     SY       Updating _adapt_offline method
 ## -- 2023-06-21  1.2.2     LSB      Updating _adapt_offline method
 ## -- 2023-07-04  1.2.3     LSB      Refactoring _complete_state for path conflict
+## -- 2023-07-14  1.2.4     LSB      Refactoring for afct fct parameter, so it is provided after instanciating
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2023-07-04)
+Ver. 1.2.4 (2023-07-14)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
@@ -118,15 +119,15 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             if hd == 0:
                 act_input_size  = self.get_hyperparam().get_value(ids_[0])
                 output_size     = self.get_hyperparam().get_value(ids_[4])[hd]
-                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]()
+                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]
             elif hd == self.get_hyperparam().get_value(ids_[3]):
                 act_input_size  = self.get_hyperparam().get_value(ids_[4])[hd-1]
                 output_size     = self.get_hyperparam().get_value(ids_[1])
-                act_fct         = self.get_hyperparam().get_value(ids_[6])()
+                act_fct         = self.get_hyperparam().get_value(ids_[6])
             else:
                 act_input_size  = self.get_hyperparam().get_value(ids_[4])[hd-1]
                 output_size     = self.get_hyperparam().get_value(ids_[4])[hd]
-                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]()
+                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]
             
             if self.get_hyperparam().get_value(ids_[13]):
                 modules.append(init_(torch.nn.Linear(int(act_input_size), int(output_size))))

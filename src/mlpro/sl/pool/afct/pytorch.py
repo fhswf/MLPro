@@ -18,10 +18,11 @@
 ## -- 2023-05-03  3.0.4     SY        Updating sampling method
 ## -- 2023-06-20  3.0.5     LSB       Updating the sampling method
 ## -- 2023-07-02  3.0.6     LSB       Refactoring the postproc and preproc methods
+## -- 2023-07-14  3.0.7     LSB       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.6 (2023-07-02)
+Ver. 3.0.7 (2023-07-14)
 
 This a helper module for supervised learning models using PyTorch. 
 """
@@ -268,7 +269,7 @@ class PyTorchHelperFunctions():
             output = p_output
 
         # Convert output from Tensor to a list
-        output = output.detach().squeeze().tolist()
+        output = output.detach().tolist()
 
         return output
 

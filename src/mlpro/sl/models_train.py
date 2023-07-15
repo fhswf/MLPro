@@ -157,7 +157,6 @@ class SLDataPlotting(DataPlotting):
         fig = plt.figure(figsize=self.figsize)
         for var in self.printing.keys():
             data = []
-            indexes = []
             plt.title(self._names[0])
             plt.grid(True, which='both', axis = 'both')
             for fr in range(len(self.data.memory_dict[var])):
