@@ -13,6 +13,19 @@
 Ver. 1.0.0 (2023-07-15)
 
 This module provides dataset classes for supervised learning tasks.
+
+You will learn:
+
+1. How to setup a SLScenario and Training
+
+2. How to setup a PytorchMLP
+
+3. How to train an Adaptive Function () AFct on a Dataset
+
+4. How to reload a trained AFct
+
+5. How to do Inference.
+
 """
 
 
