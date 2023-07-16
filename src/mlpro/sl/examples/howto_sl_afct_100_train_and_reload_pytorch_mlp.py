@@ -26,11 +26,15 @@ You will learn:
 
 5. How to do Inference.
 
+Note::
+    Please assign the paths for your corresponding states and action csv for training and inference respectively,
+    in the corresponding sections 2.1 and 2.3 respectively.
 """
 
 
 
 # 1. Importing necessary packages
+import os
 from pathlib import Path
 from mlpro.rl.pool.envs.doublependulum import *
 from mlpro.sl.pool.afct.fnn.pytorch.mlp import *
@@ -39,10 +43,19 @@ import torch.optim as opt
 import torch.nn as nn
 
 
-# 2. Setting Path for offline dataset resources (CSV files in this case).
+# 2. Setting Path variables for training and offline dataset resources (CSV files in this case).
 path = str(Path.home()) + os.sep
-path_state = path + 'data3\env_states.csv'
-path_action = path + 'data3\\agent_actions.csv'
+
+# 2.1 Training Resource
+train_path = str(Path.home()) + os.sep + 'data3' + os.sep
+name_train_states = 'env_states.csv'
+name_train_actions = 'agent_actions.csv'
+
+# 2.2 Inference Resources
+inference_path = str(Path.home()) + os.sep + 'results-8' + os.sep
+name_infer_states = 'env_states.csv'
+name_infer_actions = 'agent_actions.csv'
+
 
 
 # 3. Getting the state and action space of the Double Pendulum Environment
@@ -65,15 +78,16 @@ class MLPSLScenario(SLScenario):
 
 
 
-        self._dataset = SASDataset(p_state_fpath=path_state,
-                        p_action_fpath=path_action,
-                        p_state_space=state_space,
-                        p_action_space=action_space,
-                        p_normalize=True,
-                        p_batch_size=16,
-                        p_eval_split=0.5,
-                        p_shuffle=False,
-                        p_logging=Log.C_LOG_WE)
+        self._dataset = SASDataset(p_path=train_path,
+                                    p_state_fname=name_train_states,
+                                    p_action_fname=name_train_actions,
+                                    p_state_space=state_space,
+                                    p_action_space=action_space,
+                                    p_normalize=True,
+                                    p_batch_size=16,
+                                    p_eval_split=0.5,
+                                    p_shuffle=False,
+                                    p_logging=Log.C_LOG_WE)
 
 
         return PyTorchMLP(p_input_space=self._dataset._feature_space,
@@ -129,9 +143,12 @@ training = SLTraining(p_scenario_cls = MLPSLScenario,
 training.run()
 
 
+
 # 8. Reloading the scenario from saved results of previous training
 scenario = MLPSLScenario.load(p_filename=training.get_scenario().get_filename(),
                               p_path=training.get_scenario()._get_path())
+
+
 
 # 9. Getting the model from the Scenario
 # Get the model
@@ -153,8 +170,9 @@ class InferenceScenario(SLScenario):
 
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
-        self._dataset = SASDataset(p_state_fpath=path+str(os.sep)+"results-8\\env_states.csv",
-                                   p_action_fpath=path+str(os.sep)+"results-8\\agent_actions.csv",
+        self._dataset = SASDataset(p_path = inference_path,
+                                   p_state_fname = name_infer_states,
+                                   p_action_fname = name_infer_actions,
                                    p_state_space=state_space,
                                    p_action_space=action_space,
                                    p_batch_size=1,
@@ -176,6 +194,8 @@ new_scenario = InferenceScenario(p_path=path,
                                  p_cycle_limit=300,
                                  p_get_mapping_plots=True,
                                  p_save_plots=True)
+
+
 
 # 12. Running the scenario
 new_scenario.run()

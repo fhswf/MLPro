@@ -14,7 +14,7 @@ Ver. 1.0.0 (2023-07-15)
 
 This module provides dataset classes for supervised learning tasks.
 """
-
+import os
 
 from mlpro.bf.math import *
 from mlpro.bf.math.normalizers import NormalizerMinMax
@@ -542,8 +542,9 @@ class SASDataset(Dataset):
 
     ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_state_fpath,
-                 p_action_fpath,
+                 p_path,
+                 p_state_fname,
+                 p_action_fname,
                  p_state_space : ESpace,
                  p_action_space : ESpace,
                  p_episode_col = 'Episode ID',
@@ -560,11 +561,12 @@ class SASDataset(Dataset):
                  ):
 
         # 1. Setup feature and label dataset from the csv files
-        feature_dataset, label_dataset = self._setup_dataset(state_fpath=p_state_fpath,
-            action_fpath=p_action_fpath,
-            drop_columns=p_drop_columns,
-            episode_col=p_episode_col,
-            delimiter=p_delimiter)
+        feature_dataset, label_dataset = self._setup_dataset(p_path = p_path,
+                                                            p_state_fname=p_state_fname,
+                                                            p_action_fname=p_action_fname,
+                                                            p_drop_columns=p_drop_columns,
+                                                            p_episode_col=p_episode_col,
+                                                            p_delimiter=p_delimiter)
 
 
         self._state_space = p_state_space.copy(True)
@@ -611,11 +613,12 @@ class SASDataset(Dataset):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_dataset(self,
-                       state_fpath: str,
-                       action_fpath: str,
-                       drop_columns: list,
-                       episode_col: str,
-                       delimiter='\t'):
+                       p_path:str,
+                       p_state_fname: str,
+                       p_action_fname: str,
+                       p_drop_columns: list,
+                       p_episode_col: str,
+                       p_delimiter='\t'):
         """
         Sets up the dataset. The CSV files are read and processed to generate the feature and label dataset.
 
@@ -638,18 +641,19 @@ class SASDataset(Dataset):
         """
 
         # Fetching states without dropping columns
-        self._states = pd.read_csv(filepath_or_buffer=state_fpath, delimiter=delimiter)
+        self._states = pd.read_csv(filepath_or_buffer=p_path+os.sep+p_state_fname,
+                                    delimiter=p_delimiter)
 
         # Finding the episode change ids
-        episodes_entry_change = self._states[episode_col].diff()
+        episodes_entry_change = self._states[p_episode_col].diff()
         episode_idx = episodes_entry_change[episodes_entry_change.ne(0)].index-1
 
         # Drop the columns
-        self._states = self._states.drop(columns=drop_columns, axis=0)
+        self._states = self._states.drop(columns=p_drop_columns, axis=0)
 
         # Fetch actions and drop the columns
-        self._actions = pd.read_csv(filepath_or_buffer=action_fpath, delimiter=delimiter).drop(columns=drop_columns,
-            axis=0)
+        self._actions = pd.read_csv(filepath_or_buffer=p_path+os.sep+p_action_fname,
+                                    delimiter=p_delimiter).drop(columns=p_drop_columns, axis=0)
 
         # Create input df, with state and action
         input = pd.concat([self._states, self._actions], axis=1, copy=True).iloc[:-1].reset_index(drop=True)
