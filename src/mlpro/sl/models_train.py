@@ -20,6 +20,7 @@ import warnings
 import matplotlib.pyplot as plt
 from mlpro.bf.data import *
 from mlpro.sl import *
+from mlpro.sl.basics import *
 from mlpro.bf.plot import DataPlotting
 from mlpro.bf import *
 from mlpro.bf.ml import *
@@ -127,9 +128,17 @@ class SLDataPlotting(DataPlotting):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_data: DataStoring, p_type=DataPlotting.C_PLOT_TYPE_EP, p_window=100,
-                 p_showing=True, p_printing=None, p_figsize=(7, 7), p_color="darkblue",
-                 p_window_type='same', p_names = [None], p_style = C_PLOT_STYLE_LINE):
+    def __init__(self,
+                 p_data: DataStoring,
+                 p_type=DataPlotting.C_PLOT_TYPE_EP,
+                 p_window=100,
+                 p_showing=True,
+                 p_printing=None,
+                 p_figsize=(7, 7),
+                 p_color="darkblue",
+                 p_window_type='same',
+                 p_names = [None],
+                 p_style = C_PLOT_STYLE_LINE):
 
         DataPlotting.__init__(self,
                               p_data = p_data,
