@@ -66,10 +66,14 @@
 ## -- 2022-03-16  2.1.4     SY       Add _get_accuracy(), add_objective, _add_objective in Model
 ## -- 2023-03-29  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
 ## -- 2023-04-10  2.2.1     SY       Update get_accuracy, add_objective in Model
+## -- 2023-07-24  2.3.0     LSB      New methods in context of hyperparameter tuning
+##                                   - _update_hyperparameters()
+##                                   - _hpt_updated
+##                                   - _hyperparameter_handler()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.1 (2023-04-10)
+Ver. 2.3.0 (2023-07-24)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -255,6 +259,11 @@ class Model (Task, ScientificObject):
         self._hyperparam_tuple  = None
         self._init_hyperparam(**p_par)
 
+        for hyper_param in self._hyperparam_space.get_dims():
+            hyper_param.register_event_handler(p_event_id=HyperParam.C_EVENT_VALUE_CHANGED, p_event_handler=self._hyperparam_handler)
+
+        self._hp_updated = True
+
         if p_buffer_size > 0:
             self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size)
         else:
@@ -286,6 +295,31 @@ class Model (Task, ScientificObject):
         """
 
         return self._hyperparam_tuple
+
+
+## -------------------------------------------------------------------------------------------------
+    def _hyperparam_handler(self):
+        """
+        This is an event handler method for managing the updates of hyperparameters in the HPTuple.
+        Set's the flag hp_latest to false, as the hpt of the model are not latest to the tuple.
+        """
+        self._hp_latest = False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_hyperparameters(self) -> bool:
+        """
+        Custom method to update the hyperparameters of a system with the latest value in the Hyperparameter Tuple.
+        This may be due to Hyperparameter Tuning. Please return True if the hyperparameters are updated successfully.
+
+        Returns
+        -------
+        bool:
+            True if the hyperparameters are updated successfully.
+
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -352,6 +386,12 @@ class Model (Task, ScientificObject):
             True, if something has been adapted. False otherwise.
 
         """
+        if not self._hp_updated:
+            self._hp_updated = self._update_hyperparameters()
+            if not self._hp_updated:
+                raise ImplementationError("Hyperparameters not updated properly for the model after changing the "
+                                          "values in Hyperparameter Tuple. Please read the documentation "
+                                          "for method _update_hyperparameter() on Model class.")
 
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_S, 'Adaptation started')
