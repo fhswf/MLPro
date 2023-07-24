@@ -22,7 +22,7 @@ from mlpro.bf.data import *
 from mlpro.sl import *
 from mlpro.sl.basics import *
 from mlpro.bf.plot import DataPlotting
-from mlpro.bf import *
+from mlpro.bf.datasets import *
 from mlpro.bf.ml import *
 
 

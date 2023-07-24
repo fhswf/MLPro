@@ -1,16 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.sl
-## -- Module  : models_data.py
+## -- Package : mlpro.bf.datasets
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-18  0.0.0     LSB      Creation
-## -- 2023-07-15  1.0.0     LSB      Release
+## -- 2023-07-24  1.0.0     LSB      Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-07-15)
+Ver. 1.0.0 (2023-07-24)
 
 This module provides dataset classes for supervised learning tasks.
 """
