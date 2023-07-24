@@ -387,6 +387,7 @@ class Model (Task, ScientificObject):
             True, if something has been adapted. False otherwise.
 
         """
+        # Check if the hyperparameters are updated
         if not self._hp_latest:
             try:
                 self._hp_latest = self._update_hyperparameters()
