@@ -394,7 +394,7 @@ class Model (Task, ScientificObject):
                 self._hp_latest = self._update_hyperparameters()
             except:
                 if not self._hp_latest:
-                    warnings.warn("No hyperparameter update mechanism provided. Runs will continue without update."
+                    self.log(Log.C_LOG_TYPE_E, "No hyperparameter update mechanism provided. Runs will continue without update."
                                   " Please read the documentation for method _update_hyperparameter() on Model class.")
 
         if not self._adaptivity: return False
