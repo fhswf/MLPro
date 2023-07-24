@@ -78,7 +78,7 @@ Ver. 2.3.0 (2023-07-24)
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
 """
-
+import warnings
 
 from mlpro.bf.various import *
 from mlpro.bf.math import *
@@ -262,7 +262,7 @@ class Model (Task, ScientificObject):
         for hyper_param in self._hyperparam_space.get_dims():
             hyper_param.register_event_handler(p_event_id=HyperParam.C_EVENT_VALUE_CHANGED, p_event_handler=self._hyperparam_handler)
 
-        self._hp_updated = True
+        self._hp_latest = True
 
         if p_buffer_size > 0:
             self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size)
@@ -298,12 +298,13 @@ class Model (Task, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _hyperparam_handler(self):
+    def _hyperparam_handler(self, p_event_id, p_event_object:Event):
         """
         This is an event handler method for managing the updates of hyperparameters in the HPTuple.
         Set's the flag hp_latest to false, as the hpt of the model are not latest to the tuple.
         """
-        self._hp_latest = False
+        if p_event_id == HyperParam.C_EVENT_VALUE_CHANGED:
+            self._hp_latest = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -386,12 +387,15 @@ class Model (Task, ScientificObject):
             True, if something has been adapted. False otherwise.
 
         """
-        if not self._hp_updated:
-            self._hp_updated = self._update_hyperparameters()
-            if not self._hp_updated:
-                raise ImplementationError("Hyperparameters not updated properly for the model after changing the "
-                                          "values in Hyperparameter Tuple. Please read the documentation "
-                                          "for method _update_hyperparameter() on Model class.")
+        # Check if the hyperparameters are updated
+
+        if not self._hp_latest:
+            try:
+                self._hp_latest = self._update_hyperparameters()
+            except:
+                if not self._hp_latest:
+                    self.log(Log.C_LOG_TYPE_E, "No hyperparameter update mechanism provided. Runs will continue without update."
+                                  " Please read the documentation for method _update_hyperparameter() on Model class.")
 
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_S, 'Adaptation started')
