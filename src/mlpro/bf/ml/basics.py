@@ -388,6 +388,7 @@ class Model (Task, ScientificObject):
 
         """
         # Check if the hyperparameters are updated
+
         if not self._hp_latest:
             try:
                 self._hp_latest = self._update_hyperparameters()
