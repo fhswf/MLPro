@@ -1153,3 +1153,29 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         #         workflow.update_plot(**p_kwargs)
         #     except:
         #         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_visualization(self, p_object = None, p_visualize = None):
+        """
+        Method to switch the visualization of an object in an online adaptive system.
+
+        Parameters
+        ----------
+        p_object: object
+            The object whose visualization is to be switched off. A valid object is any object
+            with visualization property in MLPro, within this runtime. It is suggested to use only on the Functions,
+            Workflows, Tasks and System itself.
+
+        Notes
+        -----
+        Please do not turn off the visualization by getting functions of the system (e.g. self.get_fctstrans()), if the functions are not
+        provided externally to the system, since this will refer to the system itself.
+
+        Examples
+        --------
+        myOASystem.switch_visualization(p_visualize = False, p_object = self.get_fct_workflow())
+
+        """
+
+        p_object._visualize = p_visualize

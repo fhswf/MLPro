@@ -230,6 +230,22 @@ class AFctBase (Model):
 class AFctSTrans (AFctBase, FctSTrans):
     """
     Online adaptive version of a state transition function. See parent classes for further details.
+
+
+    Parameters
+    ----------
+    p_afct_cls
+    p_state_space
+    p_action_space
+    p_input_space_cls
+    p_output_space_cls
+    p_output_elem_cls
+    p_threshold
+    p_buffer_size
+    p_ada
+    p_visualize
+    p_logging
+    p_par
     """
 
     C_TYPE = 'AFct STrans'
@@ -248,7 +264,6 @@ class AFctSTrans (AFctBase, FctSTrans):
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL,
                   **p_par):
-
         super().__init__(p_afct_cls,
                          p_state_space,
                          p_action_space,
@@ -264,8 +279,23 @@ class AFctSTrans (AFctBase, FctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
+    def _setup_spaces(self,
+                      p_state_space: MSpace,
+                      p_action_space: MSpace,
+                      p_input_space: MSpace,
                       p_output_space: MSpace):
+        """
+
+        Parameters
+        ----------
+        p_state_space
+        p_action_space
+        p_input_space
+        p_output_space
+
+        """
+
+
         # 1 Setup input space
         p_input_space.append( p_set=p_state_space )
         p_input_space.append( p_set=p_action_space, p_ignore_duplicates=True)
@@ -275,7 +305,23 @@ class AFctSTrans (AFctBase, FctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self,
+                           p_state: State,
+                           p_action: Action,
+                           p_t_step = None) -> State:
+        """
+
+        Parameters
+        ----------
+        p_state
+        p_action
+        p_t_step
+
+        Returns
+        -------
+
+        """
+
         # 1 Create input vector from given state and action
         input_values = p_state.get_values().copy()
         if isinstance(input_values, np.ndarray):
@@ -334,9 +380,21 @@ class AFctSuccess (AFctBase, FctSuccess):
     C_TYPE = 'AFct Success'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
+    def _setup_spaces(self,
+                      p_state_space: MSpace,
+                      p_action_space: MSpace,
+                      p_input_space: MSpace,
                       p_output_space: MSpace):
+        """
 
+        Parameters
+        ----------
+        p_state_space
+        p_action_space
+        p_input_space
+        p_output_space
+
+        """
         # 1 Setup input space
         p_input_space.append(p_state_space)
 
@@ -348,6 +406,16 @@ class AFctSuccess (AFctBase, FctSuccess):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state: State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = self._afct.map(p_state)
 
         if output.get_values()[0] >= 0.5:
@@ -357,6 +425,16 @@ class AFctSuccess (AFctBase, FctSuccess):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
@@ -386,7 +464,16 @@ class AFctBroken (AFctBase, FctBroken):
                        p_action_space:MSpace, 
                        p_input_space:MSpace,
                        p_output_space: MSpace ):
+        """
 
+        Parameters
+        ----------
+        p_state_space
+        p_action_space
+        p_input_space
+        p_output_space
+
+        """
         # 1 Setup input space
         p_input_space.append(p_state_space)
 
@@ -398,6 +485,16 @@ class AFctBroken (AFctBase, FctBroken):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = self._afct.map(p_state)
 
         if output.get_values()[0] >= 0.5:
@@ -407,6 +504,16 @@ class AFctBroken (AFctBase, FctBroken):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
