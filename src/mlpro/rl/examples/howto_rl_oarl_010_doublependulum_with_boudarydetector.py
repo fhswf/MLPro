@@ -70,7 +70,7 @@ class OADPScenario(RLScenario):
 
 
         # Creating the Online Adaptive Double Pendulum Environment
-        environment = DoublePendulumOA7(p_range_max=Range.C_RANGE_THREAD, p_name='', p_ada=adaptivity, p_visualize=visualize)
+        oa_environment = DoublePendulumOA7(p_range_max=Range.C_RANGE_THREAD, p_name='', p_ada=adaptivity, p_visualize=visualize)
 
         # Creating the Boundary Detector Task
         task_bd = BoundaryDetector(p_name='Boundary Detector', p_visualize=visualize, p_range_max=range)
@@ -79,17 +79,21 @@ class OADPScenario(RLScenario):
         task_norm = NormalizerMinMax(p_name='Normalizer', p_visualize=visualize, p_range_max=range)
 
         # Adding the boundary detector task to the Reward Workflow
-        environment.add_task_reward(p_task=task_bd)
+        oa_environment.add_task_reward(p_task=task_bd)
 
         # Adding the normalizer task to the reward workflow
-        environment.add_task_reward(p_task=task_norm, p_pred_tasks=[task_bd])
+        oa_environment.add_task_reward(p_task=task_norm, p_pred_tasks=[task_bd])
 
         # Registering the event handler to Normalizer
         task_bd.register_event_handler(p_event_id=task_bd.C_EVENT_ADAPTED, p_event_handler=task_norm.adapt_on_event)
 
+        # Switching off visualization of uninteresting  objects
+        oa_environment.switch_visualization(p_object=oa_environment.get_workflow_strans(), p_visualize=False)
+        oa_environment.switch_visualization(p_object=oa_environment.get_workflow_success(), p_visualize=False)
+        oa_environment.switch_visualization(p_object=oa_environment.get_workflow_broken(), p_visualize=False)
 
         # 2.1 Setup environment
-        self._env   = environment
+        self._env   = oa_environment
 
 
         # 2.2 Setup and return random action agent
@@ -120,4 +124,7 @@ myscenario  = OADPScenario( p_mode=Mode.C_MODE_SIM,
                             p_logging=logging )
 
 myscenario.reset(p_seed=3)
+
+
+
 myscenario.run()

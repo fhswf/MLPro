@@ -442,3 +442,10 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
             self._last_reward = OAFctReward.compute_reward(self, p_state_new=state_new, p_state_old=state_old)
 
         return self._last_reward
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_workflow_reward(self):
+
+        return self._wf_reward
+

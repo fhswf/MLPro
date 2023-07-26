@@ -1163,9 +1163,12 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         Parameters
         ----------
         p_object: object
-            The object whose visualization is to be switched off. A valid object is any object
+            The object whose visualization is to be switched off. Although, a valid object is any object
             with visualization property in MLPro, within this runtime. It is suggested to use only on the Functions,
             Workflows, Tasks and System itself.
+
+        p_visualize: bool
+            The bool value for setting the visualization of an object.
 
         Notes
         -----
@@ -1179,3 +1182,21 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         """
 
         p_object._visualize = p_visualize
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_workflow_strans(self):
+
+        return self._wf_strans
+
+## -------------------------------------------------------------------------------------------------
+    def get_workflow_success(self):
+
+        return self._wf_success
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_workflow_broken(self):
+
+        return self._wf_broken
+
