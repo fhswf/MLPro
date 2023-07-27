@@ -85,6 +85,12 @@ class LOF(AnomalyDetector):
 
 
 
+    def event_handler(self, p_event_id, p_event_object:Event):
+        self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
+        self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -136,6 +142,10 @@ class SVM(AnomalyDetector):
     def _adapt(self, p_inst_new):
         
         self.svm.fit(p_inst_new)
+
+    def event_handler(self, p_event_id, p_event_object:Event):
+        self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
+        self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -191,3 +201,8 @@ class IF(AnomalyDetector):
         
         self.iso_f.fit(p_inst_new)
 
+    def event_handler(self, p_event_id, p_event_object:Event):
+        self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
+        self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
+
+        
