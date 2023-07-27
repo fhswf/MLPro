@@ -139,7 +139,7 @@ class AnomalyEvent (Event):
 
     C_NAME     = 'Anomaly'
 
-    def __init__(self, p_raising_object, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time : str, p_instance: float, **p_kwargs):
         pass
 
 
@@ -149,7 +149,7 @@ class PointAnomaly (AnomalyEvent):
 
     C_NAME      = 'Point Anomaly'
 
-    def __init__(self, p_raising_object, p_deviation, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time : str, p_instance : float, p_deviation : float, **p_kwargs):
         pass
 
 
@@ -159,7 +159,7 @@ class GroupAnomaly (AnomalyEvent):
 
     C_NAME      = 'Group Anomaly'
 
-    def __init__(self, p_raising_object, p_mean, p_mean_deviation, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time : str, p_instances : list, p_mean : float, p_mean_deviation : float, **p_kwargs):
         pass
 
 
@@ -169,7 +169,7 @@ class ContextualAnomaly (AnomalyEvent):
 
     C_NAME      = 'Contextual Anomaly'
 
-    def __init__(self, p_raising_object, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time :str, p_instance: float,  **p_kwargs):
         pass
 
 
@@ -179,7 +179,7 @@ class DriftEvent (AnomalyEvent):
 
     C_NAME      = 'Drift'
 
-    def __init__(self, p_raising_object, p_deviation, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time : str, p_magnitude : float, p_rate : float, **p_kwargs):
         pass
 
 
@@ -189,6 +189,6 @@ class DriftEventCB (DriftEvent):
 
     C_NAME      = 'Cluster based Drift'
 
-    def __init__(self, p_raising_object, p_deviation, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time : str, **p_kwargs):
         pass
 
