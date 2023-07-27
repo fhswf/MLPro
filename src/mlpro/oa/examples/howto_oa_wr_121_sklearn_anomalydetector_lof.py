@@ -36,6 +36,8 @@ DBSTREAM
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.models import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
+from mlpro.bf.various import Log
+from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 from mlpro.oa.streams import *
 from mlpro.wrappers.sklearn import LocalOutlierFactor
@@ -53,8 +55,6 @@ class Stream4ADlof (StreamMLProBase):
     C_NAME              = 'Stream4DBStream'
     C_VERSION           = '1.0.0'
     C_NUM_INSTANCES     = 12
-
-    C_SCIREF_URL        = 'https://riverml.xyz/latest/api/cluster/DBSTREAM/'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -77,12 +77,19 @@ class Stream4ADlof (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
 
-        # Prepare a test dataset from https://riverml.xyz/latest/api/cluster/DBSTREAM/
         
-        X = [ [1, 0.5], [1, 0.625], [1, 0.75], [1, 1.125], [1, 1.5], [1, 1.75], [4, 1.5], [4, 2.25],
-             [4, 2.5], [4, 3], [4, 3.25], [4, 3.5] ]
+        openml = WrStreamProviderOpenML(p_logging = logging)
 
-        self._dataset   = np.array(X)
+        # 3 Get stream "credit-g" from the stream provider OpenML
+        mystream = openml.get_stream( p_id='42397', p_name='CreditCardFraudDetection', p_logging=logging)
+
+
+        # 5 Get the feature space of the stream
+        feature_space = mystream.get_feature_space()
+        openml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
+
+        self._dataset   = np.array(mystream)
+        print(self._dataset)
 
 
 
