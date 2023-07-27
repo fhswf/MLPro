@@ -41,8 +41,6 @@ from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 from mlpro.oa.streams import *
 from mlpro.wrappers.sklearn import LocalOutlierFactor
-from mlpro.wrappers.river.clusteranalyzers import *
-
 
 
 

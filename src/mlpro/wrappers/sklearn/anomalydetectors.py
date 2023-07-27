@@ -60,7 +60,7 @@ class LocalOutlierFactor(AnomalyDetector):
         
         self.num_neighbours = p_neighbours
         # Instance of the LOF Algorithm
-        self.lof = LocalOutlierFactor(self.num_neighbors)
+        self.lof = LocalOutlierFactor(self.num_neighbours)
     ## ------------------------------------------------------------------------------------------------
 
     def _run(self, p_inst_new: list, p_inst_del: list):
