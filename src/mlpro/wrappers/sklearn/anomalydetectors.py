@@ -34,7 +34,7 @@ from sklearn.ensemble import IsolationForest
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class LOF(AnomalyDetector):
+class LocalOutlierFactor(AnomalyDetector):
 
     C_NAME          = 'LOF Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
@@ -94,9 +94,9 @@ class LOF(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SVM(AnomalyDetector):
+class OneClassSVM(AnomalyDetector):
 
-    C_NAME          = 'SVM Anomaly Detector'
+    C_NAME          = 'One Class SVM Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
 
 ## -------------------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ class SVM(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class IF(AnomalyDetector):
+class IsolationForest(AnomalyDetector):
 
     C_NAME          = 'Isolation Forest Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
@@ -205,4 +205,3 @@ class IF(AnomalyDetector):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
         self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
 
-        
