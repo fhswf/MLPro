@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_009_clusteranalyzer_river_dbstream.py
+## -- Module  : howto_oa_wr_121_sklearn_anomalydetector_oneclasssvm.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -38,6 +38,7 @@ from mlpro.bf.streams.models import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 from mlpro.oa.streams import *
+from mlpro.wrappers.sklearn import LocalOutlierFactor
 from mlpro.wrappers.river.clusteranalyzers import *
 
 
@@ -46,7 +47,7 @@ from mlpro.wrappers.river.clusteranalyzers import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream4DBStream (StreamMLProBase):
+class Stream4ADlof (StreamMLProBase):
 
     C_ID                = 'St4DBStream'
     C_NAME              = 'Stream4DBStream'
@@ -89,15 +90,15 @@ class Stream4DBStream (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AdScenario4DBStream (OAScenario):
+class AdScenario4ADlof (OAScenario):
 
-    C_NAME = 'AdScenario4DBStream'
+    C_NAME = 'AdScenario4ADlof'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1 Get stream from Stream4DBStream
-        stream = Stream4DBStream( p_logging=0 )
+        stream = Stream4ADlof( p_logging=0 )
 
         # 2 Set up a stream workflow based on a custom stream task
 
@@ -110,13 +111,10 @@ class AdScenario4DBStream (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverDBStream2MLPro( p_clustering_threshold = 1.5,
-                                          p_fading_factor = 0.05,
-                                          p_cleanup_interval = 4,
-                                          p_intersection_factor = 0.5,
-                                          p_minimum_weight = 1.0 )
+        anomalydetector = LocalOutlierFactor(p_neighbours = 10)
 
-        workflow.add_task( p_task=clusterer )
+
+        workflow.add_task( p_task=anomalydetector )
 
         # 3 Return stream and workflow
         return stream, workflow
@@ -146,49 +144,9 @@ else:
 
 
 # 2 Instantiate the stream scenario
-myscenario = AdScenario4DBStream( p_mode=Mode.C_MODE_REAL,
+myscenario = AdScenario4ADlof( p_mode=Mode.C_MODE_REAL,
                                  p_cycle_limit=cycle_limit,
                                  p_visualize=visualize,
                                  p_logging=logging )
 
 
-
-# 3 Reset and run own stream scenario
-myscenario.reset()
-
-if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
-                                                        p_step_rate = step_rate ) )
-    input('\nPlease arrange all windows and press ENTER to start stream processing...')
-
-tp_before = datetime.now()
-myscenario.run()
-tp_after = datetime.now()
-tp_delta = tp_after - tp_before
-duraction_sec = ( tp_delta.seconds * 1000000 + tp_delta.microseconds + 1 ) / 1000000
-myscenario.log(Log.C_LOG_TYPE_S, 'Duration [sec]:', round(duraction_sec,2), ', Cycles/sec:', round(cycle_limit/duraction_sec,2))
-
-
-
-# 4 Validating the number of clusters and centers of each cluster between original algorithm and wrapper
-river_n_clusters    = myscenario.get_workflow()._tasks[0].get_algorithm().n_clusters
-wr_n_clusters       = len(myscenario.get_workflow()._tasks[0].get_clusters())
-
-if river_n_clusters == wr_n_clusters:
-    print("The number of clusters from river and mlpro matches!")
-else:
-    print("The number of clusters from river and mlpro does not match!")
-    
-    
-river_centers       = myscenario.get_workflow()._tasks[0].get_algorithm().centers
-
-for x in range(wr_n_clusters):
-    if list(river_centers[x].values()) == list(myscenario.get_workflow()._tasks[0].get_clusters()[x].get_centroid().get_values()):
-        print("The center of cluster %s from river and mlpro matches!"%(x+1))
-    else:
-        print("The center of cluster %s from river and mlpro does not match!"%(x+1))
-
-
-
-if __name__ == '__main__':
-    input('Press ENTER to exit...')
