@@ -27,9 +27,12 @@ https://scikit-learn.org
 from mlpro.wrappers.sklearn.basics import *
 from mlpro.oa.streams.basics import Instance, List
 from mlpro.oa.streams.tasks.anomalydetectors import *
-from sklearn.neighbors import LocalOutlierFactor
+from sklearn.neighbors import LocalOutlierFactor as LOF
 from sklearn.svm import OneClassSVM
 from sklearn.ensemble import IsolationForest
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -60,9 +63,10 @@ class LocalOutlierFactor(AnomalyDetector):
         
         self.num_neighbours = p_neighbours
         # Instance of the LOF Algorithm
-        self.lof = LocalOutlierFactor(self.num_neighbours)
-    ## ------------------------------------------------------------------------------------------------
+        self.lof = LOF(self.num_neighbours)
 
+
+## ------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
         # Adaption
@@ -79,12 +83,13 @@ class LocalOutlierFactor(AnomalyDetector):
             self._raise_event(event_obj.C_NAME, event_obj)
 
 
+## ------------------------------------------------------------------------------------------------
     def _adapt(self, p_inst_new):
 
-        self.lof.fit(p_inst_new)
+        self.lof.fit(p_inst_new[0].get_feature_data().get_values().reshape(1,-1))
 
 
-
+## ------------------------------------------------------------------------------------------------
     def event_handler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
         self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())

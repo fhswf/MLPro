@@ -35,60 +35,10 @@ DBSTREAM
 
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.models import *
-from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 from mlpro.bf.various import Log
 from mlpro.wrappers.openml import WrStreamProviderOpenML
-
 from mlpro.oa.streams import *
 from mlpro.wrappers.sklearn import LocalOutlierFactor
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Stream4ADlof (StreamMLProBase):
-
-    C_ID                = 'St4DBStream'
-    C_NAME              = 'Stream4DBStream'
-    C_VERSION           = '1.0.0'
-    C_NUM_INSTANCES     = 12
-
-
-## -------------------------------------------------------------------------------------------------
-    def _setup_feature_space(self) -> MSpace:
-        
-        feature_space : MSpace = MSpace()
-
-        for i in range(2):
-            feature_space.add_dim( Feature( p_name_short = 'f' + str(i),
-                                            p_base_set = Feature.C_BASE_SET_R,
-                                            p_name_long = 'Feature #' + str(i),
-                                            p_name_latex = '',
-                                            p_description = '',
-                                            p_symmetrical = False,
-                                            p_logging=Log.C_LOG_NOTHING ) )
-
-        return feature_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_dataset(self):
-
-        
-        openml = WrStreamProviderOpenML(p_logging = logging)
-
-        # 3 Get stream "credit-g" from the stream provider OpenML
-        mystream = openml.get_stream( p_id='42397', p_name='CreditCardFraudDetection', p_logging=logging)
-
-
-        # 5 Get the feature space of the stream
-        feature_space = mystream.get_feature_space()
-        openml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
-
-        self._dataset   = np.array(mystream)
-        print(self._dataset)
-
 
 
 
@@ -102,10 +52,13 @@ class AdScenario4ADlof (OAScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
-        # 1 Get stream from Stream4DBStream
-        stream = Stream4ADlof( p_logging=0 )
+        openml = WrStreamProviderOpenML(p_logging = logging)
+
+        # 3 Get stream from the stream provider OpenML
+        mystream = openml.get_stream( p_id='42397', p_name='CreditCardFraudDetection', p_logging=logging)
 
         # 2 Set up a stream workflow based on a custom stream task
+        #print(mystream._dataset)
 
         # 2.1 Creation of a workflow
         workflow = OAWorkflow( p_name='wf1',
@@ -115,14 +68,14 @@ class AdScenario4ADlof (OAScenario):
                                p_logging=p_logging )
 
 
-        # 2.2 Creation of a cluster analzer task
-        anomalydetector = LocalOutlierFactor(p_neighbours = 10)
+        # Initiailise the lof anomaly detctor class
+        anomalydetector = LocalOutlierFactor(p_neighbours = 1, p_visualize=p_visualize)
 
-
+        # Add anomaly detection task to workflow
         workflow.add_task( p_task=anomalydetector )
 
         # 3 Return stream and workflow
-        return stream, workflow
+        return mystream, workflow
 
 
 
@@ -136,7 +89,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
-    cycle_limit = 12
+    cycle_limit = 1000
     step_rate   = 1
 
 else:
@@ -148,6 +101,8 @@ else:
 
 
 
+
+
 # 2 Instantiate the stream scenario
 myscenario = AdScenario4ADlof( p_mode=Mode.C_MODE_REAL,
                                  p_cycle_limit=cycle_limit,
@@ -155,3 +110,14 @@ myscenario = AdScenario4ADlof( p_mode=Mode.C_MODE_REAL,
                                  p_logging=logging )
 
 
+# 3 Reset and run own stream scenario
+myscenario.reset()
+
+if __name__ == '__main__':
+    myscenario.init_plot()
+    input('Press ENTER to start stream processing...')
+
+myscenario.run()
+
+if __name__ == '__main__':
+    input('Press ENTER to exit...')
