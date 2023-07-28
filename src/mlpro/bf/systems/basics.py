@@ -2260,7 +2260,7 @@ class DemoScenario(ScenarioBase):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
+    def  __init__(self,
                  p_system : System,
                  p_mode, 
                  p_action_pattern : str = 'random',
@@ -2284,7 +2284,7 @@ class DemoScenario(ScenarioBase):
                               p_auto_setup = p_auto_setup, 
                               p_visualize = p_visualize, 
                               p_logging = p_logging)
-        
+
 
 
         self._action_length = len(self._system.get_action_space().get_dims())
@@ -2294,7 +2294,7 @@ class DemoScenario(ScenarioBase):
             if self._action is None:
                 raise ParamError("Please provide a value for action, when running in constant action mode.")
             
-            if self._action_length == len(self._action):
+            if not self._action_length == len(self._action):
                 raise ParamError("Please provide the action as a list of length equal to the number"+
                                  " of dimenstions in the action space of the system.")
         

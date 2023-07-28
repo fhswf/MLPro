@@ -208,12 +208,7 @@ class OAFctSTrans(FctSTrans, Model):
             The new state of the System.
 
         """
-        # 1. copying the state and action object for the function level
-        try:
-            p_state.get_id()
-        except:
-            p_state.set_id(self._state_id)
-            self._state_id += 1
+
 
         self._state_obj = p_state.copy()
         self._action_obj = copy.deepcopy(p_action)
@@ -315,7 +310,7 @@ class OAFctSTrans(FctSTrans, Model):
         """
 
         if self._afct_strans is not None:
-            self._wf_strans.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
+            self._wf_strans.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self._afct_strans,
                                                                                 p_state=p_inst_new[0],
                                                                                 p_action=self._action_obj))
         else:
@@ -524,7 +519,7 @@ class OAFctSuccess(FctSuccess, Model):
         """
 
         if self._afct_success is not None:
-            self._wf_success.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self,
+            self._wf_success.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self._afct_success,
                                                                                  p_state=p_inst_new[0]))
         else:
             self._wf_success.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
@@ -645,7 +640,7 @@ class OAFctBroken(FctBroken, Model):
                 raise ParamError("Please provide mandatory parameters state and action space.")
 
 
-            self._afct_broken = AFctSuccess(p_afct_cls=p_afct_cls,
+            self._afct_broken = AFctBroken(p_afct_cls=p_afct_cls,
                                             p_state_space=p_state_space,
                                             p_action_space=p_action_space,
                                             p_input_space_cls=p_input_space_cls,
@@ -745,7 +740,7 @@ class OAFctBroken(FctBroken, Model):
 
         """
         if self._afct_broken is not None:
-            self._wf_broken.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self,
+            self._wf_broken.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self._afct_broken,
                                                                          p_state=p_inst_new[0]))
         else:
             self._wf_broken.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
@@ -911,11 +906,11 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         self._workflows = []
         self._fcts =[]
 
-        OAFctSTrans.__init__(self, p_name=p_name, p_wf_strans=p_wf_strans, p_visualize=p_visualize)
+        OAFctSTrans.__init__(self, p_name=p_name, p_wf_strans=p_wf_strans, p_visualize=p_visualize, p_logging=p_logging)
 
-        OAFctSuccess.__init__(self, p_name=p_name, p_wf=p_wf_success, p_visualize=p_visualize)
+        OAFctSuccess.__init__(self, p_name=p_name, p_wf=p_wf_success, p_visualize=p_visualize, p_logging=p_logging)
 
-        OAFctBroken.__init__(self, p_name=p_name, p_wf_broken=p_wf_broken, p_visualize=p_visualize)
+        OAFctBroken.__init__(self, p_name=p_name, p_wf_broken=p_wf_broken, p_visualize=p_visualize, p_logging=p_logging)
 
         self._workflows = [self._wf_strans, self._wf_success, self._wf_broken]
 
@@ -1043,12 +1038,25 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
             The new state of the System.
 
         """
+        # 1. copying the state and action object for the function level
+        try:
+            p_state.get_id()
+        except:
+            p_state.set_id(self._state_id)
+            self._state_id += 1
 
         if self._fct_strans is not None:
-            return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
+            state = self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
         else:
-            return OAFctSTrans.simulate_reaction(self, p_state, p_action, p_t_step)
+            state = OAFctSTrans.simulate_reaction(self, p_state, p_action, p_t_step)
 
+        try:
+            state.get_id()
+        except:
+            state.set_id(self._state_id)
+            self._state_id += 1
+
+        return state
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
