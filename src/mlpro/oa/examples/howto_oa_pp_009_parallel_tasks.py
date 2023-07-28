@@ -1,19 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_008_rearranger_deriver_normalizer.py
+## -- Module  : howto_oa_pp_009_parallel_tasks.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-02-12  1.0.0     DA       Adapted from howto_bf_stream_task_deriver
-## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
+## -- 2023-07-27  1.0.0     LSB      Creation/Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-04-10)
+Ver. 1.0.0 (2023-07-28)
 
-This module was adapted from howto_bf_streams_114_stream_task_deriver. It adds an online adaptive
-boundary detector and min/max normalizer task to the workflow.
+This howto shows an example of howto add parallel tasks to an Online Adaptive stream workflow
 
 You will learn:
 
@@ -24,6 +22,8 @@ You will learn:
 3) How to add a task Deriver and how to extend the features.
 
 4) How to normalize even derived data based on a boundary detector
+
+5) How to add parallel task Z-trans normalizer parallel to MinMax normalizer
         
 5) How to run a stream scenario dark or with visualization.
 
@@ -31,7 +31,7 @@ You will learn:
 
 
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.tasks import Rearranger, Deriver
+from mlpro.bf.streams.tasks import *
 
 from mlpro.oa.streams import *
 from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
@@ -106,15 +106,24 @@ class MyScenario (OAScenario):
 
         workflow.add_task( p_task=task_deriver_2, p_pred_tasks=[task_rearranger, task_deriver_1] )
 
-        # 2.4 Boundary detector 
+        # 2.4 Set up and add a window task
+        task_window = Window( p_buffer_size=30,
+                              p_name = 't1',
+                              p_delay = True,
+                              p_visualize = p_visualize,
+                              p_enable_statistics = True )
+        workflow.add_task(task_window, p_pred_tasks=[task_deriver_2])
+
+
+        # 2.5 Setup Boundary detector
         task_bd = BoundaryDetector( p_name='t4', 
                                     p_ada=True, 
                                     p_visualize=True,   
                                     p_logging=p_logging )
 
-        workflow.add_task( p_task = task_bd, p_pred_tasks=[task_deriver_2])
+        workflow.add_task( p_task = task_bd, p_pred_tasks=[task_window])
 
-        # # 2.5 MinMax-Normalizer
+        # 2.6 Setup MinMax-Normalizer
         task_norm_minmax = NormalizerMinMax( p_name='t5', 
                                              p_ada=True, 
                                              p_visualize=p_visualize, 
@@ -123,6 +132,13 @@ class MyScenario (OAScenario):
         task_bd.register_event_handler( p_event_id=BoundaryDetector.C_EVENT_ADAPTED, p_event_handler=task_norm_minmax.adapt_on_event )
 
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
+
+        # 2.6 Setup Z Trasnform-Normalizer in Parallel
+        task_norm_ztrans = NormalizerZTransform(p_name='Demo ZTrans Normalizer',
+                                         p_ada=p_ada,
+                                         p_visualize=p_visualize,
+                                         p_logging=p_logging)
+        workflow.add_task(p_task=task_norm_ztrans, p_pred_tasks=[task_bd])
 
         # 3 Return stream and workflow
         return stream, workflow
