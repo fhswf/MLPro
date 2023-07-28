@@ -336,7 +336,8 @@ class OAFctSTrans(FctSTrans, Model):
         else:
             p_pred_tasks = [self._wf_strans._tasks[-1]]
             self._wf_strans = OAWorkflow()
-        self._wf_strans.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_strans), p_pred_tasks=p_pred_tasks)
+        self._wf_strans.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_strans, p_logging=self.get_log_level()),
+                                 p_pred_tasks=p_pred_tasks)
 
         return True
 
@@ -573,7 +574,7 @@ class OAFctSuccess(FctSuccess, Model):
         else:
             p_pred_tasks = [self._wf_success._tasks[-1]]
 
-        self._wf_success.add_task(p_task = PseudoTask(p_wrap_method = self._run_wf_success),
+        self._wf_success.add_task(p_task = PseudoTask(p_wrap_method = self._run_wf_success, p_logging=self.get_log_level()),
                                   p_pred_tasks=p_pred_tasks)
         return True
 
@@ -810,7 +811,7 @@ class OAFctBroken(FctBroken, Model):
             p_pred_tasks = None
         else:
             p_pred_tasks = [self._wf_broken._tasks[-1]]
-        self._wf_broken.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_broken),
+        self._wf_broken.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_broken, p_logging=self.get_log_level()),
                                  p_pred_tasks=p_pred_tasks)
         return True
 
