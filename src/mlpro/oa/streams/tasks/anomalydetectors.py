@@ -134,7 +134,7 @@ class AnomalyEvent (Event):
 
     C_NAME     = 'Anomaly'
 
-    def __init__(self, p_raising_object, p_det_time : str, p_instance: float, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time : str, p_instance: str, **p_kwargs):
         pass
 
 
@@ -144,7 +144,7 @@ class PointAnomaly (AnomalyEvent):
 
     C_NAME      = 'Point Anomaly'
 
-    def __init__(self, p_raising_object, p_det_time : str, p_instance : float, p_deviation : float, **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time : str, p_instance : str, p_deviation : float, **p_kwargs):
         pass
 
 
@@ -164,7 +164,7 @@ class ContextualAnomaly (AnomalyEvent):
 
     C_NAME      = 'Contextual Anomaly'
 
-    def __init__(self, p_raising_object, p_det_time :str, p_instance: float,  **p_kwargs):
+    def __init__(self, p_raising_object, p_det_time :str, p_instance: str,  **p_kwargs):
         pass
 
 

@@ -30,6 +30,7 @@ from mlpro.oa.streams.tasks.anomalydetectors import *
 from sklearn.neighbors import LocalOutlierFactor as LOF
 from sklearn.svm import OneClassSVM
 from sklearn.ensemble import IsolationForest
+import datetime
 
 
 
@@ -69,6 +70,7 @@ class LocalOutlierFactor(AnomalyDetector):
 ## ------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
+        det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Adaption
         self.adapt(p_inst_new, p_inst_del)
@@ -80,7 +82,8 @@ class LocalOutlierFactor(AnomalyDetector):
                 
         # Determine if data point is an anomaly based on its outlier score
         if len(self.anomaly_scores) != 0 and self.anomaly_scores[-1] == -1:
-            event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1])
+            event_obj = AnomalyEvent(p_raising_object=self, p_det_time=det_time,
+                                     p_instance=str(self.data_points[-1]))
             handler = self.event_handler
             self.register_event_handler(event_obj.C_NAME, handler)
             self._raise_event(event_obj.C_NAME, event_obj)
