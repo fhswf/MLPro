@@ -79,7 +79,7 @@ class LocalOutlierFactor(AnomalyDetector):
         print(self.anomaly_scores)
                 
         # Determine if data point is an anomaly based on its outlier score
-        if self.anomaly_scores[-1] < -1:
+        if len(self.anomaly_scores) != 0 and self.anomaly_scores[-1] < -1:
             event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1])
             handler = self.event_handler
             self.register_event_handler(event_obj.C_NAME, handler)
