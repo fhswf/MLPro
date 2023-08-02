@@ -43,6 +43,7 @@ class LocalOutlierFactor(AnomalyDetector):
     C_NAME          = 'LOF Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
 
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_neighbours = 10,
@@ -67,7 +68,7 @@ class LocalOutlierFactor(AnomalyDetector):
         self.lof = LOF(self.num_neighbours)
 
 
-## ------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
         det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -86,7 +87,7 @@ class LocalOutlierFactor(AnomalyDetector):
             self._raise_event(event_obj.C_NAME, event_obj)
 
 
-## ------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_inst_new):
 
         self.data_points.append(p_inst_new[0].get_feature_data().get_values())
@@ -97,9 +98,10 @@ class LocalOutlierFactor(AnomalyDetector):
             self.anomaly_scores = self.lof.fit_predict(np.array(self.data_points))
 
 
-## ------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def event_handler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
+
 
 
 
@@ -110,6 +112,7 @@ class OneClassSVM(AnomalyDetector):
 
     C_NAME          = 'One Class SVM Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -137,8 +140,7 @@ class OneClassSVM(AnomalyDetector):
         self.svm = OCSVM(kernel=self.kernel, gamma='auto', nu=self.nu)
 
 
-    ## ------------------------------------------------------------------------------------------------
-
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
         det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -157,6 +159,7 @@ class OneClassSVM(AnomalyDetector):
             self._raise_event(event_obj.C_NAME, event_obj)
 
 
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_inst_new):
         
         self.data_points.append(p_inst_new[0].get_feature_data().get_values())
@@ -166,9 +169,13 @@ class OneClassSVM(AnomalyDetector):
         if len(self.data_points) >= 20:
             self.anomaly_scores = self.svm.fit_predict(np.array(self.data_points))
 
+
+## -------------------------------------------------------------------------------------------------
     def event_handler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
         
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -177,6 +184,7 @@ class IsolationForest(AnomalyDetector):
 
     C_NAME          = 'Isolation Forest Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -204,8 +212,8 @@ class IsolationForest(AnomalyDetector):
         self.iso_f = IF(n_estimators=self.num_estimators,
                                                 contamination=self.contamination)
   
-    ## ------------------------------------------------------------------------------------------------
 
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
         det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -221,6 +229,7 @@ class IsolationForest(AnomalyDetector):
             self._raise_event(event_obj.C_NAME, event_obj)
 
 
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_inst_new):
         
         self.data_points.append(p_inst_new[0].get_feature_data().get_values())
@@ -230,5 +239,8 @@ class IsolationForest(AnomalyDetector):
         if len(self.data_points) >= 20:
             self.anomaly_scores = self.iso_f.fit_predict(np.array(self.data_points))
 
+
+## -------------------------------------------------------------------------------------------------
     def event_handler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
+
