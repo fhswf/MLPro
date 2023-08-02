@@ -135,10 +135,7 @@ class AnomalyEvent (Event):
     C_NAME     = 'Anomaly'
 
     def __init__(self, p_raising_object, p_det_time : str, p_instance: str, **p_kwargs):
-        self._data = list(self._data)
-        self._data.append(p_raising_object)
-        self._data.append(p_det_time)
-        self._data.append(p_instance)
+        pass
 
 
 

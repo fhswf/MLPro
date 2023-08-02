@@ -103,7 +103,6 @@ class LocalOutlierFactor(AnomalyDetector):
 ## ------------------------------------------------------------------------------------------------
     def event_handler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
-        self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
 
 
 
