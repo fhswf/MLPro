@@ -76,9 +76,6 @@ class LocalOutlierFactor(AnomalyDetector):
         self.adapt(p_inst_new, p_inst_del)
 
         # Perform anomaly detection
-        #
-        print(self.data_points)
-        print(self.anomaly_scores)
                 
         # Determine if data point is an anomaly based on its outlier score
         if len(self.anomaly_scores) != 0 and self.anomaly_scores[-1] == -1:
