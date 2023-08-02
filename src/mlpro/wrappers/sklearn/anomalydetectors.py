@@ -89,7 +89,7 @@ class LocalOutlierFactor(AnomalyDetector):
 ## ------------------------------------------------------------------------------------------------
     def _adapt(self, p_inst_new):
 
-        self.data_points.append(p_inst_new[0].get_feature_data().get_values().reshape(1,-1))
+        self.data_points.append(p_inst_new[0].get_feature_data().get_values())
         if len(self.data_points) > 100:
             self.data_points.pop(0)
 
