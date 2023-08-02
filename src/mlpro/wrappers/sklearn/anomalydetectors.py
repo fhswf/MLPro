@@ -71,7 +71,7 @@ class LocalOutlierFactor(AnomalyDetector):
 
 
         # Adaption
-        self.adapt(p_inst_new)
+        self.adapt(p_inst_new, p_inst_del)
 
         # Perform anomaly detection
         self.anomaly_scores = self.lof.predict(self.data_points)
@@ -85,7 +85,7 @@ class LocalOutlierFactor(AnomalyDetector):
 
 
 ## ------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new):
+    def _adapt(self, p_inst_new, p_inst_del):
 
         self.data_points.append(p_inst_new[0].get_feature_data().get_values().reshape(1,-1))
         if len(self.data_points) > 100:
