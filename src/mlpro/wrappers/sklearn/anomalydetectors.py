@@ -28,8 +28,8 @@ from mlpro.wrappers.sklearn.basics import *
 from mlpro.oa.streams.basics import Instance, List
 from mlpro.oa.streams.tasks.anomalydetectors import *
 from sklearn.neighbors import LocalOutlierFactor as LOF
-from sklearn.svm import OneClassSVM
-from sklearn.ensemble import IsolationForest
+from sklearn.svm import OneClassSVM as OCSVM
+from sklearn.ensemble import IsolationForest as IF
 import datetime
 
 
@@ -134,18 +134,24 @@ class OneClassSVM(AnomalyDetector):
         self.kernel = p_kernel
         self.nu = p_nu
         # Instance of the LOF algorithm
-        self.svm = OneClassSVM(kernel=self.kernel, nu=self.nu)
+        self.svm = OCSVM(kernel=self.kernel, gamma='auto', nu=self.nu)
+
+
     ## ------------------------------------------------------------------------------------------------
 
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        self.adapt(p_inst_new)
-        self.anomaly_scores = self.svm.decision_function(p_inst_new, p_inst_del)
+        det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        #Adaptation
+        self.adapt(p_inst_new, p_inst_del)
+
+        #self.anomaly_scores = self.svm.decision_function(p_inst_new, p_inst_del)
                 
         # Determine if the data point is an anomaly based on its outlier score
-        if self.anomaly_scores < 0:
-            self.counter += 1
-            event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=p_inst_new) 
+        if len(self.anomaly_scores) != 0 and self.anomaly_scores[-1] == -1:
+            event_obj = AnomalyEvent(p_raising_object=self, p_det_time=det_time,
+                                     p_instance=str(self.data_points[-1]))
             handler = self.event_handler
             self.register_event_handler(event_obj.C_NAME, handler)
             self._raise_event(event_obj.C_NAME, event_obj)
@@ -153,11 +159,16 @@ class OneClassSVM(AnomalyDetector):
 
     def _adapt(self, p_inst_new):
         
-        self.svm.fit(p_inst_new)
+        self.data_points.append(p_inst_new[0].get_feature_data().get_values())
+        if len(self.data_points) > 100:
+            self.data_points.pop(0)
+
+        if len(self.data_points) >= 20:
+            self.anomaly_scores = self.svm.fit_predict(np.array(self.data_points))
 
     def event_handler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
-        self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
+        
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -190,30 +201,34 @@ class IsolationForest(AnomalyDetector):
         self.num_estimators = p_estimators
         self.contamination = p_contamination
         # Instance of the LOF algorithm
-        self.iso_f = IsolationForest(n_estimators=self.num_estimators,
+        self.iso_f = IF(n_estimators=self.num_estimators,
                                                 contamination=self.contamination)
   
     ## ------------------------------------------------------------------------------------------------
 
     def _run(self, p_inst_new: list, p_inst_del: list):
 
+        det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Perform anomaly detection on the current data points
-        self.anomaly_scores = self.iso_f.decision_function(p_inst_new, p_inst_del)
+        #self.anomaly_scores = self.iso_f.decision_function(p_inst_new, p_inst_del)
 
-        # Determine if the latest data point is an anomaly based on its outlier score
-        if self.anomaly_scores[-1] < 0:
-            self.counter += 1
-            event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=p_inst_new) 
+        if len(self.anomaly_scores) != 0 and self.anomaly_scores[-1] == -1:
+            event_obj = AnomalyEvent(p_raising_object=self, p_det_time=det_time,
+                                     p_instance=str(self.data_points[-1]))
             handler = self.event_handler
             self.register_event_handler(event_obj.C_NAME, handler)
             self._raise_event(event_obj.C_NAME, event_obj)
 
+
     def _adapt(self, p_inst_new):
         
-        self.iso_f.fit(p_inst_new)
+        self.data_points.append(p_inst_new[0].get_feature_data().get_values())
+        if len(self.data_points) > 100:
+            self.data_points.pop(0)
+
+        if len(self.data_points) >= 20:
+            self.anomaly_scores = self.iso_f.fit_predict(np.array(self.data_points))
 
     def event_handler(self, p_event_id, p_event_object:Event):
         self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
-        self.log(Log.C_LOG_TYPE_I, 'Event data:', p_event_object.get_data())
-

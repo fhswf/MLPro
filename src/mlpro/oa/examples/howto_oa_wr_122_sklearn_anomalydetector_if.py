@@ -5,20 +5,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-05-23  0.0.0     SY       Creation
-## -- 2023-05-23  1.0.0     SY       First version release
-## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
-## -- 2023-06-05  1.0.2     SY       Renaming module
+## -- 2023-08-02  0.0.0     SY       Creation
+## -- 2023-08-02  1.0.0     SY       First version release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-06-05)
+Ver. 1.0.0 (2023-08-02)
 
-This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
-a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
-a standard task 'Cluster Analyzer'. The stream scenario is used to process some instances. Moreover,
-we reuse a number of cluster analyzer algorithms from river package, which will also be demonstrated
-in this howto file.
+This module demonstrates the use of anomaly detector based on isolation forest algorithm with MLPro.
+To this regard, a stream of a stream provider is combined with a stream workflow to a stream scenario.
+The workflow consists of a standard task 'Aanomaly Detector'.
 
 You will learn:
 
@@ -26,63 +22,19 @@ You will learn:
 
 2) How to set up a stream scenario based on a stream and a processing stream workflow.
 
-3) How to add a task ClusterAnalyzer.
+3) How to add a task anomalydetector.
 
-4) How to reuse a cluster analyzer algorithm from river (https://www.riverml.xyz/), specifically
-DBSTREAM
+4) How to reuse an anomaly detector algorithm from scikitlearn (https://scikit-learn.org/), specifically
+Isolation Forest
 
 """
 
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.models import *
-from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
-
+from mlpro.bf.various import Log
+from mlpro.wrappers.openml import WrStreamProviderOpenML
 from mlpro.oa.streams import *
 from mlpro.wrappers.sklearn import IsolationForest
-from mlpro.wrappers.river.clusteranalyzers import *
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Stream4ADif (StreamMLProBase):
-
-    C_ID                = 'St4DBStream'
-    C_NAME              = 'Stream4DBStream'
-    C_VERSION           = '1.0.0'
-    C_NUM_INSTANCES     = 12
-
-    C_SCIREF_URL        = 'https://riverml.xyz/latest/api/cluster/DBSTREAM/'
-
-
-## -------------------------------------------------------------------------------------------------
-    def _setup_feature_space(self) -> MSpace:
-        
-        feature_space : MSpace = MSpace()
-
-        for i in range(2):
-            feature_space.add_dim( Feature( p_name_short = 'f' + str(i),
-                                            p_base_set = Feature.C_BASE_SET_R,
-                                            p_name_long = 'Feature #' + str(i),
-                                            p_name_latex = '',
-                                            p_description = '',
-                                            p_symmetrical = False,
-                                            p_logging=Log.C_LOG_NOTHING ) )
-
-        return feature_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_dataset(self):
-
-        # Prepare a test dataset from https://riverml.xyz/latest/api/cluster/DBSTREAM/
-        
-        X = [ [1, 0.5], [1, 0.625], [1, 0.75], [1, 1.125], [1, 1.5], [1, 1.75], [4, 1.5], [4, 2.25],
-             [4, 2.5], [4, 3], [4, 3.25], [4, 3.5] ]
-
-        self._dataset   = np.array(X)
 
 
 
@@ -92,17 +44,16 @@ class Stream4ADif (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
 class AdScenario4ADif (OAScenario):
 
-    C_NAME = 'AdScenario4ADif'
+    C_NAME = 'AdScenario4ADlif'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
-        # 1 Get stream from Stream4DBStream
-        stream = Stream4ADif( p_logging=0 )
+        # 1 Get stream from the stream provider OpenML
+        openml = WrStreamProviderOpenML(p_logging = logging)
+        mystream = openml.get_stream( p_id='42397', p_name='CreditCardFraudDetection', p_logging=logging)
 
-        # 2 Set up a stream workflow based on a custom stream task
-
-        # 2.1 Creation of a workflow
+        # 2 Creation of a workflow
         workflow = OAWorkflow( p_name='wf1',
                                p_range_max=OAWorkflow.C_RANGE_NONE,
                                p_ada=p_ada,
@@ -110,14 +61,14 @@ class AdScenario4ADif (OAScenario):
                                p_logging=p_logging )
 
 
-        # 2.2 Creation of a cluster analzer task
+        # 3 Initiailise the lof anomaly detctor class
         anomalydetector = IsolationForest(p_estimators=100, p_contamination=0.01)
 
-
+        # 4 Add anomaly detection task to workflow
         workflow.add_task( p_task=anomalydetector )
 
-        # 3 Return stream and workflow
-        return stream, workflow
+        # 5 Return stream and workflow
+        return mystream, workflow
 
 
 
@@ -131,7 +82,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
-    cycle_limit = 12
+    cycle_limit = 30
     step_rate   = 1
 
 else:
@@ -150,3 +101,16 @@ myscenario = AdScenario4ADif( p_mode=Mode.C_MODE_REAL,
                                  p_logging=logging )
 
 
+# 3 Reset and run own stream scenario
+myscenario.reset()
+
+if __name__ == '__main__':
+    myscenario.init_plot()
+    input('Press ENTER to start stream processing...')
+
+myscenario.run()
+
+if __name__ == '__main__':
+    input('Press ENTER to exit...')
+
+    
