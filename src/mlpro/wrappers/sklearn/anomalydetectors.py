@@ -74,7 +74,7 @@ class LocalOutlierFactor(AnomalyDetector):
         self.adapt(p_inst_new, p_inst_del)
 
         # Perform anomaly detection
-        self.anomaly_scores = self.lof.negative_outlier_factor_
+        #
                 
         # Determine if data point is an anomaly based on its outlier score
         if self.anomaly_scores[-1] < -1:
@@ -92,7 +92,7 @@ class LocalOutlierFactor(AnomalyDetector):
             self.data_points.pop(0)
 
         if len(self.data_points) >= 20:
-            self.lof.fit(np.array(self.data_points))
+            self.anomaly_scores = self.lof.fit_predict(np.array(self.data_points))
 
 
 ## ------------------------------------------------------------------------------------------------
