@@ -62,7 +62,7 @@ class AdScenario4ADif (OAScenario):
 
 
         # 3 Initiailise the lof anomaly detctor class
-        anomalydetector = IsolationForest(p_estimators=100, p_contamination=0.01)
+        anomalydetector = IsolationForest(p_estimators=100, p_visualize = p_visualize, p_contamination=0.01)
 
         # 4 Add anomaly detection task to workflow
         workflow.add_task( p_task=anomalydetector )
