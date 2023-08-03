@@ -71,7 +71,8 @@ class LocalOutlierFactor(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        det_time = datetime.datetime.now()
+        det_time = det_time.strftime("%Y-%m-%d %H:%M:%S")
 
         # Adaption
         self.adapt(p_inst_new, p_inst_del)
@@ -143,7 +144,8 @@ class OneClassSVM(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        det_time = datetime.datetime.now()
+        det_time = det_time.strftime("%Y-%m-%d %H:%M:%S")
 
         #Adaptation
         self.adapt(p_inst_new, p_inst_del)
@@ -216,7 +218,8 @@ class IsolationForest(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        det_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        det_time = datetime.datetime.now()
+        det_time = det_time.strftime("%Y-%m-%d %H:%M:%S")
 
         # Perform anomaly detection on the current data points
         #self.anomaly_scores = self.iso_f.decision_function(p_inst_new, p_inst_del)
