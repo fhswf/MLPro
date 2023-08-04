@@ -30,7 +30,7 @@ from mlpro.oa.streams.tasks.anomalydetectors import *
 from sklearn.neighbors import LocalOutlierFactor as LOF
 from sklearn.svm import OneClassSVM as OCSVM
 from sklearn.ensemble import IsolationForest as IF
-import datetime
+from datetime import datetime
 
 
 
@@ -71,7 +71,7 @@ class LocalOutlierFactor(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        det_time = datetime.datetime.now()
+        det_time = datetime.now()
         det_time = det_time.strftime("%Y-%m-%d %H:%M:%S")
 
         # Adaption
@@ -144,7 +144,7 @@ class OneClassSVM(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        det_time = datetime.datetime.now()
+        det_time = datetime.now()
         det_time = det_time.strftime("%Y-%m-%d %H:%M:%S")
 
         #Adaptation
@@ -218,7 +218,7 @@ class IsolationForest(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
 
-        det_time = datetime.datetime.now()
+        det_time = datetime.now()
         det_time = det_time.strftime("%Y-%m-%d %H:%M:%S")
 
         # Perform anomaly detection on the current data points
