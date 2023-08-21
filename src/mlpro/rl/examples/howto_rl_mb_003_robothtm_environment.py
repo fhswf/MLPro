@@ -19,11 +19,11 @@
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
 ## -- 2023-03-08  2.0.1     SY       Refactoring
 ## -- 2023-03-10  2.0.2     SY       Renumbering module
-## -- 2023-09-21  2.0.3     MRD      Change transformation to scipy
+## -- 2023-08-21  2.0.3     MRD      Change transformation to scipy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.3 (2023-09-21)
+Ver. 2.0.3 (2023-08-21)
 
 This module demonstrates model-based reinforcement learning (MBRL) with native algorithm and
 action planner using MPC.

@@ -19,11 +19,11 @@
 ## -- 2022-01-21  1.1.6     MRD      Add recommended cycle limit and add seed parameter
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-11-09  1.1.8     DA       Refactoring due to changes on plot systematics
-## -- 2023-09-21  1.1.9     MRD      Remove Transformation package, and quaternion converter
+## -- 2023-08-21  1.1.9     MRD      Remove Transformation package, and quaternion converter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.9 (2022-11-09)
+Ver. 1.1.9 (2023-08-21)
 
 This module provides an environment of a robot manipulator based on Homogeneous Matrix
 """
