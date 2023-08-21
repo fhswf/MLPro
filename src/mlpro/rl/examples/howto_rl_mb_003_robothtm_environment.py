@@ -42,7 +42,7 @@ You will learn:
 
 
 import torch
-import scipy
+from scipy.spatial.transform import Rotation as R
 from mlpro.bf.plot import DataPlotting
 from mlpro.bf.ml import *
 from mlpro.rl import *
@@ -372,8 +372,8 @@ class RobothtmAFct(SLAdaptiveFunction, PyTorchHelperFunctions):
         angles = torch.Tensor([])
         thets = torch.zeros(3)
         for idx in range(self.joint_num):
-            angle = torch.Tensor(scipy.spatial.transform.Rotation.from_matrix(p_output[-1][idx][:].detach().numpy()).as_euler('xyz', degree=False)) - thets
-            thets = torch.Tensor(scipy.spatial.transform.Rotation.from_matrix(p_output[-1][idx][:].detach().numpy()).as_euler('xyz', degree=False))
+            angle = torch.Tensor(R.from_matrix(p_output[-1][idx][:].detach().numpy()[:3,:3]).as_euler('xyz')) - thets
+            thets = torch.Tensor(R.from_matrix(p_output[-1][idx][:].detach().numpy()[:3,:3]).as_euler('xyz'))
             angles = torch.cat([angles, torch.norm(angle).reshape(1, 1)], dim=1)
 
         output = torch.cat([self.input_temp, p_output[-1][-1][:3, [-1]].reshape(1,3)], dim=1)
