@@ -19,10 +19,11 @@
 ## -- 2023-04-03  2.0.1     SY       Remove Potential Games and refactoring
 ## -- 2023-04-12  2.1.0     SY       MLPro-GT-DP to MLPro-GT-DG (Dynamic Games)
 ## -- 2023-05-11  2.2.0     SY       Remove PGameBoard and refactoring
+## -- 2021-08-22  2.2.1     SY       Refactoring due to compatibility
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2023-05-11)
+Ver. 2.2.1 (2023-08-22)
 
 This module provides model classes for tasks related to Game Theory in dynamic games.
 """
@@ -65,12 +66,12 @@ class GameBoard (Environment):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTPlayer (Agent):
+class Player (Agent):
     """
     This class implements a game theoretical player model. See super class for more information.
     """
 
-    C_TYPE = 'GT Player'
+    C_TYPE = 'Player'
 
 
 
@@ -78,16 +79,16 @@ class GTPlayer (Agent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTMultiPlayer (MultiAgent):
+class MultiPlayer (MultiAgent):
     """
     This class implements a game theoretical model for a team of players. See super class for more 
     information.
     """
 
-    C_TYPE = 'GT Multi-Player'
+    C_TYPE = 'Multi-Player'
 
 ## -------------------------------------------------------------------------------------------------
-    def add_player(self, p_player: GTPlayer, p_weight=1.0) -> None:
+    def add_player(self, p_player: Player, p_weight=1.0) -> None:
         super().add_agent(p_agent=p_player, p_weight=p_weight)
 
 
@@ -96,13 +97,13 @@ class GTMultiPlayer (MultiAgent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTGame (RLScenario):
+class Game (RLScenario):
     """
     This class implements a game consisting of a game board and a (multi-)player. See super class for 
     more information.
     """
 
-    C_TYPE = 'GT Game'
+    C_TYPE = 'Game'
 
 
 
