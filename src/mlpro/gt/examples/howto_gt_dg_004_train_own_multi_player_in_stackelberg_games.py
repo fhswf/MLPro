@@ -8,10 +8,11 @@
 ## -- 2023-04-12  0.0.0     SY       Creation
 ## -- 2023-04-12  1.0.0     SY       Release of first version
 ## -- 2023-05-11  1.0.1     SY       Refactoring
+## -- 2021-08-22  1.0.2     SY       Refactoring due to compatibility in mlpro.gt.dynamicsgames
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-05-11)
+Ver. 1.0.2 (2023-08-22)
  
 This module shows how to train an own multi-player in stackelberg games.
 
@@ -68,7 +69,7 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own game
-class MyGame(GTGame):
+class MyGame(Game):
 
     C_NAME      = 'Matrix'
 
