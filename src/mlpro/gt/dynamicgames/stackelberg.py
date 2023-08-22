@@ -8,10 +8,11 @@
 ## -- 2023-04-03  0.0.0     SY       Creation
 ## -- 2023-04-12  1.0.0     SY       Release of first version
 ## -- 2023-05-11  1.1.0     SY       Refactoring
+## -- 2021-08-22  1.1.1     SY       Refactoring due to compatibility in mlpro.gt.dynamicsgames
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-05-11)
+Ver. 1.1.1 (2023-08-22)
 
 This module provides model classes for Stackelberg Games in dynamic programming.
 """
@@ -24,7 +25,7 @@ from mlpro.gt.dynamicgames import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTPlayer_SG (GTPlayer):
+class GTPlayer_SG (Player):
     """
     This class implements a game theoretical player model in a stackelberg game mode, in which
     there is a possibility to assign the role of the player as a leader or follower.
@@ -154,7 +155,7 @@ class GTPlayer_SG (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTMultiPlayer_SG (GTMultiPlayer):
+class GTMultiPlayer_SG (MultiPlayer):
     """
     This class implements a game theoretical multi-player model in a stackelberg game mode.
     """
