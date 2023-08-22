@@ -587,13 +587,13 @@ class MujocoHandler(Wrapper):
         for world_body_elem in self._xml_root.iter("worldbody"):
             # Extract Position and Orientation, if a body
             for elem in self._xml_root.iter("body"):
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.x"), p_boundaries=[float('inf'), float('inf')]))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.y"), p_boundaries=[float('inf'), float('inf')]))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.z"), p_boundaries=[float('inf'), float('inf')]))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.w"), p_boundaries=[float('inf'), float('inf')]))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.x"), p_boundaries=[float('inf'), float('inf')]))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.y"), p_boundaries=[float('inf'), float('inf')]))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.z"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.x"), p_boundaries=[-float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.y"), p_boundaries=[-float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.z"), p_boundaries=[-float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.w"), p_boundaries=[-float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.x"), p_boundaries=[-float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.y"), p_boundaries=[-float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.z"), p_boundaries=[-float('inf'), float('inf')]))
                 
             # Extract Position, Velocity, and Acceleration, if a joint
             for elem in world_body_elem.iter("joint"):
@@ -609,33 +609,33 @@ class MujocoHandler(Wrapper):
                         self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint", p_boundaries=[float(bound[0]), float(bound[1])]))
                         self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint", p_boundaries=[float(bound[0]), float(bound[1])]))
                     except KeyError as e:
-                        self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint."+joint_type, p_boundaries=[float('inf'), float('inf')]))
-                        self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint", p_boundaries=[float('inf'), float('inf')]))
-                        self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint", p_boundaries=[float('inf'), float('inf')]))
+                        self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint."+joint_type, p_boundaries=[-float('inf'), float('inf')]))
+                        self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint", p_boundaries=[-float('inf'), float('inf')]))
+                        self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.joint", p_boundaries=[-float('inf'), float('inf')]))
                     
-                    self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".vel.joint."+joint_type, p_boundaries=[float('inf'), float('inf')]))
-                    self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".acc.joint."+joint_type, p_boundaries=[float('inf'), float('inf')]))
+                    self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".vel.joint."+joint_type, p_boundaries=[-float('inf'), float('inf')]))
+                    self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".acc.joint."+joint_type, p_boundaries=[-float('inf'), float('inf')]))
                 else:
-                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.x", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.y", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.z", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.w", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.x", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.y", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.z", p_boundaries=[float('inf'), float('inf')]))
+                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.x", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.y", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".pos.z", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.w", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.x", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.y", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qpos_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".rot.z", p_boundaries=[-float('inf'), float('inf')]))
                     
-                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".lin.x", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".lin.y", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".lin.z", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".ang.x", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".ang.y", p_boundaries=[float('inf'), float('inf')]))
-                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".ang.z", p_boundaries=[float('inf'), float('inf')]))
+                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".lin.x", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".lin.y", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".lin.z", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".ang.x", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".ang.y", p_boundaries=[-float('inf'), float('inf')]))
+                    self._init_qvel_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".ang.z", p_boundaries=[-float('inf'), float('inf')]))
                 
             # Extract camera
             for elem in world_body_elem.iter("camera"):
                 self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.rgb", p_base_set=Dimension.C_BASE_SET_DO))
                 self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.depth", p_base_set=Dimension.C_BASE_SET_DO))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.fovy", p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.fovy", p_boundaries=[-float('inf'), float('inf')]))
                 self._camera_list[elem.attrib["name"]] = self._setup_camera(elem.attrib["name"])
         
         return self._system_state_space
@@ -660,14 +660,14 @@ class MujocoHandler(Wrapper):
                     bound = elem.attrib["ctrlrange"].split(" ")
                     self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float(bound[0]), float(bound[1])]))
                 except KeyError as e:
-                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float('inf'), float('inf')]))
+                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[-float('inf'), float('inf')]))
                     
             for elem in actuator_elem.iter("position"):
                 try:
                     bound = elem.attrib["ctrlrange"].split(" ")
                     self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float(bound[0]), float(bound[1])]))
                 except KeyError as e:
-                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float('inf'), float('inf')]))
+                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[-float('inf'), float('inf')]))
             
         return self._system_action_space
 
