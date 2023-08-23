@@ -11,10 +11,11 @@
 ## -- 2023-04-10  1.0.3     LSB      Adding a window task to validate the _adapt_reverse() method
 ## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
 ## -- 2023-05-02  1.1.1     DA       Minor corrections 
+## -- 2023-08-23  1.1.2     DA       Minor corrections 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-05-02)
+Ver. 1.1.2 (2023-08-23)
 
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
@@ -31,6 +32,7 @@ You will learn:
 from mlpro.oa.streams.tasks.normalizers import *
 from mlpro.oa.streams.tasks.boundarydetectors import *
 from mlpro.oa.streams import *
+from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.tasks import Window
 
 
