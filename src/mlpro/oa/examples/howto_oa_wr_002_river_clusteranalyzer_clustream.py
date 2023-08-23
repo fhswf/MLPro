@@ -117,7 +117,8 @@ class AdScenario4CluStream (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverCluStream2MLPro( p_n_macro_clusters=3,
+        clusterer = WrRiverCluStream2MLPro( p_name='t1',
+                                           p_n_macro_clusters=3,
                                            p_max_micro_clusters=5,
                                            p_time_gap=3,
                                            p_seed=0,

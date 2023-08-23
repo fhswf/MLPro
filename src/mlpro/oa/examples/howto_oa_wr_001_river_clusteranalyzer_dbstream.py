@@ -111,7 +111,8 @@ class AdScenario4DBStream (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverDBStream2MLPro( p_clustering_threshold = 1.5,
+        clusterer = WrRiverDBStream2MLPro( p_name='t1',
+                                          p_clustering_threshold = 1.5,
                                           p_fading_factor = 0.05,
                                           p_cleanup_interval = 4,
                                           p_intersection_factor = 0.5,

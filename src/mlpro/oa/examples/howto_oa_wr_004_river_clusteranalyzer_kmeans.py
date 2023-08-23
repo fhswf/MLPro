@@ -115,7 +115,8 @@ class AdScenario4KMeans (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverKMeans2MLPro( p_n_clusters=2,
+        clusterer = WrRiverKMeans2MLPro( p_name='t1',
+                                        p_n_clusters=2,
                                         p_halflife=0.1, 
                                         p_sigma=3, 
                                         p_seed=42 )

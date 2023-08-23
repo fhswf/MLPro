@@ -113,7 +113,8 @@ class AdScenario4DenStream (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverDenStream2MLPro( p_decaying_factor=0.01,
+        clusterer = WrRiverDenStream2MLPro( p_name='t1',
+                                           p_decaying_factor=0.01,
                                            p_beta=0.5,
                                            p_mu=2.5,
                                            p_epsilon=0.5,

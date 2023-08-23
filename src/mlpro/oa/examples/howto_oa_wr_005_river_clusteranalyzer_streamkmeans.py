@@ -111,7 +111,8 @@ class AdScenario4STREAMKMeans (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverStreamKMeans2MLPro( p_chunk_size=3,
+        clusterer = WrRiverStreamKMeans2MLPro( p_name='t1',
+                                              p_chunk_size=3,
                                               p_n_clusters=2,
                                               p_halflife=0.5,
                                               p_sigma=1.5,
