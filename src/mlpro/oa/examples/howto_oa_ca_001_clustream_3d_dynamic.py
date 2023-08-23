@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_ca_001_clustream.py
+## -- Module  : howto_oa_ca_001_clustream_3d_dynamic.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -21,14 +21,15 @@ This module demonstrates the combination of several tasks in a workflow, which i
 3) Wrapped CluStream Algorithm (River).
 
 Two data stream are incorporated in this module, such as static 3D point clouds and dynamic 3D point
-clouds. This module is prepared for the MLPro-OA scientific paper and going to be stored as Code
+clouds. In this module, we demonstrate the workflow in dynamic 3D point clouds.
+
+This module is prepared for the MLPro-OA scientific paper and going to be stored as Code
 Ocean Capsule, thus the result is reproducible.
 
 """
 
 
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.streams.clouds3d_static import StreamMLProStaticClouds3D
 from mlpro.bf.streams.streams.clouds3d_dynamic import StreamMLProDynamicClouds3D
 from mlpro.bf.various import Log
 
