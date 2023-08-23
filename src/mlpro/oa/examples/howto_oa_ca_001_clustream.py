@@ -58,7 +58,7 @@ else:
 # 1 Prepare a scenario for Dynamic 3D Point Clouds
 class Dynamic3DScenario(OAScenario):
 
-    C_NAME = 'AdScenario4DBStream'
+    C_NAME = 'Dynamic3DScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
@@ -102,13 +102,13 @@ class Dynamic3DScenario(OAScenario):
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
         # Cluster Analyzer
-        task_clusterer = WrRiverDBStream2MLPro(p_name='t3',
-                                               p_clustering_threshold = 1.5,
-                                               p_fading_factor = 0.05,
-                                               p_cleanup_interval = 4,
-                                               p_intersection_factor = 0.5,
-                                               p_minimum_weight = 1.0)
-        workflow.add_task(p_task=task_clusterer, p_pred_tasks=[task_norm_minmax])
+        task_clusterer = WrRiverCluStream2MLPro(p_name='t3',
+                                                p_n_macro_clusters=3,
+                                                p_max_micro_clusters=5,
+                                                p_time_gap=3,
+                                                p_seed=0,
+                                                p_halflife=0.4)
+        workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_norm_minmax])
 
         # 1.3 Return stream and workflow
         return stream, workflow
@@ -147,10 +147,12 @@ clusters            = myscenario.get_workflow()._tasks[2].get_clusters()
 number_of_clusters  = len(clusters)
 
 myscenario.log(Log.C_LOG_TYPE_I, '-------------------------------------------------------')
-myscenario.log(Log.C_LOG_TYPE_I, 'Here are the recap of the cluster analyzer')
+myscenario.log(Log.C_LOG_TYPE_I, '-------------------------------------------------------')
+myscenario.log(Log.C_LOG_TYPE_I, 'Here is the recap of the cluster analyzer')
 myscenario.log(Log.C_LOG_TYPE_I, 'Number of clusters: ', number_of_clusters)
 for x in range(number_of_clusters):
     myscenario.log(Log.C_LOG_TYPE_I, 'Center of Cluster ', str(x+1), ': ', list(clusters[x].get_centroid().get_values()))
+myscenario.log(Log.C_LOG_TYPE_I, '-------------------------------------------------------')
 myscenario.log(Log.C_LOG_TYPE_I, '-------------------------------------------------------')
 
 if __name__ == '__main__':
