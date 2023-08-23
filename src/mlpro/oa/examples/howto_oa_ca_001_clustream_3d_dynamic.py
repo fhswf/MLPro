@@ -74,11 +74,11 @@ class Dynamic3DScenario(OAScenario):
         # 1.2 Set up a stream workflow based on a custom stream task
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow( p_name='wf_3D',
-                               p_range_max=OAWorkflow.C_RANGE_NONE,
-                               p_ada=p_ada,
-                               p_visualize=p_visualize, 
-                               p_logging=p_logging )
+        workflow = OAWorkflow(p_name='wf_3D',
+                              p_range_max=OAWorkflow.C_RANGE_NONE,
+                              p_ada=p_ada,
+                              p_visualize=p_visualize,
+                              p_logging=p_logging)
 
 
         # 1.2.2 Creation of tasks and add them to the workflow
