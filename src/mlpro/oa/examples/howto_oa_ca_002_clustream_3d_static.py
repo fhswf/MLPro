@@ -57,9 +57,9 @@ else:
 
 
 # 1 Prepare a scenario for Static 3D Point Clouds
-class Dynamic3DScenario(OAScenario):
+class Static3DScenario(OAScenario):
 
-    C_NAME = 'Dynamic3DScenario'
+    C_NAME = 'Static3DScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
@@ -70,11 +70,11 @@ class Dynamic3DScenario(OAScenario):
         # 1.2 Set up a stream workflow based on a custom stream task
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow( p_name='wf_3D',
-                               p_range_max=OAWorkflow.C_RANGE_NONE,
-                               p_ada=p_ada,
-                               p_visualize=p_visualize, 
-                               p_logging=p_logging )
+        workflow = OAWorkflow(p_name='wf_3D',
+                              p_range_max=OAWorkflow.C_RANGE_NONE,
+                              p_ada=p_ada,
+                              p_visualize=p_visualize,
+                              p_logging=p_logging)
 
 
         # 1.2.2 Creation of tasks and add them to the workflow
@@ -115,7 +115,7 @@ class Dynamic3DScenario(OAScenario):
 
 
 # 2 Instantiate the stream scenario
-myscenario = Dynamic3DScenario(
+myscenario = Static3DScenario(
     p_mode=Mode.C_MODE_REAL,
     p_cycle_limit=cycle_limit,
     p_visualize=visualize,
