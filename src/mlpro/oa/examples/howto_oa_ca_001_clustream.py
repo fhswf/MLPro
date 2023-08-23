@@ -41,18 +41,24 @@ from mlpro.wrappers.river.clusteranalyzers import *
 
 # 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
+    step_rate   = 1
 else:
+    cycle_limit = 2
     logging     = Log.C_LOG_NOTHING
     visualize   = False
+    step_rate   = 1
 
 
 
 
 
 # 1 Prepare a scenario for Dynamic 3D Point Clouds
-class Dynamic3DScenario (OAScenario):
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Dynamic3DScenario(OAScenario):
 
     C_NAME = 'AdScenario4DBStream'
 
@@ -109,3 +115,15 @@ class Dynamic3DScenario (OAScenario):
 
         # 1.3 Return stream and workflow
         return stream, workflow
+
+
+
+
+
+# 2 Instantiate the stream scenario
+myscenario = Dynamic3DScenario(
+    p_mode=Mode.C_MODE_REAL,
+    p_cycle_limit=cycle_limit,
+    p_visualize=visualize,
+    p_logging=logging
+    )
