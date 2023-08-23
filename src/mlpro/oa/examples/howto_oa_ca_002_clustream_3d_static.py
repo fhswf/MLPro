@@ -100,8 +100,8 @@ class Static3DScenario(OAScenario):
 
         # Cluster Analyzer
         task_clusterer = WrRiverCluStream2MLPro(p_name='t3',
-                                                p_n_macro_clusters=3,
-                                                p_max_micro_clusters=5,
+                                                p_n_macro_clusters=4,
+                                                p_max_micro_clusters=40,
                                                 p_time_gap=3,
                                                 p_seed=0,
                                                 p_halflife=0.4)
