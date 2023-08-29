@@ -47,17 +47,19 @@ class StreamMLProClouds (StreamMLProBase):
     C_NAME                  = 'Dynamic Clouds 3D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
+    C_NUM_DIMENSIONS        = 3
     C_NUM_INSTANCES         = 0
     C_NUM_INST_PER_CLOUD    = 250
-    C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES 3-dimensional instances per cluster randomly positioned around centers which move over time.'
+    C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
     C_BOUNDARIES            = [-60,60]
     C_PATTERN               = ['random', 'random chain', 'static', 'merge']
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
+    def __init__( self,
+                  p_num_dim : int = 3,
                   p_pattern : str = 'random',
                   p_no_clouds : int = 8,
-                  p_variance : float = 5.0,
+                  p_radius : float = 100.0,
                   p_velocity : float = 0.1,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
@@ -69,7 +71,7 @@ class StreamMLProClouds (StreamMLProBase):
         if str.lower(p_pattern) not in self.C_PATTERN:
             raise ValueError(f"Invalid value for pattern, allowed values are {self.C_PATTERN}")
         self.pattern = str.lower(p_pattern)
-        self.variance = p_variance
+        self.radius = p_radius
         self.no_clouds = int(p_no_clouds)
         self.C_NUM_INSTANCES = self.C_NUM_INST_PER_CLOUD*self.no_clouds
         self.velocity = p_velocity
@@ -148,7 +150,7 @@ class StreamMLProClouds (StreamMLProBase):
         a = np.random.RandomState(seed=seed).rand(self.C_NUM_INSTANCES, 3)**3
         s = np.round(np.random.RandomState(seed=seed).rand(self.C_NUM_INSTANCES, 3))
         s[s==0] = -1
-        fx = self.variance
+        fx = self.radius
         c = a*s * np.array([fx, fx, fx]) 
         
         # Create the dataset
