@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_012_clusteranalyzer_river_kmeans.py
+## -- Module  : howto_oa_wr_004_river_clusteranalyzer_kmeans.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-05  0.0.0     SY       Creation
 ## -- 2023-06-05  1.0.0     SY       First version release
+## -- 2023-08-23  1.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-06-05)
+Ver. 1.0.1 (2023-08-23)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -114,7 +115,8 @@ class AdScenario4KMeans (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverKMeans2MLPro( p_n_clusters=2,
+        clusterer = WrRiverKMeans2MLPro( p_name='t1',
+                                        p_n_clusters=2,
                                         p_halflife=0.1, 
                                         p_sigma=3, 
                                         p_seed=42 )

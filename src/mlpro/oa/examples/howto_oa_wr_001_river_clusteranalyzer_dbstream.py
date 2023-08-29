@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_009_clusteranalyzer_river_dbstream.py
+## -- Module  : howto_oa_wr_001_river_clusteranalyzer_dbstream.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -9,10 +9,11 @@
 ## -- 2023-05-23  1.0.0     SY       First version release
 ## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
 ## -- 2023-06-05  1.0.2     SY       Renaming module
+## -- 2023-08-23  1.0.3     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-06-05)
+Ver. 1.0.3 (2023-08-23)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -110,7 +111,8 @@ class AdScenario4DBStream (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverDBStream2MLPro( p_clustering_threshold = 1.5,
+        clusterer = WrRiverDBStream2MLPro( p_name='t1',
+                                          p_clustering_threshold = 1.5,
                                           p_fading_factor = 0.05,
                                           p_cleanup_interval = 4,
                                           p_intersection_factor = 0.5,

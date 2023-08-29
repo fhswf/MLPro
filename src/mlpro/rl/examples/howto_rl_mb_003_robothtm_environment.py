@@ -19,10 +19,11 @@
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
 ## -- 2023-03-08  2.0.1     SY       Refactoring
 ## -- 2023-03-10  2.0.2     SY       Renumbering module
+## -- 2023-08-21  2.0.3     MRD      Change transformation to scipy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2023-03-10)
+Ver. 2.0.3 (2023-08-21)
 
 This module demonstrates model-based reinforcement learning (MBRL) with native algorithm and
 action planner using MPC.
@@ -41,7 +42,7 @@ You will learn:
 
 
 import torch
-import transformations
+from scipy.spatial.transform import Rotation as R
 from mlpro.bf.plot import DataPlotting
 from mlpro.bf.ml import *
 from mlpro.rl import *
@@ -371,8 +372,8 @@ class RobothtmAFct(SLAdaptiveFunction, PyTorchHelperFunctions):
         angles = torch.Tensor([])
         thets = torch.zeros(3)
         for idx in range(self.joint_num):
-            angle = torch.Tensor(transformations.euler_from_matrix(p_output[-1][idx][:].detach().numpy(), 'rxyz')) - thets
-            thets = torch.Tensor(transformations.euler_from_matrix(p_output[-1][idx][:].detach().numpy(), 'rxyz'))
+            angle = torch.Tensor(R.from_matrix(p_output[-1][idx][:].detach().numpy()[:3,:3]).as_euler('xyz')) - thets
+            thets = torch.Tensor(R.from_matrix(p_output[-1][idx][:].detach().numpy()[:3,:3]).as_euler('xyz'))
             angles = torch.cat([angles, torch.norm(angle).reshape(1, 1)], dim=1)
 
         output = torch.cat([self.input_temp, p_output[-1][-1][:3, [-1]].reshape(1,3)], dim=1)
