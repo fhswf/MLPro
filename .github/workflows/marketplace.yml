@@ -1,0 +1,12 @@
+name: Marketplace Update
+on:
+  schedule:
+    - cron: '00 22 * * *'
+
+jobs:
+  update-marketplace:
+    name: Update the MLPro marketplace
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo Hello World!
