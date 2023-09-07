@@ -14,4 +14,5 @@ jobs:
     steps:
 #      - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py
       - run: echo ${GITHUB_WORKSPACE}
-      - run: ls -l ${GITHUB_WORKSPACE}
+      - run: ls -l ${GITHUB_WORKSPACE} > output.txt
+      - run: cat output.txt
