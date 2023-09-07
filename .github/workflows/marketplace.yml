@@ -13,3 +13,4 @@ jobs:
 
     steps:
       - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py
+      - run: ls -l ${GITHUB_WORKSPACE}
