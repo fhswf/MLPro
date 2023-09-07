@@ -12,12 +12,13 @@
 """
 Ver. 1.0.0 (2023-08-29)
 
-This module provides the native stream class StreamMLProClouds. This stream provides self.C_NUM_INSTANCES 
-instances per cluster with self.C_NUM_DIMENSIONS dimensional random feature data placed around centers
-(can be defined by user) which may or maynot move over time.
+This module provides the native stream class StreamMLProClouds. This stream provides instances with
+self.C_NUM_DIMENSIONS dimensional random feature data placed around centers (can be defined by user)
+which may or maynot move over time.
 """
 
 import numpy as np
+import random
 from mlpro.bf.streams.models import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
@@ -28,7 +29,8 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds (StreamMLProBase):
     """
-    This demo stream provides self.C_NUM_INSTANCES 3-dimensional instances per cluster randomly positioned around centers which move over time.
+    This demo stream provides self.C_NUM_INSTANCES 3-dimensional instances randomly positioned around
+    centers which move over time.
 
     p_pattern : str
         Pattern for cloud movements. Possible values are 'random', 'random chain', 'static', 'merge'.
@@ -49,17 +51,16 @@ class StreamMLProClouds (StreamMLProBase):
     C_VERSION               = '1.0.0'
     C_NUM_DIMENSIONS        = 3
     C_NUM_INSTANCES         = 0
-    C_NUM_INST_PER_CLOUD    = 250
     C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
-    C_BOUNDARIES            = [-60,60]
-    C_PATTERN               = ['random', 'random chain', 'static', 'merge']
+    C_BOUNDARIES            = [-1000,1000]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_num_dim : int = 3,
-                  p_pattern : str = 'random',
-                  p_no_clouds : int = 8,
-                  p_radius : float = 100.0,
+                  p_num_instances : int = 0,
+                  p_num_clouds : int = 8,
+                  p_radii : list = [100.0],
+                  p_behaviour : str = 'static',
                   p_velocity : float = 0.1,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
@@ -70,11 +71,16 @@ class StreamMLProClouds (StreamMLProBase):
         
         if str.lower(p_pattern) not in self.C_PATTERN:
             raise ValueError(f"Invalid value for pattern, allowed values are {self.C_PATTERN}")
-        self.pattern = str.lower(p_pattern)
-        self.radius = p_radius
-        self.no_clouds = int(p_no_clouds)
-        self.C_NUM_INSTANCES = self.C_NUM_INST_PER_CLOUD*self.no_clouds
+        
+        self.num_dim = p_num_dim
+        self.radii = p_radii
+        self.num_clouds = int(p_num_clouds)
+        self.C_NUM_INSTANCES = self.C_NUM_INST_PER_CLOUD*self.num_clouds
         self.velocity = p_velocity
+        self.cloud_centers = []
+        self.num_instances = p_num_instances
+        self.behaviour = str.lower(p_behaviour)
+        self.centers_step = []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -103,81 +109,71 @@ class StreamMLProClouds (StreamMLProBase):
         except:
             seed = random.seed(32)
 
-        self._dataset = np.empty( (self.C_NUM_INSTANCES, 3))
+        self._dataset = np.empty( (self.C_NUM_INSTANCES, self.num_dim))
 
 
         # Compute the initial positions of the centers
-        centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0],
-                                                           self.C_BOUNDARIES[1], size=(self.no_clouds, 3))
-        centers = centers.astype(np.float64)
+        for i in range(self.num_clouds):
 
-        # Compute the final positions of the centers
-        final_centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0],
-                                                                    self.C_BOUNDARIES[1], size=(self.no_clouds, 3))
-        final_centers = final_centers.astype(np.float64)
+            self.cloud_centers.append([])
 
-        for x in range(self.no_clouds):
-            mag = ((centers[x][0]-final_centers[x][0])**2 + (centers[x][1]-final_centers[x][1])**2 + (centers[x][2]-final_centers[x][2])**2)**0.5
-            if mag != 0:
-                final_centers[x][:] = centers[x][:] + ((final_centers[x][:]-centers[x][:])/ mag)*self.C_NUM_INST_PER_CLOUD*self.velocity
-            else:
-                final_centers[x][:] = centers[x][:] + (1/(3**0.5))*self.C_NUM_INST_PER_CLOUD*self.velocity
-            if x<(self.no_clouds-1) and self.pattern=='random chain':
-                centers[x+1] = final_centers[x]
+            for j in range(self.num_dim):
+                self.cloud_centers[i].append(random.randint(self.C_BOUNDARIES[0],
+                                                           self.C_BOUNDARIES[1]))
 
-        if self.pattern == 'merge':
-            if self.no_clouds%2==0:
-                e1 = self.no_clouds
-                e2 = 0
-                m = int(e1/2)
-            else:
-                e1 = self.no_clouds-1
-                e2 = e1
-                m = int(e1/2)
-            final_centers[m:e1] = final_centers[:m]
-            if e2!=0:
-                final_centers[e2] = final_centers[e1-1]
+       
+        if self.behaviour == 'dynamic':
 
-            for x in range(self.no_clouds-m):
-                mag = ((centers[m+x][0]-final_centers[m+x][0])**2 + (centers[m+x][1]-final_centers[m+x][1])**2 + (centers[m+x][2]-final_centers[m+x][2])**2)**0.5
+            # Compute the final positions of the centers
+            for i in range(self.num_clouds):
+
+                self.centers_step.append([])
+
+                for j in range(self.num_dim):
+                    self.centers_step[i].append(random.randint(self.C_BOUNDARIES[0],
+                                                           self.C_BOUNDARIES[1]))
+
+            for x in range(self.num_clouds):
+
+                mag = 0
+                for i in range(self.num_dim):
+                    mag = mag + (self.cloud_centers[x][i]-self.centers_step[x][0])**2
+                mag = mag**0.5
                 if mag != 0:
-                    centers[m+x][:] = final_centers[m+x][:] + ((centers[m+x][:] - final_centers[m+x][:])/ mag)*self.C_NUM_INST_PER_CLOUD*self.velocity
+                    self.centers_step[x][:] = ((self.centers_step[x][:]-self.cloud_centers[x][:])/ mag)*self.velocity
                 else:
-                    centers[m+x][:] = final_centers[m+x][:] + (1/(3**.5))*self.C_NUM_INST_PER_CLOUD*self.velocity
+                    self.centers_step[x][:] = (1/(self.num_dim**0.5))*self.velocity
 
 
-        # 2 Create self.C_NUM_INSTANCES noisy inputs around each of the 8 hotspots
-        a = np.random.RandomState(seed=seed).rand(self.C_NUM_INSTANCES, 3)**3
-        s = np.round(np.random.RandomState(seed=seed).rand(self.C_NUM_INSTANCES, 3))
-        s[s==0] = -1
-        fx = self.radius
-        c = a*s * np.array([fx, fx, fx]) 
         
-        # Create the dataset
-        dataset = np.zeros((self.C_NUM_INSTANCES, 3))
-
-        centers_diff = (final_centers - centers) / self.C_NUM_INST_PER_CLOUD
 
 
-        if self.pattern == 'static':
+    def _get_next(self) -> Instance:
 
-            i = 0
-            while i< (self.C_NUM_INST_PER_CLOUD / 2):
-                dataset[i*self.no_clouds:(i+1)*self.no_clouds] = centers + c[i*self.no_clouds:(i+1)*self.no_clouds]
-                centers = centers + centers_diff
-                i += 1
+        if self._index == self.C_NUM_INSTANCES: raise StopIteration
 
-            while i<self.C_NUM_INST_PER_CLOUD:
-                dataset[i*self.no_clouds:(i+1)*self.no_clouds] = centers + c[i*self.no_clouds:(i+1)*self.no_clouds]
-                centers = centers - centers_diff
-                i += 1
+        if self.behaviour == 'dynamic':
+            self.cloud_centers = self.cloud_centers + self.centers_step
 
+        id = random.randint(0, self.num_clouds)
+        if len(self.radii) == 1:
+            radius = self.radii[0]
         else:
+            radius = self.radii[id]
 
-            for i in range(self.C_NUM_INST_PER_CLOUD):
-                dataset[i*self.no_clouds:(i+1)*self.no_clouds] = centers + c[i*self.no_clouds:(i+1)*self.no_clouds]
-                centers = centers + centers_diff
+        instance = []
 
-        self._dataset = dataset
+        for i in range(self.num_dim):
+            instance.append(random.random()*radius)
+            a = random.random()
+            if a<0.5:
+                instance[i] = instance[i]*(-1)
+
+        instance = instance + self.cloud_centers[id]
+
+
+        self._index += 1
+
+        return instance
 
 
