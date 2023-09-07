@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: echo Hello World!
+      - run: python3 marketplace/update_marketplace.py
