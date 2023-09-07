@@ -12,4 +12,4 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: python3 ../marketplace/update_marketplace.py
+      - run: python3 marketplace/update_marketplace.py
