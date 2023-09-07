@@ -12,5 +12,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py
+#      - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py
       - run: ls -l ${GITHUB_WORKSPACE}
