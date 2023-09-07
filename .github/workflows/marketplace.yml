@@ -12,7 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#      - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py
-      - run: echo ${GITHUB_WORKSPACE}
-      - run: ls -l ${GITHUB_WORKSPACE} > output.txt
-      - run: cat output.txt
+      - name: Update marketplace
+        uses: actions/checkout@v4
+      - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py
+      # - run: echo ${GITHUB_WORKSPACE}
+      # - run: ls -l ${GITHUB_WORKSPACE} > output.txt
+      # - run: cat output.txt
