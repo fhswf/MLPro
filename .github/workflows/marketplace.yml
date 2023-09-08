@@ -15,6 +15,5 @@ jobs:
       - name: Update marketplace
         uses: actions/checkout@v4
       - run: |
-#          pip3 install dill
           pip3 install mlpro
           python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py
