@@ -76,7 +76,7 @@ class StreamMLProClouds (StreamMLProBase):
         if str.lower(p_behaviour) not in self.C_BEHAVIOUR:
             raise ValueError(f"Invalid value for behaviour, allowed values are {self.C_BEHAVIOUR}")
         
-        self.num_dim = p_num_dim
+        self.num_dim = int(p_num_dim)
         self.radii = p_radii
         self.num_clouds = int(p_num_clouds)
         self.C_NUM_INSTANCES = p_num_instances
