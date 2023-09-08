@@ -15,7 +15,7 @@ template repo /fhswf/MLPro-Extension.
 """
 
 
-from mlpro.bf.various import *
+from mlpro.bf.various import Log
 
 
 
