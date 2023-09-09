@@ -17,4 +17,5 @@ jobs:
       - run: |
           pip3 install dill
           pip3 install mlpro
+          pip3 install PyGithub
           python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py

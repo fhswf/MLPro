@@ -18,6 +18,9 @@ template repo /fhswf/MLPro-Extension.
 
 import sys, os.path, time
 from mlpro.bf.various import Log
+from github import Auth, Github
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -35,6 +38,8 @@ class Marketplace (Log):
     def __init__(self, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
 
+        self.gh = Github( auth = Auth.Token("access_token"))
+
 
 ## -------------------------------------------------------------------------------------------------
     def _get_new_extensions(self):
@@ -46,12 +51,14 @@ class Marketplace (Log):
         # 0 Intro
         self.log(Log.C_LOG_TYPE_S, 'Start scanning for new extensions...')
 
-        # 1 Scanning for new extensions
-        self.log(Log.C_LOG_TYPE_E, 'Not yet implemented')
+
+        # 1 Scanning for all Github repositories based on template MLPro-Extension
+        extensions = self.gh.search_repositories( query='MLPro in:readme')
+
 
         # 2 Outro
         self.log(Log.C_LOG_TYPE_S, 'End of scanning for new extensions')
-        return ['pseudo']
+        return extensions
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -157,7 +164,7 @@ class Marketplace (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self):
+    def update(self):
 
         # 1 Report new MLPro extensions  
         self.log(Log.C_LOG_TYPE_S, 'Step 1: Determination and report of new MLPro extensions...')   
@@ -175,4 +182,4 @@ class Marketplace (Log):
 
 
         
-Marketplace().run()
+Marketplace().update()
