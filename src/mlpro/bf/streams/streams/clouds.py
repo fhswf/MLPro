@@ -139,9 +139,11 @@ class StreamMLProClouds (StreamMLProBase):
                     mag = mag + (self.centers[x][i]-self.centers_step[x][0])**2
                 mag = mag**0.5
                 if mag != 0:
-                    self.centers_step[x][:] = ((self.centers[x][:]-self.centers_step[x][:])/ mag)*self.velocity
+                    for j in range(self.num_dim):
+                        self.centers_step[x][j] = ((self.centers[x][j]-self.centers_step[x][j])/ mag)*self.velocity
                 else:
-                    self.centers_step[x][:] = (1/(self.num_dim**0.5))*self.velocity
+                    for j in range(self.num_dim):
+                        self.centers_step[x][j] = (1/(self.num_dim**0.5))*self.velocity
 
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
