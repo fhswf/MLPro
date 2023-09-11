@@ -71,22 +71,22 @@ class StreamMLProClouds (StreamMLProBase):
         
         if str.lower(p_behaviour) not in self.C_BEHAVIOUR:
             raise ValueError(f"Invalid value for behaviour, allowed values are {self.C_BEHAVIOUR}")
-        
+           
         self.num_dim = int(p_num_dim)
         self.radii = p_radii
         self.num_clouds = int(p_num_clouds)
         self.C_NUM_INSTANCES = p_num_instances
         self.velocity = p_velocity
-        self.cloud_centers = []
+        self.centers = []
+        self.centers_step = []
         self.num_instances = p_num_instances
         self.behaviour = str.lower(p_behaviour)
-        self.centers_step = []
-        
-        
+
+
         StreamMLProBase.__init__(self,
                                  p_logging=p_logging,
                                  **p_kwargs)
-
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
@@ -115,10 +115,10 @@ class StreamMLProClouds (StreamMLProBase):
         # Compute the initial positions of the centers
         for i in range(self.num_clouds):
 
-            self.cloud_centers.append([])
+            self.centers.append([])
 
             for j in range(self.num_dim):
-                self.cloud_centers[i].append(random.randint(self.C_BOUNDARIES[0],
+                self.centers[i].append(random.randint(self.C_BOUNDARIES[0],
                                                            self.C_BOUNDARIES[1]))
 
         if self.behaviour == 'dynamic':
@@ -136,10 +136,10 @@ class StreamMLProClouds (StreamMLProBase):
 
                 mag = 0
                 for i in range(self.num_dim):
-                    mag = mag + (self.cloud_centers[x][i]-self.centers_step[x][0])**2
+                    mag = mag + (self.centers[x][i]-self.centers_step[x][0])**2
                 mag = mag**0.5
                 if mag != 0:
-                    self.centers_step[x][:] = ((self.centers_step[x][:]-self.cloud_centers[x][:])/ mag)*self.velocity
+                    self.centers_step[x][:] = ((self.centers[x][:]-self.centers_step[x][:])/ mag)*self.velocity
                 else:
                     self.centers_step[x][:] = (1/(self.num_dim**0.5))*self.velocity
 
@@ -151,7 +151,7 @@ class StreamMLProClouds (StreamMLProBase):
         elif self._index == self.C_NUM_INSTANCES: raise StopIteration
 
         if self.behaviour == 'dynamic':
-            self.cloud_centers = self.cloud_centers + self.centers_step
+            self.centers = self.centers + self.centers_step
 
         id = random.randint(0, self.num_clouds)
         if len(self.radii) == 1:
@@ -167,7 +167,7 @@ class StreamMLProClouds (StreamMLProBase):
             if a<0.5:
                 instance[i] = instance[i]*(-1)
 
-        instance = instance + self.cloud_centers[id]
+        instance = instance + self.centers[id]
 
         feature_data = Element(self._feature_space)
         feature_data.set_values(p_values=instance)
