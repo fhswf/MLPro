@@ -69,10 +69,6 @@ class StreamMLProClouds (StreamMLProBase):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        StreamMLProBase.__init__(self,
-                                 p_logging=p_logging,
-                                 **p_kwargs)
-        
         if str.lower(p_behaviour) not in self.C_BEHAVIOUR:
             raise ValueError(f"Invalid value for behaviour, allowed values are {self.C_BEHAVIOUR}")
         
@@ -85,6 +81,11 @@ class StreamMLProClouds (StreamMLProBase):
         self.num_instances = p_num_instances
         self.behaviour = str.lower(p_behaviour)
         self.centers_step = []
+        
+        
+        StreamMLProBase.__init__(self,
+                                 p_logging=p_logging,
+                                 **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
