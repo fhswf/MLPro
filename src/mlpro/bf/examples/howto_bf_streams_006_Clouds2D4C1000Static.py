@@ -30,9 +30,7 @@ You will learn:
 
 
 from mlpro.bf.streams import *
-from mlpro.wrappers.openml import WrStreamProviderOpenML
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.streams.clouds import StreamMLProClouds2D4C1000Static
 from mlpro.bf.streams.tasks import Window
 from mlpro.bf.streams.models import StreamTask
 
