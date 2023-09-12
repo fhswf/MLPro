@@ -7,10 +7,11 @@
 ## -- 2023-09-08  0.0.0     DA       Creation 
 ## -- 2023-09-08  0.1.0     DA       Basic structure
 ## -- 2023-09-11  0.2.0     DA       Method Marketplace._get_extensions implemented
+## -- 2023-09-12  0.3.0     DA       Restructuring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2023-09-11)
+Ver. 0.3.0 (2023-09-12)
 
 This standalone module collects meta data of all whitelisted GitHub repositories based on the
 template repo /fhswf/MLPro-Extension.
@@ -48,6 +49,8 @@ class Marketplace (Log):
         else:
             self.gh = None
             self.log(Log.C_LOG_TYPE_E, 'Please provide valid Github access token as first parameter')
+
+        self._extensions_with_issue = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -110,7 +113,7 @@ class Marketplace (Log):
                                    latest_release.last_modified,
                                    repo.html_url,
                                    repo.homepage,
-                                   repo.topics) )
+                                   repo.topics ) )
 
 
         # 4 Outro
@@ -119,37 +122,81 @@ class Marketplace (Log):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _report_pending_extensions(self, p_new_extensions : list):
+    def _create_issue(self, p_extension):
+
+        # 0 Intro
+        self.log(Log.C_LOG_TYPE_S, 'Start creating/updating issue for extension', p_extension[0])
+    
+
+        # 1 Preparation
+        if self._extensions_with_issue is None:
+            self._mlpro  = self.gh.get_repo('fhswf/MLPro')
+
+            # 1.1 Searching for open issues for pending extensions
+            issues = self._mlpro.get_issues( state='open', labels=['pending-extension'] )
+            self._extensions_with_issue = {}
+
+            for issue in issues:
+                self._extensions_with_issue[issue.title] = issue.number
+
+            # 1.2 Get list of MLPro's administrators
+            team_members        = {}
+            self._mlpro_admins  = []
+
+            for team in self._mlpro.get_teams():
+                if ( team.name == 'MLPro' ) and ( team.organization.login == 'fhswf' ):
+                    self._mlpro_team = team
+                    break
+
+            for team_member in self._mlpro_team.get_members():
+                team_members[team_member.login] = True
+
+            for collaborator in self._mlpro.get_collaborators():
+                try:
+                    if ( team_members[collaborator.login] ) and ( self._mlpro.get_collaborator_permission(collaborator) == 'admin' ):
+                        self._mlpro_admins.append(collaborator.login)
+                except:
+                    pass
+
+            if len( self._mlpro_admins ) == 0:
+                self.log(Log.C_LOG_TYPE_E, 'No administrator found in repository fhswf/MLPro')
+                return
+                
+
+        # 2 Check: does an open issue already exist for the given extension?
+        try:
+            issue_no = self._extensions_with_issue[p_extension[0]]
+            self.log(Log.C_LOG_TYPE_I, 'Issue already exists:', issue_no)
+        except:
+            # 2.1 Issue needs to be created
+            issue = self._mlpro.create_issue( title = p_extension[0],
+                                              labels = [ 'pending-extension'],
+                                              assignees = self._mlpro_admins,
+                                              body = 'A new extension has been detected. Please check for seriousness and add the repo to the whitelist or blacklist of the marketplace.\n\n- [ ] Checked for seriousness\n- [ ] Whitelisted the repo\n- [ ] Blacklisted the repo (please explain the decision)' )
+            
+            self.log(Log.C_LOG_TYPE_I, 'New issue created:', issue.number)
+
+
+        # 2 Outro
+        self.log(Log.C_LOG_TYPE_S, 'End of creating/updating issue for extension', p_extension[0])
+
+
+## -------------------------------------------------------------------------------------------------
+    def _report_pending_extensions(self, p_extensions):
+        """
+        This method creates an issue for each pending MLPro extension and assigns it to all admin
+        users of MLPro.
+        """
 
         # 0 Intro
         self.log(Log.C_LOG_TYPE_S, 'Start reporting pending extensions...')
 
 
-        # 1 Get MLPro's administrators
-        repo_mlpro          = self.gh.get_repo( 'fhswf/mlpro')
-        mlpro_team          = repo_mlpro.get_teams()[0]
-        mlpro_collaborators = repo_mlpro.get_collaborators()
+        # 1 Create/update issues for each pending extension
+        for org in p_extensions.keys():
+            for repo in p_extensions[org]['repos']:
+                self._create_issue(repo)
 
-        for team in repo_mlpro.get_teams():
-            if team.name != 'MLPro': continue
-            for member in team.get_members(role='maintainer'):
-                print(member)
-
-        # for collaborator in mlpro_collaborators:
-        #     if not team.has_in_members(collaborator):
-        #         print(collaborator)
-
-        # for team in mlpro_team:
-        #     print('Team: ', team)
-        #     members = team.get_members()
-        #     for member in members:
-        #         print(member)
-        #         # print(repo_mlpro.get_collaborator_permission(member))
-        #         print('\n')
-
-
-        # 1 Reporting
-        self.log(Log.C_LOG_TYPE_E, 'Not yet implemented')
 
         # 2 Outro
         self.log(Log.C_LOG_TYPE_S, 'End of report of pending extensions')
