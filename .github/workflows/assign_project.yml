@@ -5,6 +5,9 @@ on:
     types:
       - opened
 
+  workflow_dispatch:
+
+
 jobs:
   add-to-project:
     name: Assign project MLPro to new issues
