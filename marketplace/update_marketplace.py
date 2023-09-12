@@ -50,6 +50,8 @@ class Marketplace (Log):
             self.gh = None
             self.log(Log.C_LOG_TYPE_E, 'Please provide valid Github access token as first parameter')
 
+        self._extensions_with_issue = None
+
 
 ## -------------------------------------------------------------------------------------------------
     def _get_extensions(self):
@@ -126,12 +128,57 @@ class Marketplace (Log):
         self.log(Log.C_LOG_TYPE_S, 'Start creating/updating issue for extension', p_extension[0])
     
 
-        # 1 Searching for existing issue
-        self.log(Log.C_LOG_TYPE_E, 'Not yet implemented')
+        # 1 Preparation
+        if self._extensions_with_issue is None:
+            self._mlpro  = self.gh.get_repo('fhswf/MLPro')
+
+            # 1.1 Searching for open issues for pending extensions
+            issues = self._mlpro.get_issues( state='open', labels=['pending-extension'] )
+            self._extensions_with_issue = {}
+
+            for issue in issues:
+                self._extensions_with_issue[issue.title] = issue.number
+
+            # 1.2 Get list of MLPro's administrators
+            team_members        = {}
+            self._mlpro_admins  = []
+
+            for team in self._mlpro.get_teams():
+                if ( team.name == 'MLPro' ) and ( team.organization.login == 'fhswf' ):
+                    self._mlpro_team = team
+                    break
+
+            for team_member in self._mlpro_team.get_members():
+                team_members[team_member.login] = True
+
+            for collaborator in self._mlpro.get_collaborators():
+                try:
+                    if ( team_members[collaborator.login] ) and ( self._mlpro.get_collaborator_permission(collaborator) == 'admin' ):
+                        self._mlpro_admins.append(collaborator.login)
+                except:
+                    pass
+
+            if len( self._mlpro_admins ) == 0:
+                self.log(Log.C_LOG_TYPE_E, 'No administrator found in repository fhswf/MLPro')
+                return
+                
+
+        # 2 Check: does an open issue already exist for the given extension?
+        try:
+            issue_no = self._extensions_with_issue[p_extension[0]]
+            self.log(Log.C_LOG_TYPE_I, 'Issue already exists:', issue_no)
+        except:
+            # 2.1 Issue needs to be created
+            issue = self._mlpro.create_issue( title = p_extension[0],
+                                              labels = [ 'pending-extension'],
+                                              assignees = self._mlpro_admins,
+                                              body = 'A new extension has been detected. Please check for seriousness and add the repo to the whitelist or blacklist of the marketplace.\n\n- [ ] Checked for seriousness\n- [ ] Whitelisted the repo\n- [ ] Blacklisted the repo (please explain the decision)' )
+            
+            self.log(Log.C_LOG_TYPE_I, 'New issue created:', issue.number)
 
 
         # 2 Outro
-        self.log(Log.C_LOG_TYPE_S, 'En of creating/updating issue for extension', p_extension[0])
+        self.log(Log.C_LOG_TYPE_S, 'End of creating/updating issue for extension', p_extension[0])
 
 
 ## -------------------------------------------------------------------------------------------------
