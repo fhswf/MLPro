@@ -183,7 +183,7 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
 
-    C_ID                    = 'StaticClouds2D'
+    C_ID                    = 'StreamMLProClouds2D4C1000Static'
     C_NAME                  = 'Static Clouds 2D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
@@ -219,7 +219,7 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 
-    C_ID                    = 'StaticClouds3D'
+    C_ID                    = 'StreamMLProClouds3D8C2000Static'
     C_NAME                  = 'Static Clouds 3D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
@@ -255,7 +255,7 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
 
-    C_ID                    = 'DynamicClouds2D'
+    C_ID                    = 'StreamMLProClouds2D4C5000Dynamic'
     C_NAME                  = 'Dynamic Clouds 2D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
@@ -291,7 +291,7 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds):
 
-    C_ID                    = 'StaticClouds2D'
+    C_ID                    = 'StreamMLProClouds3D8C10000Dynamic'
     C_NAME                  = 'Static Clouds 2D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'

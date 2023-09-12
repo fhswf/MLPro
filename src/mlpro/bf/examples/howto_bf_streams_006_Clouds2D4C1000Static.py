@@ -33,8 +33,6 @@ from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.tasks import Window
 from mlpro.bf.streams.models import StreamTask
-
-
 from mlpro.bf.various import Log
 
 
@@ -74,11 +72,11 @@ class MyScenario (StreamScenario):
         stream = provider_mlpro.get_stream('StreamMLProClouds2D4C1000Static', p_mode=p_mode, p_logging=p_logging)
 
 
-        # 2 Set up a stream workflow based on a custom stream task
+        # 2 Set up a stream workflow
 
         # 2.1 Creation of tasks
 
-        # 2.1 Set up and add a window task
+        # 2.1 Set up and add a window task and an empty task
         task_window1 = Window( p_buffer_size=30, 
                               p_name = 't1', 
                               p_delay = True,
@@ -90,11 +88,11 @@ class MyScenario (StreamScenario):
 
         # 2.2 Create a workflow and add the tasks
         workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE,    #StreamWorkflow.C_RANGE_THREAD, 
+                                   p_range_max=StreamWorkflow.C_RANGE_NONE, 
                                    p_visualize=p_visualize,
                                    p_logging=logging )
 
-        # 2.2.1 At first we add three tasks that build the starting points of our workflow
+        # 2.2.1 Add the tasks to our workflow
         workflow.add_task( p_task=task_window1 )
         workflow.add_task( p_task=task_empty )
 
@@ -109,7 +107,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 10
+    cycle_limit = 100
     logging     = Log.C_LOG_ALL
     visualize   = True
   
