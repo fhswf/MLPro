@@ -127,16 +127,25 @@ class Marketplace (Log):
 
         # 1 Get MLPro's administrators
         repo_mlpro          = self.gh.get_repo( 'fhswf/mlpro')
-        mlpro_team          = repo_mlpro.get_teams()
+        mlpro_team          = repo_mlpro.get_teams()[0]
         mlpro_collaborators = repo_mlpro.get_collaborators()
 
-        for team in mlpro_team:
-            print('Team: ', team)
-            members = team.get_members(role='Maintainer')
-            for member in members:
+        for team in repo_mlpro.get_teams():
+            if team.name != 'MLPro': continue
+            for member in team.get_members(role='maintainer'):
                 print(member)
-                # print(repo_mlpro.get_collaborator_permission(member))
-                print('\n')
+
+        # for collaborator in mlpro_collaborators:
+        #     if not team.has_in_members(collaborator):
+        #         print(collaborator)
+
+        # for team in mlpro_team:
+        #     print('Team: ', team)
+        #     members = team.get_members()
+        #     for member in members:
+        #         print(member)
+        #         # print(repo_mlpro.get_collaborator_permission(member))
+        #         print('\n')
 
 
         # 1 Reporting
