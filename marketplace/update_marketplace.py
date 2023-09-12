@@ -7,10 +7,11 @@
 ## -- 2023-09-08  0.0.0     DA       Creation 
 ## -- 2023-09-08  0.1.0     DA       Basic structure
 ## -- 2023-09-11  0.2.0     DA       Method Marketplace._get_extensions implemented
+## -- 2023-09-12  0.3.0     DA       Restructuring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2023-09-11)
+Ver. 0.3.0 (2023-09-12)
 
 This standalone module collects meta data of all whitelisted GitHub repositories based on the
 template repo /fhswf/MLPro-Extension.
@@ -110,7 +111,7 @@ class Marketplace (Log):
                                    latest_release.last_modified,
                                    repo.html_url,
                                    repo.homepage,
-                                   repo.topics) )
+                                   repo.topics ) )
 
 
         # 4 Outro
@@ -119,37 +120,36 @@ class Marketplace (Log):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _report_pending_extensions(self, p_new_extensions : list):
+    def _create_issue(self, p_extension):
+
+        # 0 Intro
+        self.log(Log.C_LOG_TYPE_S, 'Start creating/updating issue for extension', p_extension[0])
+    
+
+        # 1 Searching for existing issue
+        self.log(Log.C_LOG_TYPE_E, 'Not yet implemented')
+
+
+        # 2 Outro
+        self.log(Log.C_LOG_TYPE_S, 'En of creating/updating issue for extension', p_extension[0])
+
+
+## -------------------------------------------------------------------------------------------------
+    def _report_pending_extensions(self, p_extensions):
+        """
+        This method creates an issue for each pending MLPro extension and assigns it to all admin
+        users of MLPro.
+        """
 
         # 0 Intro
         self.log(Log.C_LOG_TYPE_S, 'Start reporting pending extensions...')
 
 
-        # 1 Get MLPro's administrators
-        repo_mlpro          = self.gh.get_repo( 'fhswf/mlpro')
-        mlpro_team          = repo_mlpro.get_teams()[0]
-        mlpro_collaborators = repo_mlpro.get_collaborators()
+        # 1 Create/update issues for each pending extension
+        for org in p_extensions.keys():
+            for repo in p_extensions[org]['repos']:
+                self._create_issue(repo)
 
-        for team in repo_mlpro.get_teams():
-            if team.name != 'MLPro': continue
-            for member in team.get_members(role='maintainer'):
-                print(member)
-
-        # for collaborator in mlpro_collaborators:
-        #     if not team.has_in_members(collaborator):
-        #         print(collaborator)
-
-        # for team in mlpro_team:
-        #     print('Team: ', team)
-        #     members = team.get_members()
-        #     for member in members:
-        #         print(member)
-        #         # print(repo_mlpro.get_collaborator_permission(member))
-        #         print('\n')
-
-
-        # 1 Reporting
-        self.log(Log.C_LOG_TYPE_E, 'Not yet implemented')
 
         # 2 Outro
         self.log(Log.C_LOG_TYPE_S, 'End of report of pending extensions')
