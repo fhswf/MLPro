@@ -8,10 +8,11 @@
 ## -- 2023-09-08  0.1.0     DA       Basic structure
 ## -- 2023-09-11  0.2.0     DA       Method Marketplace._get_extensions implemented
 ## -- 2023-09-12  0.3.0     DA       Restructuring
+## -- 2023-09-13  0.4.0     DA       Issue management implemented
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2023-09-12)
+Ver. 0.4.0 (2023-09-13)
 
 This standalone module collects meta data of all whitelisted GitHub repositories based on the
 template repo /fhswf/MLPro-Extension.
@@ -50,7 +51,7 @@ class Marketplace (Log):
             self.gh = None
             self.log(Log.C_LOG_TYPE_E, 'Please provide valid Github access token as first parameter')
 
-        self._extensions_with_issue = None
+        self._extension_issues = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -129,15 +130,15 @@ class Marketplace (Log):
     
 
         # 1 Preparation
-        if self._extensions_with_issue is None:
+        if self._extension_issues is None:
             self._mlpro  = self.gh.get_repo('fhswf/MLPro')
 
             # 1.1 Searching for open issues for pending extensions
             issues = self._mlpro.get_issues( state='open', labels=['pending-extension'] )
-            self._extensions_with_issue = {}
+            self._extension_issues = {}
 
             for issue in issues:
-                self._extensions_with_issue[issue.title] = issue.number
+                self._extension_issues[issue.title] = issue.number
 
             # 1.2 Get list of MLPro's administrators
             team_members        = {}
@@ -164,15 +165,16 @@ class Marketplace (Log):
                 
 
         # 2 Check: does an open issue already exist for the given extension?
+        issue_title = 'Pending MLPro-Extension "' + p_extension[0] + '"'
         try:
-            issue_no = self._extensions_with_issue[p_extension[0]]
+            issue_no = self._extension_issues[issue_title]
             self.log(Log.C_LOG_TYPE_I, 'Issue already exists:', issue_no)
         except:
             # 2.1 Issue needs to be created
-            issue = self._mlpro.create_issue( title = p_extension[0],
-                                              labels = [ 'pending-extension'],
+            issue = self._mlpro.create_issue( title     = issue_title,
+                                              labels    = [ 'pending-extension'],
                                               assignees = self._mlpro_admins,
-                                              body = 'A new extension has been detected. Please check for seriousness and add the repo to the whitelist or blacklist of the marketplace.\n\n- [ ] Checked for seriousness\n- [ ] Whitelisted the repo\n- [ ] Blacklisted the repo (please explain the decision)' )
+                                              body      = 'A new extension for MLPro has been detected. Please check for seriousness and add the repo to the whitelist or blacklist of the marketplace.\n\n**Title:** [{title}]({url})\n**Version:** {version}\n**Description:** {desc}\n\n**Checklist:**\n- [ ] Check for seriousness is done\n- [ ] Repo has been whitelisted\n- [ ] Repo has been blacklisted\n   - [ ] MLPro admins were informed\n   - [ ] Repo owners were informed'.format(vars='variables', url=p_extension[6], title=p_extension[1], version=p_extension[3], desc=p_extension[2]) )
             
             self.log(Log.C_LOG_TYPE_I, 'New issue created:', issue.number)
 
