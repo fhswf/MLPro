@@ -21,7 +21,7 @@ template repo /fhswf/MLPro-Extension.
 
 import sys, os.path, time
 from mlpro.bf.various import Log
-from github import Auth, Github
+from github import Auth, Github, Issue
 
 
 
@@ -30,16 +30,16 @@ from github import Auth, Github
 ## -------------------------------------------------------------------------------------------------
 class Marketplace (Log):
 
-    C_TYPE              = 'Marketplace'
-    C_NAME              = 'MLPro'
+    C_TYPE                  = 'Marketplace'
+    C_NAME                  = 'MLPro'
 
-    C_FNAME_WHITELIST   = 'whitelist'
-    C_FNAME_BLACKLIST   = 'blacklist'
-    C_FNAME_DB          = 'marketplace.csv'
+    C_FNAME_WHITELIST       = 'whitelist'
+    C_FNAME_BLACKLIST       = 'blacklist'
+    C_FNAME_TPL_ISSUE_BODY  = 'templates' + os.sep + 'issue_body'
     
-    C_STATUS_APPROVED   = 'Approved'
-    C_STATUS_DENIED     = 'Denied'
-    C_STATUS_PENDING    = 'Pending'
+    C_STATUS_APPROVED       = 'Approved'
+    C_STATUS_DENIED         = 'Denied'
+    C_STATUS_PENDING        = 'Pending'
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_token, p_logging=Log.C_LOG_ALL):
@@ -123,6 +123,21 @@ class Marketplace (Log):
     
 
 ## -------------------------------------------------------------------------------------------------
+    def _create_issue_body(self, p_extension) -> str:
+
+        topics = ', '.join(p_extension[8])
+        with open( sys.path[0] + os.sep + self.C_FNAME_TPL_ISSUE_BODY ) as f:
+            body = f.read().format( vars='variables', url=p_extension[6], title=p_extension[1], topics=topics, version=p_extension[3], desc=p_extension[2] )
+
+        return body
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _create_issue_comment(self, p_extension) -> str:
+        return '@detlefarend Pseudo-comment...'
+   
+
+## -------------------------------------------------------------------------------------------------
     def _create_issue(self, p_extension):
 
         # 0 Intro
@@ -173,8 +188,10 @@ class Marketplace (Log):
             # 2.1 Issue needs to be created
             issue = self._mlpro.create_issue( title     = issue_title,
                                               labels    = [ 'pending-extension'],
-                                              assignees = self._mlpro_admins,
-                                              body      = 'A new extension for MLPro has been detected. Please check for seriousness and add the repo to the whitelist or blacklist of the marketplace.\n\n**Title:** [{title}]({url})\n**Version:** {version}\n**Description:** {desc}\n\n**Checklist:**\n- [ ] Check for seriousness is done\n- [ ] Repo has been whitelisted\n- [ ] Repo has been blacklisted\n   - [ ] MLPro admins were informed\n   - [ ] Repo owners were informed'.format(vars='variables', url=p_extension[6], title=p_extension[1], version=p_extension[3], desc=p_extension[2]) )
+                                              assignees = [ 'detlefarend' ], #self._mlpro_admins,
+                                              body      = self._create_issue_body(p_extension) )
+            
+            issue.create_comment(self._create_issue_comment(p_extension))
             
             self.log(Log.C_LOG_TYPE_I, 'New issue created:', issue.number)
 
