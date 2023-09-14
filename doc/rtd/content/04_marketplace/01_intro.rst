@@ -1,6 +1,6 @@
 .. _target_marketplace_intro:
-Introduction
-============
+General Information
+===================
 
 ...
 

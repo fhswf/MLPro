@@ -39,13 +39,16 @@ class Marketplace (Log):
     C_FNAME_TPL_ISSUE_BODY      = 'templates' + os.sep + 'issue_body'
     C_FNAME_TPL_ISSUE_COMMENT   = 'templates' + os.sep + 'issue_comment'
     C_FNAME_TPL_RTD_EXENSION    = 'templates' + os.sep + 'rtd_extension'
+
+    C_PATH_RTD_ORG              = '01_extensions_org' + os.sep + 'org_test/'
+    C_PATH_RTD_USR              = '02_extensions_user' + os.sep + 'users_test/'
     
     C_STATUS_APPROVED           = 'Approved'
     C_STATUS_DENIED             = 'Denied'
     C_STATUS_PENDING            = 'Pending'
     
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_token, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_token, p_rtd_path, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
 
         if p_token is not None:
@@ -54,7 +57,9 @@ class Marketplace (Log):
             self.gh = None
             self.log(Log.C_LOG_TYPE_E, 'Please provide valid Github access token as first parameter')
 
-        self._extension_issues = None
+        self._rtd_path_org      = sys.path[0] + os.sep + p_rtd_path + self.C_PATH_RTD_ORG
+        self._rtd_path_usr      = sys.path[0] + os.sep + p_rtd_path + self.C_PATH_RTD_USR
+        self._extension_issues  = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -100,29 +105,32 @@ class Marketplace (Log):
                 status = self.C_STATUS_PENDING
 
             try:
-                org = extensions[status][repo.organization.login]
+                owner = extensions[status][repo.owner.login]
             except:
-                org = {}
-                org['name']     = repo.organization.name
-                org['location'] = repo.organization.location
-                org['html_url'] = repo.organization.html_url
-                org['repos']    = []
-                extensions[status][repo.organization.login] = org
+                owner = {}
+                owner['name']     = repo.owner.name
+                owner['bio']      = repo.owner.bio
+                owner['blog']     = repo.owner.blog
+                owner['location'] = repo.owner.location
+                owner['html_url'] = repo.owner.html_url
+                owner['type']     = repo.owner.type
+                owner['repos']    = []
+                extensions[status][repo.owner.login] = owner
 
             repo_admins = []
             for collaborator in repo.get_collaborators():
                 if repo.get_collaborator_permission(collaborator.login) == 'admin': repo_admins.append(collaborator.login)
 
-            org['repos'].append( ( repo.full_name,
-                                   repo.name,
-                                   repo.description, 
-                                   latest_release.tag_name,
-                                   latest_release.title,
-                                   latest_release.last_modified,
-                                   repo.html_url,
-                                   repo.homepage,
-                                   repo.topics,
-                                   repo_admins ) )
+            owner['repos'].append( ( repo.full_name,
+                                     repo.name,
+                                     repo.description, 
+                                     latest_release.tag_name,
+                                     latest_release.title,
+                                     latest_release.last_modified,
+                                     repo.html_url,
+                                     repo.homepage,
+                                     repo.topics,
+                                     repo_admins ) )
 
 
         # 4 Outro
@@ -244,16 +252,40 @@ class Marketplace (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _build_marketplace_db(self, p_approved_extensions : list):
+    def _build_rtd_owner_structure(self, p_owner, p_data):
+        if p_data['type'] == 'Organization':
+            pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _build_rtd_documentation(self, p_approved_extensions : list):
 
         # 0 Intro
-        self.log(Log.C_LOG_TYPE_S, 'Start building marketplace DB...')
+        self.log(Log.C_LOG_TYPE_S, 'Start building RTD documentation')
 
-        # 1 Reporting
-        self.log(Log.C_LOG_TYPE_E, 'Not yet implemented')
+        
+        # 1 Clear destination folders in RTD
+        try:
+            os.rmdir(self._rtd_path_org)
+        except:
+            pass
 
-        # 2 Outro
-        self.log(Log.C_LOG_TYPE_S, 'End of building marketplace DB')
+        try:
+            os.rmdir(self._rtd_path_usr)
+        except:
+            pass
+
+        os.mkdir(self._rtd_path_org)
+        os.mkdir(self._rtd_path_usr)
+
+
+        # 2 Create folder and file structure for each owner
+        for owner in p_approved_extensions.keys():
+            self._build_rtd_owner_structure( p_owner=owner, p_data=p_approved_extensions[owner])
+            
+
+        # 3 Outro
+        self.log(Log.C_LOG_TYPE_S, 'End of building RTD documentation')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -275,8 +307,8 @@ class Marketplace (Log):
             self.log(Log.C_LOG_TYPE_I, 'No pending MLPro extensions detected')
 
 
-        # 3 Build of MLPro marketplace DB file
-        self._build_marketplace_db( extensions[self.C_STATUS_APPROVED] )
+        # 3 Build of MLPro marketplace documentation
+        self._build_rtd_documentation( extensions[self.C_STATUS_APPROVED] )
         
         
 
@@ -288,4 +320,4 @@ try:
 except:
     token = None
 
-Marketplace( p_token=token ).update()
+Marketplace( p_token=token, p_rtd_path=sys.argv[2] ).update()
