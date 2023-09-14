@@ -21,6 +21,7 @@ template repo /fhswf/MLPro-Extension.
 
 
 import sys, os.path, time
+import shutil
 from mlpro.bf.various import Log
 from github import Auth, Github, Issue
 
@@ -36,12 +37,14 @@ class Marketplace (Log):
 
     C_FNAME_WHITELIST           = 'whitelist'
     C_FNAME_BLACKLIST           = 'blacklist'
+
     C_FNAME_TPL_ISSUE_BODY      = 'templates' + os.sep + 'issue_body'
     C_FNAME_TPL_ISSUE_COMMENT   = 'templates' + os.sep + 'issue_comment'
-    C_FNAME_TPL_RTD_EXENSION    = 'templates' + os.sep + 'rtd_extension'
+    C_FNAME_TPL_RTD_EXT_OWNER   = 'templates' + os.sep + 'rtd_ext_owner.rst'
+    C_FNAME_TPL_RTD_EXT_REPO    = 'templates' + os.sep + 'rtd_ext_repo.rst'
 
-    C_PATH_RTD_ORG              = '01_extensions_org' + os.sep + 'org_test/'
-    C_PATH_RTD_USR              = '02_extensions_user' + os.sep + 'users_test/'
+    C_PATH_RTD_ORG              = '01_extensions_org' + os.sep + 'org_test'
+    C_PATH_RTD_USR              = '02_extensions_user' + os.sep + 'users_test'
     
     C_STATUS_APPROVED           = 'Approved'
     C_STATUS_DENIED             = 'Denied'
@@ -252,9 +255,34 @@ class Marketplace (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _build_rtd_owner_repo(self, p_repo_data):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
     def _build_rtd_owner_structure(self, p_owner, p_data):
+
+        # 0 Preparation
         if p_data['type'] == 'Organization':
-            pass
+            path = self._rtd_path_org
+        else:
+            path = self._rtd_path_usr
+
+
+        # 1 Create owner file and folder
+        path_owner = path + os.sep + p_owner
+        os.mkdir(path_owner)
+
+        with open( sys.path[0] + os.sep + self.C_FNAME_TPL_RTD_EXT_OWNER ) as f:
+            owner_body = f.read().format( vars='variables', owner=p_owner, name=p_data['name'], location=p_data['location'], bio=p_data['bio'], blog=p_data['blog'], html_url=p_data['html_url'] )
+
+        with open( path_owner + os.sep + p_owner + '.rst', 'w' ) as f:
+            f.write(owner_body)
+        
+
+        # 2 Create rtd files for each extension
+        for repo_data in p_data['repos']:
+            self._build_rtd_owner_repo(repo_data)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -266,12 +294,12 @@ class Marketplace (Log):
         
         # 1 Clear destination folders in RTD
         try:
-            os.rmdir(self._rtd_path_org)
+            shutil.rmtree(self._rtd_path_org)
         except:
             pass
 
         try:
-            os.rmdir(self._rtd_path_usr)
+            shutil.rmtree(self._rtd_path_usr)
         except:
             pass
 
