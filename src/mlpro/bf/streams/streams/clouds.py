@@ -91,7 +91,8 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
         feature_space : MSpace = MSpace()
-
+        """
+        """
         for i in range(self.num_dim):
             feature_space.add_dim( Feature( p_name_short = 'f_' + str(i),
                                             p_base_set = Feature.C_BASE_SET_R,
