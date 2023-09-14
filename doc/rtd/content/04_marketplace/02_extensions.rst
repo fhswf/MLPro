@@ -1,5 +1,5 @@
 .. _target_marketplace_extensions:
-Third Party Extensions
+Third-Party Extensions
 ======================
 
 Hello world!

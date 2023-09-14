@@ -1,5 +1,5 @@
 .. _target_marketplace_ext_user:
-Single Users
-============
+Single Contributors
+===================
 
 Hello world!
