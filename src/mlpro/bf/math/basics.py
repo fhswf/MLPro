@@ -37,10 +37,11 @@
 ## -- 2023-02-28  2.2.0     DA       Class Function: new method __call__()
 ## -- 2023-03-07  2.2.1     SY       Refactoring
 ## -- 2023-04-09  2.2.2     SY       Refactoring
+## -- 2023-05-06  2.2.3     DA       Class Element: completion of data type definitions
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.2 (2023-04-09)
+Ver. 2.2.3 (2023-05-06)
 
 This module provides basic mathematical classes.
 """
@@ -51,6 +52,7 @@ from itertools import repeat
 import uuid
 from mlpro.bf.various import Log
 from mlpro.bf.events import *
+from typing import Union
 
 
 
@@ -432,12 +434,12 @@ class Element:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_values(self):
+    def get_values(self) -> Union[list,np.ndarray]:
         return self._values
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_values(self, p_values):
+    def set_values(self, p_values : Union[list, np.ndarray]):
         """
         Overwrites the values of all components of the element.
 
