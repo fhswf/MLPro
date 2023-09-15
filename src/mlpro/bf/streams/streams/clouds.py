@@ -37,7 +37,7 @@ class StreamMLProClouds (StreamMLProBase):
     p_num_dim : int
         The number of dimensions or features of the data. Default = 3.
     p_num_instances : int
-        Total number of instances. The value '0' means indefinite. Default = 0.
+        Total number of instances. The value '0' means indefinite. Default = 1000.
     p_num_clouds : int
         Number of clouds. Default = 4.
     p_radii : list
@@ -54,7 +54,7 @@ class StreamMLProClouds (StreamMLProBase):
     C_NAME                  = 'Clouds N-Dim'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
-    C_NUM_INSTANCES         = 0
+    _num_instances         = 0
     C_BEHAVIOUR             = ['static', 'dynamic']
     C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
     C_BOUNDARIES            = [-1000,1000]
@@ -62,7 +62,7 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_num_dim : int = 3,
-                  p_num_instances : int = 0,
+                  p_num_instances : int = 1000,
                   p_num_clouds : int = 8,
                   p_radii : list = [100.0],
                   p_behaviour : str = 'dynamic',
@@ -76,7 +76,7 @@ class StreamMLProClouds (StreamMLProBase):
         self.num_dim = int(p_num_dim)
         self.radii = p_radii
         self.num_clouds = int(p_num_clouds)
-        self.C_NUM_INSTANCES = p_num_instances
+        self._num_instances = p_num_instances
         self.velocity = p_velocity
         self.centers = []
         self.centers_step = []
@@ -150,9 +150,9 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
 
-        if self.C_NUM_INSTANCES == 0: raise StopIteration
+        if self._num_instances == 0: pass
 
-        elif self._index == self.C_NUM_INSTANCES: raise StopIteration
+        elif self._index == self._num_instances: raise StopIteration
 
         if self.behaviour == 'dynamic':
             self.centers = self.centers + self.centers_step
