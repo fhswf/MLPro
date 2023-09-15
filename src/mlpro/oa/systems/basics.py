@@ -9,6 +9,7 @@
 ## -- 2023-05-31  0.1.0     LSB      Visualization
 ## -- 2023-05-31  0.1.1     LSB      cleaning
 ## -- 2023-05-31  0.1.2     LSB      Visualization bug fixed
+## -- 2023-06-06  0.1.3     LSB      Renaming _wf and run methods with *_strans
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -135,7 +136,7 @@ class OAFctSTrans(FctSTrans, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_wf: OAWorkflow = None,
+                 p_wf_strans: OAWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -171,13 +172,13 @@ class OAFctSTrans(FctSTrans, Model):
                        p_logging=p_logging,
                        **p_kwargs)
 
-        if p_wf is None:
-            self._wf = OAWorkflow(p_name='State Transition',
+        if p_wf_strans is None:
+            self._wf_strans = OAWorkflow(p_name='State Transition',
                                   p_visualize=p_visualize,
                                   p_ada=p_ada,
                                   p_logging=p_logging)
         else:
-            self._wf = p_wf
+            self._wf_strans = p_wf_strans
 
         self._action_obj:Action = None
         self._setup_wf_strans = False
@@ -207,12 +208,7 @@ class OAFctSTrans(FctSTrans, Model):
             The new state of the System.
 
         """
-        # 1. copying the state and action object for the function level
-        try:
-            p_state.get_id()
-        except:
-            p_state.set_id(self._state_id)
-            self._state_id += 1
+
 
         self._state_obj = p_state.copy()
         self._action_obj = copy.deepcopy(p_action)
@@ -223,11 +219,11 @@ class OAFctSTrans(FctSTrans, Model):
             self._setup_wf_strans = self._setup_oafct_strans()
 
         # 3. Running the workflow
-        self._wf.run(p_inst_new=[self._state_obj])
+        self._wf_strans.run(p_inst_new=[self._state_obj])
 
 
         # 4. get the results
-        state = self._wf.get_so().get_results()[self.get_id()]
+        state = self._wf_strans.get_so().get_results()[self.get_id()]
 
         # state.set_id(self._state_id)
         state.set_id(self._state_id)
@@ -253,7 +249,7 @@ class OAFctSTrans(FctSTrans, Model):
 
         adapted = False
         try:
-            adapted = self._wf.adapt(**p_kwargs) or adapted
+            adapted = self._wf_strans.adapt(**p_kwargs) or adapted
         except:
             adapted = adapted or False
 
@@ -282,7 +278,7 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task:OATask, p_pred_task = None):
+    def add_task_strans(self, p_task:OATask, p_pred_task = None):
         """
         Adds a task to the workflow.
 
@@ -295,11 +291,11 @@ class OAFctSTrans(FctSTrans, Model):
             Name of the predecessor tasks for the task to be added
 
         """
-        self._wf.add_task(p_task, p_pred_task)
+        self._wf_strans.add_task(p_task, p_pred_task)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new, p_inst_del):
+    def _run_wf_strans(self, p_inst_new, p_inst_del):
         """
         Runs the processing workflow, for state transition.
 
@@ -314,11 +310,11 @@ class OAFctSTrans(FctSTrans, Model):
         """
 
         if self._afct_strans is not None:
-            self._wf.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
+            self._wf_strans.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self._afct_strans,
                                                                                 p_state=p_inst_new[0],
                                                                                 p_action=self._action_obj))
         else:
-            self._wf.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
+            self._wf_strans.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
                                                                             p_state=p_inst_new[0],
                                                                             p_action=self._action_obj))
 
@@ -335,12 +331,13 @@ class OAFctSTrans(FctSTrans, Model):
 
         """
 
-        if len(self._wf._tasks) == 0:
+        if len(self._wf_strans._tasks) == 0:
             p_pred_tasks = None
         else:
-            p_pred_tasks = [self._wf._tasks[-1]]
-            self._wf = OAWorkflow()
-        self._wf.add_task(p_task=PseudoTask(p_wrap_method = self._run), p_pred_tasks=p_pred_tasks)
+            p_pred_tasks = [self._wf_strans._tasks[-1]]
+            self._wf_strans = OAWorkflow()
+        self._wf_strans.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_strans, p_logging=self.get_log_level()),
+                                 p_pred_tasks=p_pred_tasks)
 
         return True
 
@@ -523,7 +520,7 @@ class OAFctSuccess(FctSuccess, Model):
         """
 
         if self._afct_success is not None:
-            self._wf_success.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self,
+            self._wf_success.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self._afct_success,
                                                                                  p_state=p_inst_new[0]))
         else:
             self._wf_success.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
@@ -577,7 +574,7 @@ class OAFctSuccess(FctSuccess, Model):
         else:
             p_pred_tasks = [self._wf_success._tasks[-1]]
 
-        self._wf_success.add_task(p_task = PseudoTask(p_wrap_method = self._run_wf_success),
+        self._wf_success.add_task(p_task = PseudoTask(p_wrap_method = self._run_wf_success, p_logging=self.get_log_level()),
                                   p_pred_tasks=p_pred_tasks)
         return True
 
@@ -644,7 +641,7 @@ class OAFctBroken(FctBroken, Model):
                 raise ParamError("Please provide mandatory parameters state and action space.")
 
 
-            self._afct_broken = AFctSuccess(p_afct_cls=p_afct_cls,
+            self._afct_broken = AFctBroken(p_afct_cls=p_afct_cls,
                                             p_state_space=p_state_space,
                                             p_action_space=p_action_space,
                                             p_input_space_cls=p_input_space_cls,
@@ -744,7 +741,7 @@ class OAFctBroken(FctBroken, Model):
 
         """
         if self._afct_broken is not None:
-            self._wf_broken.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self,
+            self._wf_broken.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self._afct_broken,
                                                                          p_state=p_inst_new[0]))
         else:
             self._wf_broken.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
@@ -814,7 +811,7 @@ class OAFctBroken(FctBroken, Model):
             p_pred_tasks = None
         else:
             p_pred_tasks = [self._wf_broken._tasks[-1]]
-        self._wf_broken.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_broken),
+        self._wf_broken.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_broken, p_logging=self.get_log_level()),
                                  p_pred_tasks=p_pred_tasks)
         return True
 
@@ -827,38 +824,58 @@ class OAFctBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
-
     """
-    The template class for Online Adaptive Systems. Each function in this system is
-    executed in the form of an Online Adaptive Workflow.
+    This ist a template class for Adaptive State Based System.
 
-        Parameters
-        ----------
-        p_id
-        p_name
-        p_range_max
-        p_autorun
-        p_class_shared
-        p_ada
-        p_mode
-        p_latency
-        p_t_step
-        p_fct_strans
-        p_fct_success
-        p_fct_broken
-        p_wf
-        p_wf_success
-        p_wf_broken
-        p_mujoco_file
-        p_frame_skip
-        p_state_mapping
-        p_action_mapping
-        p_camera_conf
-        p_visualize
-        p_logging
-        p_kwargs
+    Parameters
+    ----------
+    p_id
+        Id of the system.
+    p_name:str
+        Name of the system.
+    p_range_max
+        Range of the system.
+    p_autorun
+        Whether the system should autorun as a Task.
+    p_class_shared
+        The shared class for multisystem.
+    p_mode
+        Mode of the System. Simulation or real.
+    p_ada:bool
+        The adaptability of the system.
+    p_latency:timedelta
+        Latency of the system.
+    p_t_step:timedelta
+        Simulation timestep of the system.
+    p_fct_strans: FctSTrans | AFctSTrans | OAFctSTrans
+        External state transition function.
+    p_fct_success: FctSuccess | AFctSuccess | OAFctSuccess
+        External success computation function.
+    p_fct_broken: FctBroken | AFctBroken | OAFctBroken
+        External broken computation function.
+    p_wf_strans: OAWorkflow
+        State transition workflow. Optional.
+    p_wf_success: OAWorkflow
+        Success computation workflow. Optional.
+    p_wf_broken: OAWorkflow
+        Broken computation workflow. Optional
+    p_mujoco_file
+        Mujoco file for simulation using mujoco engine.
+    p_frame_skip
+        Number of frames to be skipped during visualization.
+    p_state_mapping:
+        State mapping for Mujoco.
+    p_action_mapping:
+        Action Mapping for Mujoco.
+    p_camera_conf:
+        Camera Configuration for Mujoco.
+    p_visualize:
+        Visualization switch.
+    p_logging
+        Logging level for the system.
+    p_kwargs
+        Additional Parameters
     """
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -875,7 +892,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                  p_fct_strans : FctSTrans = None,
                  p_fct_success : FctSuccess = None,
                  p_fct_broken : FctBroken = None,
-                 p_wf : OAWorkflow = None,
+                 p_wf_strans : OAWorkflow = None,
                  p_wf_success : OAWorkflow = None,
                  p_wf_broken : OAWorkflow = None,
                  p_mujoco_file = None,
@@ -890,13 +907,13 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         self._workflows = []
         self._fcts =[]
 
-        OAFctSTrans.__init__(self, p_name=p_name, p_wf=p_wf, p_visualize=p_visualize)
+        OAFctSTrans.__init__(self, p_name=p_name, p_wf_strans=p_wf_strans, p_visualize=p_visualize, p_logging=p_logging)
 
-        OAFctSuccess.__init__(self, p_name=p_name, p_wf=p_wf_success, p_visualize=p_visualize)
+        OAFctSuccess.__init__(self, p_name=p_name, p_wf=p_wf_success, p_visualize=p_visualize, p_logging=p_logging)
 
-        OAFctBroken.__init__(self, p_name=p_name, p_wf_broken=p_wf_broken, p_visualize=p_visualize)
+        OAFctBroken.__init__(self, p_name=p_name, p_wf_broken=p_wf_broken, p_visualize=p_visualize, p_logging=p_logging)
 
-        self._workflows = [self._wf, self._wf_success, self._wf_broken]
+        self._workflows = [self._wf_strans, self._wf_success, self._wf_broken]
 
         ASystem.__init__(self,
                          p_id = p_id,
@@ -1022,12 +1039,25 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
             The new state of the System.
 
         """
+        # 1. copying the state and action object for the function level
+        try:
+            p_state.get_id()
+        except:
+            p_state.set_id(self._state_id)
+            self._state_id += 1
 
         if self._fct_strans is not None:
-            return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
+            state = self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
         else:
-            return OAFctSTrans.simulate_reaction(self, p_state, p_action, p_t_step)
+            state = OAFctSTrans.simulate_reaction(self, p_state, p_action, p_t_step)
 
+        try:
+            state.get_id()
+        except:
+            state.set_id(self._state_id)
+            self._state_id += 1
+
+        return state
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
@@ -1132,3 +1162,50 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         #         workflow.update_plot(**p_kwargs)
         #     except:
         #         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_visualization(self, p_object = None, p_visualize = None):
+        """
+        Method to switch the visualization of an object in an online adaptive system.
+
+        Parameters
+        ----------
+        p_object: object
+            The object whose visualization is to be switched off. Although, a valid object is any object
+            with visualization property in MLPro, within this runtime. It is suggested to use only on the Functions,
+            Workflows, Tasks and System itself.
+
+        p_visualize: bool
+            The bool value for setting the visualization of an object.
+
+        Notes
+        -----
+        Please do not turn off the visualization by getting functions of the system (e.g. self.get_fctstrans()), if the functions are not
+        provided externally to the system, since this will refer to the system itself.
+
+        Examples
+        --------
+        myOASystem.switch_visualization(p_visualize = False, p_object = self.get_fct_workflow())
+
+        """
+
+        p_object._visualize = p_visualize
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_workflow_strans(self):
+
+        return self._wf_strans
+
+## -------------------------------------------------------------------------------------------------
+    def get_workflow_success(self):
+
+        return self._wf_success
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_workflow_broken(self):
+
+        return self._wf_broken
+

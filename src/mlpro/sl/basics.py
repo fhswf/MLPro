@@ -16,16 +16,22 @@
 ## -- 2023-03-01  0.4.2     SY       - Renaming module
 ## --                                - Remove SLNetwork
 ## -- 2023-03-10  0.4.3     DA       Class SLAdaptiveFunction: refactoring of constructor parameters
+## -- 2023-06-20  0.4.4     LSB      Moved the quality check to the adapt online method
+## -- 2023-06-20  0.5.0     LSB      New methods: adapt_offline and adapt_online
+## -- 2023-07-24  0.5.1     LSB      Merged the new methods back to _adapt method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.3 (2023-03-10)
+Ver. 0.5.1 (2023-06-24)
 
 This module provides model classes for supervised learning tasks. 
 """
 
 
+
 from mlpro.bf.ml import *
+from mlpro.sl.models_eval import Metric
+from typing import List
 
 
 
@@ -82,14 +88,16 @@ class SLAdaptiveFunction (AdaptiveFunction):
                   p_output_space : MSpace,
                   p_output_elem_cls=Element,
                   p_threshold=0,
-                  p_ada : bool = True, 
-                  p_buffer_size : int = 0, 
-                  p_name: str = None, 
-                  p_range_max: int = Async.C_RANGE_PROCESS, 
-                  p_autorun = Task.C_AUTORUN_NONE, 
-                  p_class_shared=None, 
+                  p_ada : bool = True,
+                  p_buffer_size : int = 0,
+                  p_metrics : List[Metric] = [],
+                  p_score_metric = None,
+                  p_name: str = None,
+                  p_range_max: int = Async.C_RANGE_PROCESS,
+                  p_autorun = Task.C_AUTORUN_NONE,
+                  p_class_shared=None,
                   p_visualize: bool = False, 
-                  p_logging=Log.C_LOG_ALL, 
+                  p_logging=Log.C_LOG_ALL,
                   **p_par ):
 
         super().__init__( p_input_space = p_input_space,
@@ -104,11 +112,28 @@ class SLAdaptiveFunction (AdaptiveFunction):
                           p_visualize = p_visualize,
                           p_logging = p_logging,
                           **p_par )                  
-        
+
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
+        self._metrics        = p_metrics
+
+        self._score_metric   = p_score_metric or p_metrics[0] if len(p_metrics) != 0 else None
+        if (self._score_metric is not None) and (self._score_metric not in self._metrics):
+            self._metrics.insert(0, self._score_metric)
+
+        # self.metric_variables = []
+        self._metric_space = ESpace()
+
+        for metric in self._metrics:
+            dims = metric.get_output_space().get_dims()
+            for dim in dims:
+                self._metric_space.add_dim(dim.copy())
+
+        self._metric_values = Element(self._metric_space)
+
         self._sl_model       = self._setup_model()
+        self._logging_set    = self._setup_logging_set()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -123,6 +148,34 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_input_space(self):
+        return self._input_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_output_space(self):
+        return self._output_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_logging_set(self) -> Set :
+
+        return Set()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_logging_set(self) -> Set:
+
+        return self._logging_set
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_logging_data(self) -> list :
+
+        return []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -153,32 +206,14 @@ class SLAdaptiveFunction (AdaptiveFunction):
             A set of data for offline learning
         """
 
-        if not self._adaptivity:
-            return False
-        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+        # if self._adaptivity:
+        #     self._set_adapted(self._adapt(p_input, p_output, p_dataset))
+        # else:
+        #     self._set_adapted(False)
+        adapted = Model.adapt(self, p_input=p_input, p_output = p_output, p_dataset=p_dataset)
 
-        # Quality check
-        if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
-            # Quality of function ok. No need to adapt.
-            self._mappings_total += 1
-            self._mappings_good += 1
 
-        else:
-            # Quality of function not ok. Adaptation is to be triggered.
-            self._set_adapted(self._adapt(p_input, p_output, p_dataset))
-            if self.get_adapted():
-                self._mappings_total = 1
-
-                # Second quality check after adaptation
-                if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
-                    self._mappings_good = 1
-                else:
-                    self._mappings_good = 0
-
-            else:
-                self._mappings_total += 1
-
-        return self.get_adapted()
+        return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -204,9 +239,42 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         if ( p_input is not None ) and ( p_output is not None ):
-            adapted = self._adapt_online(p_input, p_output)
+            if not self._adaptivity:
+                return False
+
+            self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+
+            adapted = False
+
+            if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+                # Quality of function ok. No need to adapt.
+                self._mappings_total += 1
+                self._mappings_good += 1
+
+            elif (p_input is not None) and (p_output is not None):
+                adapted = self._adapt_online(p_input, p_output)
+
+            if adapted:
+                self._mappings_total = 1
+
+                # Second quality check after adaptation
+                if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+                    self._mappings_good = 1
+                else:
+                    self._mappings_good = 0
+
+            else:
+                self._mappings_total += 1
+
         else:
-            adapted = self._adapt_offline(p_dataset)
+            adapted = False
+
+            self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+
+            if self._adaptivity:
+                adapted = self._adapt_offline(p_dataset)
+
+            return adapted
 
         return adapted
 
@@ -262,42 +330,40 @@ class SLAdaptiveFunction (AdaptiveFunction):
         return self._mappings_good / self._mappings_total
 
 
+## -------------------------------------------------------------------------------------------------
+    def get_metrics(self) -> list:
 
+        return self._metrics
 
 
 ## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SLScenario (Scenario):
-    """
-    To be designed.
-    """
+    def get_score_metric(self):
 
-    C_TYPE = 'SL-Scenario'
+        return self._score_metric
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_mode=Mode.C_MODE_SIM,
-                 p_ada: bool = True,
-                 p_cycle_limit: int = 0,
-                 p_visualize: bool = True, 
-                 _logging=Log.C_LOG_ALL):
-        raise NotImplementedError
+    def get_metric_space(self) -> ESpace:
 
-
-
+        return self._metric_space
 
 
 ## -------------------------------------------------------------------------------------------------
+    def calculate_metrics(self, p_data) -> Element:
+
+        val = []
+        for metric in self._metrics:
+            val.append(metric.compute(self, p_data))
+
+        self._metric_values = Element(self._metric_space)
+        self._metric_values.set_values(val)
+        return self._metric_values
+
+
 ## -------------------------------------------------------------------------------------------------
-class SLTraining (Training):
-    """
-    To be designed.
-    """
-
-    C_NAME = 'SL'
+    def get_current_metrics(self):
+        return self._metric_values
 
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, **p_kwargs):
-        raise NotImplementedError
+
+

@@ -230,6 +230,22 @@ class AFctBase (Model):
 class AFctSTrans (AFctBase, FctSTrans):
     """
     Online adaptive version of a state transition function. See parent classes for further details.
+
+
+    Parameters
+    ----------
+    p_afct_cls
+    p_state_space
+    p_action_space
+    p_input_space_cls
+    p_output_space_cls
+    p_output_elem_cls
+    p_threshold
+    p_buffer_size
+    p_ada
+    p_visualize
+    p_logging
+    p_par
     """
 
     C_TYPE = 'AFct STrans'
@@ -248,7 +264,6 @@ class AFctSTrans (AFctBase, FctSTrans):
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL,
                   **p_par):
-
         super().__init__(p_afct_cls,
                          p_state_space,
                          p_action_space,
@@ -264,8 +279,23 @@ class AFctSTrans (AFctBase, FctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
+    def _setup_spaces(self,
+                      p_state_space: MSpace,
+                      p_action_space: MSpace,
+                      p_input_space: MSpace,
                       p_output_space: MSpace):
+        """
+
+        Parameters
+        ----------
+        p_state_space
+        p_action_space
+        p_input_space
+        p_output_space
+
+        """
+
+
         # 1 Setup input space
         p_input_space.append( p_set=p_state_space )
         p_input_space.append( p_set=p_action_space, p_ignore_duplicates=True)
@@ -275,7 +305,23 @@ class AFctSTrans (AFctBase, FctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self,
+                           p_state: State,
+                           p_action: Action,
+                           p_t_step = None) -> State:
+        """
+
+        Parameters
+        ----------
+        p_state
+        p_action
+        p_t_step
+
+        Returns
+        -------
+
+        """
+
         # 1 Create input vector from given state and action
         input_values = p_state.get_values().copy()
         if isinstance(input_values, np.ndarray):
@@ -334,9 +380,21 @@ class AFctSuccess (AFctBase, FctSuccess):
     C_TYPE = 'AFct Success'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
+    def _setup_spaces(self,
+                      p_state_space: MSpace,
+                      p_action_space: MSpace,
+                      p_input_space: MSpace,
                       p_output_space: MSpace):
+        """
 
+        Parameters
+        ----------
+        p_state_space
+        p_action_space
+        p_input_space
+        p_output_space
+
+        """
         # 1 Setup input space
         p_input_space.append(p_state_space)
 
@@ -348,6 +406,16 @@ class AFctSuccess (AFctBase, FctSuccess):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state: State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = self._afct.map(p_state)
 
         if output.get_values()[0] >= 0.5:
@@ -357,6 +425,16 @@ class AFctSuccess (AFctBase, FctSuccess):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
@@ -386,7 +464,16 @@ class AFctBroken (AFctBase, FctBroken):
                        p_action_space:MSpace, 
                        p_input_space:MSpace,
                        p_output_space: MSpace ):
+        """
 
+        Parameters
+        ----------
+        p_state_space
+        p_action_space
+        p_input_space
+        p_output_space
+
+        """
         # 1 Setup input space
         p_input_space.append(p_state_space)
 
@@ -398,6 +485,16 @@ class AFctBroken (AFctBase, FctBroken):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = self._afct.map(p_state)
 
         if output.get_values()[0] >= 0.5:
@@ -407,6 +504,16 @@ class AFctBroken (AFctBase, FctBroken):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
@@ -425,17 +532,50 @@ class AFctBroken (AFctBase, FctBroken):
 ## -------------------------------------------------------------------------------------------------
 class ASystem(System, Model):
     """
-    This is a template class for Adaptive Systems
+    This ist a template class for Adaptive State Based System.
 
     Parameters
     ----------
+    p_id
+        Id of the system.
+    p_name:str
+        Name of the system.
+    p_range_max
+        Range of the system.
+    p_autorun
+        Whether the system should autorun as a Task.
+    p_class_shared
+        The shared class for multisystem.
     p_mode
-    p_latency
-    p_fct_strans
-    p_fct_success
-    p_fct_broken
-    p_visualize
+        Mode of the System. Simulation or real.
+    p_ada:bool
+        The adaptability of the system.
+    p_latency:timedelta
+        Latency of the system.
+    p_t_step:timedelta
+        Simulation timestep of the system.
+    p_fct_strans: FctSTrans | AFctSTrans
+        External state transition function.
+    p_fct_success: FctSuccess | AFctSuccess
+        External success computation function.
+    p_fct_broken: FctBroken | AFctBroken
+        External broken computation function.
+    p_mujoco_file
+        Mujoco file for simulation using mujoco engine.
+    p_frame_skip
+        Number of frames to be skipped during visualization.
+    p_state_mapping:
+        State mapping for Mujoco.
+    p_action_mapping:
+        Action Mapping for Mujoco.
+    p_camera_conf:
+        Camera Configuration for Mujoco.
+    p_visualize:
+        Visualization switch.
     p_logging
+        Logging level for the system.
+    p_kwargs
+        Additional Parameters
     """
 
     C_NAME = 'Adaptive Systems'
@@ -464,8 +604,32 @@ class ASystem(System, Model):
                  p_visualize: bool = False,
                  p_logging =Log.C_LOG_ALL,
                  **p_kwargs):
+        """
 
-
+        Parameters
+        ----------
+        p_id
+        p_name
+        p_range_max
+        p_autorun
+        p_class_shared
+        p_mode
+        p_ada
+        p_buffer_size
+        p_latency
+        p_t_step
+        p_fct_strans
+        p_fct_success
+        p_fct_broken
+        p_mujoco_file
+        p_frame_skip
+        p_state_mapping
+        p_action_mapping
+        p_camera_conf
+        p_visualize
+        p_logging
+        p_kwargs
+        """
         System.__init__(self,
                           p_id = p_id,
                           p_name =p_name,
@@ -508,21 +672,6 @@ class ASystem(System, Model):
                         **p_kwargs)
 
 
-    # ## -------------------------------------------------------------------------------------------------
-    #     def _set_adapted(self, p_adapted:bool):
-    #         """
-    #
-    #         Parameters
-    #         ----------
-    #         p_adapted
-    #
-    #         Returns
-    #         -------
-    #
-    #         """
-    #
-    #         Model._set_adapted(self, p_adapted=p_adapted)
-
 
 ## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada:bool):
@@ -564,29 +713,5 @@ class ASystem(System, Model):
             except:
                 pass
 
-        # try:
-        #     self._fct_strans.adapt(**p_kwargs)
-        #     adapted = self._fct_strans.get_adapted() or adapted
-        #
-        #
-        # except: adapted = adapted or False
-        #
-        #
-        #
-        # try:
-        #     self._fct_broken.adapt(**p_kwargs)
-        #     adapted = self._fct_broken.get_adapted() or adapted
-        #
-        #
-        # except: adapted = adapted or False
-        #
-        #
-        #
-        # try:
-        #     self._fct_success.adapt(**p_kwargs)
-        #     adapted = self._fct_success.get_adapted() or adapted
-        #
-        #
-        # except: adapted = adapted or False
 
         return adapted
