@@ -19,16 +19,16 @@
 ## -- 2022-01-21  1.1.6     MRD      Add recommended cycle limit and add seed parameter
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-11-09  1.1.8     DA       Refactoring due to changes on plot systematics
+## -- 2023-08-21  1.1.9     MRD      Remove Transformation package, and quaternion converter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.8 (2022-11-09)
+Ver. 1.1.9 (2023-08-21)
 
 This module provides an environment of a robot manipulator based on Homogeneous Matrix
 """
 
 import torch
-import transformations
 from mlpro.rl.models import *
 
 
@@ -235,28 +235,6 @@ class RobotArm3D:
     def update_theta(self, deltaTheta):
         self.thetas += deltaTheta.flatten()
 
-
-## -------------------------------------------------------------------------------------------------
-    def convert_to_quaternion(self):
-        origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
-        hm_reshape = self.HM.reshape(self.joints.shape[1], 4, 4)
-        hm_length = hm_reshape.shape[0]
-
-        out = torch.Tensor([])
-        for x in range(hm_length):
-            _, _, rot, trans, _ = transformations.decompose_matrix(hm_reshape[x].numpy())
-
-            qx = transformations.quaternion_about_axis(rot[0], xaxis)
-            qy = transformations.quaternion_about_axis(rot[1], yaxis)
-            qz = transformations.quaternion_about_axis(rot[2], zaxis)
-            q = transformations.quaternion_multiply(qx, qy)
-            q = transformations.quaternion_multiply(q, qz)
-
-            outs = torch.Tensor(trans)
-            outs = torch.cat([outs, torch.Tensor(q)])
-            out = torch.cat([out, outs])
-
-        return out
 
 
 
