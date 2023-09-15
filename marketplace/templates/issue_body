@@ -1,0 +1,19 @@
+A new extension for MLPro has been detected. Please check for plausibility and add the repo to the whitelist or blacklist of the marketplace.
+
+| | |
+|-|-|
+|**Title**|{title}|
+|**URL**|{url}|
+|**Version**|{version}|
+|**Topics**|{topics}|
+|**Description**|{desc}|
+
+
+**Checklist:**
+- [ ] **Plausibility check**
+   - [ ] Repo is no malware (mass generated pseudo-repo, dummy without senseful content, spam, ...)
+   - [ ] Repo has a concrete relation to MLPro 
+   - [ ] Repo fulfills minimum quality requirements (documenation, sample files, ...) 
+- [ ] **Repo has been whitelisted**
+- [ ] **Repo has been blacklisted**
+   - [ ] The reasons for this decision were commented in this issue
