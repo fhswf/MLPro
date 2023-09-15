@@ -75,7 +75,6 @@ class StreamMLProClouds (StreamMLProBase):
         self.num_dim = int(p_num_dim)
         self.radii = p_radii
         self.num_clouds = int(p_num_clouds)
-        self._num_instances = p_num_instances
         self.velocity = p_velocity
         self.centers = []
         self.centers_step = []
@@ -149,7 +148,7 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
 
-        if self._num_instances == 0: pass
+        if self.num_instances == 0: pass
 
         elif self._index == self._num_instances: raise StopIteration
 
