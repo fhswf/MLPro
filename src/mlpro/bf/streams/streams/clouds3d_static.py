@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-15  0.0.0     DA       Creation 
 ## -- 2022-12-15  1.0.0     DA       First draft implementation
+## -- 2023-05-02  1.0.1     DA       Removed boundaries from features
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-15)
+Ver. 1.0.1 (2023-05-02)
 
 This module provides the native stream class StreamMLProStaticClouds3D. This stream provides 2000 
 instances with 3-dimensional random feature data placed around eight fixed center points.
@@ -49,7 +50,7 @@ class StreamMLProStaticClouds3D (StreamMLProBase):
                                             p_base_set = Feature.C_BASE_SET_R,
                                             p_name_long = 'Feature #' + str(i),
                                             p_name_latex = '',
-                                            p_boundaries = self.C_BOUNDARIES,
+                                            # p_boundaries = self.C_BOUNDARIES,
                                             p_description = '',
                                             p_symmetrical = False,
                                             p_logging=Log.C_LOG_NOTHING ) )
