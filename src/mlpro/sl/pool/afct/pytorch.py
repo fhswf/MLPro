@@ -16,10 +16,13 @@
 ## -- 2023-03-10  3.0.2     SY        Refactoring PyTorchBuffer
 ## -- 2023-04-09  3.0.3     SY        Refactoring
 ## -- 2023-05-03  3.0.4     SY        Updating sampling method
+## -- 2023-06-20  3.0.5     LSB       Updating the sampling method
+## -- 2023-07-02  3.0.6     LSB       Refactoring the postproc and preproc methods
+## -- 2023-07-14  3.0.7     LSB       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.4 (2023-05-03)
+Ver. 3.0.7 (2023-07-14)
 
 This a helper module for supervised learning models using PyTorch. 
 """
@@ -153,22 +156,22 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         trainer         = {}
         tester          = {}
         
-        trainer["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                       batch_size=self._batch_size,
-                                                       sampler=train_sampler
-                                                       )
-        trainer["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                        batch_size=self._batch_size,
-                                                        sampler=train_sampler
-                                                        )
-        tester["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                      batch_size=self._batch_size,
-                                                      sampler=test_sampler
-                                                      )
-        tester["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                       batch_size=self._batch_size,
-                                                       sampler=test_sampler
-                                                       )
+        trainer = torch.utils.data.DataLoader(self,
+                                              batch_size=self._batch_size,
+                                              sampler=train_sampler
+                                              )
+        # trainer["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
+        #                                                 batch_size=self._batch_size,
+        #                                                 sampler=train_sampler
+        #                                                 )
+        tester = torch.utils.data.DataLoader(self,
+                                             batch_size=self._batch_size,
+                                             sampler=test_sampler
+                                             )
+        # tester["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
+        #                                                batch_size=self._batch_size,
+        #                                                sampler=test_sampler
+        #                                                )
         
         return trainer, tester
     
@@ -201,7 +204,8 @@ class PyTorchHelperFunctions():
         """
 
         # Convert p_input from Element to Tensor
-        input = torch.Tensor(np.array([p_input.get_values()]))
+        # input = torch.Tensor(np.array([p_input.get_values()]))
+        input = torch.Tensor(np.array(p_input.get_values()))
 
         # Preprocessing Data if needed
         try:
@@ -265,7 +269,7 @@ class PyTorchHelperFunctions():
             output = p_output
 
         # Convert output from Tensor to a list
-        output = output.detach().flatten().tolist()
+        output = output.detach().tolist()
 
         return output
 

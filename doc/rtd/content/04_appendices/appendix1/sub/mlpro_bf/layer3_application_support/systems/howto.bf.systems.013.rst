@@ -1,5 +1,5 @@
-.. _Howto BF SYSTEMS 004:
-Howto BF-SYSTEMS-004: MuJoCo Simulation with Camera
+.. _Howto BF SYSTEMS 013:
+Howto BF-SYSTEMS-013: MuJoCo Simulation with Camera
 ====================================================================
 
 Ver. 1.0.1 (2023-04-12)
@@ -27,7 +27,7 @@ You will learn:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_004_box_on_table_mujoco_simulation.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_013_box_on_table_mujoco_simulation.py
 	:language: python
 
 

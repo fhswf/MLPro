@@ -1,18 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_systems_003_cartpole_continuous_systems_wrapped_with_mujoco.py
+## -- Module  : howto_bf_systems_012_cartpole_continuous_systems_wrapped_with_mujoco.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-23  0.0.0     MRD       Creation
 ## -- 2023-02-23  1.0.0     MRD       Release
 ## -- 2023-03-07  1.0.1     MRD       Remove CartPoleSystem Class
+## -- 2023-04-19  1.0.2     LSB       Renamed the module
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2023-03-07)
+Ver. 1.0.1 (2023-04-19)
 
 This module demonstrates the principles of using classes System and uses MuJoCo wrapper to simulate 
 the pre-defined model.
