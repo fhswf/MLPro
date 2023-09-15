@@ -78,7 +78,7 @@ class StreamMLProClouds (StreamMLProBase):
         self.velocity = p_velocity
         self.centers = []
         self.centers_step = []
-        self.num_instances = p_num_instances
+        self.C_NUM_INSTANCES = p_num_instances
         self.behaviour = str.lower(p_behaviour)
 
 
@@ -148,9 +148,9 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
 
-        if self.num_instances == 0: pass
+        if self.C_NUM_INSTANCES== 0: pass
 
-        elif self._index == self._num_instances: raise StopIteration
+        elif self._index == self.C_NUM_INSTANCES: raise StopIteration
 
         if self.behaviour == 'dynamic':
             self.centers = self.centers + self.centers_step
