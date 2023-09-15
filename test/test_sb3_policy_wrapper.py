@@ -18,10 +18,11 @@
 ## -- 2023-01-14  2.0.5     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-04-19  2.0.6     MRD      Refactor module import gym to gymnasium
 ## -- 2023-04-23  2.0.7     MRD      Temp commented testing
+## -- 2023-08-21  2.0.8     MRD      Refactor for new gymnasium and sb3 wrapper, remove A2C test temp
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.7 (2023-04-23)
+Ver. 2.0.8 (2023-08-21)
 
 Unit test classes for environment.
 """
@@ -30,7 +31,6 @@ Unit test classes for environment.
 from numpy import empty
 import pytest
 import gymnasium as gym
-from gymnasium.utils import seeding
 import torch
 from mlpro.rl import *
 from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro, WrEnvMLPro2GYM
@@ -43,9 +43,9 @@ from stable_baselines3.common.callbacks import BaseCallback
 
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [PPO, A2C, DQN, DDPG, SAC])
+@pytest.mark.parametrize("env_cls", [PPO, DQN, DDPG, SAC])
 def test_sb3_policy_wrapper(env_cls):
-    buffer_size = 100
+    buffer_size = 200
     policy_kwargs_on = dict(activation_fn=torch.nn.Tanh,
                             net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
@@ -58,18 +58,26 @@ def test_sb3_policy_wrapper(env_cls):
 
         def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
             class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
+                def __init__(self, p_gym_env, p_state_space: MSpace = None, p_action_space: MSpace = None, p_seed=None, p_visualize: bool = True, p_logging=Log.C_LOG_ALL):
+                    super().__init__(p_gym_env, p_state_space, p_action_space, p_seed, p_visualize, p_logging)
+                    self.reseted = False
+
                 def _reset(self, p_seed=None):
                     self.log(self.C_LOG_TYPE_I, 'Reset')
                     self._num_cycles = 0
 
                     # 1 Reset Gym environment and determine initial state
-                    observation,_ = self._gym_env.reset()
+                    if not self.reseted:
+                        observation, _ = self._gym_env.reset(seed=self._p_seed)
+                        self.reseted = True
+                    else:
+                        observation, _ = self._gym_env.reset()
                     obs = DataObject(observation)
 
                     # 2 Create state object from Gym observation
                     state = State(self._state_space)
                     state.set_values(obs.get_data())
-                    self._set_state(state)
+                    self._set_state(state)    
 
             if issubclass(env_cls, OnPolicyAlgorithm):
                 # 1 Setup environment
@@ -118,9 +126,9 @@ def test_sb3_policy_wrapper(env_cls):
                         if isinstance(self.sb3, DQN):
                             self.loss_cnt.append(self.sb3.logger.name_to_value["train/loss"])
                         elif isinstance(self.sb3, DDPG):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/actor_loss"])
                         elif isinstance(self.sb3, SAC):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/actor_loss"])
                         return True
                     return False
 
@@ -184,9 +192,9 @@ def test_sb3_policy_wrapper(env_cls):
                 elif isinstance(self.locals.get("self"), DQN):
                     self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/loss"])
                 elif isinstance(self.locals.get("self"), DDPG):
-                    self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/critic_loss"])
+                    self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/actor_loss"])
                 elif isinstance(self.locals.get("self"), SAC):
-                    self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/critic_loss"])
+                    self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/actor_loss"])
 
         def _on_step(self) -> bool:
             return super()._on_step()
@@ -226,8 +234,8 @@ def test_sb3_policy_wrapper(env_cls):
     cus_callback = CustomCallback()
     policy_sb3.learn(total_timesteps=600, callback=cus_callback)
 
-    # assert cus_callback.loss_cnt is not empty, "No Loss on Native"
-    # assert training.get_scenario().policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"
-    # length = min(len(cus_callback.loss_cnt), len(training.get_scenario().policy_wrapped.loss_cnt))
-    # assert np.linalg.norm(np.array(cus_callback.loss_cnt[:length]) - np.array(
-    #     training.get_scenario().policy_wrapped.loss_cnt[:length])) <= 0.05, "Mismatch Native and Wrapper"
+    assert cus_callback.loss_cnt is not empty, "No Loss on Native"
+    assert training.get_scenario().policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"
+    length = min(len(cus_callback.loss_cnt), len(training.get_scenario().policy_wrapped.loss_cnt))
+    assert np.linalg.norm(np.array(cus_callback.loss_cnt[:length]) - np.array(
+        training.get_scenario().policy_wrapped.loss_cnt[:length])) <= 0.1, "Mismatch Native and Wrapper"

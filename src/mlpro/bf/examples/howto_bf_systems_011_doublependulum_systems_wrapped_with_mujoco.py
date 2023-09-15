@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco.py
+## -- Module  : howto_bf_systems_011_doublependulum_systems_wrapped_with_mujoco.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -11,11 +11,12 @@
 ## -- 2023-02-13  1.0.2     MRD       Refactor
 ## -- 2023-02-23  1.0.3     MRD       Rename file
 ## -- 2023-03-08  1.0.4     MRD       Remove Custom class
+## -- 2023-04-19  1.0.5     LSB       Renamed the module
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.3 (2023-03-08)
+Ver. 1.0.5 (2023-04-19)
 
 This module demonstrates the principles of using classes System and uses MuJoCo wrapper to simulate 
 the pre-defined model.

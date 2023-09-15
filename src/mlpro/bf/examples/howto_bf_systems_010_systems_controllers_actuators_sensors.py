@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_systems_001_systems_controllers_actuators_sensors.py
+## -- Module  : howto_bf_systems_010_systems_controllers_actuators_sensors.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-05  1.0.0     DA       Creation
 ## -- 2022-12-09  1.1.0     DA       Simplification
+## -- 2023-04-19  1.1.1     LSB      Renamed the module
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-12-09)
+Ver. 1.1.1 (2023-04-19)
 
 This module demonstrates the principles of using classes System, Controller, Actuator and Sensor. To
 this regard we assume a custom system with two state and action components and a custom controller
