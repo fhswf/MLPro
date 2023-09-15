@@ -19,11 +19,12 @@
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
 ## -- 2023-03-08  2.0.1     SY       Refactoring
 ## -- 2023-03-10  2.0.2     SY       Renumbering module
-## -- 2023-08-21  2.0.3     MRD      Change transformation to scipy
+## -- 2023-07-03  2.0.3     SY       Minor Refacoring due to reduntant batch size handling in input preproc
+## -- 2023-08-21  2.0.4     MRD      Change transformation to scipy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.3 (2023-08-21)
+Ver. 2.0.4 (2023-08-21)
 
 This module demonstrates model-based reinforcement learning (MBRL) with native algorithm and
 action planner using MPC.
@@ -360,9 +361,9 @@ class RobothtmAFct(SLAdaptiveFunction, PyTorchHelperFunctions):
 
 ## -------------------------------------------------------------------------------------------------
     def _input_preproc(self, p_input: torch.Tensor) -> torch.Tensor:
-        input = torch.cat([p_input[0][6+self.joint_num:], p_input[0][6:6+self.joint_num]])
+        input = torch.cat([p_input[6+self.joint_num:], p_input[6:6+self.joint_num]])
         input = input.reshape(1,self.joint_num*2)
-        self.input_temp = p_input[0][:3].reshape(1,3)
+        self.input_temp = p_input[:3].reshape(1,3)
         
         return input
 

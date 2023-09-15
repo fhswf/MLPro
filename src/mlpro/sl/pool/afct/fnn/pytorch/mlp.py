@@ -11,20 +11,19 @@
 ## -- 2023-03-28  1.2.0     SY       - Add _complete_state, _reduce_state due to new class Persistent
 ## --                                - Update _map
 ## -- 2023-05-03  1.2.1     SY       Updating _adapt_offline method
+## -- 2023-06-21  1.2.2     LSB      Updating _adapt_offline method
+## -- 2023-07-04  1.2.3     LSB      Refactoring _complete_state for path conflict
+## -- 2023-07-14  1.2.4     LSB      Refactoring for afct fct parameter, so it is provided after instanciating
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-05-03)
+Ver. 1.2.4 (2023-07-14)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
-
-
+import torch
 from mlpro.sl.pool.afct.pytorch import *
-from mlpro.sl import *
-
-
-
+from mlpro.sl.fnn import MLP
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -116,15 +115,15 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             if hd == 0:
                 act_input_size  = self.get_hyperparam().get_value(ids_[0])
                 output_size     = self.get_hyperparam().get_value(ids_[4])[hd]
-                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]()
+                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]
             elif hd == self.get_hyperparam().get_value(ids_[3]):
                 act_input_size  = self.get_hyperparam().get_value(ids_[4])[hd-1]
                 output_size     = self.get_hyperparam().get_value(ids_[1])
-                act_fct         = self.get_hyperparam().get_value(ids_[6])()
+                act_fct         = self.get_hyperparam().get_value(ids_[6])
             else:
                 act_input_size  = self.get_hyperparam().get_value(ids_[4])[hd-1]
                 output_size     = self.get_hyperparam().get_value(ids_[4])[hd]
-                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]()
+                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]
             
             if self.get_hyperparam().get_value(ids_[13]):
                 modules.append(init_(torch.nn.Linear(int(act_input_size), int(output_size))))
@@ -442,15 +441,25 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
         self._sl_model.train()
         
-        for itr in range(len(p_dataset["input"])):
+        for input, target in p_dataset:
+
+            try:
+                input = torch.tensor(input.get_values(), dtype=torch.float)
+                target = torch.tensor(target.get_values(), dtype=torch.float)
+            except:
+                pass
+
+            torch.manual_seed(self._sampling_seed)
+            outputs = self.forward(torch.squeeze(input))
             
             torch.manual_seed(self._sampling_seed)
-            outputs = self.forward(torch.squeeze(next(iter(p_dataset["input"]))))
-            
-            torch.manual_seed(self._sampling_seed)
-            loss    = self._calc_loss(outputs, torch.squeeze(next(iter(p_dataset["output"]))))
-            
-            self._optimize(loss)
+            self._loss    = self._calc_loss(outputs, torch.squeeze(target))
+
+            self._optimize(self._loss)
+
+            if isinstance(self._loss, torch.Tensor):
+                self._loss = self._loss.item()
+
             self._sampling_seed += 1
             
         return True
@@ -475,7 +484,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         BatchSize   = p_input.shape[0]
         output      = self._sl_model(p_input)   
         ids_        = self.get_hyperparam().get_dim_ids()
-        output      = output.reshape(BatchSize, int(self.get_hyperparam().get_value(ids_[1])))
+        # output      = output.reshape(BatchSize, int(self.get_hyperparam().get_value(ids_[1])))
         
         return output
 
@@ -485,6 +494,8 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         
         torch.save(p_state['_sl_model'].state_dict(),
                    p_path + p_os_sep + p_filename_stub + '_model.pt')
+        # print(p_state['_sl_model'].state_dict())
+
         torch.save(p_state['_optimizer'].state_dict(),
                    p_path + p_os_sep + p_filename_stub + '_optimizer.pt')
         
@@ -494,9 +505,15 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
 ## -------------------------------------------------------------------------------------------------
     def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
-        
-        load_model      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt')
-        load_optim      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_optimizer.pt')
+        try:
+            load_model = torch.load(p_path + p_os_sep + p_filename_stub + '_model.pt')
+        except:
+            load_model      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt')
+        # print(load_model)
+        try:
+            load_optim = torch.load(p_path + p_os_sep + p_filename_stub + '_optimizer.pt')
+        except:
+            load_optim      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_optimizer.pt')
         self._sl_model  = self._setup_model()
         self._sl_model.load_state_dict(load_model)
         self._optimizer.load_state_dict(load_optim)
