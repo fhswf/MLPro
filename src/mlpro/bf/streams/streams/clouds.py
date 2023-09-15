@@ -54,7 +54,6 @@ class StreamMLProClouds (StreamMLProBase):
     C_NAME                  = 'Clouds N-Dim'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
-    _num_instances         = 0
     C_BEHAVIOUR             = ['static', 'dynamic']
     C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
     C_BOUNDARIES            = [-1000,1000]
