@@ -7,17 +7,17 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-15  0.0.0     DA       Creation 
 ## -- 2022-12-15  1.0.0     DA       First draft implementation
+## -- 2023-05-02  1.0.1     DA       Removed boundaries from features
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-15)
+Ver. 1.0.1 (2023-05-02)
 
 This module provides the native stream class StreamMLProStaticClouds2D. This stream provides 1000 
 instances with 2-dimensional random feature data placed around four fixed center points.
 """
 
 import numpy as np
-import math
 from mlpro.bf.streams.models import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
@@ -49,7 +49,7 @@ class StreamMLProStaticClouds2D (StreamMLProBase):
                                             p_base_set = Feature.C_BASE_SET_R,
                                             p_name_long = 'Feature #' + str(i),
                                             p_name_latex = '',
-                                            p_boundaries = self.C_BOUNDARIES,
+                                            # p_boundaries = self.C_BOUNDARIES,
                                             p_description = '',
                                             p_symmetrical = False,
                                             p_logging=Log.C_LOG_NOTHING ) )
