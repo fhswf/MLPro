@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-12  1.0.0     DA       Adapted from howto_bf_stream_task_deriver
+## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-02-12)
+Ver. 1.1.0 (2023-04-10)
 
 This module was adapted from howto_bf_streams_114_stream_task_deriver. It adds an online adaptive
 boundary detector and min/max normalizer task to the workflow.
@@ -48,17 +49,18 @@ class MyScenario (OAScenario):
     C_NAME      = 'Demo Deriver'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize: bool, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1 Import a native stream from MLPro
         provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
         stream = provider_mlpro.get_stream('DoubleSpiral2D', p_mode=p_mode, p_logging=p_logging)
 
         # 2 Set up a stream workflow 
-        workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=Task.C_RANGE_NONE, 
-                                   p_visualize=p_visualize,
-                                   p_logging=logging )
+        workflow = OAWorkflow( p_name='wf1', 
+                               p_range_max=Task.C_RANGE_NONE, 
+                               p_ada=p_ada,
+                               p_visualize=p_visualize,
+                               p_logging=logging )
         
         # 2.1 Set up and add a rearranger task to reduce the feature and label space
         features = stream.get_feature_space().get_dims()

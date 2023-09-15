@@ -11,10 +11,11 @@
 ## -- 2023-03-10  1.0.3     SY       Refactoring
 ## -- 2023-03-27  1.0.4     DA       Refactoring
 ## -- 2023-04-19  1.0.5     MRD      Refactor module import gym to gymnasium
+## -- 2023-07-15  1.0.6     LSB       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2023-04-19)
+Ver. 1.0.6 (2023-07-15)
 
 This module shows how to train a single agent in MBRL and load it again to do some extra cycles.
 
@@ -99,8 +100,8 @@ class MyScenario (RLScenario):
                                   p_update_rate=1,
                                   p_num_hidden_layers=3,
                                   p_hidden_size=128,
-                                  p_activation_fct=torch.nn.ReLU,
-                                  p_output_activation_fct=torch.nn.ReLU,
+                                  p_activation_fct=torch.nn.ReLU(),
+                                  p_output_activation_fct=torch.nn.ReLU(),
                                   p_optimizer=torch.optim.Adam,
                                   p_loss_fct=torch.nn.MSELoss,
                                   p_learning_rate=3e-4 )
@@ -117,8 +118,8 @@ class MyScenario (RLScenario):
                                   p_update_rate=1,
                                   p_num_hidden_layers=3,
                                   p_hidden_size=128,
-                                  p_activation_fct=torch.nn.ReLU,
-                                  p_output_activation_fct=torch.nn.ReLU,
+                                  p_activation_fct=torch.nn.ReLU(),
+                                  p_output_activation_fct=torch.nn.ReLU(),
                                   p_optimizer=torch.optim.Adam,
                                   p_loss_fct=torch.nn.MSELoss,
                                   p_learning_rate=3e-4 )

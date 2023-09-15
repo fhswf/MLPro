@@ -9,10 +9,12 @@
 ## -- 2022-12-20  0.1.0     DA       Supplements
 ## -- 2023-01-01  1.0.0     DA       Completion
 ## -- 2023-01-09  1.1.0     DA       User input of cycles and visualization step rate
+## -- 2023-04-10  1.2.0     DA       Refactoring after changes on class OAScenario
+## -- 2023-05-20  1.2.1     DA       Registered handler of boundary detector to window
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-01-09)
+Ver. 1.2.1 (2023-05-20)
 
 This module is an example of adaptive normalization of streaming data using MinMax normalizer. To 
 this regard, an online-adadptive custom scenario is set up. It combines a native 10-dimensional 
@@ -38,7 +40,6 @@ from mlpro.oa.streams import *
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MyAdaptiveScenario (OAScenario):
@@ -46,7 +47,7 @@ class MyAdaptiveScenario (OAScenario):
     C_NAME = 'Dummy'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize:bool, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1 Prepare a native stream from MLPro
         mlpro  = StreamProviderMLPro(p_logging=p_logging)
@@ -61,7 +62,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2.1 Creation of a workflow
         workflow = OAWorkflow( p_name='wf1',
                                p_range_max=OAWorkflow.C_RANGE_NONE,
-                               p_ada=True,
+                               p_ada=p_ada,
                                p_visualize=p_visualize, 
                                p_logging=p_logging )
 
@@ -95,9 +96,9 @@ class MyAdaptiveScenario (OAScenario):
         task_bd = BoundaryDetector( p_name='t3', 
                                     p_ada=True, 
                                     p_visualize=True,   
-                                    p_logging=p_logging,
-                                    p_window=task_window )
+                                    p_logging=p_logging )
 
+        task_window.register_event_handler( p_event_id=Window.C_EVENT_DATA_REMOVED, p_event_handler=task_bd.adapt_on_event )
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
         # # 2.2.4 MinMax-Normalizer
@@ -107,7 +108,6 @@ class MyAdaptiveScenario (OAScenario):
                                              p_logging=p_logging )
 
         task_bd.register_event_handler( p_event_id=BoundaryDetector.C_EVENT_ADAPTED, p_event_handler=task_norm_minmax.adapt_on_event )
-
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
 
