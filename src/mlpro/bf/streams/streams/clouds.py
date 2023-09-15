@@ -5,12 +5,13 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-08-29  0.0.0     SR       Creation 
+## -- 2023-08-29  0.0.0     SR       Creation
 ## -- 2023-08-29  1.0.0     SR       First draft implementation
+## -- 2023-09-15  1.0.1     LSB      Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-08-29)
+Ver. 1.0.1 (2023-09-15)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -149,7 +150,7 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
 
-        if self.C_NUM_INSTANCES == 0: pass
+        if self.C_NUM_INSTANCES == 0: raise StopIteration
 
         elif self._index == self.C_NUM_INSTANCES: raise StopIteration
 
