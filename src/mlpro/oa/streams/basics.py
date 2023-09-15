@@ -15,10 +15,12 @@
 ## -- 2023-01-01  0.6.0     DA       Refactoring
 ## -- 2023-02-23  0.6.1     DA       Removed class OAFunction
 ## -- 2023-03-27  0.6.1     DA       Refactoring
+## -- 2023-04-09  0.7.0     DA       Class OATask: new methods adapt(), _adapt(), adapt_reverse()
+## -- 2023-05-15  0.7.1     DA       Class OATask: new parameter p_buffer_size
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.1 (2023-03-27)
+Ver. 0.7.1 (2023-05-15)
 
 Core classes for online adaptive stream processing.
 """
@@ -28,6 +30,8 @@ from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.ml import *
 import mlpro.sl as sl
+
+from typing import List
 
 
 
@@ -59,6 +63,8 @@ class OATask (StreamTask, Model):
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_duplicate_data : bool
         If True, instances will be duplicated before processing. Default = False.
     p_visualize : bool
@@ -81,6 +87,7 @@ class OATask (StreamTask, Model):
                   p_name: str = None, 
                   p_range_max = StreamTask.C_RANGE_THREAD, 
                   p_ada : bool = True, 
+                  p_buffer_size : int = 0,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
@@ -92,7 +99,7 @@ class OATask (StreamTask, Model):
                         p_range_max = p_range_max,
                         p_autorun = Task.C_AUTORUN_NONE,
                         p_class_shared = None,
-                        p_buffer_size = 0,
+                        p_buffer_size = p_buffer_size,
                         p_visualize = p_visualize,
                         p_logging = p_logging )    
 
@@ -106,14 +113,50 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:list, p_inst_del:list) -> bool:
+    def adapt(self, p_inst_new:List[Instance], p_inst_del:List[Instance]) -> bool:
+        if not self._adaptivity: return False
+
+        if len(p_inst_new) > 0:
+            self.log(self.C_LOG_TYPE_S, 'Adaptation started')
+            adapted = self._adapt( p_inst_new=p_inst_new )
+        else:
+            adapted = False
+
+        if len(p_inst_del) > 0:
+            self.log(self.C_LOG_TYPE_S, 'Reverse adaptation started')
+            adapted = adapted or self._adapt_reverse( p_inst_del=p_inst_del )
+
+        self._set_adapted( p_adapted = adapted )
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_inst_new:List[Instance]) -> bool:
         """
-        Custom method for adaptations during regular operation. See method _run() for further informmation.
+        Obligatory custom method for adaptations during regular operation. 
 
         Parameters
         ----------
         p_inst_new : list
             List of new stream instances to be processed.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something has been adapted. False otherwise.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_reverse(self, p_inst_del:List[Instance]) -> bool:
+        """
+        Optional custom method for reverse adaptations during regular operation. 
+
+        Parameters
+        ----------
         p_inst_del : list
             List of obsolete stream instances to be removed.
 
@@ -123,7 +166,7 @@ class OATask (StreamTask, Model):
             True, if something has been adapted. False otherwise.
         """
 
-        raise NotImplementedError
+        return False
 
 
 
@@ -195,10 +238,79 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
 # -------------------------------------------------------------------------------------------------
 class OAScenario (StreamScenario): 
     """
-    ...
+    Template class for stream based scenarios with online adaptive workflows. 
+
+    Parameters
+    ----------
+    p_mode
+        Operation mode. See bf.ops.Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_cycle_limit : int
+        Maximum number of cycles (0=no limit, -1=get from env). Default = 0.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
     
     C_TYPE      = 'OA-Scenario'
+
+# -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_mode = Mode.C_MODE_SIM,  
+                  p_ada : bool = True,  
+                  p_cycle_limit = 0, 
+                  p_visualize : bool = False, 
+                  p_logging = Log.C_LOG_ALL ):
+        
+        self._ada = p_ada
+
+        super().__init__( p_mode = p_mode, 
+                          p_cycle_limit = p_cycle_limit, 
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging )
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup(self):
+        """
+        Specialized method to set up an oa stream scenario. It is automatically called by the 
+        constructor and calls in turn the custom method _setup().
+        """
+
+        self._stream, self._workflow = self._setup( p_mode = self.get_mode(),
+                                                    p_ada = self._ada, 
+                                                    p_visualize = self.get_visualization(),
+                                                    p_logging = self.get_log_level() )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging):
+        """
+        Custom method to set up a stream scenario consisting of a stream and a processing stream
+        workflow.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_ada : bool
+            Boolean switch for adaptivitiy. Default = True.
+        p_visualize : bool
+            Boolean switch for visualisation.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+
+        Returns
+        -------
+        stream : Stream
+            A stream object.
+        workflow : OAWorkflow
+            An online adaptive stream workflow object.
+        """
+
+        raise NotImplementedError
 
 
 

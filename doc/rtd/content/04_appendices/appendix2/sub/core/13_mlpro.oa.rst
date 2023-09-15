@@ -2,4 +2,8 @@
 MLPro-OA - Online Adaptivity
 ============================
 
-Coming soon...
+.. toctree::
+   :maxdepth: 2
+   :glob:
+   
+   mlpro_oa/*
