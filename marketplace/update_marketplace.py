@@ -10,10 +10,11 @@
 ## -- 2023-09-12  0.3.0     DA       Refactoring
 ## -- 2023-09-13  0.4.0     DA       Issue management implemented
 ## -- 2023-09-14  0.5.0     DA       Issue commenting implemented
+## -- 2023-09-15  1.0.0     DA       First implementation completed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2023-09-14)
+Ver. 1.0.0 (2023-09-15)
 
 This standalone module collects meta data of all whitelisted GitHub repositories based on the
 template repo /fhswf/MLPro-Extension.
@@ -21,6 +22,7 @@ template repo /fhswf/MLPro-Extension.
 
 
 import sys, os.path, time
+import shutil
 from mlpro.bf.various import Log
 from github import Auth, Github, Issue
 
@@ -36,16 +38,21 @@ class Marketplace (Log):
 
     C_FNAME_WHITELIST           = 'whitelist'
     C_FNAME_BLACKLIST           = 'blacklist'
+
     C_FNAME_TPL_ISSUE_BODY      = 'templates' + os.sep + 'issue_body'
     C_FNAME_TPL_ISSUE_COMMENT   = 'templates' + os.sep + 'issue_comment'
-    C_FNAME_TPL_RTD_EXENSION    = 'templates' + os.sep + 'rtd_extension'
+    C_FNAME_TPL_RTD_EXT_OWNER   = 'templates' + os.sep + 'rtd_ext_owner.rst'
+    C_FNAME_TPL_RTD_EXT_REPO    = 'templates' + os.sep + 'rtd_ext_repo.rst'
+
+    C_PATH_RTD_ORG              = '01_extensions_org' + os.sep + 'org'
+    C_PATH_RTD_USR              = '02_extensions_user' + os.sep + 'users'
     
     C_STATUS_APPROVED           = 'Approved'
     C_STATUS_DENIED             = 'Denied'
     C_STATUS_PENDING            = 'Pending'
     
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_token, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_token, p_rtd_path, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
 
         if p_token is not None:
@@ -54,7 +61,9 @@ class Marketplace (Log):
             self.gh = None
             self.log(Log.C_LOG_TYPE_E, 'Please provide valid Github access token as first parameter')
 
-        self._extension_issues = None
+        self._rtd_path_org      = sys.path[0] + os.sep + p_rtd_path + self.C_PATH_RTD_ORG
+        self._rtd_path_usr      = sys.path[0] + os.sep + p_rtd_path + self.C_PATH_RTD_USR
+        self._extension_issues  = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -100,29 +109,32 @@ class Marketplace (Log):
                 status = self.C_STATUS_PENDING
 
             try:
-                org = extensions[status][repo.organization.login]
+                owner = extensions[status][repo.owner.login]
             except:
-                org = {}
-                org['name']     = repo.organization.name
-                org['location'] = repo.organization.location
-                org['html_url'] = repo.organization.html_url
-                org['repos']    = []
-                extensions[status][repo.organization.login] = org
+                owner = {}
+                owner['name']     = repo.owner.name
+                owner['bio']      = repo.owner.bio
+                owner['blog']     = repo.owner.blog
+                owner['location'] = repo.owner.location
+                owner['html_url'] = repo.owner.html_url
+                owner['type']     = repo.owner.type
+                owner['repos']    = []
+                extensions[status][repo.owner.login] = owner
 
             repo_admins = []
             for collaborator in repo.get_collaborators():
                 if repo.get_collaborator_permission(collaborator.login) == 'admin': repo_admins.append(collaborator.login)
 
-            org['repos'].append( ( repo.full_name,
-                                   repo.name,
-                                   repo.description, 
-                                   latest_release.tag_name,
-                                   latest_release.title,
-                                   latest_release.last_modified,
-                                   repo.html_url,
-                                   repo.homepage,
-                                   repo.topics,
-                                   repo_admins ) )
+            owner['repos'].append( ( repo.full_name,
+                                     repo.name,
+                                     repo.description, 
+                                     latest_release.tag_name,
+                                     latest_release.title,
+                                     latest_release.last_modified,
+                                     repo.html_url,
+                                     repo.homepage,
+                                     repo.topics,
+                                     repo_admins ) )
 
 
         # 4 Outro
@@ -244,16 +256,93 @@ class Marketplace (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _build_marketplace_db(self, p_approved_extensions : list):
+    def _build_rtd_owner_repo(self, p_repo_data, p_path):
+
+        self.log(Log.C_LOG_TYPE_I, 'Adding extension', p_repo_data[1], '...')
+
+        if ( p_repo_data[4] == p_repo_data[3] ) or ( p_repo_data[4] == '' ):
+            vertext = ''
+        else:
+            vertext = ' - ' + p_repo_data[4]
+
+        topics = ', '.join( p_repo_data[8] )
+
+        with open( sys.path[0] + os.sep + self.C_FNAME_TPL_RTD_EXT_REPO ) as f:
+            repo_body = f.read().format( vars='variables', 
+                                          name=p_repo_data[1], 
+                                          topics=topics, 
+                                          desc=p_repo_data[2], 
+                                          ver=p_repo_data[3], 
+                                          vertext=vertext, 
+                                          modified=p_repo_data[5], 
+                                          url_github=p_repo_data[6], 
+                                          url=p_repo_data[7] )
+
+        with open( p_path + os.sep + p_repo_data[1] + '.rst', 'w' ) as f:
+            f.write(repo_body)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _build_rtd_owner_structure(self, p_owner, p_data):
 
         # 0 Intro
-        self.log(Log.C_LOG_TYPE_S, 'Start building marketplace DB...')
+        self.log(Log.C_LOG_TYPE_I, 'Start building RTD documentation for owner', p_owner)
 
-        # 1 Reporting
-        self.log(Log.C_LOG_TYPE_E, 'Not yet implemented')
+        if p_data['type'] == 'Organization':
+            path = self._rtd_path_org
+        else:
+            path = self._rtd_path_usr
 
-        # 2 Outro
-        self.log(Log.C_LOG_TYPE_S, 'End of building marketplace DB')
+
+        # 1 Create owner file and folder
+        path_owner = path + os.sep + p_owner
+        os.mkdir(path_owner)
+
+        with open( sys.path[0] + os.sep + self.C_FNAME_TPL_RTD_EXT_OWNER ) as f:
+            owner_body = f.read().format( vars='variables', owner=p_owner, name=p_data['name'], location=p_data['location'], bio=p_data['bio'], blog=p_data['blog'], html_url=p_data['html_url'] )
+
+        with open( path + os.sep + p_owner + '.rst', 'w' ) as f:
+            f.write(owner_body)
+        
+
+        # 2 Create rtd files for each extension
+        for repo_data in p_data['repos']:
+            self._build_rtd_owner_repo(repo_data, path_owner)
+
+
+        # 3 Outro
+        self.log(Log.C_LOG_TYPE_I, 'End of building RTD documentation for owner', p_owner)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _build_rtd_documentation(self, p_approved_extensions : list):
+
+        # 0 Intro
+        self.log(Log.C_LOG_TYPE_S, 'Start building RTD documentation')
+
+        
+        # 1 Clear destination folders in RTD
+        try:
+            shutil.rmtree(self._rtd_path_org)
+        except:
+            pass
+
+        try:
+            shutil.rmtree(self._rtd_path_usr)
+        except:
+            pass
+
+        os.mkdir(self._rtd_path_org)
+        os.mkdir(self._rtd_path_usr)
+
+
+        # 2 Create folder and file structure for each owner
+        for owner in p_approved_extensions.keys():
+            self._build_rtd_owner_structure( p_owner=owner, p_data=p_approved_extensions[owner])
+            
+
+        # 3 Outro
+        self.log(Log.C_LOG_TYPE_S, 'End of building RTD documentation')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -275,8 +364,8 @@ class Marketplace (Log):
             self.log(Log.C_LOG_TYPE_I, 'No pending MLPro extensions detected')
 
 
-        # 3 Build of MLPro marketplace DB file
-        self._build_marketplace_db( extensions[self.C_STATUS_APPROVED] )
+        # 3 Build of MLPro marketplace documentation
+        self._build_rtd_documentation( extensions[self.C_STATUS_APPROVED] )
         
         
 
@@ -288,4 +377,4 @@ try:
 except:
     token = None
 
-Marketplace( p_token=token ).update()
+Marketplace( p_token=token, p_rtd_path=sys.argv[2] ).update()
