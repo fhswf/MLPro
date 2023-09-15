@@ -8,10 +8,11 @@
 ## -- 2023-04-09  0.0.0     MRD      Copied from openai_gym wrapper
 ## -- 2023-04-10  1.0.0     MRD      First Release 
 ## -- 2023-04-19  1.0.1     MRD      Refactor reset function
+## -- 2023-08-21  1.0.2     MRD      Saving the seed in variable self._p_seed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-04-19)
+Ver. 1.0.2 (2023-08-21)
 
 This module provides wrapper classes for Gym environments from Farama-Foundation Gymnasium.
 
@@ -63,6 +64,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
                  p_logging=Log.C_LOG_ALL):
 
         self._gym_env = p_gym_env
+        self._p_seed = p_seed
             
         self._gym_env_id = self._gym_env.env.spec.id
         self.C_NAME      = '(' + self._gym_env_id + ')'
@@ -81,7 +83,6 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
             self._action_space = self.recognize_space(self._gym_env.action_space)
         
         self.log(self.C_LOG_TYPE_I, 'Gym Environment has been sucessfully wrapped as MLPro Environment.')
-        WrEnvGYM2MLPro._reset(self, p_seed=p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
