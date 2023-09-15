@@ -10,10 +10,11 @@
 ## -- 2023-09-12  0.3.0     DA       Refactoring
 ## -- 2023-09-13  0.4.0     DA       Issue management implemented
 ## -- 2023-09-14  0.5.0     DA       Issue commenting implemented
+## -- 2023-09-15  1.0.0     DA       First implementation completed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2023-09-14)
+Ver. 1.0.0 (2023-09-15)
 
 This standalone module collects meta data of all whitelisted GitHub repositories based on the
 template repo /fhswf/MLPro-Extension.
@@ -43,8 +44,8 @@ class Marketplace (Log):
     C_FNAME_TPL_RTD_EXT_OWNER   = 'templates' + os.sep + 'rtd_ext_owner.rst'
     C_FNAME_TPL_RTD_EXT_REPO    = 'templates' + os.sep + 'rtd_ext_repo.rst'
 
-    C_PATH_RTD_ORG              = '01_extensions_org' + os.sep + 'org_test'
-    C_PATH_RTD_USR              = '02_extensions_user' + os.sep + 'users_test'
+    C_PATH_RTD_ORG              = '01_extensions_org' + os.sep + 'org'
+    C_PATH_RTD_USR              = '02_extensions_user' + os.sep + 'users'
     
     C_STATUS_APPROVED           = 'Approved'
     C_STATUS_DENIED             = 'Denied'
@@ -255,14 +256,38 @@ class Marketplace (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _build_rtd_owner_repo(self, p_repo_data):
-        pass
+    def _build_rtd_owner_repo(self, p_repo_data, p_path):
+
+        self.log(Log.C_LOG_TYPE_I, 'Adding extension', p_repo_data[1], '...')
+
+        if ( p_repo_data[4] == p_repo_data[3] ) or ( p_repo_data[4] == '' ):
+            vertext = ''
+        else:
+            vertext = ' - ' + p_repo_data[4]
+
+        topics = ', '.join( p_repo_data[8] )
+
+        with open( sys.path[0] + os.sep + self.C_FNAME_TPL_RTD_EXT_REPO ) as f:
+            repo_body = f.read().format( vars='variables', 
+                                          name=p_repo_data[1], 
+                                          topics=topics, 
+                                          desc=p_repo_data[2], 
+                                          ver=p_repo_data[3], 
+                                          vertext=vertext, 
+                                          modified=p_repo_data[5], 
+                                          url_github=p_repo_data[6], 
+                                          url=p_repo_data[7] )
+
+        with open( p_path + os.sep + p_repo_data[1] + '.rst', 'w' ) as f:
+            f.write(repo_body)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _build_rtd_owner_structure(self, p_owner, p_data):
 
-        # 0 Preparation
+        # 0 Intro
+        self.log(Log.C_LOG_TYPE_I, 'Start building RTD documentation for owner', p_owner)
+
         if p_data['type'] == 'Organization':
             path = self._rtd_path_org
         else:
@@ -276,13 +301,17 @@ class Marketplace (Log):
         with open( sys.path[0] + os.sep + self.C_FNAME_TPL_RTD_EXT_OWNER ) as f:
             owner_body = f.read().format( vars='variables', owner=p_owner, name=p_data['name'], location=p_data['location'], bio=p_data['bio'], blog=p_data['blog'], html_url=p_data['html_url'] )
 
-        with open( path_owner + os.sep + p_owner + '.rst', 'w' ) as f:
+        with open( path + os.sep + p_owner + '.rst', 'w' ) as f:
             f.write(owner_body)
         
 
         # 2 Create rtd files for each extension
         for repo_data in p_data['repos']:
-            self._build_rtd_owner_repo(repo_data)
+            self._build_rtd_owner_repo(repo_data, path_owner)
+
+
+        # 3 Outro
+        self.log(Log.C_LOG_TYPE_I, 'End of building RTD documentation for owner', p_owner)
 
 
 ## -------------------------------------------------------------------------------------------------

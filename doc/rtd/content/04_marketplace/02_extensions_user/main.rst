@@ -3,3 +3,9 @@ Single Contributors
 ===================
 
 Hello world!
+
+.. toctree::
+   :maxdepth: 3
+   :glob:
+
+   users/*
