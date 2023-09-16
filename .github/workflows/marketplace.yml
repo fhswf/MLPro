@@ -20,7 +20,7 @@ jobs:
       - run: pip3 install mlpro
       - run: pip3 install PyGithub
       - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_marketplace/
-      - run: git status
-      - run: git add *
+      - run: git add $(GitHUB_WORKSPACE}/doc/rtd/content/04_marketplace/01_extensions_org/
+      - run: git add $(GitHUB_WORKSPACE}/doc/rtd/content/04_marketplace/02_extensions_user/
       - run: git commit --message 'Marketplace updated'
       - run: git push
