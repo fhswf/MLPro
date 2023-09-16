@@ -139,7 +139,7 @@ MLPro is also present on...
    :caption: Appendices
    :glob:
 
-   content/04_appendices/appendix1/main
-   content/04_appendices/appendix2/main
-   content/04_appendices/appendix3/main
+   content/99_appendices/appendix1/main
+   content/99_appendices/appendix2/main
+   content/99_appendices/appendix3/main
 
