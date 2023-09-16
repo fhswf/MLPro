@@ -2,7 +2,7 @@
 Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor
 ====================================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors
+.. automodule:: mlpro.bf.examples.howto_bf_systems_010_systems_controllers_actuators_sensors
 
 
 **Executable code**

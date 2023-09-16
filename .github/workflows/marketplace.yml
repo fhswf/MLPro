@@ -12,11 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Update marketplace
-        uses: actions/checkout@v4
-      - run: |
-          pip3 install dill
-          pip3 install mlpro
-          pip3 install PyGithub
-          python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }}
-        
+      - uses: actions/checkout@v4
+      # - uses: fregante/setup-git-user@v2
+      - run: git config --global user.name detlefarend
+      - run: git config --global user.email "detlef@arend-privat.net"
+      - run: pip3 install dill
+      - run: pip3 install mlpro
+      - run: pip3 install PyGithub
+      - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_marketplace/
+      - run: git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_marketplace/
+      - run: git commit --message 'Marketplace updated'
+      - run: git push
