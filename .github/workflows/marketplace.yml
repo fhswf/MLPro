@@ -13,17 +13,11 @@ jobs:
 
     steps:
       - name: Update marketplace
-        uses: actions/checkout@v4
-      - run: |
-          pip3 install dill
-          pip3 install mlpro
-          pip3 install PyGithub
-          python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_marketplace/
-
-          date > generated.txt
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "generated"
-          git push
-        
+      - uses: actions/checkout@v4
+      - uses: fregante/setup-git-user@v2
+      - run: pip3 install dill
+      - run: pip3 install mlpro
+      - run: pip3 install PyGithub
+      - run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_marketplace/
+      - run: git commit --message 'Marketplace updated'
+      - run: git push
