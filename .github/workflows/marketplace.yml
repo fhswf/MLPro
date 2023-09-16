@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Update marketplace
       - uses: actions/checkout@v4
       - uses: fregante/setup-git-user@v2
       - run: pip3 install dill
