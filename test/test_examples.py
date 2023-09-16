@@ -41,20 +41,14 @@
 ## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
 ## -- 2023-03-10  1.7.3     SY       Renumbering module
 ## -- 2023-03-24  1.7.4     DA       Add Howto BF 005
-<<<<<<< HEAD
 ## -- 2023-04-12  1.8.0     SY       Update due to GT HowTos
-=======
 ## -- 2023-09-16  1.7.5     DA       Temporarily disabled howto_rl_agent_011/021/022
->>>>>>> origin/main
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-<<<<<<< HEAD
 Ver. 1.8.0 (2023-04-12)
-=======
 Ver. 1.7.5 (2023-09-16)
->>>>>>> origin/main
 
 Unit test for all examples available.
 """
