@@ -41,7 +41,9 @@
 ## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
 ## -- 2023-03-10  1.7.3     SY       Renumbering module
 ## -- 2023-03-24  1.7.4     DA       Add Howto BF 005
-## -- 2023-09-16  1.7.5     DA       Temporarily disabled howto_rl_agent_011/021/022
+## -- 2023-09-16  1.7.5     DA       Temporarily disabled: 
+## --                                - howto_rl_agent_011/021/022
+## --                                - howto_rl_att_003
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -111,7 +113,7 @@ howto_list = {
 
     "rl_att_001": "mlpro.rl.examples.howto_rl_att_001_train_and_reload_single_agent_gym_sd",
     "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete",
-    "rl_att_003": "mlpro.rl.examples.howto_rl_att_003_train_and_reload_single_agent_mujoco_sd_cartpole_continuous",
+    # "rl_att_003": "mlpro.rl.examples.howto_rl_att_003_train_and_reload_single_agent_mujoco_sd_cartpole_continuous",
 
     "rl_agent_001": "mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment",
     "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
