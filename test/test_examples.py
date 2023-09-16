@@ -41,11 +41,12 @@
 ## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
 ## -- 2023-03-10  1.7.3     SY       Renumbering module
 ## -- 2023-03-24  1.7.4     DA       Add Howto BF 005
+## -- 2023-09-16  1.7.5     DA       Temporarily disabled howto_rl_agent_011/021/022
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.7.4 (2023-03-24)
+Ver. 1.7.5 (2023-09-16)
 
 Unit test for all examples available.
 """
@@ -116,9 +117,9 @@ howto_list = {
     "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
-    "rl_agent_011": "mlpro.rl.examples.howto_rl_agent_011_train_and_reload_single_agent_gym",
-    "rl_agent_021": "mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete",
-    "rl_agent_022": "mlpro.rl.examples.howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous",
+    # "rl_agent_011": "mlpro.rl.examples.howto_rl_agent_011_train_and_reload_single_agent_gym",
+    # "rl_agent_021": "mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete",
+    # "rl_agent_022": "mlpro.rl.examples.howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous",
 
     "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
     "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",
