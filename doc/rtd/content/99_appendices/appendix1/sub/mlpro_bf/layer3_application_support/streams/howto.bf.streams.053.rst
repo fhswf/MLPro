@@ -20,7 +20,7 @@ Please install the following packages to run this examples properly:
 
 **Results**
 
-.. code-block:: bashh
+.. code-block:: bash
 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Wrapper "Stream Provider Scikit-learn": Instantiated
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Wrapper "Stream Provider Scikit-learn": Wrapped package scikit-learn installed in version 1.0.2

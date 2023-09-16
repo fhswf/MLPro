@@ -126,10 +126,20 @@ MLPro is also present on...
 .. toctree::
    :hidden:
    :maxdepth: 3
+   :caption: Marketplace
+   :glob:
+   :numbered: 2
+
+   content/04_marketplace/*
+   
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
    :caption: Appendices
    :glob:
 
-   content/04_appendices/appendix1/main
-   content/04_appendices/appendix2/main
-   content/04_appendices/appendix3/main
+   content/99_appendices/appendix1/main
+   content/99_appendices/appendix2/main
+   content/99_appendices/appendix3/main
 
