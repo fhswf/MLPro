@@ -2,7 +2,7 @@
 Howto RL-HT-002: Hyperparameter Tuning using Optuna
 ===================================================
 
-.. automodule:: mlpro.bf.examples.howto_rl_ht_002_optuna
+.. automodule:: mlpro.rl.examples.howto_rl_ht_002_optuna
 
 
 

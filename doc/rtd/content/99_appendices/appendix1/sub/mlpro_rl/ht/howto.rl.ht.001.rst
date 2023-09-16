@@ -8,7 +8,6 @@ Howto RL-HT-001: Hyperparameter Tuning using Hyperopt
 
 **Prerequisites**
 
-
 Please install the following packages to run this examples properly:
     - `Hyperopt <https://pypi.org/project/hyperopt/>`_
 
