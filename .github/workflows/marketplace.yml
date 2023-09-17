@@ -12,9 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: S1 Preparation
+      - name: S0 Checkout branch main
         uses: actions/checkout@v4
         # - uses: fregante/setup-git-user@v2
+        
+      - name: S1 Preparation 
         run: |
           git config --global user.name detlefarend
           git config --global user.email "detlef@arend-privat.net"
