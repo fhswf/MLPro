@@ -15,17 +15,19 @@ jobs:
       - name: S1 Preparation
         uses: actions/checkout@v4
         # - uses: fregante/setup-git-user@v2
-        run: git config --global user.name detlefarend
-        run: git config --global user.email "detlef@arend-privat.net"
-        run: pip3 install dill
-        run: pip3 install mlpro
-        run: pip3 install PyGithub
+        run: |
+          git config --global user.name detlefarend
+          git config --global user.email "detlef@arend-privat.net"
+          pip3 install dill
+          pip3 install mlpro
+          pip3 install PyGithub
 
       - name: S2 Updates on the Marketplace
         run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_marketplace/
 
       - name: S3 Commit changes
-        run: git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_marketplace/
-        run: git commit --message 'Marketplace updated'
+        run: |
+          git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_marketplace/
+          git commit --message 'Marketplace updated'
         continue-on-error: true
       - run: git push
