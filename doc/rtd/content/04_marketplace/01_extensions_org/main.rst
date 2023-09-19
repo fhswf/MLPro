@@ -2,7 +2,7 @@
 Organizations
 =============
 
-Hello world!
+This section lists MLPro extensions provided by organizations.
 
 .. toctree::
    :maxdepth: 3

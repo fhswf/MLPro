@@ -99,8 +99,12 @@ class Marketplace (Log):
         for repo in results:
             if repo.is_template or repo.private: continue
             try:
-                latest_release = repo.get_latest_release()
+                latest_release  = repo.get_latest_release()
+                license         = repo.get_license()
+                license_name    = license.license.name
+                license_url     = license.html_url
             except:
+                self.log(Log.C_LOG_W, 'Repository', repo.full_name, 'denied. Release and/or license is missing.')
                 continue
 
             try:
@@ -134,7 +138,9 @@ class Marketplace (Log):
                                      repo.html_url,
                                      repo.homepage,
                                      repo.topics,
-                                     repo_admins ) )
+                                     repo_admins,
+                                     license_name,
+                                     license_url ) )
 
 
         # 4 Outro
@@ -276,7 +282,9 @@ class Marketplace (Log):
                                           vertext=vertext, 
                                           modified=p_repo_data[5], 
                                           url_github=p_repo_data[6], 
-                                          url=p_repo_data[7] )
+                                          url=p_repo_data[7],
+                                          license_name=p_repo_data[10],
+                                          license_url=p_repo_data[11] )
 
         with open( p_path + os.sep + p_repo_data[1] + '.rst', 'w' ) as f:
             f.write(repo_body)

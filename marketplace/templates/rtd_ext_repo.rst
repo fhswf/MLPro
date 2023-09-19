@@ -2,28 +2,20 @@
 {name}
 ======
 
-**Topics**
-
-{topics}
-
-
-**Description**
-
 {desc}
 
 
-**Latest Release**
+.. list-table::
 
-{ver} {vertext}
-
-{modified}
-
-
-**URL (Github)**
-
-{url_github}
-
-
-**URL**
-
-{url}
+    * - **Topics**
+      - {topics}
+    * - **Version**
+      - {ver} {vertext}
+    * - **Last update**
+      - {modified}
+    * - **URL (GitHub)**
+      - {url_github}
+    * - **URL**
+      - {url}
+    * - **License**
+      - `{license_name} <{license_url}>`_

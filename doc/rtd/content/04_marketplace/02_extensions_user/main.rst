@@ -2,7 +2,7 @@
 Single Contributors
 ===================
 
-Hello world!
+This section lists MLPro extensions provided by single users.
 
 .. toctree::
    :maxdepth: 3

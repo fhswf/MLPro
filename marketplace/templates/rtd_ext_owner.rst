@@ -1,20 +1,18 @@
 .. _target_marketplace_ext_org_{owner}:
-{name}, {location}
-==================
-
-**Description**
+{name}
+======
 
 {bio}
 
 
-**URL (Github)**
+.. list-table::
 
-{html_url}
-
-
-**URL**
-
-{blog}
+    * - **Location**
+      - {location}
+    * - **URL (GitHub)**
+      - {html_url}
+    * - **URL**
+      - {blog}
 
 
 **MLPro Extensions**
