@@ -1,4 +1,4 @@
-.. _target_marketplace_ext_org_{owner}:
+.. _target_extension_owner_{owner}:
 {name}
 ======
 

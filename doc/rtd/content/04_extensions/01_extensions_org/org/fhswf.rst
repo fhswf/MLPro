@@ -1,4 +1,4 @@
-.. _target_marketplace_ext_org_fhswf:
+.. _target_extension_owner_fhswf:
 Fachhochschule Südwestfalen
 ======
 
@@ -9,7 +9,7 @@ Wir geben Impulse!
 
     * - **Location**
       - Iserlohn, Germany
-    * - **URL (Github)**
+    * - **URL (GitHub)**
       - https://github.com/fhswf
     * - **URL**
       - http://fh-swf.de

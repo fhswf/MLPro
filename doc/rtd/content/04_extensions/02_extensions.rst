@@ -1,4 +1,4 @@
-.. _target_marketplace_extensions:
+.. _target_extensions:
 Third-Party Extensions
 ======================
 

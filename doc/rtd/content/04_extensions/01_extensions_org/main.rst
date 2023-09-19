@@ -1,4 +1,4 @@
-.. _target_marketplace_ext_org:
+.. _target_extensions_org:
 Organizations
 =============
 

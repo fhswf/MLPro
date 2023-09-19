@@ -1,4 +1,4 @@
-.. _target_marketplace_ext_org_fhswf_MLPro-MPPS:
+.. _target_extension_repo_MLPro-MPPS:
 MLPro-MPPS
 ======
 
@@ -13,7 +13,7 @@ An extension feature of MLPro related to a simulation of multi-purpose productio
       - v1.1.0 
     * - **Last update**
       - Thu, 13 Apr 2023 13:02:31 GMT
-    * - **URL (Github)**
+    * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-MPPS
     * - **URL**
       - 

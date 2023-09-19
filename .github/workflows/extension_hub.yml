@@ -1,4 +1,4 @@
-name: Marketplace Update
+name: Update Extension Hub
 
 on:
   schedule:
@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-marketplace:
-    name: Update the MLPro marketplace
+  update-extension-hub:
+    name: Update the MLPro extension hub
     runs-on: ubuntu-latest
 
     steps:
@@ -24,12 +24,12 @@ jobs:
           pip3 install mlpro
           pip3 install PyGithub
 
-      - name: S2 Updates on the Marketplace
-        run: python3 ${GITHUB_WORKSPACE}/marketplace/update_marketplace.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_marketplace/
+      - name: S2 Updates on the extension hub
+        run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_extensions/
 
       - name: S3 Commit changes
         run: |
-          git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_marketplace/
-          git commit --message 'Marketplace updated'
+          git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
+          git commit --message 'MLPro extension hub updated'
         continue-on-error: true
       - run: git push

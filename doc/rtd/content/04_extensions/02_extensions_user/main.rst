@@ -1,4 +1,4 @@
-.. _target_marketplace_ext_user:
+.. _target_extensions_user:
 Single Contributors
 ===================
 

@@ -1,4 +1,4 @@
-.. _target_marketplace_ext_org_fhswf_{name}:
+.. _target_extension_repo_{name}:
 {name}
 ======
 
