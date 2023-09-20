@@ -13,9 +13,10 @@
 ## -- 2023-09-15  1.0.0     DA       First implementation completed
 ## -- 2023-09-19  1.1.0     DA       - new project name "Extension Hub"
 ## --                                - minor extensions and improvements
-## -- 2023-09-20  1.1.1     DA       Method ExtensionHub._get_extensions: API call get_collabotors()
-## --                                replaced by get_contributors() - due to necessary rights on 
-## --                                extension repo
+## -- 2023-09-20  1.1.1     DA       - Method ExtensionHub._get_extensions: 
+## --                                  API call get_collabotors() replaced by get_contributors()
+## --                                  due to necessary rights on extension repo
+## --                                - Method ExtensionHub._create_issue(): optimized team identifiction    
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -205,7 +206,7 @@ class ExtensionHub (Log):
             self._mlpro_admins  = []
 
             for team in self._mlpro.get_teams():
-                if ( team.name == 'MLPro' ) and ( team.organization.login == 'fhswf' ):
+                if ( team.slug == 'mlpro-team' ) and ( team.organization.login == 'fhswf' ):
                     self._mlpro_team = team
                     break
 
