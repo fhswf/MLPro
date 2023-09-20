@@ -13,20 +13,23 @@
 ## -- 2023-09-15  1.0.0     DA       First implementation completed
 ## -- 2023-09-19  1.1.0     DA       - new project name "Extension Hub"
 ## --                                - minor extensions and improvements
+## -- 2023-09-20  1.1.1     DA       Method ExtensionHub._get_extensions: API call get_collabotors()
+## --                                replaced by get_contributors() - due to necessary rights on 
+## --                                extension repo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-09-19)
+Ver. 1.1.1 (2023-09-20)
 
 This standalone module collects meta data of all puGitHub repositories based on the
 template repo /fhswf/MLPro-Extension.
 """
 
 
-import sys, os.path, time
+import sys, os.path
 import shutil
 from mlpro.bf.various import Log
-from github import Auth, Github, Issue
+from github import Auth, Github
 
 
 
@@ -127,9 +130,9 @@ class ExtensionHub (Log):
                 owner['repos']    = []
                 extensions[status][repo.owner.login] = owner
 
-            repo_admins = []
-            for collaborator in repo.get_collaborators():
-                if repo.get_collaborator_permission(collaborator.login) == 'admin': repo_admins.append(collaborator.login)
+            repo_contributors = []
+            for contributor in repo.get_contributors():
+                repo_contributors.append(contributor.login)
 
             owner['repos'].append( ( repo.full_name,
                                      repo.name,
@@ -140,7 +143,7 @@ class ExtensionHub (Log):
                                      repo.html_url,
                                      repo.homepage,
                                      repo.topics,
-                                     repo_admins,
+                                     repo_contributors,
                                      license_name,
                                      license_url ) )
 
