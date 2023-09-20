@@ -25,7 +25,7 @@ jobs:
           pip3 install PyGithub
 
       - name: S2 Updates on the extension hub
-        run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.MARKETPLACE_UPDATE_TOKEN }} ../doc/rtd/content/04_extensions/
+        run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/
 
       - name: S3 Commit changes
         run: |
