@@ -42,24 +42,24 @@ MLPro
 
 .. |examples| image:: content/00_start_page/images/example_pool.png
    :scale: 65 %
-   :target: content/04_appendices/appendix1/main.html
+   :target: content/99_appendices/appendix1/main.html
 
 .. |mlpro_api| image:: content/00_start_page/images/api_reference.png
    :scale: 65 %
-   :target: content/04_appendices/appendix2/main.html
+   :target: content/99_appendices/appendix2/main.html
 
 .. |project| image:: content/00_start_page/images/project_mlpro.png
    :scale: 65 %
-   :target: content/04_appendices/appendix3/main.html
+   :target: content/99_appendices/appendix3/main.html
 
-.. |publications| image:: content/00_start_page/images/publications.png
+.. |extensions| image:: content/00_start_page/images/extension_hub.png
    :scale: 65 %
-   :target: content/04_appendices/appendix3/sub/02_publications.html
+   :target: content/04_extensions/02_extensions.html
 
 
 |welcome| |mlpro_bf| |mlpro_sl| |mlpro_oa| |mlpro_rl| 
 
-|mlpro_gt| |examples| |mlpro_api| |project| |publications|
+|mlpro_gt| |examples| |mlpro_api| |project| |extensions|
 
 
 .. |mlpro_pypi| image:: content/00_start_page/images/pypi.svg
@@ -126,11 +126,11 @@ MLPro is also present on...
 .. toctree::
    :hidden:
    :maxdepth: 3
-   :caption: Marketplace
+   :caption: Extension Hub
    :glob:
    :numbered: 2
 
-   content/04_marketplace/*
+   content/04_extensions/*
    
 
 .. toctree::

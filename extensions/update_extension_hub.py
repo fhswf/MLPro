@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro Marketplace
-## -- Module  : update_marketplace.py
+## -- Project : MLPro Extension Hub
+## -- Module  : update_extension_hub.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -11,12 +11,14 @@
 ## -- 2023-09-13  0.4.0     DA       Issue management implemented
 ## -- 2023-09-14  0.5.0     DA       Issue commenting implemented
 ## -- 2023-09-15  1.0.0     DA       First implementation completed
+## -- 2023-09-19  1.1.0     DA       - new project name "Extension Hub"
+## --                                - minor extensions and improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-09-15)
+Ver. 1.1.0 (2023-09-19)
 
-This standalone module collects meta data of all whitelisted GitHub repositories based on the
+This standalone module collects meta data of all puGitHub repositories based on the
 template repo /fhswf/MLPro-Extension.
 """
 
@@ -31,9 +33,9 @@ from github import Auth, Github, Issue
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Marketplace (Log):
+class ExtensionHub (Log):
 
-    C_TYPE                      = 'Marketplace'
+    C_TYPE                      = 'Extension Hub'
     C_NAME                      = 'MLPro'
 
     C_FNAME_WHITELIST           = 'whitelist'
@@ -99,8 +101,12 @@ class Marketplace (Log):
         for repo in results:
             if repo.is_template or repo.private: continue
             try:
-                latest_release = repo.get_latest_release()
+                latest_release  = repo.get_latest_release()
+                license         = repo.get_license()
+                license_name    = license.license.name
+                license_url     = license.html_url
             except:
+                self.log(Log.C_LOG_W, 'Repository', repo.full_name, 'denied. Release and/or license is missing.')
                 continue
 
             try:
@@ -134,7 +140,9 @@ class Marketplace (Log):
                                      repo.html_url,
                                      repo.homepage,
                                      repo.topics,
-                                     repo_admins ) )
+                                     repo_admins,
+                                     license_name,
+                                     license_url ) )
 
 
         # 4 Outro
@@ -276,7 +284,9 @@ class Marketplace (Log):
                                           vertext=vertext, 
                                           modified=p_repo_data[5], 
                                           url_github=p_repo_data[6], 
-                                          url=p_repo_data[7] )
+                                          url=p_repo_data[7],
+                                          license_name=p_repo_data[10],
+                                          license_url=p_repo_data[11] )
 
         with open( p_path + os.sep + p_repo_data[1] + '.rst', 'w' ) as f:
             f.write(repo_body)
@@ -364,7 +374,7 @@ class Marketplace (Log):
             self.log(Log.C_LOG_TYPE_I, 'No pending MLPro extensions detected')
 
 
-        # 3 Build of MLPro marketplace documentation
+        # 3 Build of MLPro extension hub documentation
         self._build_rtd_documentation( extensions[self.C_STATUS_APPROVED] )
         
         
@@ -377,4 +387,4 @@ try:
 except:
     token = None
 
-Marketplace( p_token=token, p_rtd_path=sys.argv[2] ).update()
+ExtensionHub( p_token=token, p_rtd_path=sys.argv[2] ).update()

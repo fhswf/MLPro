@@ -1,8 +1,8 @@
-.. _target_marketplace_ext_user:
+.. _target_extensions_user:
 Single Contributors
 ===================
 
-Hello world!
+This section lists MLPro extensions provided by single users.
 
 .. toctree::
    :maxdepth: 3
