@@ -54,7 +54,7 @@ MLPro
 
 .. |extensions| image:: content/00_start_page/images/extension_hub.png
    :scale: 65 %
-   :target: content/04_extensions/02_extensions.html
+   :target: content/04_extensions/main.html
 
 
 |welcome| |mlpro_bf| |mlpro_sl| |mlpro_oa| |mlpro_rl| 
@@ -86,7 +86,6 @@ MLPro is also present on...
    * - |mlpro_pypi| `Python Package Index <https://pypi.org/project/mlpro>`_
      - |mlpro_anaconda| `Anaconda.org <https://anaconda.org/mlpro/mlpro>`_
      - |mlpro_github| `GitHub <https://github.com/fhswf/MLPro>`_
-..     - |mlpro_rg| `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
 
 
 
@@ -128,9 +127,9 @@ MLPro is also present on...
    :maxdepth: 3
    :caption: Extension Hub
    :glob:
-   :numbered: 2
+   :numbered: 
 
-   content/04_extensions/*
+   content/04_extensions/sub/*
    
 
 .. toctree::

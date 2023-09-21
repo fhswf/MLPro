@@ -14,7 +14,6 @@ jobs:
     steps:
       - name: S0 Checkout branch main
         uses: actions/checkout@v4
-        # - uses: fregante/setup-git-user@v2
         
       - name: S1 Preparation 
         run: |
@@ -25,7 +24,7 @@ jobs:
           pip3 install PyGithub
 
       - name: S2 Updates on the extension hub
-        run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/
+        run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/sub/
 
       - name: S3 Commit changes
         run: |
