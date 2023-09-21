@@ -16,14 +16,24 @@
 ## -- 2023-09-20  1.1.1     DA       - Method ExtensionHub._get_extensions: 
 ## --                                  API call get_collabotors() replaced by get_contributors()
 ## --                                  due to necessary rights on extension repo
-## --                                - Method ExtensionHub._create_issue(): optimized team identifiction    
+## --                                - Method ExtensionHub._create_issue(): optimized team identif.
+## -- 2023-09-21  1.1.2     DA       Method ExtensionHub._get_extensions:
+## --                                - bugfix in repo extraction from white/blacklist
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-09-20)
+Ver. 1.1.2 (2023-09-21)
 
-This standalone module collects meta data of all puGitHub repositories based on the
-template repo /fhswf/MLPro-Extension.
+This standalone module collects meta data of all public GitHub repositories that are labelled as
+MLPro extensions (repo topic "mlpro-extension). It updates the RTD subsection "Extension Hub"
+based on the white-/blacklisted repositories and creates issues for new extensions that are not
+yet white-/blacklisted.
+
+See also:
+- GitHub workflow .github/workflows/extension_hub.yml
+- Whitelist file ./extensions/whitelist
+- Blacklist file ./extensions/blacklist
+- Template files ./extensions/templates/*
 """
 
 
@@ -90,12 +100,12 @@ class ExtensionHub (Log):
 
         # 1 Get whitelisted extensions
         with open( sys.path[0] + os.sep + self.C_FNAME_WHITELIST ) as f:
-            for repo in f.readlines():
+            for repo in f.read().splitlines():
                 whitelist[repo] = self.C_STATUS_APPROVED
 
         # 2 Get blacklisted extensions
         with open( sys.path[0] + os.sep + self.C_FNAME_BLACKLIST ) as f:
-            for repo in f.readlines():
+            for repo in f.read().splitlines():
                 whitelist[repo] = self.C_STATUS_DENIED
 
 
