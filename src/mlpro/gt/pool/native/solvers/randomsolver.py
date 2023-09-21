@@ -24,12 +24,12 @@ import random
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RandomGenerator (GTSolver):
+class RandomSolver (GTSolver):
     """
     A solver that generates random actions for each dimension of the underlying strategy space.
     """
 
-    C_NAME      = 'RandomGenerator'
+    C_NAME      = 'RandomSolver'
 
 
 ## -------------------------------------------------------------------------------------------------
