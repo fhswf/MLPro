@@ -11,12 +11,13 @@
 ## -- 2022-09-19  1.0.2     SY       Minor improvements: False operation for integers
 ## -- 2022-10-08  1.0.3     SY       Bug fixing
 ## -- 2022-11-02  1.0.4     DA       Refactoring: method _adapt()
+## -- 2023-09-21  1.0.5     SY       Typo on description
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-11-02)
+Ver. 1.0.5 (2023-09-21)
 
-This module providew random genarator for multi purposes, e.g. testing environment, etc..
+This module provides random genarator for multi purposes, e.g. testing environment, etc..
 """
 
 from mlpro.rl.models import *
