@@ -1,8 +1,8 @@
-.. _target_marketplace_extensions:
+.. _target_extensions:
 Third-Party Extensions
 ======================
 
-Hello world!
+All MLPro extensions currently available in GitHub are listed below.
 
 .. toctree::
    :maxdepth: 3
