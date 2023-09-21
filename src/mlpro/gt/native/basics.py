@@ -8,15 +8,16 @@
 ## -- 2023-03-30  0.0.0     SY       Creation
 ## -- 2023-06-02  1.0.0     SY       Release of first version
 ## -- 2023-06-15  1.0.1     SY       Add solver configuration methods in GTTraining
-## -- 2023-06-28  1.0.3     SY       - Update solver configuration methods
+## -- 2023-06-28  1.0.2     SY       - Update solver configuration methods
 ## --                                - Add is_zerosum(), _is_bestresponse() in class GTGame
 ## --                                - Adjust _get_evaluation() in class GTGame
 ## --                                - Enhancement of GTStrategy
 ## --                                - Add TransferFunction as another option on GTFunction
+## -- 2023-09-21  1.0.3     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2023-06-28)
+Ver. 1.0.3 (2023-09-21)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -70,6 +71,7 @@ class GTFunction:
     C_FUNCTION_TYPE         = None
     C_FUNC_PAYOFF_MATRIX    = 0
     C_FUNC_TRANSFER_FCTS    = 1
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_func_type:int, p_dim_elems:list=None):
@@ -786,6 +788,7 @@ class GTCompetition (GTCoalition):
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTDataStoring (DataStoring):
@@ -798,6 +801,7 @@ class GTDataStoring (DataStoring):
     C_VAR_DAY       = 'Day'
     C_VAR_SEC       = 'Second'
     C_VAR_MICROSEC  = 'Microsecond'
+
 
  ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_space:Set = None):
@@ -842,6 +846,8 @@ class GTDataStoring (DataStoring):
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_trial, p_data[i])
+
+
 
 
 

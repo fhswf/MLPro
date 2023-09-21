@@ -31,7 +31,7 @@ class RandomGenerator (Policy):
     """
     A random policy that generates random actions for each dimension of the underlying action space.
 
-    See class mlpro.rl.Policy for furter details.
+    See class mlpro.rl.Policy for further details.
 
     """
 
