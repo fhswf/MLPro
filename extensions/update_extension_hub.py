@@ -66,7 +66,7 @@ class ExtensionHub (Log):
     C_STATUS_APPROVED           = 'Approved'
     C_STATUS_DENIED             = 'Denied'
     C_STATUS_PENDING            = 'Pending'
-    
+   
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_token, p_rtd_path, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
@@ -100,12 +100,16 @@ class ExtensionHub (Log):
 
         # 1 Get whitelisted extensions
         with open( sys.path[0] + os.sep + self.C_FNAME_WHITELIST ) as f:
-            for repo in f.read().splitlines():
+            for line in f.read().splitlines():
+                repo = line.replace(' ', '')
+                if repo == '': continue
                 whitelist[repo] = self.C_STATUS_APPROVED
 
         # 2 Get blacklisted extensions
         with open( sys.path[0] + os.sep + self.C_FNAME_BLACKLIST ) as f:
-            for repo in f.read().splitlines():
+            for line in f.read().splitlines():
+                repo = line.replace(' ', '')
+                if repo == '': continue
                 whitelist[repo] = self.C_STATUS_DENIED
 
 
