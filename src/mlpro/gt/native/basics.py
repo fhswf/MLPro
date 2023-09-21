@@ -855,7 +855,7 @@ class GTDataStoring (DataStoring):
 ## -------------------------------------------------------------------------------------------------
 class GTGame (Scenario):
 
-    C_TYPE  = 'GTCompetition'
+    C_TYPE  = 'GTGame'
     C_NAME  = ''
 
 
@@ -880,7 +880,7 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         """
-        Custom setup of ML scenario.
+        Custom setup of GT Game.
 
         Parameters
         ----------
