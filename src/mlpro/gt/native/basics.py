@@ -14,10 +14,11 @@
 ## --                                - Enhancement of GTStrategy
 ## --                                - Add TransferFunction as another option on GTFunction
 ## -- 2023-09-21  1.0.3     SY       Refactoring
+## -- 2023-09-22  1.0.4     SY       Update __init__ and _setup of GTGame
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2023-09-21)
+Ver. 1.0.4 (2023-09-22)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -414,11 +415,19 @@ class GTPlayer (GTSolver):
             self._random_solver = False
             self._list_solvers  = [p_solver]
         self._num_solvers = len(self._list_solvers)
-        self.switch_solver()
 
         self._visualize = p_visualize
         self._logging   = p_logging
         self._param     = p_param
+        
+        GTSolver.__init__(self,
+                          p_strategy_space = self._list_solvers[0].get_strategy_space(),
+                          p_id = self._list_solvers[0].get_id(),
+                          p_visualize = self._visualize,
+                          p_logging = self._logging,
+                          **self._param)
+        
+        self.switch_solver()
 
         
 ## -------------------------------------------------------------------------------------------------
@@ -476,7 +485,8 @@ class GTPlayer (GTSolver):
     def switch_solver(self):
 
         if len(self._list_solvers) == 1:
-            self.log(self.C_LOG_TYPE_I, 'Player %s is keeping the same solver %s'%(self._id, self._solver.get_id()))
+            self._solver = self._list_solvers[0]
+            self.log(self.C_LOG_TYPE_I, '%s is keeping the same solver %s'%(self.get_name(), self._solver.get_id()))
         else:
             if self._random_solver:
                 rnd             = random.randint(0, self._num_solvers-1)
@@ -861,17 +871,17 @@ class GTGame (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_payoff_matrix:GTPayoffMatrix,
-                 p_visualize:bool = False,
-                 p_logging = Log.C_LOG_ALL):
+                 p_mode=Mode.C_MODE_SIM,
+                 p_ada=False,
+                 p_cycle_limit=1,
+                 p_visualize:bool=False,
+                 p_logging=Log.C_LOG_ALL):
         
-        super().__init__(p_mode=Mode.C_MODE_SIM,
-                         p_ada=False,
-                         p_cycle_limit=1,
+        super().__init__(p_mode=p_mode,
+                         p_ada=p_ada,
+                         p_cycle_limit=p_cycle_limit,
                          p_visualize=p_visualize,
                          p_logging=p_logging)
-        
-        self._payoff        = p_payoff_matrix
         self._strategies    = None
 
         self.connect_data_logger()
@@ -880,7 +890,7 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         """
-        Custom setup of GT Game.
+        Custom setup of GT Game. Payoff matrix has to be defined here as self._payoff.
 
         Parameters
         ----------

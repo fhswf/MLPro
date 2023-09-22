@@ -67,7 +67,7 @@ class PrisonersDilemma2PGame (GTGame):
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
         solver1 = RandomSolver(
-            p_strategy_space=MSpace().add_dim('RStr','Z','Random Strategy','','','',[0,1]),
+            p_strategy_space=MSpace().add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,1])),
             p_id=1,
             p_visualize=p_visualize,
             p_logging=p_logging
@@ -117,6 +117,11 @@ class PrisonersDilemma2PGame (GTGame):
             )
         competition.add_coalition(coal1)
         competition.add_coalition(coal2)
+
+        self._payoff = GTPayoffMatrix(
+            p_function=PayoffFunction_PD2P,
+            p_player_ids=[1,2]
+        )
         
         return competition
         
