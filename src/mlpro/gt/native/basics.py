@@ -14,7 +14,7 @@
 ## --                                - Enhancement of GTStrategy
 ## --                                - Add TransferFunction as another option on GTFunction
 ## -- 2023-09-21  1.0.3     SY       Refactoring
-## -- 2023-09-22  1.0.4     SY       Update __init__ and _setup of GTGame
+## -- 2023-09-22  1.0.4     SY       Update __init__ and _setup of GTGame, GTTraining, and more
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -1079,14 +1079,19 @@ class GTTrainingResults (TrainingResults):
 class GTTraining (Training):
 
     C_TYPE          = 'GTTraining'
+    C_NAME          = 'Native GT Training'
 
     C_CLS_RESULTS   = GTTrainingResults
 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
+        
+        kwargs = p_kwargs.copy()
+        kwargs['p_scenario_cls'] = kwargs['p_game_cls']
+        kwargs.pop('p_game_cls')
 
-        super().__init__(**p_kwargs)
+        super().__init__(**kwargs)
 
         try:
             self._collect_strategy = self._kwargs['p_collect_strategy']

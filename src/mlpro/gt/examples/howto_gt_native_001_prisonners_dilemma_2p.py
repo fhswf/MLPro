@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-22  0.0.0     SY       Creation
-## -- 2023-xx-xx  1.0.0     SY       Release of first version
+## -- 2023-09-22  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-xx-xx)
+Ver. 1.0.0 (2023-09-22)
 
 This module shows how to run a game, namely 2P Prisoners' Dilemma.
 
@@ -50,6 +50,7 @@ training = GTTraining(
         p_cycle_limit=cycle_limit,
         p_path=path,
         p_visualize=visualize,
-        p_logging=logging )
+        p_logging=logging
+        )
 
 training.run()
