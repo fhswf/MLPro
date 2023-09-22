@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-21  0.0.0     SY       Creation
-## -- 2023-09-21  1.0.0     SY       Release of first version
+## -- 2023-09-22  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-09-21)
+Ver. 1.0.0 (2023-09-22)
 
 This module provides solver with random GT strategy.
 """
@@ -61,4 +61,4 @@ class RandomSolver (GTSolver):
                 raise ParamError('Mandatory boundaries are not defined.')
 
         # 3 Return an action object with the generated random values
-        return Action(self._id, self._strategy_space, my_strategy_values)
+        return GTStrategy(self._id, self._strategy_space, my_strategy_values)
