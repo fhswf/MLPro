@@ -18,7 +18,7 @@ jobs:
       - name: S1 Preparation 
         run: |
           git config --global user.name mlpro-admin
-          git config --global user.email "arend.detlef@fh-swf.de"
+          git config --global user.email "mlpro@listen.fh-swf.de"
           pip3 install dill
           pip3 install mlpro
           pip3 install PyGithub
