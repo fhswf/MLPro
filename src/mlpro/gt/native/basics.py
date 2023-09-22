@@ -547,6 +547,12 @@ class GTCoalition (GTPlayer):
         
         self.switch_logging(p_logging)
 
+        Model.__init__(self,
+                       p_ada=False,
+                       p_name=p_name,
+                       p_visualize=False,
+                       p_logging=p_logging)
+
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging) -> None:
@@ -554,6 +560,11 @@ class GTCoalition (GTPlayer):
 
         for pl in self._coop_players:
             pl.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada:bool):
+        pass
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -688,6 +699,10 @@ class GTCompetition (GTCoalition):
             self.set_name(self.C_NAME)
         
         self.switch_logging(p_logging)
+        
+        super().__init__(p_name=p_name,
+                         p_coalition_type=GTCoalition.C_COALITION_CUSTOM,
+                         p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -714,7 +729,7 @@ class GTCompetition (GTCoalition):
 
         self.log(Log.C_LOG_TYPE_I, p_coalition.C_TYPE + ' ' + p_coalition.get_name() + ' added.')
 
-        for coal in p_coalition.get_coalitions():
+        for coal in self.get_coalitions():
             for pl in coal.get_players():
                 if pl.get_solver().get_hyperparam() is not None:
                     self._hyperparam_space.append(p_set=pl._solver.get_hyperparam().get_related_set(),
