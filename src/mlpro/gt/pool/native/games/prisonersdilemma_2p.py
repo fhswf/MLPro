@@ -47,7 +47,7 @@ class PrisonersDilemma2PGame (GTGame):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
 
-        solver = GTSolver(
+        solver = RandomSolver(
             p_strategy_space=MSpace().add_dim('RStr','Z','Random Strategy','','','',[0,1]),
             p_id=None,
             p_visualize=p_visualize,
