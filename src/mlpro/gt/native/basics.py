@@ -396,7 +396,7 @@ class GTPlayer (GTSolver):
     def __init__(self,
                  p_solver:Union[list, GTSolver],
                  p_name='',
-                 p_visualize:bool=True,
+                 p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
                  p_random_solver:bool=False,
                  **p_param):

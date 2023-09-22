@@ -37,4 +37,63 @@ class PayoffFunction_PD2P (GTFunction):
         
 
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class PrisonersDilemma2PGame (GTGame):
+
+    C_NAME  = 'PrisonersDilemma2PGame'
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
+
+        solver = GTSolver(
+            p_strategy_space=MSpace().add_dim('RStr','Z','Random Strategy','','','',[0,1]),
+            p_id=None,
+            p_visualize=p_visualize,
+            p_logging=p_logging
+        )
+
+
+        p1 = GTPlayer(
+            p_solver=solver,
+            p_name="Player of Prisoner 1",
+            p_visualize=p_visualize,
+            p_logging=p_logging,
+            p_random_solver=False
+        )
+
+        coal1 = GTCoalition(
+            p_name="Coalition of Prisoner 1",
+            p_coalition_type=GTCoalition.C_COALITION_SUM
+        )
+        coal1.add_player(p1)
+
+
+        p2 = GTPlayer(
+            p_solver=solver,
+            p_name="Player of Prisoner 2",
+            p_visualize=p_visualize,
+            p_logging=p_logging,
+            p_random_solver=False
+        )
+
+        coal2 = GTCoalition(
+            p_name="Coalition of Prisoner 2",
+            p_coalition_type=GTCoalition.C_COALITION_SUM
+        )
+        coal2.add_player(p2)
+
+
+        competition = GTCompetition(
+            p_name="Prisoner's Dilemma Competition",
+            p_logging=p_logging
+            )
+        competition.add_coalition(coal1)
+        competition.add_coalition(coal2)
+        
+        return competition
+        
+
+
 
