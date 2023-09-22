@@ -14,6 +14,17 @@ Ver. 1.0.0 (2023-09-22)
 
 This module provides a 2-player game of Prisoners' Dilemma with random solver. In the near future,
 we are going to add more solvers and this howto is going to be updated accordingly.
+
+The game consists of two competitors, where each competitor represents a prisonner.
+Both of them have a goal to minimize their prison sentences, where their length of sentences depend
+on their decision in front of the jury. If a prisoner pleads guilty, while another prisoner pleads
+not guilty. The guilty prisoner gets 8 years of imprisonment, while the not guilty prisoner gets 1
+year of imprisonment. If both of them plead guilty, then each of them gets 5 years of imprisonment.
+Meanwhile, if both of them plead not guilty, then each of them obtains 2 years of imprisonment.
+To be noted, the decision making of the prisoners take place simultaneously, where:
+- Decision "0" means confess
+- Decision "1" means not confess
+
 """
 
 from mlpro.gt.native.basics import *
