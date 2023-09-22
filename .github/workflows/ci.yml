@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Codes
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.CI_UNIT_TEST }}
           ref: ${{ github.head_ref }}
 
       - name: Generate dependecies list
@@ -33,8 +33,8 @@ jobs:
         with:
           commit_message: Dependencies Generation
           branch: ${{ github.head_ref }}
-          commit_user_name: Mochammad Rizky Diprasetya
-          commit_user_email: diprasetya.rizky@protonmail.com
+          commit_user_name: MLPro Administration
+          commit_user_email: mlpro@listen.fh-swf.de
 
       - name: "Run if changes not detected"
         if: steps.auto-commit-action.outputs.changes_detected == 'false'

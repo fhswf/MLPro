@@ -42,24 +42,24 @@ MLPro
 
 .. |examples| image:: content/00_start_page/images/example_pool.png
    :scale: 65 %
-   :target: content/04_appendices/appendix1/main.html
+   :target: content/99_appendices/appendix1/main.html
 
 .. |mlpro_api| image:: content/00_start_page/images/api_reference.png
    :scale: 65 %
-   :target: content/04_appendices/appendix2/main.html
+   :target: content/99_appendices/appendix2/main.html
 
 .. |project| image:: content/00_start_page/images/project_mlpro.png
    :scale: 65 %
-   :target: content/04_appendices/appendix3/main.html
+   :target: content/99_appendices/appendix3/main.html
 
-.. |publications| image:: content/00_start_page/images/publications.png
+.. |extensions| image:: content/00_start_page/images/extension_hub.png
    :scale: 65 %
-   :target: content/04_appendices/appendix3/sub/02_publications.html
+   :target: content/04_extensions/main.html
 
 
 |welcome| |mlpro_bf| |mlpro_sl| |mlpro_oa| |mlpro_rl| 
 
-|mlpro_gt| |examples| |mlpro_api| |project| |publications|
+|mlpro_gt| |examples| |mlpro_api| |project| |extensions|
 
 
 .. |mlpro_pypi| image:: content/00_start_page/images/pypi.svg
@@ -86,7 +86,6 @@ MLPro is also present on...
    * - |mlpro_pypi| `Python Package Index <https://pypi.org/project/mlpro>`_
      - |mlpro_anaconda| `Anaconda.org <https://anaconda.org/mlpro/mlpro>`_
      - |mlpro_github| `GitHub <https://github.com/fhswf/MLPro>`_
-..     - |mlpro_rg| `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
 
 
 
@@ -126,10 +125,20 @@ MLPro is also present on...
 .. toctree::
    :hidden:
    :maxdepth: 3
+   :caption: Extension Hub
+   :glob:
+   :numbered: 
+
+   content/04_extensions/sub/*
+   
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
    :caption: Appendices
    :glob:
 
-   content/04_appendices/appendix1/main
-   content/04_appendices/appendix2/main
-   content/04_appendices/appendix3/main
+   content/99_appendices/appendix1/main
+   content/99_appendices/appendix2/main
+   content/99_appendices/appendix3/main
 
