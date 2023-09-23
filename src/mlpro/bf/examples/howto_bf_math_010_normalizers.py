@@ -10,11 +10,12 @@
 ## -- 2022-10-01  1.0.1     LSB      Renormalization
 ## -- 2022-10-06  1.0.2     LSB      Refactoring
 ## -- 2022-10-16  1.0.3     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
-## -- 2022-11-03  1.0.4     LSB      refacoring for update with replaced data (a-transformer)
+## -- 2022-11-03  1.0.4     LSB      refacoring for update with replaced data (Z-
+## -- 2023-09-23  1.0.5     LSB      Bug Fix, the input to normalizer shall be copied as it returns the same object
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-11-03)
+Ver. 1.0.5 (2023-09-23)
 Example file for demonstrating the use of MLPro's normalizer for normalizing and de-normalizing data.
 
 
@@ -142,13 +143,13 @@ if p_printing:
 
 
 # 11. Normalizing using MinMax
-normalized_state = my_normalizer_minmax.normalize(my_state)
+normalized_state = my_normalizer_minmax.normalize(my_state.copy())
 if p_printing:
     print('11. Normalized value (MinMax Normalizer):\n', normalized_state.get_values(),'\n\n')
 
 
 # 12. De-normalizing using MinMAx
-denormalized_state = my_normalizer_minmax.denormalize(normalized_state)
+denormalized_state = my_normalizer_minmax.denormalize(normalized_state.copy())
 if p_printing:
     print('12. Denormalized value (MinMax Normalizer):\n', denormalized_state.get_values(),'\n\n')
 
@@ -167,12 +168,12 @@ if p_printing:
 
 
 # 15. Renormalizing the previously normalized data with the new parameters
-re_normalized_state = my_normalizer_minmax.renormalize(normalized_state)
+re_normalized_state = my_normalizer_minmax.renormalize(normalized_state.copy())
 if p_printing:
     print('15. Renormalized value (MinMax Normalizer):\n', re_normalized_state.get_values(),'\n\n')
 
 
 # 16. Validating the renormalization
-normalized_state = my_normalizer_minmax.normalize(my_state)
+normalized_state = my_normalizer_minmax.normalize(my_state.copy())
 if p_printing:
     print('16. Normalized value (Validation renormalization):\n', normalized_state.get_values(),'\n\n')
