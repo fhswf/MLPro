@@ -2,35 +2,35 @@
 Howto RL-UI-001: SciUI - Reinforcement Learning Cockpit
 ==========================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit
-
-
-**Prerequisites**
-
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install the following packages to run this examples properly:
+
     - `NumPy <https://pypi.org/project/numpy/>`_
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `Tkinter <https://pypi.org/project/tk/>`_
 
 
 
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_ui_001_reinforcement_learning_cockpit.py
 	:language: python
 
 
 
-**Results**
-
+Results
+^^^^^^^
 
 This UI is not ready-to-use and still under development. The current cockpit is shown as follow,
 
 .. image:: images/howto.rl.ui.001/sciui_rl.png
 
 
-**Cross Reference**
+Cross Reference
+^^^^^^^^^^^^^^^
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`

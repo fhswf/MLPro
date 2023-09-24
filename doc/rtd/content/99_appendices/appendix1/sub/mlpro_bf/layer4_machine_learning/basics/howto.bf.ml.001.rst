@@ -2,16 +2,16 @@
 Howto BF-ML-001: Adaptive Model
 ===============================
 
-.. automodule:: mlpro.bf.examples.howto_bf_ml_001_adaptive_model
-
-
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_ml_001_adaptive_model.py
 	:language: python
 
 
-**Results**
+
+Results
+^^^^^^^
 
 As shown below, the howto logs all steps and a demo window for visualization appears...
 
@@ -19,6 +19,8 @@ As shown below, the howto logs all steps and a demo window for visualization app
     :scale: 75%
     
 
-**Cross Reference**
 
-+ :ref:`API Reference: Machine Learning <target_api_bf_ml>`
+Cross Reference
+^^^^^^^^^^^^^^^
+
+    - :ref:`API Reference: Machine Learning <target_api_bf_ml>`

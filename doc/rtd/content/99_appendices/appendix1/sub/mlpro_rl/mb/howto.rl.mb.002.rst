@@ -2,27 +2,26 @@
 Howto RL-MB-002: MBRL with MPC on Grid World Environment
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_mb_002_grid_world_environment
-
-
-
-**Prerequisites**
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install the following packages to run this examples properly:
+
     - `PyTorch <https://pypi.org/project/torch/>`_
     - `NumPy <https://pypi.org/project/numpy/>`_
 
 
 
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_002_grid_world_environment.py
 	:language: python
 
 
 
-**Results**
-
+Results
+^^^^^^^
 
 After the environment is initiated, the training will run for the specified amount of limits. The expected initial console output can be seen below.
 
@@ -60,9 +59,11 @@ After termination the local result folder contains the training result files:
 The image above shows that the agent in most cases can reach the goal.
 
 
-**Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - Environment Model <target_api_rl_env_ada>`
-    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+Cross Reference
+^^^^^^^^^^^^^^^
+
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - Environment Model <target_api_rl_env_ada>`
+    - :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`

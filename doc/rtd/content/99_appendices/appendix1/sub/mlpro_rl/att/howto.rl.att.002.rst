@@ -2,27 +2,26 @@
 Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection Cartpole Discrete (MuJoCo)
 ===================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete
-
-
-
-**Prerequisites**
-
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install the following packages to run this examples properly:
+
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
 
 
 
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete.py
 	:language: python
 
 
 
-**Results**
+Results
+^^^^^^^
 
 The MuJoCo Cartpole environment window appears during training and shows an improved control behavior after a while. After the training, 
 the related scenario is reloaded and run for a further episode to demonstrate the final control behavior.
@@ -44,8 +43,9 @@ After termination the local result folder contains the training result files:
 
 
 
-**Cross Reference**
+Cross Reference
+^^^^^^^^^^^^^^^
 
-- :ref:`MLPro-RL: Training <target_training_RL>`
-- :ref:`Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo) <Howto Agent RL 021>`
-- :ref:`API Reference <target_api_rl_run_train>`
+    - :ref:`MLPro-RL: Training <target_training_RL>`
+    - :ref:`Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo) <Howto Agent RL 021>`
+    - :ref:`API Reference <target_api_rl_run_train>`
