@@ -15,8 +15,8 @@ sphinx:
    configuration: doc/rtd/conf.py
 
 # Build Other Format
-# formats:
-#  - pdf
+formats:
+  - pdf
 
 # Optionally declare the Python requirements required to build your docs
 python:
