@@ -1,12 +1,9 @@
 .. _Howto Env RL 005:
 Howto RL-ENV-005: Run Agent with random policy on double pendulum mujoco environment
-====================================================================================================
+====================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment
-
-
-**Prerequisites**
-
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install the following packages to run this examples properly:
 
@@ -17,22 +14,25 @@ Please install the following packages to run this examples properly:
 
 
 Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
 	:language: python
 
 
 
-**Results**
-
+Results
+^^^^^^^
 
 .. image:: images/MuJoCo.gif
     :width: 500 px
     :align: center
 
 
-**Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+Cross Reference
+^^^^^^^^^^^^^^^
+
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`

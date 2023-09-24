@@ -1,28 +1,26 @@
 .. _Howto WP RL 001:
 Howto RL-WP-001: MLPro to OpenAI Gym
-===========================================================================
+====================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment
-
-
-
-**Prerequisites**
-
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install the following packages to run this examples properly:
+
     - `OpenAI Gym <https://pypi.org/project/gym/0.19.0/>`_
     
 
 
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_wp_001_mlpro_environment_to_gym_environment.py
 	:language: python
 
 
 
-**Results**
-
+Results
+^^^^^^^
 
 The native MLPro GridWorld environment will be wrapped to a OpenAI Gym environment. By making use of Gym's environment
 checker, we could confirm the success of the environment wrapping.
@@ -44,8 +42,10 @@ There will be several more lines of action processing logs due to the nature of 
 When there is no detected failure, the environment is successfully wrapped.
 
 
-**Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - Wrapper OpenAI Gym <Wrapper OpenAI Gym>`
+Cross Reference
+^^^^^^^^^^^^^^^
+
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - Wrapper OpenAI Gym <Wrapper OpenAI Gym>`
