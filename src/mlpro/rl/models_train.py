@@ -49,10 +49,11 @@
 ## -- 2023-02-20  1.9.0     DA       Class RLScenario: new methods load(), _save()
 ## -- 2023-03-09  1.9.1     DA       Class RLTrainingResults: removed parameter p_path
 ## -- 2023-03-26  2.0.0     DA       Class RLScenario: refactoring persistence
+## -- 2023-09-25  2.0.1     SY       Class RLScenario: debugging reward storing in _run_cycle 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2023-03-26)
+Ver. 2.0.1 (2023-09-25)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -529,12 +530,21 @@ class RLScenario (Scenario):
         ts = self._timer.get_time()
         reward.set_tstamp(ts)
         if self._ds_rewards is not None:
-            if (reward.get_type() == Reward.C_TYPE_OVERALL) or (reward.get_type() == Reward.C_TYPE_EVERY_AGENT):
+            
+            if reward.get_type() == Reward.C_TYPE_OVERALL:
                 reward_values = np.zeros(self._ds_rewards.get_space().get_num_dim())
 
                 for i, agent_id in enumerate(self._ds_rewards.get_space().get_dim_ids()):
                     reward_values[i] = reward.get_agent_reward(i)
 
+                self._ds_rewards.memorize_row(self._cycle_id, ts, reward_values)
+                
+            elif reward.get_type() == Reward.C_TYPE_EVERY_AGENT:
+                reward_values = np.zeros(len(reward.agent_ids))
+    
+                for i, agent_id in enumerate(reward.agent_ids):
+                    reward_values[i] = reward.get_agent_reward(agent_id)
+    
                 self._ds_rewards.memorize_row(self._cycle_id, ts, reward_values)
 
 
