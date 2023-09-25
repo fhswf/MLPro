@@ -68,7 +68,7 @@ class MultiFlipFlop(MultiSystem):
 
 
 # Creating MultiSystem Object
-system = MultiFlipFlop()
+system = MultiFlipFlop(p_logging=logging)
 
 
 # Add systems to MultiSystem
