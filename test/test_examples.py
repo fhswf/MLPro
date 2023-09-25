@@ -59,8 +59,9 @@ Unit test for all examples available.
 
 import sys
 import os
-import runpy
 from mlpro.bf.various import Log
+import runpy
+import pytest
 
 
 
@@ -73,43 +74,51 @@ class HowtoTester(Log):
     C_NAME      = 'MLPro'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_path:str):
-        super().__init__( p_logging = Log.C_LOG_ALL )
-        self._path = p_path
-        self.log(Log.C_LOG_TYPE_S, 'Howto path:', self._path )
-        
-
-## -------------------------------------------------------------------------------------------------
     def test(self, p_path, p_file):
         self.log(Log.C_LOG_TYPE_S, 'Testing file', p_file)
         runpy.run_path( p_path + os.sep + p_file )
 
         
 ## -------------------------------------------------------------------------------------------------
-    def run(self):
+    def get_howtos(self, p_path:str):
 
-        total  = 0
+        file_list = []
 
-        for (root ,sub_dirs, files) in os.walk(self._path, topdown=True):
+        for (root ,sub_dirs, files) in os.walk(p_path, topdown=True):
             sub_dirs.sort()
 
             for sub_dir in sub_dirs:
-                for (root, dirs, files) in os.walk(self._path + os.sep + sub_dir, topdown=True):
+                for (root, dirs, files) in os.walk(p_path + os.sep + sub_dir, topdown=True):
                     self.log(Log.C_LOG_TYPE_S, 'Scanning folder', root)  
                     files.sort()
 
                     for file in files:
                         if os.path.splitext(file)[1] == '.py':
-                            self.test(p_path=root, p_file=file)
-                            total += 1
+                            file_list.append( (root, file) )
                         else:
                             self.log(Log.C_LOG_TYPE_W, 'File ignored:', file)
 
             break
 
-        self.log(Log.C_LOG_TYPE_S, 'Files tested:', total)
+        return file_list
 
 
 
+tester = HowtoTester()
+howtos = tester.get_howtos( sys.path[0] + os.sep + 'howtos' )
 
-HowtoTester( sys.path[0] + os.sep + 'howtos' ).run()
+
+if __name__ != '__main__':
+    @pytest.mark.parametrize("p_path,p_file", howtos)
+    def test_howto(p_path, p_file):
+        runpy.run_path( p_path + os.sep + p_file )
+
+else:
+    for howto in howtos:
+        tester.test(howto[0], howto[1])
+
+    tester.log(Log.C_LOG_TYPE_S, 'Howtos tested:', len(howtos))
+    
+
+        
+
