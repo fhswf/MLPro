@@ -153,7 +153,7 @@ class GTTraining (RLTraining):
 
     """
 
-    C_NAME = 'GT Training'
+    C_NAME = 'GT'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
