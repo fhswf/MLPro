@@ -20,10 +20,11 @@
 ## -- 2023-04-12  2.1.0     SY       MLPro-GT-DP to MLPro-GT-DG (Dynamic Games)
 ## -- 2023-05-11  2.2.0     SY       Remove PGameBoard and refactoring
 ## -- 2021-08-22  2.2.1     SY       Refactoring due to compatibility
+## -- 2021-09-25  2.3.0     SY       Introduction of GTTrainingResults
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.1 (2023-08-22)
+Ver. 2.3.0 (2023-09-25)
 
 This module provides model classes for tasks related to Game Theory in dynamic games.
 """
@@ -111,6 +112,20 @@ class Game (RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class GTTrainingResults (RLTrainingResults):
+    """
+    Results of a GT training.
+
+    """
+
+    C_NAME = 'GT'
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class GTTraining (RLTraining):
     """
     This class implements a standardized episodical training process. See super class for more 
@@ -154,6 +169,8 @@ class GTTraining (RLTraining):
     """
 
     C_NAME = 'GT'
+
+    C_CLS_RESULTS = GTTrainingResults
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
