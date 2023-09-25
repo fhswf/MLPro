@@ -39,8 +39,8 @@ class GameBoard (Environment):
     Model class for a game theoretical game board. See super class for more information.
     """
 
-    C_TYPE = 'Game Board'
-    C_REWARD_TYPE = Reward.C_TYPE_EVERY_AGENT
+    C_TYPE          = 'Game Board'
+    C_REWARD_TYPE   = Reward.C_TYPE_EVERY_AGENT
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:

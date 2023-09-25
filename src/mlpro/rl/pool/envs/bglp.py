@@ -985,7 +985,7 @@ class BGLP (Environment):
             overflow_diff, demand_diff, power_diff, transport_diff, margin_diff = self.get_status(self.t, self._demand)
             self.overflow_t     += overflow_diff
             self.demand_t       += demand_diff
-            self.power_t       += power_diff
+            self.power_t        += power_diff
             self.transport_t    += transport_diff
             self.margin_t       += margin_diff
             self.t              += self.t_step
