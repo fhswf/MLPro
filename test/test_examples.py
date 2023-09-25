@@ -90,14 +90,22 @@ class HowtoTester(Log):
 
         total  = 0
 
-        for (root, dirs, files) in os.walk(self._path, topdown=True):
-            self.log(Log.C_LOG_TYPE_S, 'Scanning folder', root)  
-            for file in files:
-                if os.path.splitext(file)[1] != '.py':
-                    self.log(Log.C_LOG_TYPE_W, 'File ignored:', file)
-                else:
-                    self.test(p_path=root, p_file=file)
-                    total += 1
+        for (root ,sub_dirs, files) in os.walk(self._path, topdown=True):
+            sub_dirs.sort()
+
+            for sub_dir in sub_dirs:
+                for (root, dirs, files) in os.walk(self._path + os.sep + sub_dir, topdown=True):
+                    self.log(Log.C_LOG_TYPE_S, 'Scanning folder', root)  
+                    files.sort()
+
+                    for file in files:
+                        if os.path.splitext(file)[1] == '.py':
+                            self.test(p_path=root, p_file=file)
+                            total += 1
+                        else:
+                            self.log(Log.C_LOG_TYPE_W, 'File ignored:', file)
+
+            break
 
         self.log(Log.C_LOG_TYPE_S, 'Files tested:', total)
 
