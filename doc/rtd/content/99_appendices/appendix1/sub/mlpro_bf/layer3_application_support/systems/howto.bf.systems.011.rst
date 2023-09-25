@@ -2,8 +2,7 @@
 Howto BF-SYSTEMS-011: Double Pendulum Systems wrapped with MuJoCo
 ====================================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -13,16 +12,14 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The MuJoCo windows appears and shows the simulation of a pendulum system.
 
@@ -30,7 +27,6 @@ The MuJoCo windows appears and shows the simulation of a pendulum system.
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Systems <target_ap_bf_systems>`

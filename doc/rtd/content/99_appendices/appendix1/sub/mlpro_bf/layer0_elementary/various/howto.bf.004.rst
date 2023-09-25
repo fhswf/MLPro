@@ -2,16 +2,14 @@
 Howto BF-004: Buffers
 =====================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_004_buffers.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_004_buffers.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/buffer_example.png
@@ -19,7 +17,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Various <target_api_bf_various>`

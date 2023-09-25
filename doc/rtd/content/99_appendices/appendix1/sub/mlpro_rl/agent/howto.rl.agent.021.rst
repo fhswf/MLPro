@@ -1,9 +1,8 @@
 .. _Howto Agent RL 021:
 Howto RL-AGENT-021: Train and Reload Single Agent Cartpole Discrete (MuJoCo)
-==========================================================
+============================================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -12,16 +11,14 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The MuJoCo Cartpole environment window appears. Afterwards, the training runs 
 for a few episodes before terminating and printing the result. 
@@ -38,8 +35,7 @@ Both training results are from the same agent.
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`MLPro-RL: Training <target_training_RL>`
     - :ref:`API Reference <target_api_rl_run_train>`

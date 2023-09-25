@@ -55,7 +55,7 @@ class MyScenario(RLScenario):
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
             p_visualize=p_visualize,
-            p_logging=p_logging,
+            p_logging=p_logging
         )
 
         # 1.4 Setup standard single-agent with own policy

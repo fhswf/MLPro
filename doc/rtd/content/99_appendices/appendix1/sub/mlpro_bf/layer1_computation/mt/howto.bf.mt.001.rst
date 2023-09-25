@@ -2,8 +2,7 @@
 Howto BF-MT-001: Multitasking - Parallel Algorithms
 ===================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install following packages to run this howto
 
@@ -11,16 +10,14 @@ Please install following packages to run this howto
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_mt_001_parallel_algorithms.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_mt_001_parallel_algorithms.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The howto example logs details of the three runs and in particular the speed factors of multithreading and 
 multiprocessing in comparison to the serial/synchronous execution. On a PC with an AMD Ryzen 7 CPU (8/16 cores)
@@ -30,7 +27,6 @@ running Linux, the system monitor shows an approx. 5x speedup with multithreadin
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
 	- :ref:`API Reference: Multitasking <target_api_bf_mt>`

@@ -2,23 +2,20 @@
 Howto BF-001: Logging
 =====================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_001_logging.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_001_logging.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image:: images/log_example.png
     :scale: 60 %
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Various <target_api_bf_various>`

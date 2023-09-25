@@ -2,8 +2,7 @@
 Howto BF-UI-001: SciUI - Reuse of interactive 2D/3D Input Space
 ===============================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this example properly:
 
@@ -12,16 +11,14 @@ Please install the following packages to run this example properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The SciUI application should start and show an interactive demo of a 2D/3D input space as follows:
 
@@ -29,7 +26,6 @@ The SciUI application should start and show an interactive demo of a 2D/3D input
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: SciUi <target_api_bf_ui_sciui>`

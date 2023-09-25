@@ -2,8 +2,7 @@
 Howto RL-WP-005: Validation SB3 Wrapper (On-Policy) 
 ===================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -14,16 +13,14 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_wp_005_validation_wrapped_sb3_on_policy.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_wp_005_validation_wrapped_sb3_on_policy.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The result plot shows that MLPro's wrapper for Stable Baselines 3 behaves neutrally.
 
@@ -31,8 +28,7 @@ The result plot shows that MLPro's wrapper for Stable Baselines 3 behaves neutra
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference - RL Agent <target_api_rl_agents>`
     - :ref:`API Reference - RL Environments <target_api_rl_env>`

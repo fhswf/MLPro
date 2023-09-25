@@ -2,23 +2,20 @@
 Howto BF-PHYSICS-002: Unit Converter
 ====================================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_physics_002_unit_converter.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_physics_002_unit_converter.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/physics_3.png
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Physics <target_ap_bf_physics>`

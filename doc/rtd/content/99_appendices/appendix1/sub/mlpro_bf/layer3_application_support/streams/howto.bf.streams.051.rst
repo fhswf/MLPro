@@ -2,8 +2,7 @@
 Howto BF-STREAMS-051: Accessing Data from OpenML
 ================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -12,14 +11,12 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-`howto_bf_streams_051_accessing_data_from_openml.py <https://github.com/fhswf/MLPro/blob/main/src/mlpro/bf/examples/howto_bf_streams_051_accessing_data_from_openml.py>`_
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_051_accessing_data_from_openml.py.off
+	:language: python
 
 
-
-Results
-^^^^^^^
+**Results**
 
     - :ref:`API Reference: Streams <target_ap_bf_streams>`

@@ -2,10 +2,7 @@
 Howto RL-WP-004: Train an Agent with SB3
 ========================================
 
-Prerequisites
-^^^^^^^^^^^^^
-
-
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -14,24 +11,21 @@ Please install the following packages to run this examples properly:
     
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_wp_004_train_agent_with_sb3_policy.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_wp_004_train_agent_with_sb3_policy.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 An output similar to the one present in :ref:`Howto RL-AGENT-002 <Howto Agent RL 002>` 
 will show up, making use of the wrapped training algorithm.
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+
+**Cross Reference**
 
     - :ref:`API Reference - RL Agent <target_api_rl_agents>`
     - :ref:`API Reference - RL Environments <target_api_rl_env>`
