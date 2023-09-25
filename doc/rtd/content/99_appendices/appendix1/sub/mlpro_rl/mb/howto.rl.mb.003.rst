@@ -2,28 +2,26 @@
 Howto RL-MB-003: MBRL on RobotHTM Environment
 =======================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_mb_003_robothtm_environment
-  
-
-
-**Prerequisites**
-
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install the following packages to run this examples properly:
+
     - `Pytorch <https://pypi.org/project/torch/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
 
 
 
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_003_robothtm_environment.py
 	:language: python
 
 
 
-**Results**
-
+Results
+^^^^^^^
 
 After the environment is initiated, the training will run for the specified amount of limits.
 The expected initial console output can be seen below.
@@ -56,9 +54,11 @@ The expected initial console output can be seen below.
     ...
 
 
-**Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - Environment Model <target_api_rl_env_ada>`
-    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+Cross Reference
+^^^^^^^^^^^^^^^
+
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - Environment Model <target_api_rl_env_ada>`
+    - :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`

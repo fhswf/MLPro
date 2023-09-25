@@ -1,23 +1,26 @@
 .. _Howto BF MATH 010:
 Howto BF-MATH-010: Normalizers
-==============================================
+==============================
 
-.. automodule:: mlpro.bf.examples.howto_bf_math_010_normalizers
-
-
-**Prerequisites**
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install following packages to run this howto
 
-+ `Numpy <https://www.numpy.org>`_
+    - `Numpy <https://www.numpy.org>`_
 
-**Executable code**
+
+
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_math_010_normalizers.py
 	:language: python
 
 
-**Results**
+
+Results
+^^^^^^^
 
 The results will be available as follows
 
@@ -99,6 +102,7 @@ The results will be available as follows
 
 
 
-**Cross References**
+Cross Reference
+^^^^^^^^^^^^^^^
 
-+ :ref:`API Reference: Normalizers <target_ap_bf_math_norm>`
+    - :ref:`API Reference: Normalizers <target_ap_bf_math_norm>`

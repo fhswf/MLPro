@@ -2,21 +2,23 @@
 Howto BF-005: Persistence
 =========================
 
-.. automodule:: mlpro.bf.examples.howto_bf_005_persistence
-
-
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_005_persistence.py
 	:language: python
 
 
-**Results**
+
+Results
+^^^^^^^
 
 .. image::
     images/howto.bf.005.png
 
 
-**Cross Reference**
+
+Cross Reference
+^^^^^^^^^^^^^^^
 
 + :ref:`API Reference: Various <target_api_bf_various>`

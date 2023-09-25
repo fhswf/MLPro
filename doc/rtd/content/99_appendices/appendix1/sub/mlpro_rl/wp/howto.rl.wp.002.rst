@@ -2,27 +2,25 @@
 Howto RL-WP-002: MLPro to PettingZoo
 ===========================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment
-
-
-
-**Prerequisites**
-
+Prerequisites
+^^^^^^^^^^^^^
 
 Please install the following packages to run this examples properly:
+
     - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
 
     
 
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment.py
 	:language: python
 
 
 
-**Results**
-
+Results
+^^^^^^^
 
 The Bulk Good Laboratory Plant (BGLP) environment will be wrapped to a PettingZoo compliant environment. 
 
@@ -41,8 +39,9 @@ The Bulk Good Laboratory Plant (BGLP) environment will be wrapped to a PettingZo
 There are several lines of action processing logs due to the API tests. When there is no detected failure, the environment is successfully wrapped.
 
 
-**Cross Reference**
+Cross Reference
+^^^^^^^^^^^^^^^
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - Wrapper PettingZoo <Wrapper PettingZoo>`
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - Wrapper PettingZoo <Wrapper PettingZoo>`

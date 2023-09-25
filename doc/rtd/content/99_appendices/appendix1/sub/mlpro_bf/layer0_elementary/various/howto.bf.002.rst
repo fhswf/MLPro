@@ -2,23 +2,23 @@
 Howto BF-002: Timer
 ===================
 
-.. automodule:: mlpro.bf.examples.howto_bf_002_timer
-
-
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_002_timer.py
 	:language: python
 
-**Results**
-
-.. image::
-    images/timer_example.png
-    :align: center
-    :width: 1000px
 
 
+Results
+^^^^^^^
 
-**Cross Reference**
+.. image:: images/timer_example.png
+    :scale: 70 %
 
-+ :ref:`API Reference: Various <target_api_bf_various>`
+
+
+Cross Reference
+^^^^^^^^^^^^^^^
+
+    - :ref:`API Reference: Various <target_api_bf_various>`

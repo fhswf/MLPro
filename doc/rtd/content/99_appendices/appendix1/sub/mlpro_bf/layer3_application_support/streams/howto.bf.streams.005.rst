@@ -2,18 +2,17 @@
 Howto BF-STREAMS-005: Streams Sampler
 =====================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_005_sampler
+Executable code
+^^^^^^^^^^^^^^^
 
-
-
-**Executable code**
 
 .. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_005_sampler.py
 	:language: python
 
 
 
-**Results**
+Results
+^^^^^^^
 
 .. code-block:: bashh
 
@@ -54,8 +53,9 @@ Howto BF-STREAMS-005: Streams Sampler
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream "Random 10D x 1000": Number of instances being sampled: 50
 
 
-**Cross Reference**
 
+Cross Reference
+^^^^^^^^^^^^^^^
 
-+ :ref:`API Reference: Random Samplers <ap2_samplers>`
-+ :ref:`API Reference: Data from CSV files <ap2_csv_files>`
+    - :ref:`API Reference: Random Samplers <ap2_samplers>`
+    - :ref:`API Reference: Data from CSV files <ap2_csv_files>`

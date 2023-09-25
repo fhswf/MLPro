@@ -2,18 +2,15 @@
 Howto BF-STREAMS-004: Visualizing Moving 3D Clouds Provided By MLPro
 ====================================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_004_visualize_moving_clouds3d
-
-
-
-**Executable code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_004_visualize_moving_clouds3d.py
 	:language: python
 
 
-
-**Results**
+Results
+^^^^^^^
 
 .. image::
     images/streams_moving_clouds_3d.gif
@@ -21,6 +18,7 @@ Howto BF-STREAMS-004: Visualizing Moving 3D Clouds Provided By MLPro
 
 
 
-**Cross Reference**
+Cross Reference
+^^^^^^^^^^^^^^^
 
-+ :ref:`API Reference: Streams <target_ap_bf_streams>`
+    - :ref:`API Reference: Streams <target_ap_bf_streams>`

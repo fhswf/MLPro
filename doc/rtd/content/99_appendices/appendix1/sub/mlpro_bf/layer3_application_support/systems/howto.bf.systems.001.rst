@@ -2,16 +2,16 @@
 Howto BF-SYSTEMS-001: Demonstrating Native Systems
 ====================================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_systems_001_demonstrating_native_systems
-
-**Prerequisites**
-
-**Executable Code**
+Executable code
+^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_001_demonstrating_native_systems.py
 	:language: python
 
-**Results**
+
+
+Results
+^^^^^^^
 
 .. code-block:: bashh
     
@@ -211,6 +211,8 @@ Howto BF-SYSTEMS-001: Demonstrating Native Systems
     2023-05-03  10:50:48.538374  S  Scenario Base "????": Process time 0:00:00.400000 : End of processing
 
 
-**Cross Reference**
 
-+ :ref:`API Reference: Systems <target_ap_bf_systems>`
+Cross Reference
+^^^^^^^^^^^^^^^
+
+    - :ref:`API Reference: Systems <target_ap_bf_systems>`
