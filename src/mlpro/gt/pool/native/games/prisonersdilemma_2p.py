@@ -65,9 +65,12 @@ class PrisonersDilemma2PGame (GTGame):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
-
+        
+        _strategy_space = MSpace()
+        _strategy_space.add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,1]))
+        
         solver1 = RandomSolver(
-            p_strategy_space=MSpace().add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,1])),
+            p_strategy_space=_strategy_space,
             p_id=1,
             p_name="Random Solver",
             p_visualize=p_visualize,
@@ -91,7 +94,7 @@ class PrisonersDilemma2PGame (GTGame):
 
 
         solver2 = RandomSolver(
-            p_strategy_space=MSpace().add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,1])),
+            p_strategy_space=_strategy_space,
             p_id=2,
             p_visualize=p_visualize,
             p_logging=p_logging

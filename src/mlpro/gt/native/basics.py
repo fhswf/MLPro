@@ -47,8 +47,8 @@ class GTStrategy (Action):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_player_id = 0, 
-                 p_strategy_space: Set = None,
-                 p_values: np.ndarray = None):
+                 p_strategy_space:Set = None,
+                 p_values:np.ndarray = None):
         
         super().__init__(p_agent_id=p_player_id,
                          p_action_space=p_strategy_space,
@@ -249,7 +249,7 @@ class GTPayoffMatrix (TStamp):
 
         payoff = self.get_payoff(p_strategies, p_element_id)
         if self._function is not None:
-            best_payoff = self._function.best_response()
+            best_payoff = self._function.best_response(p_element_id)
         else:
             best_payoff = self._call_best_response(p_element_id)
 
@@ -634,7 +634,7 @@ class GTCoalition (GTPlayer):
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> ESpace:
 
-        if self.get_coalition_strategy == self.C_COALITION_CONCATENATE:
+        if self.get_coalition_strategy() == self.C_COALITION_CONCATENATE:
             return None
         else:        
             espace = ESpace()
@@ -645,11 +645,11 @@ class GTCoalition (GTPlayer):
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
 
-        if self.get_coalition_strategy == self.C_COALITION_CUSTOM:
+        if self.get_coalition_strategy() == self.C_COALITION_CUSTOM:
 
             coalition_strategy  = self._custom_coalition_strategy(p_payoff)
 
-        elif self.get_coalition_strategy == self.C_COALITION_CONCATENATE:
+        elif self.get_coalition_strategy() == self.C_COALITION_CONCATENATE:
 
             coalition_strategy  = GTStrategy()
 
@@ -662,19 +662,19 @@ class GTCoalition (GTPlayer):
 
             for pl in self._coop_players:
 
-                if pl == 0:
+                if self._coop_players.index(pl) == 0:
                     strategy_pl = pl.compute_strategy(p_payoff).get_sorted_values()
                 else:
-                    if self.get_coalition_strategy == self.C_COALITION_MEAN:
+                    if self.get_coalition_strategy() == self.C_COALITION_MEAN:
                         strategy_pl = (strategy_pl * pl + pl.compute_strategy(p_payoff).get_sorted_values()) / (pl + 1)
-                    elif self.get_coalition_strategy == self.C_COALITION_SUM:
+                    elif self.get_coalition_strategy() == self.C_COALITION_SUM:
                         strategy_pl += pl.compute_strategy(p_payoff).get_sorted_values()
-                    elif self.get_coalition_strategy == self.C_COALITION_MIN:
+                    elif self.get_coalition_strategy() == self.C_COALITION_MIN:
                         strategy_pl = np.minimum(strategy_pl, pl.compute_strategy(p_payoff).get_sorted_values())
-                    elif self.get_coalition_strategy == self.C_COALITION_MAX:
+                    elif self.get_coalition_strategy() == self.C_COALITION_MAX:
                         strategy_pl = np.maximum(strategy_pl, pl.compute_strategy(p_payoff).get_sorted_values())
 
-            coalition_strategy = GTStrategy(self.get_id(), Element(self.get_strategy_space), strategy_pl)
+            coalition_strategy = GTStrategy(self.get_id(), self.get_strategy_space(), strategy_pl)
         
         return coalition_strategy
 
