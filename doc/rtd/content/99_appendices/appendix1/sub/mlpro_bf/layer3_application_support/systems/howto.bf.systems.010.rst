@@ -2,16 +2,14 @@
 Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor
 ====================================================================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_010_systems_controllers_actuators_sensors.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_systems_010_systems_controllers_actuators_sensors.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. code-block:: bashh
 
@@ -62,7 +60,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Systems <target_ap_bf_systems>`

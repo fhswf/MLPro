@@ -2,16 +2,14 @@
 Howto BF-STREAMS-001: Accessing Native Data From MLPro
 ================================================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_001_accessing_native_data_from_mlpro.py
+.. literalinclude:: ../../../../../../../../..test/howtos/bf/howto_bf_streams_001_accessing_native_data_from_mlpro.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. code-block:: bashh
 
@@ -42,7 +40,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Streams <target_ap_bf_streams>`

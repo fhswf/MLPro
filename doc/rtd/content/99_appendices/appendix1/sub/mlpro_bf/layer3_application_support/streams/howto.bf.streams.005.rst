@@ -2,17 +2,15 @@
 Howto BF-STREAMS-005: Streams Sampler
 =====================================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_005_sampler.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_005_sampler.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. code-block:: bashh
 
@@ -54,8 +52,7 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Random Samplers <ap2_samplers>`
     - :ref:`API Reference: Data from CSV files <ap2_csv_files>`

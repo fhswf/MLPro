@@ -2,8 +2,7 @@
 Howto BF-STREAMS-053: Accessing Data from River
 ===============================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -12,16 +11,14 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_053_accessing_data_from_river.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_053_accessing_data_from_river.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. code-block:: bash
 
@@ -106,7 +103,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
    - :ref:`API Reference: Streams <target_ap_bf_streams>`

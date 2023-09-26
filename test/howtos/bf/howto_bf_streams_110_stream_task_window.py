@@ -73,7 +73,9 @@ class MyStreamScenario(StreamScenario):
                               p_name = 't1', 
                               p_delay = True,
                               p_visualize = p_visualize, 
-                              p_enable_statistics = True )
+                              p_enable_statistics = True,
+                              p_logging = p_logging)
+
         workflow.add_task(task_window)
 
         # 2.2 Set up and add an own custom task

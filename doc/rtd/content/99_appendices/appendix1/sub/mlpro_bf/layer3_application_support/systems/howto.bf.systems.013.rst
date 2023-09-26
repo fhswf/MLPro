@@ -2,8 +2,7 @@
 Howto BF-SYSTEMS-013: MuJoCo Simulation with Camera
 ===================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
     
@@ -13,16 +12,14 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_013_box_on_table_mujoco_simulation.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_systems_013_box_on_table_mujoco_simulation.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The MuJoCo window appears and shows the simulation of a random box on the table. A Matplotlib window appears also and shows
 the current image data from the camera.
@@ -31,7 +28,6 @@ the current image data from the camera.
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Systems <target_ap_bf_systems>`

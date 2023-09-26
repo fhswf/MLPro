@@ -2,8 +2,7 @@
 Howto BF-MATH-010: Normalizers
 ==============================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install following packages to run this howto
 
@@ -11,16 +10,14 @@ Please install following packages to run this howto
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_math_010_normalizers.py
+.. literalinclude:: ../../../../../../../../test/howtos/bf/howto_bf_math_010_normalizers.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The results will be available as follows
 
@@ -102,7 +99,6 @@ The results will be available as follows
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Normalizers <target_ap_bf_math_norm>`
