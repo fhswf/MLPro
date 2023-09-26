@@ -2,11 +2,10 @@
 Howto BF-STREAMS-113: Rearranger (nD)
 ===============================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_113_stream_task_rearranger_nd
-
 **Prerequisites**
 
 Please install the following packages to run this example properly:
+
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `Tkinter <https://pypi.org/project/tk/>`_
 
@@ -14,8 +13,10 @@ Please install the following packages to run this example properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_113_stream_task_rearranger_nd.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_113_stream_task_rearranger_nd.py
 	:language: python
+
+
 
 **Results**
 
@@ -23,6 +24,7 @@ Please install the following packages to run this example properly:
     images/streams_rearranger_nd.gif
 
 
+
 **Cross Reference**
 
-+ :ref:`API Reference: Streams <target_ap_bf_streams>`
+    - :ref:`API Reference: Streams <target_ap_bf_streams>`

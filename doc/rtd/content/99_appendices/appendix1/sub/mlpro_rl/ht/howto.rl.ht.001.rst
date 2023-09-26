@@ -2,22 +2,20 @@
 Howto RL-HT-001: Hyperparameter Tuning using Hyperopt
 =====================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_ht_001_hyperopt
-
-
-
 **Prerequisites**
 
-
 Please install the following packages to run this examples properly:
+
     - `Hyperopt <https://pypi.org/project/hyperopt/>`_
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_ht_001_hyperopt.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_ht_001_hyperopt.py
 	:language: python
+
+
 
 **Results**
 
@@ -64,9 +62,10 @@ Please install the following packages to run this examples properly:
     ------------------------------------------------------------------------------
 
 
+
 **Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
-    + :ref:`API Reference - Machine Learning <target_api_bf_ml>`
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+    - :ref:`API Reference - Machine Learning <target_api_bf_ml>`

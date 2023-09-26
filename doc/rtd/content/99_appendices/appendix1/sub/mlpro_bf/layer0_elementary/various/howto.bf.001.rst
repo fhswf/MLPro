@@ -2,13 +2,11 @@
 Howto BF-001: Logging
 =====================
 
-.. automodule:: mlpro.bf.examples.howto_bf_001_logging
-
-
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_001_logging.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_001_logging.py
 	:language: python
+
 
 
 **Results**
@@ -17,6 +15,7 @@ Howto BF-001: Logging
     :scale: 60 %
 
 
+
 **Cross Reference**
 
-+ :ref:`API Reference: Various <target_api_bf_various>`
+    - :ref:`API Reference: Various <target_api_bf_various>`

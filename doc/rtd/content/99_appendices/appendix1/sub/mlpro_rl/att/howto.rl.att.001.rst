@@ -2,14 +2,10 @@
 Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gym)
 ================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_att_001_train_and_reload_single_agent_gym_sd
-
-
-
 **Prerequisites**
 
-
 Please install the following packages to run this examples properly:
+
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
 
@@ -17,7 +13,7 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_att_001_train_and_reload_single_agent_gym_sd.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_att_001_train_and_reload_single_agent_gym_sd.py
 	:language: python
 
 
@@ -46,6 +42,6 @@ After termination the local result folder contains the training result files:
 
 **Cross Reference**
 
-- :ref:`MLPro-RL: Training <target_training_RL>`
-- :ref:`Howto RL-AGENT-011: Train and Reload Single Agent (Gym) <Howto Agent RL 011>`
-- :ref:`API Reference <target_api_rl_run_train>`
+    - :ref:`MLPro-RL: Training <target_training_RL>`
+    - :ref:`Howto RL-AGENT-011: Train and Reload Single Agent (Gym) <Howto Agent RL 011>`
+    - :ref:`API Reference <target_api_rl_run_train>`

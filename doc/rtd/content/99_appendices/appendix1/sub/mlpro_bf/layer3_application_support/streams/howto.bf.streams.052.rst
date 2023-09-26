@@ -2,20 +2,20 @@
 Howto BF-STREAMS-052: Accessing Data from Scikit-Learn
 ======================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn
-
-
 **Prerequisites**
 
-
 Please install the following packages to run this examples properly:
+
     - `Scikit-Learn <https://pypi.org/project/sklearn/>`_
     - `Numpy <https://pypi.org/project/numpy/>`_
 
+
+
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_052_accessing_data_from_scikitlearn.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_052_accessing_data_from_scikitlearn.py
 	:language: python
+
 
 
 **Results**
@@ -102,6 +102,7 @@ Please install the following packages to run this examples properly:
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream "Sklearn stream "iris"": Done in 0.0  seconds (throughput = 140000000 instances/sec)
 
 
+
 **Cross Reference**
 
-+ :ref:`API Reference: Streams <target_ap_bf_streams>`
+   - :ref:`API Reference: Streams <target_ap_bf_streams>`
