@@ -634,7 +634,7 @@ class GTCoalition (GTPlayer):
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> ESpace:
 
-        if self.get_coaltion_strategy == self.C_COALITION_CONCATENATE:
+        if self.get_coalition_strategy == self.C_COALITION_CONCATENATE:
             return None
         else:        
             espace = ESpace()
@@ -645,7 +645,7 @@ class GTCoalition (GTPlayer):
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
 
-        if self.get_coaltion_strategy == self.C_COALITION_CUSTOM:
+        if self.get_coalition_strategy == self.C_COALITION_CUSTOM:
 
             coalition_strategy  = self._custom_coalition_strategy(p_payoff)
 
@@ -665,7 +665,7 @@ class GTCoalition (GTPlayer):
                 if pl == 0:
                     strategy_pl = pl.compute_strategy(p_payoff).get_sorted_values()
                 else:
-                    if self.get_coaltion_strategy == self.C_COALITION_MEAN:
+                    if self.get_coalition_strategy == self.C_COALITION_MEAN:
                         strategy_pl = (strategy_pl * pl + pl.compute_strategy(p_payoff).get_sorted_values()) / (pl + 1)
                     elif self.get_coalition_strategy == self.C_COALITION_SUM:
                         strategy_pl += pl.compute_strategy(p_payoff).get_sorted_values()
@@ -915,7 +915,7 @@ class GTGame (Scenario):
                          p_cycle_limit=p_cycle_limit,
                          p_visualize=p_visualize,
                          p_logging=p_logging)
-        self._strategies    = None
+        self._strategies = None
 
         self.connect_data_logger()
 
@@ -1154,10 +1154,10 @@ class GTTraining (Training):
 
         self._scenario.reset()
 
-        if (self._results.ds_strategies and self._scenario.ds_strategies) is not None:
+        if (self._results.ds_strategies and self._scenario._ds_strategies) is not None:
             self._results.ds_strategies.add_trial(self._results.num_trials)
 
-        if (self._results.ds_payoffs and self._scenario.ds_payoffs) is not None:
+        if (self._results.ds_payoffs and self._scenario._ds_payoffs) is not None:
             self._results.ds_payoffs.add_trial(self._results.num_trials)
 
 
