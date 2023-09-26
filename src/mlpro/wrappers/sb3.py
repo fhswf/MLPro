@@ -27,10 +27,11 @@
 ## -- 2022-11-07  1.2.5     DA       Class WrPolicySB32MLPro: new parameter p_visualize
 ## -- 2023-02-16  1.2.6     SY       Bug fixing: observation_space recognization for integer
 ## -- 2023-04-19  1.2.7     MRD      Refactor module import gym to gymnasium
+## -- 2023-09-25  1.2.8     DA       Set minimum version for sb3 to 2.1.0
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.7 (2023-04-19)
+Ver. 1.2.8 (2023-09-25)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -150,6 +151,7 @@ class WrPolicySB32MLPro (Wrapper, Policy):
 
     C_TYPE              = 'Wrapper SB3 -> MLPro'
     C_WRAPPED_PACKAGE   = 'stable_baselines3'
+    C_MINIMUM_VERSION   = '2.1.0'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace,
@@ -310,6 +312,7 @@ class WrPolicySB32MLPro (Wrapper, Policy):
                 obs = torch.Tensor(obs).reshape(1, len(obs)).to(self.sb3.device)
             else:
                 obs = torch.Tensor(obs).reshape(1, obs.size).to(self.sb3.device)
+
             action, _ = self.sb3.predict(obs, deterministic=True)
 
             action = action.flatten()
@@ -396,7 +399,8 @@ class WrPolicySB32MLPro (Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _clear_buffer_on_policy(self):
-        self.sb3.rollout_buffer.reset()
+        if self.sb3.rollout_buffer is not None:
+            self.sb3.rollout_buffer.reset()
 
 
 ## -------------------------------------------------------------------------------------------------

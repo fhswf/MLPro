@@ -2,13 +2,10 @@
 Howto RL-MB-001: Train and Reload Model Based Agent (Gym)
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_mb_001_train_and_reload_model_based_agent_gym
-
-
-
 **Prerequisites**
 
 Please install the following packages to run this examples properly:
+
     - `PyTorch <https://pypi.org/project/torch/>`_
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
@@ -16,13 +13,12 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_001_train_and_reload_model_based_agent_gym.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_mb_001_train_and_reload_model_based_agent_gym.py
 	:language: python
 
 
 
 **Results**
-
 
 After the environment is initiated, the training will run for the specified amount of limits. The expected initial console output can be seen below.
 
@@ -58,9 +54,11 @@ After termination the local result folder contains the training result files:
     - summary.csv
     - trained model.pkl
 
+
+
 **Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - Environment Model <target_api_rl_env_ada>`
-    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - Environment Model <target_api_rl_env_ada>`
+    - :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`

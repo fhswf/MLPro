@@ -2,21 +2,17 @@
 Howto RL-AGENT-002: Train an Agent with Own Policy
 ============================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment
-
-
-
 **Prerequisites**
 
-
 Please install the following packages to run this examples properly:
+
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.py
 	:language: python
 
 
@@ -60,6 +56,7 @@ The local result folder contains the training result files:
     - evaluation.csv
     - summary.csv
     - trained model.pkl
+
 
 
 **Cross Reference**

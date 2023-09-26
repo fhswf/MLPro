@@ -2,19 +2,20 @@
 Howto BF-003: Store and plot data
 =================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables
-
 **Prerequisites**
 
 PLease install following packages to run this howto
 
-+ `Matplotlib <https://matplotlib.org/>`_
+    - `Matplotlib <https://matplotlib.org/>`_
+
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_003_store_plot_and_save_variables.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_003_store_plot_and_save_variables.py
 	:language: python
+
+
 
 **Results**
 
@@ -35,6 +36,8 @@ PLease install following packages to run this howto
     images/model_loss.png
     :width: 350 px
 
+
+
 **Cross Reference**
 
-+ :ref:`API Reference: Various <target_api_bf_various>`
+    - :ref:`API Reference: Various <target_api_bf_various>`

@@ -1,14 +1,12 @@
 .. _Howto BF ML 010:
 Howto BF-ML-010: Hyperparameters
-=============================
-
-.. automodule:: mlpro.bf.examples.howto_bf_ml_010_hyperparameters
-
+================================
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_ml_010_hyperparameters.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_ml_010_hyperparameters.py
 	:language: python
+
 
 
 **Results**
@@ -25,6 +23,8 @@ Howto BF-ML-010: Hyperparameters
     A new value for variable ID ids_[0]
     Variable with ID ids_[0] = 50.00
 
+
+
 **Cross Reference**
 
-+ :ref:`API Reference: Machine Learning <target_api_bf_ml>`
+    - :ref:`API Reference: Machine Learning <target_api_bf_ml>`

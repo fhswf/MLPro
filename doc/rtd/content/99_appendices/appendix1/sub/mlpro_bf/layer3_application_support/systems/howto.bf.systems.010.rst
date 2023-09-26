@@ -2,13 +2,11 @@
 Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor
 ====================================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_systems_010_systems_controllers_actuators_sensors
-
-
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_010_systems_controllers_actuators_sensors.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_systems_010_systems_controllers_actuators_sensors.py
 	:language: python
+
 
 
 **Results**
@@ -61,6 +59,7 @@ Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor
     2023-02-10  18:02:12.158016  I  System "Dummy": Action processing finished successfully
 
 
+
 **Cross Reference**
 
-+ :ref:`API Reference: Systems <target_ap_bf_systems>`
+    - :ref:`API Reference: Systems <target_ap_bf_systems>`
