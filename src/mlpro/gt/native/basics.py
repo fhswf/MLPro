@@ -896,8 +896,10 @@ class GTDataStoring (DataStoring):
 ## -------------------------------------------------------------------------------------------------
 class GTGame (Scenario):
 
-    C_TYPE  = 'GT Game'
-    C_NAME  = ''
+    C_TYPE      = 'GT Game'
+    C_NAME      = ''
+    
+    C_LATENCY   = timedelta(0, 1, 0)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1030,6 +1032,12 @@ class GTGame (Scenario):
             return br_values
         else:
             return self._payoff.best_response_value(self._strategies, p_coalition_id)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+
+        return self.C_LATENCY
     
 
 
