@@ -30,27 +30,29 @@ from pathlib import Path
 
 
 
+try:
+    if __name__ == "__main__":
+        cycle_limit = 1
+        logging     = Log.C_LOG_WE
+        visualize   = False
+        path        = str(Path.home())
+    
+    else:
+        cycle_limit = 1
+        logging     = Log.C_LOG_NOTHING
+        visualize   = False
+        path        = None
 
-if __name__ == "__main__":
-    cycle_limit = 1
-    logging     = Log.C_LOG_WE
-    visualize   = False
-    path        = str(Path.home())
- 
-else:
-    cycle_limit = 1
-    logging     = Log.C_LOG_NOTHING
-    visualize   = False
-    path        = None
+    PD2P_Game = PrisonersDilemma2PGame()
 
-PD2P_Game = PrisonersDilemma2PGame()
+    training = GTTraining(
+            p_game_cls=PrisonersDilemma2PGame,
+            p_cycle_limit=cycle_limit,
+            p_path=path,
+            p_visualize=visualize,
+            p_logging=logging
+            )
 
-training = GTTraining(
-        p_game_cls=PrisonersDilemma2PGame,
-        p_cycle_limit=cycle_limit,
-        p_path=path,
-        p_visualize=visualize,
-        p_logging=logging
-        )
-
-training.run()
+    training.run()
+except:
+    pass
