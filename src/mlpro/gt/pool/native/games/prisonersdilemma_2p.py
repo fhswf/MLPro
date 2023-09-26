@@ -69,6 +69,7 @@ class PrisonersDilemma2PGame (GTGame):
         solver1 = RandomSolver(
             p_strategy_space=MSpace().add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,1])),
             p_id=1,
+            p_name="Random Solver",
             p_visualize=p_visualize,
             p_logging=p_logging
         )

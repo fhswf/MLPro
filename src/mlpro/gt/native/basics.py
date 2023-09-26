@@ -15,6 +15,7 @@
 ## --                                - Add TransferFunction as another option on GTFunction
 ## -- 2023-09-21  1.0.3     SY       Refactoring
 ## -- 2023-09-22  1.0.4     SY       Update __init__ and _setup of GTGame, GTTraining, and more
+## -- 2023-09-06  1.0.5     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -40,7 +41,7 @@ from typing import Union
 ## -------------------------------------------------------------------------------------------------
 class GTStrategy (Action):
 
-    C_TYPE          = 'GTStrategy'
+    C_TYPE          = 'GT Strategy'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ class GTStrategy (Action):
 ## -------------------------------------------------------------------------------------------------
 class GTFunction:
 
-    C_TYPE                  = 'GTFunction'
+    C_TYPE                  = 'GT Function'
 
     C_FUNCTION_TYPE         = None
     C_FUNC_PAYOFF_MATRIX    = 0
@@ -208,7 +209,7 @@ class GTFunction:
 ## -------------------------------------------------------------------------------------------------
 class GTPayoffMatrix (TStamp):
 
-    C_TYPE          = 'GTPayoffMatrix'
+    C_TYPE          = 'GT Payoff Matrix'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -288,7 +289,7 @@ class GTPayoffMatrix (TStamp):
 ## -------------------------------------------------------------------------------------------------
 class GTSolver (Task, ScientificObject):
 
-    C_TYPE          = 'GTSolver'
+    C_TYPE          = 'GT Solver'
     C_NAME          = '????'
 
     C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE
@@ -389,7 +390,7 @@ class GTSolver (Task, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
 class GTPlayer (GTSolver):
 
-    C_TYPE = 'GTPlayer'
+    C_TYPE = 'GT Player'
     C_NAME = ''
 
 
@@ -426,6 +427,11 @@ class GTPlayer (GTSolver):
                           p_visualize = self._visualize,
                           p_logging = self._logging,
                           **self._param)
+
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
         
         self.switch_solver()
 
@@ -514,7 +520,7 @@ class GTPlayer (GTSolver):
 ## -------------------------------------------------------------------------------------------------
 class GTCoalition (GTPlayer):
 
-    C_TYPE  = 'GTCoalition'
+    C_TYPE  = 'GT Coalition'
     C_NAME  = ''
 
     C_COALITION_STRATEGY    = None
@@ -531,6 +537,11 @@ class GTCoalition (GTPlayer):
                  p_name:str = " ",
                  p_coalition_type = None,
                  p_logging = Log.C_LOG_ALL):
+
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
         
         self._coop_players      = []
         self._coop_players_ids  = []
@@ -539,11 +550,6 @@ class GTCoalition (GTPlayer):
             raise ParamError("Please add a coalition strategy!")
         else:
             self._co_strategy = p_coalition_type
-
-        if p_name != '':
-            self.set_name(p_name)
-        else:
-            self.set_name(self.C_NAME)
         
         self.switch_logging(p_logging)
 
@@ -552,6 +558,11 @@ class GTCoalition (GTPlayer):
                        p_name=p_name,
                        p_visualize=False,
                        p_logging=p_logging)
+
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -581,7 +592,7 @@ class GTCoalition (GTPlayer):
         self._coop_players.append(p_player)
         self._coop_players_ids.append(p_player.get_id())
 
-        self.log(Log.C_LOG_TYPE_I, p_player.C_TYPE + ' ' + p_player.get_name() + ' added.')
+        self.log(Log.C_LOG_TYPE_I, p_player.get_name() + ' added.')
 
         if p_player.get_solver().get_hyperparam() is not None:
             self._hyperparam_space.append(p_set=p_player._solver.get_hyperparam().get_related_set(),
@@ -681,7 +692,7 @@ class GTCoalition (GTPlayer):
 ## -------------------------------------------------------------------------------------------------
 class GTCompetition (GTCoalition):
 
-    C_TYPE  = 'GTCompetition'
+    C_TYPE  = 'GT Competition'
     C_NAME  = ''
 
 
@@ -689,20 +700,25 @@ class GTCompetition (GTCoalition):
     def __init__(self,
                  p_name:str = " ",
                  p_logging = Log.C_LOG_ALL):
-        
-        self._coalitions      = []
-        self._coalitions_ids  = []
 
         if p_name != '':
             self.set_name(p_name)
         else:
             self.set_name(self.C_NAME)
         
+        self._coalitions      = []
+        self._coalitions_ids  = []
+        
         self.switch_logging(p_logging)
         
         super().__init__(p_name=p_name,
                          p_coalition_type=GTCoalition.C_COALITION_CUSTOM,
                          p_logging=p_logging)
+
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -727,7 +743,7 @@ class GTCompetition (GTCoalition):
         self._coalitions.append(p_coalition)
         self._coalitions_ids.append(p_coalition.get_id())
 
-        self.log(Log.C_LOG_TYPE_I, p_coalition.C_TYPE + ' ' + p_coalition.get_name() + ' added.')
+        self.log(Log.C_LOG_TYPE_I, p_coalition.get_name() + ' added.')
 
         for coal in self.get_coalitions():
             for pl in coal.get_players():
@@ -880,7 +896,7 @@ class GTDataStoring (DataStoring):
 ## -------------------------------------------------------------------------------------------------
 class GTGame (Scenario):
 
-    C_TYPE  = 'GTGame'
+    C_TYPE  = 'GT Game'
     C_NAME  = ''
 
 
@@ -1038,7 +1054,7 @@ class GTTrainingResults (TrainingResults):
 
     """
 
-    C_NAME                  = 'GTTrainingResults'
+    C_NAME                  = 'GT Training Results'
 
     C_FNAME_COAL_STRATEGIES = 'coalitions_stategies'
     C_FNAME_COAL_PAYOFFS    = 'coalitions_payoffs'
@@ -1078,7 +1094,7 @@ class GTTrainingResults (TrainingResults):
 ## -------------------------------------------------------------------------------------------------
 class GTTraining (Training):
 
-    C_TYPE          = 'GTTraining'
+    C_TYPE          = 'GT Training'
     C_NAME          = 'Native GT Training'
 
     C_CLS_RESULTS   = GTTrainingResults
