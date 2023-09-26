@@ -78,15 +78,16 @@ class GTFunction:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_func_type:int, p_dim_elems:list=None):
         
-        self.C_FUNCTION_TYPE = p_func_type
+        self.C_FUNCTION_TYPE    = p_func_type
+        self._elem_ids          = None
 
         if self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
 
             if p_dim_elems is None:
                 raise ParamError("p_dim_elems is not defined!")
             
-            self._num_players   = len(p_dim_elems.shape)
-            dim_elems           = [self._num_players]
+            self._num_coals     = len(p_dim_elems)
+            dim_elems           = [self._num_coals]
             dim_elems.extend(p_dim_elems)
 
             self._payoff_map    = np.zeros(dim_elems)
@@ -107,7 +108,7 @@ class GTFunction:
 ## -------------------------------------------------------------------------------------------------
     def _add_payoff_matrix(self, p_idx:int, p_payoff_matrix:np.ndarray):
 
-        if p_payoff_matrix.shape != self._payoff_map[0]:
+        if p_payoff_matrix.shape != self._payoff_map[p_idx-1].shape:
                 raise ParamError("The shape between p_payoff_matrix and each element of self._payoff_map does not match!")
         
         self._payoff_map[p_idx] = p_payoff_matrix
@@ -150,7 +151,7 @@ class GTFunction:
         
         elif self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
 
-            for pl in range(self._num_players):
+            for pl in range(self._num_coals):
                 if pl == 0:
                     payoff = self._payoff_map[pl]
                 else:
@@ -170,7 +171,7 @@ class GTFunction:
             if self._elem_ids is None:
                 self._elem_ids = p_strategies.get_elem_ids()
 
-                if self._num_players != len(self._elem_ids):
+                if self._num_coals != len(self._elem_ids):
                     raise ParamError("The number of elements in p_dim_elems and p_elem_ids does not match!")
                 
             idx     = self._elem_ids.index(p_element_id)
@@ -181,7 +182,7 @@ class GTFunction:
                 val = p_strategies.get_elem(el).get_values()
                 el_strategy.append(np.array([ i/sum(val) for i in val ]))
 
-            for pl in range(self._num_players):
+            for pl in range(self._num_coals):
                 payoff = np.dot(payoff, el_strategy[-(pl+1)])
 
             return payoff

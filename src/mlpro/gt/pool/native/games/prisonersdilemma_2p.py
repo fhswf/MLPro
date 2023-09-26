@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-21  0.0.0     SY       Creation
-## -- 2023-09-22  1.0.0     SY       Release of first version
+## -- 2023-09-26  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-09-22)
+Ver. 1.0.0 (2023-09-26)
 
 This module provides a 2-player game of Prisoners' Dilemma with random solver. In the near future,
 we are going to add more solvers and this howto is going to be updated accordingly.
@@ -43,12 +43,12 @@ class PayoffFunction_PD2P (GTFunction):
     def _setup_payoff_matrix(self):
 
         self._add_payoff_matrix(
-            p_idx=1,
+            p_idx=0,
             p_payoff_matrix=np.array([[2, 8], [1, 5]])
         )
 
         self._add_payoff_matrix(
-            p_idx=2,
+            p_idx=1,
             p_payoff_matrix=np.array([[2, 1], [8, 5]])
         )
          
@@ -121,10 +121,15 @@ class PrisonersDilemma2PGame (GTGame):
             )
         competition.add_coalition(coal1)
         competition.add_coalition(coal2)
+        
+        coal_ids = competition.get_coalitions_ids()
 
         self._payoff = GTPayoffMatrix(
-            p_function=PayoffFunction_PD2P,
-            p_player_ids=[1,2]
+            p_function=PayoffFunction_PD2P(
+                p_func_type=GTFunction.C_FUNC_PAYOFF_MATRIX,
+                p_dim_elems=[2,2]
+                ),
+            p_player_ids=coal_ids
         )
         
         return competition
