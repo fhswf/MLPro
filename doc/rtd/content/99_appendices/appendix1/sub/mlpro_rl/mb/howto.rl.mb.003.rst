@@ -1,9 +1,8 @@
 .. _Howto MB RL 003:
 Howto RL-MB-003: MBRL on RobotHTM Environment
-=======================================================
+=============================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -12,16 +11,14 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_003_robothtm_environment.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_mb_003_robothtm_environment.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 After the environment is initiated, the training will run for the specified amount of limits.
 The expected initial console output can be seen below.
@@ -55,8 +52,7 @@ The expected initial console output can be seen below.
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference - RL Agent <target_api_rl_agents>`
     - :ref:`API Reference - RL Environments <target_api_rl_env>`

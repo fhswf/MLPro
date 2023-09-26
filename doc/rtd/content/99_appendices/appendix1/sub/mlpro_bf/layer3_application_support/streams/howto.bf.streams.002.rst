@@ -2,16 +2,14 @@
 Howto BF-STREAMS-002: Accessing Data From CSV Files
 ===================================================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_002_accessing_data_from_csv_files.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_002_accessing_data_from_csv_files.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. code-block:: bashh
 
@@ -26,7 +24,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Data from CSV files <ap2_csv_files>`

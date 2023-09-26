@@ -2,8 +2,7 @@
 Howto BF-MATH-001: Dimensions, Spaces and Elements
 =============================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install following packages to run this howto
 
@@ -11,16 +10,14 @@ Please install following packages to run this howto
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_math_001_spaces_and_elements.py
+.. literalinclude:: ../../../../../../../../test/howtos/bf/howto_bf_math_001_spaces_and_elements.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/math_001.png
@@ -28,7 +25,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Math <target_ap_bf_math>`

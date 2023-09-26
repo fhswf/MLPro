@@ -37,9 +37,9 @@ else:
 
 
 # 1. Creating subsystems
-sub_system_1 = Flipflop()
+sub_system_1 = Flipflop(p_logging=logging)
 
-sub_system_2 = Flipflop()
+sub_system_2 = Flipflop(p_logging=logging)
 
 
 
@@ -68,7 +68,7 @@ class MultiFlipFlop(MultiSystem):
 
 
 # Creating MultiSystem Object
-system = MultiFlipFlop()
+system = MultiFlipFlop(p_logging=logging)
 
 
 # Add systems to MultiSystem

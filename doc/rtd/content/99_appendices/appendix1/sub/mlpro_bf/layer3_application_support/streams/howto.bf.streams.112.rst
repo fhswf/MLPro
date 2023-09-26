@@ -2,8 +2,7 @@
 Howto BF-STREAMS-112: Rearranger (3D)
 ===============================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this example properly:
 
@@ -12,23 +11,20 @@ Please install the following packages to run this example properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_112_stream_task_rearranger_3d.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_112_stream_task_rearranger_3d.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/streams_rearranger_3d.gif
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Streams <target_ap_bf_streams>`

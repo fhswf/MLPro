@@ -2,8 +2,7 @@
 Howto RL-WP-003: Run Multi-Agent on PettingZoo Environment
 ==============================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
 
@@ -11,10 +10,9 @@ Please install the following packages to run this examples properly:
     
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment.py
 	:language: python
 
 We use the Petting Zoo environment `Pistonball <https://www.pettingzoo.ml/butterfly/pistonball>`_ as default testing environment in this example.
@@ -22,8 +20,7 @@ However, in step 3.3 you can also change the environment into `Connect Four <htt
 
 
 
-Results
-^^^^^^^
+**Results**
 
 By running the example code, the environment window appears and the runtime log is dumped to the terminal.
 
@@ -60,8 +57,7 @@ By running the example code, the environment window appears and the runtime log 
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference - RL Agent <target_api_rl_agents>`
     - :ref:`API Reference - RL Environments <target_api_rl_env>`

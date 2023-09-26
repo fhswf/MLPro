@@ -2,8 +2,7 @@
 Howto BF-PHYSICS-001: Transfer Functions
 ==========================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install following packages to run this how to
 
@@ -11,16 +10,14 @@ Please install following packages to run this how to
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_physics_001_set_up_transfer_functions.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_physics_001_set_up_transfer_functions.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/physics_1.png
@@ -33,7 +30,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Physics <target_ap_bf_physics>`

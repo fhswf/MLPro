@@ -1,17 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_math_020_geometry_point_2d.py
+## -- Module  : howto_bf_math_021_geometry_point_3d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-06  1.0.0     DA       Creation
+## -- 2023-09-25  1.0.1     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-05-06)
+Ver. 1.0.1 (2023-09-25)
 
-This module demonstrates the functionality of class bf.math.geometry.Point in a 2D plot.
+This module demonstrates the functionality of class bf.math.geometry.Point in a 3D plot.
 
 You will learn:
 
@@ -46,7 +47,7 @@ else:
     # 1.2 Parameters for internal unit test
     cycles      = 5
     visualize   = False
-    loging      = Log.C_LOG_NOTHING
+    logging      = Log.C_LOG_NOTHING
 
 
 
@@ -62,7 +63,7 @@ my_log.switch_logging(p_logging=logging)
 time_stamp = datetime.now()
 time_step  = timedelta(0,1,0)
 my_point   = Point( p_visualize = visualize )
-pos        = np.zeros(2)
+pos        = np.zeros(3)
 
 
 

@@ -2,8 +2,7 @@
 Howto BF-STREAMS-110: Window
 ===============================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 Please install the following packages to run this example properly:
 
@@ -12,23 +11,20 @@ Please install the following packages to run this example properly:
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_110_stream_task_window.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_110_stream_task_window.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/streams_window.gif
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Streams <target_ap_bf_streams>`

@@ -2,8 +2,7 @@
 Howto BF-MT-002: Multitasking - Tasks and Workflows
 ===================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 To run this howto please install the following packages
 
@@ -11,16 +10,14 @@ To run this howto please install the following packages
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_mt_002_tasks_and_workflows.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_mt_002_tasks_and_workflows.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 The howto example logs details of the two runs (workflow synchronously/multithreading). A short break
 between the workflow runs allows a better observation of CPU load in the system monitor.
@@ -29,7 +26,6 @@ between the workflow runs allows a better observation of CPU load in the system 
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
 	- :ref:`API Reference: Multiprocessing <target_api_bf_mt>`

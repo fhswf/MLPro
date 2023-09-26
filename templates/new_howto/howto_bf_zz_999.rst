@@ -2,11 +2,6 @@
 Howto BF-ZZ-999: My high-sophisticated ml sample
 ================================================
 
-.. Describe the howto in the python module itself and refer to it here
-.. automodule:: mlpro.bf.examples.howto_bf_zz_999_desciption
-    
-
-
 **Prerequisites**
 
 .. Please install the following packages to run this examples properly:
@@ -46,4 +41,4 @@ Descriptions, plots, images, screenshots of expected results.
 
 .. Other documents related to the howto should be referenced here. For example, related environments, documentation, API References, ...
     
-+ :ref:`API Reference <...>`
+  - :ref:`API Reference <...>`

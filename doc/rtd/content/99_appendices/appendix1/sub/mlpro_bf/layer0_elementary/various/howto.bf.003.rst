@@ -2,8 +2,7 @@
 Howto BF-003: Store and plot data
 =================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 PLease install following packages to run this howto
 
@@ -11,16 +10,14 @@ PLease install following packages to run this howto
 
 
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_003_store_plot_and_save_variables.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_003_store_plot_and_save_variables.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/states_1.png
@@ -41,7 +38,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Various <target_api_bf_various>`

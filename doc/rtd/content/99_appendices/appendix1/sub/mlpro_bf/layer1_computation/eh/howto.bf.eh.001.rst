@@ -2,16 +2,14 @@
 Howto BF-EH-001: Event Handling
 ===============================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_eh_001_event_handling.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bfs/howto_bf_eh_001_event_handling.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/eh_example.png
@@ -19,7 +17,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
-+ :ref:`API Reference: Event Handling <target_api_bf_event>`
+    - :ref:`API Reference: Event Handling <target_api_bf_event>`

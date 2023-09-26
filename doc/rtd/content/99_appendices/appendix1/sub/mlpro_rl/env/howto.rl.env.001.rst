@@ -2,8 +2,7 @@
 Howto RL-ENV-001: SB3 Policy on RobotHTM Environment
 ====================================================
 
-Prerequisites
-^^^^^^^^^^^^^
+**Prerequisites**
 
 
 Please install the following packages to run this examples properly:
@@ -13,16 +12,14 @@ Please install the following packages to run this examples properly:
   
    
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image:: images/howto15.png
 
@@ -65,9 +62,8 @@ The local result folder contains the training result files:
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
-    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`

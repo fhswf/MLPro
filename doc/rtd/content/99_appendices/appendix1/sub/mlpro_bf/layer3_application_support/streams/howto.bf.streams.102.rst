@@ -2,16 +2,14 @@
 Howto BF-STREAMS-102: Tasks Workflows And Stream Scenarios
 ==========================================================
 
-Executable code
-^^^^^^^^^^^^^^^
+**Executable code**
 
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_102_tasks_workflows_and_stream_scenarios.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_102_tasks_workflows_and_stream_scenarios.py
 	:language: python
 
 
 
-Results
-^^^^^^^
+**Results**
 
 .. image::
     images/streams_102.png
@@ -19,7 +17,6 @@ Results
 
 
 
-Cross Reference
-^^^^^^^^^^^^^^^
+**Cross Reference**
 
     - :ref:`API Reference: Streams <target_ap_bf_streams>`

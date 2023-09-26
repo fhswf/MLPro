@@ -13,10 +13,11 @@
 ## -- 2022-11-02  1.0.4     DA       Refactoring 
 ## -- 2022-11-09  1.1.0     DA       Refactoring 
 ## -- 2023-03-27  1.2.0     DA       Refactoring 
+## -- 2023-09-25  1.2.1     DA       Corrections on logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-03-27)
+Ver. 1.2.1 (2023-09-25)
 
 This module demonstrates how to utilize wrapper class for Optuna in RL context.
 
@@ -44,21 +45,38 @@ from pathlib import Path
 ## -------------------------------------------------------------------------------------------------
 
 # 1. Create a policy and setup the hyperparameters
-class myPolicy (Policy):
+class MyPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
     
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
+    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_visualize=True, p_logging=Log.C_LOG_ALL):
         """
-         Parameters:
-            p_observation_space     Subspace of an environment that is observed by the policy
-            p_action_space          Action space object
-            p_buffer_size           Size of the buffer
-            p_ada                   Boolean switch for adaptivity
-            p_logging               Boolean switch for logging functionality
+            Parameters
+            ----------
+            p_observation_space : MSpace     
+                Subspace of an environment that is observed by the policy.
+            p_action_space : MSpace
+                Action space object.
+            p_id
+                Optional external id
+            p_buffer_size : int           
+                Size of internal buffer. Default = 1.
+            p_ada : bool               
+                Boolean switch for adaptivity. Default = True.
+            p_visualize : bool
+                Boolean switch for env/agent visualisation. Default = False.
+            p_logging
+                Log level (see constants of class Log). Default = Log.C_LOG_ALL.
         """
-        super().__init__(p_observation_space, p_action_space, p_buffer_size, p_ada, p_logging)
+
+        super().__init__( p_observation_space=p_observation_space,
+                          p_action_space=p_action_space,
+                          p_buffer_size=p_buffer_size,
+                          p_ada=p_ada,
+                          p_visualize=p_visualize,
+                          p_logging=p_logging)
+        
         self._hyperparam_space  = HyperParamSpace()
         self._hyperparam_tuple  = None
         self._init_hyperparam()
@@ -126,7 +144,7 @@ class BGLP_Rnd(RLScenario):
         _name         = 'BELT_CONVEYOR_A'
         _ospace       = state_space.spawn([state_space.get_dim_ids()[0],state_space.get_dim_ids()[1]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[0]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = MyPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
         _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -143,7 +161,7 @@ class BGLP_Rnd(RLScenario):
         _name         = 'VACUUM_PUMP_B'
         _ospace       = state_space.spawn([state_space.get_dim_ids()[1],state_space.get_dim_ids()[2]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[1]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = MyPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
         _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -160,7 +178,7 @@ class BGLP_Rnd(RLScenario):
         _name         = 'VIBRATORY_CONVEYOR_B'
         _ospace       = state_space.spawn([state_space.get_dim_ids()[2],state_space.get_dim_ids()[3]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[2]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = MyPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
         _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -177,7 +195,7 @@ class BGLP_Rnd(RLScenario):
         _name         = 'VACUUM_PUMP_C'
         _ospace       = state_space.spawn([state_space.get_dim_ids()[3],state_space.get_dim_ids()[4]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[3]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = MyPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
         _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -194,7 +212,7 @@ class BGLP_Rnd(RLScenario):
         _name         = 'ROTARY_FEEDER_C'
         _ospace       = state_space.spawn([state_space.get_dim_ids()[4],state_space.get_dim_ids()[5]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[4]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = MyPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
         _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
