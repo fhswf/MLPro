@@ -2,11 +2,7 @@
 Howto GT-001: Run Multi-Player with Own Policy
 ===========================================================================
 
-.. automodule:: mlpro.gt.examples.howto_gt_dg_001_run_multi_player_with_own_policy_on_multicartpole_game_board
-
-
 **Prerequisites**
-
 
 Please install the following packages to run this examples properly:
     - `NumPy <https://pypi.org/project/numpy/>`_
@@ -16,7 +12,7 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/gt/examples/howto_gt_dg_001_run_multi_player_with_own_policy_on_multicartpole_game_board.py
+.. literalinclude:: ../../../../../../../../test/howtos/gt/howto_gt_dg_001_run_multi_player_with_own_policy_on_multicartpole_game_board.py
 	:language: python
 
 

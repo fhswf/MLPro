@@ -2,9 +2,6 @@
 Howto GT-003: Train Multi-Player in Potential Games
 ===========================================================================
 
-.. automodule:: mlpro.gt.examples.howto_gt_dg_003_train_own_multi_player_in_potential_games
-
-
 **Prerequisites**
 
 
@@ -15,7 +12,7 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/gt/examples/howto_gt_dg_003_train_own_multi_player_in_potential_games.py
+.. literalinclude:: ../../../../../../../../test/howtos/gt/howto_gt_dg_003_train_own_multi_player_in_potential_games.py
 	:language: python
 
 

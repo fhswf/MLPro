@@ -2,11 +2,7 @@
 Howto GT-002: Train Multi-Player
 ===========================================================================
 
-.. automodule:: mlpro.gt.examples.howto_gt_dg_002_train_own_multi_player_on_multicartpole_game_board
-
-
 **Prerequisites**
-
 
 Please install the following packages to run this examples properly:
     - `NumPy <https://pypi.org/project/numpy/>`_
@@ -16,7 +12,7 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/gt/examples/howto_gt_dg_002_train_own_multi_player_on_multicartpole_game_board.py
+.. literalinclude:: ../../../../../../../../test/howtos/gt/howto_gt_dg_002_train_own_multi_player_on_multicartpole_game_board.py
 	:language: python
 
 
