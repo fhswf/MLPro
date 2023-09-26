@@ -2,13 +2,10 @@
 Howto RL-UI-001: SciUI - Reinforcement Learning Cockpit
 ==========================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit
-
-
 **Prerequisites**
 
-
 Please install the following packages to run this examples properly:
+
     - `NumPy <https://pypi.org/project/numpy/>`_
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `Tkinter <https://pypi.org/project/tk/>`_
@@ -17,13 +14,12 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_ui_001_reinforcement_learning_cockpit.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_ui_001_reinforcement_learning_cockpit.py
 	:language: python
 
 
 
 **Results**
-
 
 This UI is not ready-to-use and still under development. The current cockpit is shown as follow,
 
@@ -32,5 +28,5 @@ This UI is not ready-to-use and still under development. The current cockpit is 
 
 **Cross Reference**
 
-    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
-    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    - :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    - :ref:`API Reference - RL Environments <target_api_rl_env>`

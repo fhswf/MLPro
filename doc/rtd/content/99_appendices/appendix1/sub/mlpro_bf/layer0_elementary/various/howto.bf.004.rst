@@ -2,14 +2,12 @@
 Howto BF-004: Buffers
 =====================
 
-.. automodule:: mlpro.bf.examples.howto_bf_004_buffers
-
-
 **Executable code**
 
-
-.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_004_buffers.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_004_buffers.py
 	:language: python
+
+
 
 **Results**
 
@@ -18,6 +16,7 @@ Howto BF-004: Buffers
     :width: 500px
 
 
+
 **Cross Reference**
 
-+ :ref:`API Reference: Various <target_api_bf_various>`
+    - :ref:`API Reference: Various <target_api_bf_various>`

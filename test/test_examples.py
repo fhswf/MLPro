@@ -41,116 +41,84 @@
 ## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
 ## -- 2023-03-10  1.7.3     SY       Renumbering module
 ## -- 2023-03-24  1.7.4     DA       Add Howto BF 005
-## -- 2023-09-16  1.7.5     DA       Temporarily disabled howto_rl_agent_011/021/022
+## -- 2023-09-16  1.7.5     DA       Temporarily disabled: 
+## --                                - howto_rl_agent_011/021/022
+## --                                - howto_rl_att_003
+## -- 2023-09-25  2.0.0     DA       Refactoring:
+## --                                - Howtos were moved from ./src to ./test/howtos
+## --                                - New auto-scan of files to be tested
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.7.5 (2023-09-16)
+Ver. 2.0.0 (2023-09-25)
 
 Unit test for all examples available.
 """
 
 
-import pytest
+import sys
+import os
+from mlpro.bf.various import Log
 import runpy
-
-
-howto_list = {
-
-# MLPro-BF - Basic Functions:
-
-    # bf.various
-    "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
-    "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
-    "bf_003": "mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables",
-    "bf_004": "mlpro.bf.examples.howto_bf_004_buffers",
-    "bf_005": "mlpro.bf.examples.howto_bf_005_persistence",
-
-    # bf.eh
-    "bf_eh_001": "mlpro.bf.examples.howto_bf_eh_001_event_handling",
-
-    # bf.mt
-    # "bf_mt_001": "mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms",
-    "bf_mt_002": "mlpro.bf.examples.howto_bf_mt_002_tasks_and_workflows",
-
-    # bf.math
-    "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
-    "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
-
-    # bf.ml
-    "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_adaptive_model",
-    "bf_ml_010": "mlpro.bf.examples.howto_bf_ml_010_hyperparameters",
-
-    # bf.streams
-    "bf_streams_001" : "mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro",
-    # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
-    "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
-    "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
-    "bf_streams_101": "mlpro.bf.examples.howto_bf_streams_101_basics",
-    "bf_streams_110": "mlpro.bf.examples.howto_bf_streams_110_stream_task_window",
-    "bf_streams_111": "mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger_2d",
-    "bf_streams_112": "mlpro.bf.examples.howto_bf_streams_112_stream_task_rearranger_3d",
-    "bf_streams_113": "mlpro.bf.examples.howto_bf_streams_113_stream_task_rearranger_nd",
-    "bf_streams_114": "mlpro.bf.examples.howto_bf_streams_114_stream_task_deriver",
-
-    # bf.systems
-    "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_demonstrating_native_systems",
-    "bf_systems_010": "mlpro.bf.examples.howto_bf_systems_010_systems_controllers_actuators_sensors",
-    "bf_systems_011": "mlpro.bf.examples.howto_bf_systems_011_doublependulum_systems_wrapped_with_mujoco",
-    "bf_systems_012": "mlpro.bf.examples.howto_bf_systems_012_cartpole_continuous_systems_wrapped_with_mujoco",
-    # "bf_systems_013": "mlpro.bf.examples.howto_bf_systems_013_box_on_table_mujoco_simulation",
-
-    # bf.physics
-    "bf_physics_001": "mlpro.bf.examples.howto_bf_physics_001_set_up_transfer_functions",
-    "bf_physics_002": "mlpro.bf.examples.howto_bf_physics_002_unit_converter",
-
-
-# MLPro-RL - Reinforcement Learning:
-    "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
-
-    "rl_att_001": "mlpro.rl.examples.howto_rl_att_001_train_and_reload_single_agent_gym_sd",
-    "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete",
-    "rl_att_003": "mlpro.rl.examples.howto_rl_att_003_train_and_reload_single_agent_mujoco_sd_cartpole_continuous",
-
-    "rl_agent_001": "mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment",
-    "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
-    "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
-    "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
-    # "rl_agent_011": "mlpro.rl.examples.howto_rl_agent_011_train_and_reload_single_agent_gym",
-    # "rl_agent_021": "mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete",
-    # "rl_agent_022": "mlpro.rl.examples.howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous",
-
-    "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
-    "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",
-    "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
-
-    "rl_ht_001": "mlpro.rl.examples.howto_rl_ht_001_hyperopt",
-    "rl_ht_002": "mlpro.rl.examples.howto_rl_ht_002_optuna",
-
-    "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_train_and_reload_model_based_agent_gym",
-    "rl_mb_002": "mlpro.rl.examples.howto_rl_mb_002_grid_world_environment",
-    "rl_mb_003": "mlpro.rl.examples.howto_rl_mb_003_robothtm_environment",
-
-    "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
-
-    "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
-    "rl_wp_002": "mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment",
-    "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
-    "rl_wp_004": "mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy",
-    "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
-    "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
-    "rl_wp_007": "mlpro.rl.examples.howto_rl_wp_007_gymnasium_environment_to_mlpro_environment",
-
-
-# MLPro-GT - Game Theory:
-    "gt_dp_001": "mlpro.gt.examples.howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board",
-    "gt_dp_002": "mlpro.gt.examples.howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board",
-}
+import pytest
 
 
 
-@pytest.mark.parametrize("cls", list(howto_list.keys()))
-def test_howto(cls):
-    runpy.run_path("src/"+howto_list[cls].replace(".","/")+".py")
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class HowtoTester(Log):
+
+    C_TYPE      = 'Howto Tester'
+    C_NAME      = 'MLPro'
+
+## -------------------------------------------------------------------------------------------------
+    def test(self, p_path, p_file):
+        self.log(Log.C_LOG_TYPE_S, 'Testing file', p_file)
+        runpy.run_path( p_path + os.sep + p_file )
+
+        
+## -------------------------------------------------------------------------------------------------
+    def get_howtos(self, p_path:str):
+
+        file_list = []
+
+        for (root ,sub_dirs, files) in os.walk(p_path, topdown=True):
+            sub_dirs.sort()
+
+            for sub_dir in sub_dirs:
+                for (root, dirs, files) in os.walk(p_path + os.sep + sub_dir, topdown=True):
+                    self.log(Log.C_LOG_TYPE_S, 'Scanning folder', root)  
+                    files.sort()
+
+                    for file in files:
+                        if os.path.splitext(file)[1] == '.py':
+                            file_list.append( (root, file) )
+                        else:
+                            self.log(Log.C_LOG_TYPE_W, 'File ignored:', file)
+
+            break
+
+        return file_list
+
+
+
+tester = HowtoTester()
+howtos = tester.get_howtos( sys.path[0] + os.sep + 'howtos' )
+
+
+if __name__ != '__main__':
+    @pytest.mark.parametrize("p_path,p_file", howtos)
+    def test_howto(p_path, p_file):
+        runpy.run_path( p_path + os.sep + p_file )
+
+else:
+    for howto in howtos:
+        tester.test(howto[0], howto[1])
+
+    tester.log(Log.C_LOG_TYPE_S, 'Howtos tested:', len(howtos))
+    
+
+        
 

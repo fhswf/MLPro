@@ -1,0 +1,34 @@
+name: Update Extension Hub
+
+on:
+  schedule:
+    - cron: '00 22 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  update-extension-hub:
+    name: Update the MLPro extension hub
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: S0 Checkout branch main
+        uses: actions/checkout@v4
+        
+      - name: S1 Preparation 
+        run: |
+          git config --global user.name mlpro-admin
+          git config --global user.email "mlpro@listen.fh-swf.de"
+          pip3 install dill
+          pip3 install mlpro
+          pip3 install PyGithub
+
+      - name: S2 Updates on the extension hub
+        run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/sub/
+
+      - name: S3 Commit changes
+        run: |
+          git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
+          git commit --message 'MLPro extension hub updated'
+        continue-on-error: true
+      - run: git push

@@ -2,19 +2,20 @@
 Howto BF-MATH-001: Dimensions, Spaces and Elements
 =============================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_math_001_spaces_and_elements
-
-
 **Prerequisites**
 
 Please install following packages to run this howto
 
-+ `Numpy <https://www.numpy.org/>`_
+    - `Numpy <https://www.numpy.org/>`_
+
+
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_math_001_spaces_and_elements.py
+.. literalinclude:: ../../../../../../../../test/howtos/bf/howto_bf_math_001_spaces_and_elements.py
 	:language: python
+
+
 
 **Results**
 
@@ -22,6 +23,8 @@ Please install following packages to run this howto
     images/math_001.png
     :width: 1200 px
 
+
+
 **Cross Reference**
 
-+ :ref:`API Reference: Math <target_ap_bf_math>`
+    - :ref:`API Reference: Math <target_ap_bf_math>`

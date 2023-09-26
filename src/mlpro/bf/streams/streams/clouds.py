@@ -206,10 +206,8 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
         self.num_dim = 2
         self.radii = p_radii
         self.num_clouds = 4
-        self.C_NUM_INSTANCES = self.C_NUM_INST_PER_CLOUD*self.num_clouds
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = 1000
         self.behaviour = 'static'
         self.centers_step = []
     
@@ -242,10 +240,8 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
         self.num_dim = 3
         self.radii = p_radii
         self.num_clouds = 8
-        self.C_NUM_INSTANCES = self.C_NUM_INST_PER_CLOUD*self.num_clouds
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = 2000
         self.behaviour = 'static'
         self.centers_step = []
     
@@ -278,10 +274,8 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
         self.num_dim = 2
         self.radii = p_radii
         self.num_clouds = 4
-        self.C_NUM_INSTANCES = self.C_NUM_INST_PER_CLOUD*self.num_clouds
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = 5000
         self.behaviour = 'dynamic'
         self.centers_step = []
     
@@ -314,10 +308,8 @@ class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds):
         self.num_dim = 3
         self.radii = p_radii
         self.num_clouds = 8
-        self.C_NUM_INSTANCES = self.C_NUM_INST_PER_CLOUD*self.num_clouds
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = 1000
         self.behaviour = 'dynamic'
         self.centers_step = []
     
