@@ -8,7 +8,6 @@
 ## -- 2023-09-11  0.0.0     SP       Creation
 ## -- 2023-09-11  1.0.0     SP       First implementation
 ## -- 2023-09-28  1.0.1     SP       Bug Fix
-## -- 2023-09-2
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -33,6 +32,7 @@ from mlpro.bf.various import Log
 class EmptyTask (StreamTask):
     """
     Implementation of an empty task with method _run().
+    
     """
 
     # needed for proper logging (see class mlpro.bf.various.Log)
@@ -62,7 +62,6 @@ class MyScenario (StreamScenario):
 
         # 1 Import the StreamMLProClouds2D4C1000Static stream from MLPro
         provider_mlpro = StreamProviderMLPro( p_logging=p_logging )
-        print(provider_mlpro.get_stream_list())
         stream = provider_mlpro.get_stream( p_id='Clouds2D4C1000Static', p_mode=p_mode, p_logging=p_logging )
 
         # 2 Set up the stream workflow
@@ -96,7 +95,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 100
     logging     = Log.C_LOG_ALL
-    visualize   = True
+    visualize   = False
   
 else:
     # 1.2 Parameters for internal unit test

@@ -157,7 +157,7 @@ class StreamMLProClouds (StreamMLProBase):
         if self.behaviour == 'dynamic':
             self.centers = self.centers + self.centers_step
 
-        id = random.randint(0, self.num_clouds)
+        id = random.randint(0, self.num_clouds-1)
         if len(self.radii) == 1:
             radius = self.radii[0]
         else:
