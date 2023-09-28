@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_006_Clouds2D4C1000Static.py
+## -- Module  : howto_bf_streams_006_Clouds3D8C10000Dynamic.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,7 +13,7 @@
 """
 Ver. 1.0.1 (2022-28-23)
 
-This module demonstrates how to use the StreamMLProClouds2D4C1000Static class from the clouds module.
+This module demonstrates how to use the StreamMLProClouds3D8C10000Dynamic class from the clouds module.
 This demonstrate and validate in dark mode the origin data and the buffered data.
 
 """
@@ -49,7 +49,7 @@ class EmptyTask (StreamTask):
 ## -------------------------------------------------------------------------------------------------
 class MyScenario (StreamScenario):
     """
-    Implementation of a custom stream scenario including the StreamMLProClouds2D4C1000Static stream
+    Implementation of a custom stream scenario including the StreamMLProClouds3D8C10000Dynamic stream
     and a stream workflow. See class mlpro.bf.streams.models.StreamScenario for further details and
     explanations.
     
@@ -60,9 +60,9 @@ class MyScenario (StreamScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
-        # 1 Import the StreamMLProClouds2D4C1000Static stream from MLPro
+        # 1 Import the StreamMLProClouds2D4C10000Dynamic stream from MLPro
         provider_mlpro = StreamProviderMLPro( p_logging=p_logging )
-        stream = provider_mlpro.get_stream( p_id='Clouds2D4C1000Static', p_mode=p_mode, p_logging=p_logging )
+        stream = provider_mlpro.get_stream( p_id='Clouds3D8C10000Dynamic', p_mode=p_mode, p_logging=p_logging )
 
         # 2 Set up the stream workflow
 
@@ -93,7 +93,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 100
+    cycle_limit = 10
     logging     = Log.C_LOG_ALL
     visualize   = False
   
