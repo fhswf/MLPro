@@ -5,10 +5,10 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-08-29  0.0.0     SR       Creation
-## -- 2023-08-29  1.0.0     SR       First draft implementation
+## -- 2023-08-29  0.0.0     SP       Creation
+## -- 2023-08-29  1.0.0     SP       First draft implementation
 ## -- 2023-09-15  1.0.1     LSB      Bug Fix
-## -- 2023-09-28  1.0.1     SR      Bug Fix
+## -- 2023-09-28  1.0.2     SP       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -53,9 +53,8 @@ class StreamMLProClouds (StreamMLProBase):
 
     C_ID                    = 'CloudsNDim'
     C_NAME                  = 'Clouds N-Dim'
-    C_TYPE                  = 'Streams'
+    C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
-    C_NUM_INSTANCES         = 1000
     C_BEHAVIOUR             = ['static', 'dynamic']
     C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
     C_BOUNDARIES            = [-1000,1000]
@@ -80,7 +79,7 @@ class StreamMLProClouds (StreamMLProBase):
         self.velocity = p_velocity
         self.centers = []
         self.centers_step = []
-        self.num_instances = p_num_instances
+        self.C_NUM_INSTANCES = p_num_instances
         self.behaviour = str.lower(p_behaviour)
 
 
@@ -150,9 +149,9 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
 
-        if self.num_instances == 0: pass
+        if self.C_NUM_INSTANCES== 0: pass
 
-        elif self._index == self.num_instances: raise StopIteration
+        elif self._index == self.C_NUM_INSTANCES: raise StopIteration
 
         if self.behaviour == 'dynamic':
             self.centers = self.centers + self.centers_step
@@ -183,9 +182,9 @@ class StreamMLProClouds (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProClouds2D4C1000Static (StreamMLProClouds, StreamMLProBase):
+class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
 
-    C_ID                    = 'Clouds2D4C1000Static'
+    C_ID                    = 'StreamMLProClouds2D4C1000Static'
     C_NAME                  = 'Static Clouds 2D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
@@ -210,7 +209,6 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds, StreamMLProBase):
         self.num_clouds = 4
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = self.C_NUM_INSTANCES
         self.behaviour = 'static'
         self.centers_step = []
     
@@ -218,9 +216,9 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds, StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProClouds3D8C2000Static (StreamMLProClouds, StreamMLProBase):
+class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 
-    C_ID                    = 'Clouds3D8C2000Static'
+    C_ID                    = 'StreamMLProClouds3D8C2000Static'
     C_NAME                  = 'Static Clouds 3D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
@@ -245,7 +243,6 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds, StreamMLProBase):
         self.num_clouds = 8
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = self.C_NUM_INSTANCES
         self.behaviour = 'static'
         self.centers_step = []
     
@@ -253,9 +250,9 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds, StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds, StreamMLProBase):
+class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
 
-    C_ID                    = 'Clouds2D4C5000Dynamic'
+    C_ID                    = 'StreamMLProClouds2D4C5000Dynamic'
     C_NAME                  = 'Dynamic Clouds 2D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
@@ -280,7 +277,6 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds, StreamMLProBase):
         self.num_clouds = 4
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = self.C_NUM_INSTANCES
         self.behaviour = 'dynamic'
         self.centers_step = []
     
@@ -288,9 +284,9 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds, StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds, StreamMLProBase):
+class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds):
 
-    C_ID                    = 'Clouds3D8C10000Dynamic'
+    C_ID                    = 'StreamMLProClouds3D8C10000Dynamic'
     C_NAME                  = 'Static Clouds 2D'
     C_TYPE                  = 'Demo'
     C_VERSION               = '1.0.0'
@@ -315,7 +311,6 @@ class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds, StreamMLProBase):
         self.num_clouds = 8
         self.velocity = p_velocity
         self.cloud_centers = []
-        self.num_instances = self.C_NUM_INSTANCES
         self.behaviour = 'dynamic'
         self.centers_step = []
     
