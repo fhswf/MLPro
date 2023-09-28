@@ -8,6 +8,7 @@
 ## -- 2023-08-29  0.0.0     SR       Creation
 ## -- 2023-08-29  1.0.0     SR       First draft implementation
 ## -- 2023-09-15  1.0.1     LSB      Bug Fix
+## -- 2023-09-28  1.0.1     SR      Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -182,7 +183,7 @@ class StreamMLProClouds (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
+class StreamMLProClouds2D4C1000Static (StreamMLProClouds, StreamMLProBase):
 
     C_ID                    = 'Clouds2D4C1000Static'
     C_NAME                  = 'Static Clouds 2D'
