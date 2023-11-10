@@ -114,7 +114,7 @@ class AnomalyDetectorCB(AnomalyDetector):
             anomaly = p_inst_new
         differences = [abs(a - b) for a, b in zip(self.centroids[0], self.centroids[-1])]
         if any(difference >= self.centroid_thre for difference in differences):
-            anomlay = p_inst_new
+            anomaly = p_inst_new
 
         if anomaly != None:
             self.counter += 1
