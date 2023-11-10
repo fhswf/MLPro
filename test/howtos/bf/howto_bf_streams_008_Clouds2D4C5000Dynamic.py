@@ -7,11 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-11  0.0.0     SP       Creation
 ## -- 2023-09-11  1.0.0     SP       First implementation
-## -- 2023-09-28  1.0.1     SP       Bug Fix
+## -- 2023-11-10  1.0.1     SP       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-28-23)
+Ver. 1.0.1 (2023-11-10)
 
 This module demonstrates how to use the StreamMLProClouds2D4C5000Dynamic class from the clouds module.
 This demonstrate and validate in dark mode the origin data and the buffered data.
@@ -62,7 +62,7 @@ class MyScenario (StreamScenario):
 
         # 1 Import the StreamMLProClouds2D4C5000Dynamic stream from MLPro
         provider_mlpro = StreamProviderMLPro( p_logging=p_logging )
-        stream = provider_mlpro.get_stream( p_id='Clouds2D4C5000Dynamic', p_mode=p_mode, p_logging=p_logging )
+        stream = provider_mlpro.get_stream( p_id='StreamMLProClouds2D4C5000Dynamic', p_mode=p_mode, p_logging=p_logging )
 
         # 2 Set up the stream workflow
 

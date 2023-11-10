@@ -1,19 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_006_Clouds2D4C1000Static.py
+## -- Module  : howto_bf_streams_006_Clouds3D8C2000Static.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-11  0.0.0     SP       Creation
 ## -- 2023-09-11  1.0.0     SP       First implementation
-## -- 2023-09-28  1.0.1     SP       Bug Fix
+## -- 2023-11-10  1.0.1     SP       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-28-23)
+Ver. 1.0.1 (2023-11-10)
 
-This module demonstrates how to use the StreamMLProClouds2D4C1000Static class from the clouds module.
+This module demonstrates how to use the StreamMLProClouds3D8C2000Static class from the clouds module.
 This demonstrate and validate in dark mode the origin data and the buffered data.
 
 """
@@ -49,7 +49,7 @@ class EmptyTask (StreamTask):
 ## -------------------------------------------------------------------------------------------------
 class MyScenario (StreamScenario):
     """
-    Implementation of a custom stream scenario including the StreamMLProClouds2D4C1000Static stream
+    Implementation of a custom stream scenario including the StreamMLProClouds3D8C2000Static stream
     and a stream workflow. See class mlpro.bf.streams.models.StreamScenario for further details and
     explanations.
     
@@ -60,9 +60,9 @@ class MyScenario (StreamScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
-        # 1 Import the StreamMLProClouds2D4C1000Static stream from MLPro
+        # 1 Import the StreamMLProClouds3D8C2000Static stream from MLPro
         provider_mlpro = StreamProviderMLPro( p_logging=p_logging )
-        stream = provider_mlpro.get_stream( p_id='Clouds2D4C1000Static', p_mode=p_mode, p_logging=p_logging )
+        stream = provider_mlpro.get_stream( p_id='StreamMLProClouds3D8C2000Static', p_mode=p_mode, p_logging=p_logging )
 
         # 2 Set up the stream workflow
 
