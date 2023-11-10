@@ -182,7 +182,7 @@ class StreamMLProClouds (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
+class StreamMLProClouds2D4C1000Static (StreamMLProClouds, StreamMLProBase):
 
     C_ID                    = 'StreamMLProClouds2D4C1000Static'
     C_NAME                  = 'Static Clouds 2D'
