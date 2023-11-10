@@ -112,7 +112,6 @@ class AnomalyDetectorCB(AnomalyDetector):
         
         if len(self.centroids[-2]) != len(self.centroids[-1]):
             anomaly = p_inst_new
-
         differences = [abs(a - b) for a, b in zip(self.centroids[0], self.centroids[-1])]
         if any(difference >= self.centroid_thre for difference in differences):
             anomlay = p_inst_new
@@ -131,6 +130,8 @@ class AnomalyDetectorCB(AnomalyDetector):
 class AnomalyEvent (Event):
 
     C_TYPE     = 'Event'
+
+
 
     C_NAME     = 'Anomaly'
 
