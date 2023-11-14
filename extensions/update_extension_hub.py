@@ -19,10 +19,11 @@
 ## --                                - Method ExtensionHub._create_issue(): optimized team identif.
 ## -- 2023-09-21  1.1.2     DA       Method ExtensionHub._get_extensions:
 ## --                                - bugfix in repo extraction from white/blacklist
+## -- 2023-10-30  1.1.3     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-09-21)
+Ver. 1.1.3 (2023-10-30)
 
 This standalone module collects meta data of all public GitHub repositories that are labelled as
 MLPro extensions (repo topic "mlpro-extension). It updates the RTD subsection "Extension Hub"
@@ -34,6 +35,7 @@ See also:
 - Whitelist file ./extensions/whitelist
 - Blacklist file ./extensions/blacklist
 - Template files ./extensions/templates/*
+
 """
 
 
@@ -105,6 +107,7 @@ class ExtensionHub (Log):
                 if repo == '': continue
                 whitelist[repo] = self.C_STATUS_APPROVED
 
+
         # 2 Get blacklisted extensions
         with open( sys.path[0] + os.sep + self.C_FNAME_BLACKLIST ) as f:
             for line in f.read().splitlines():
@@ -124,7 +127,7 @@ class ExtensionHub (Log):
                 license_name    = license.license.name
                 license_url     = license.html_url
             except:
-                self.log(Log.C_LOG_W, 'Repository', repo.full_name, 'denied. Release and/or license is missing.')
+                self.log(Log.C_LOG_TYPE_W, 'Repository', repo.full_name, 'denied. Release and/or license is missing.')
                 continue
 
             try:
