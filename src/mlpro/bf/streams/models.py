@@ -1438,7 +1438,7 @@ class StreamTask (Task):
         if self._plot_nd_plots is None:
 
             # 2.1 Check whether x label needs to be changed to time index
-            if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_ref.get_time_stamp() is not None ):
+            if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_ref.get_tstamp() is not None ):
                 p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
 
             # 2.2 Add plot for each feature
