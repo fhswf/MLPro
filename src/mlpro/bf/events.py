@@ -9,17 +9,18 @@
 ## -- 2022-10-06  1.1.0     DA       Specification of event id as string (for better observation and
 ## --                                to avoid collisions)
 ## -- 2023-03-25  1.1.1     DA       Class EventManager: correction in constructor
+## -- 2023-11-17  1.2.0     DA       Class Event: new time stamp functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-03-25)
+Ver. 1.2.0 (2023-11-17)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
 """
 
-
-from mlpro.bf.various import Log
+from datetime import datetime
+from mlpro.bf.various import Log, TStamp
 from mlpro.bf.exceptions import *
 
 
@@ -27,7 +28,7 @@ from mlpro.bf.exceptions import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Event:
+class Event (TStamp):
     """
     Root class for events. It is ready to use and transfers the raising object and further key/value
     data to the event handler.
@@ -41,8 +42,9 @@ class Event:
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_raising_object, **p_kwargs):
+    def __init__(self, p_raising_object, p_tstamp:datetime = None, **p_kwargs):
         self._raising_object = p_raising_object
+        TStamp.__init__(self, p_tstamp = p_tstamp)
         self._data           = p_kwargs
 
 
@@ -135,6 +137,7 @@ class EventManager (Log):
         # 0 Intro
         self.log(Log.C_LOG_TYPE_S, 'Event "' + p_event_id + '" fired')
 
+
         # 1 Get list of registered handlers for given event id
         try:
             handlers = self._registered_handlers[p_event_id]
@@ -144,6 +147,7 @@ class EventManager (Log):
         if len(handlers) == 0:
             self.log(Log.C_LOG_TYPE_I, 'No handlers registered for event "' + p_event_id + '"')
             return
+
 
         # 2 Call all registered handlers
         for i, handler in enumerate(handlers):
