@@ -9,9 +9,7 @@
 ## -- 2022-10-06  1.1.0     DA       Specification of event id as string (for better observation and
 ## --                                to avoid collisions)
 ## -- 2023-03-25  1.1.1     DA       Class EventManager: correction in constructor
-## -- 2023-11-17  1.2.0     DA       - Class Event: new time stamp functionality
-## --                                - Method EventManager._raise_event(): completes missing time
-## --                                  stamp in event object 
+## -- 2023-11-17  1.2.0     DA       Class Event: new time stamp functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -140,12 +138,7 @@ class EventManager (Log):
         self.log(Log.C_LOG_TYPE_S, 'Event "' + p_event_id + '" fired')
 
 
-        # 1 Add time stamp if initial
-        if p_event_object.get_tstamp() is None:
-            p_event_object.set_tstamp( p_tstamp = datetime.now() )
-
-
-        # 2 Get list of registered handlers for given event id
+        # 1 Get list of registered handlers for given event id
         try:
             handlers = self._registered_handlers[p_event_id]
         except:
@@ -156,7 +149,7 @@ class EventManager (Log):
             return
 
 
-        # 3 Call all registered handlers
+        # 2 Call all registered handlers
         for i, handler in enumerate(handlers):
             try:
                 self.log(Log.C_LOG_TYPE_I, 'Calling handler', i)
