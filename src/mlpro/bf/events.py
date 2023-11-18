@@ -10,10 +10,11 @@
 ## --                                to avoid collisions)
 ## -- 2023-03-25  1.1.1     DA       Class EventManager: correction in constructor
 ## -- 2023-11-17  1.2.0     DA       Class Event: new time stamp functionality
+## -- 2023-11-18  1.2.1     DA       Class Event: time stamp is set to now() if not provided
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-11-17)
+Ver. 1.2.1 (2023-11-18)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
@@ -44,7 +45,12 @@ class Event (TStamp):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_tstamp:datetime = None, **p_kwargs):
         self._raising_object = p_raising_object
-        TStamp.__init__(self, p_tstamp = p_tstamp)
+
+        if p_tstamp is None:
+            TStamp.__init__(self, p_tstamp = datetime.now())
+        else:
+            TStamp.__init__(self, p_tstamp = p_tstamp)
+
         self._data           = p_kwargs
 
 
