@@ -54,10 +54,13 @@
 ## --                                - removed own method get_id()
 ## --                                - constructor: keep value of internal attribute C_NAME if p_name = ''
 ## -- 2023-04-16  1.2.3     DA       Method StreamTask._run(): completed parameter types
+## -- 2023-11-17  1.3.0     DA       Refactoring class Instance: 
+## --                                - removed individual implementation of time stamp functionality
+## --                                - added parent class bf.various.TStamp
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2023-04-16)
+Ver. 1.3.0 (2023-11-17)
 
 This module provides classes for standardized stream processing. 
 """
@@ -96,7 +99,7 @@ class Label (Dimension): pass
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Instance:
+class Instance (TStamp):
     """
     Instance class to store the current instance and the corresponding labels of the stream
 
@@ -106,7 +109,7 @@ class Instance:
         Feature data of the instance.
     p_label_data : Element
         Optional label data of the instance.
-    p_time_stamp : datetime
+    p_tstamp : datetime
         Optional time stamp of the instance.
     p_kwargs : dict
         Further optional named parameters.
@@ -118,12 +121,12 @@ class Instance:
     def __init__( self, 
                   p_feature_data : Element, 
                   p_label_data : Element = None, 
-                  p_time_stamp : datetime = None,
+                  p_tstamp : datetime = None,
                   **p_kwargs ):
 
         self._feature_data = p_feature_data
         self._label_data   = p_label_data
-        self._time_stamp   = p_time_stamp
+        TStamp.__init__(self, p_tstamp=p_tstamp)
         self._kwargs       = p_kwargs.copy()
 
 
@@ -158,21 +161,16 @@ class Instance:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_time_stamp(self):
-        return self._time_stamp
-
-
-## -------------------------------------------------------------------------------------------------
     def get_kwargs(self):
         return self._kwargs
 
 
 ## -------------------------------------------------------------------------------------------------
     def copy(self):
-        duplicate = self.__class__( p_feature_data=self._feature_data.copy(),
-                                    p_label_data=self._label_data,
+        duplicate = self.__class__( p_feature_data=self.get_feature_data().copy(),
+                                    p_label_data=self.get_label_data(),
+                                    p_tstamp=self.get_tstamp(),
                                     p_kwargs=self._kwargs )
-        duplicate._time_stamp = self._time_stamp
         duplicate.set_id(self.get_id())
         return duplicate
 
@@ -1440,7 +1438,7 @@ class StreamTask (Task):
         if self._plot_nd_plots is None:
 
             # 2.1 Check whether x label needs to be changed to time index
-            if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_ref.get_time_stamp() is not None ):
+            if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_ref.get_tstamp() is not None ):
                 p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
 
             # 2.2 Add plot for each feature
