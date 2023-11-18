@@ -659,7 +659,6 @@ class TStamp:
     This class provides elementry time stamp functionality for inherited classes.
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_tstamp: timedelta = None):
         self.set_tstamp(p_tstamp)
