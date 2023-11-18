@@ -15,14 +15,18 @@
 ## --                                - new parameter p_scope
 ## --                                - refactoring
 ## --                                New Method ClusterAnalyzer.new_cluster_allowed()
+## -- 2023-11-18  0.5.0     DA       Class ClusterCentroid: added plot functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2023-06-03)
+Ver. 0.5.0 (2023-11-18)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
+from matplotlib.figure import Figure
+from mlpro.bf.mt import Figure, PlotSettings
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
@@ -255,6 +259,15 @@ class ClusterAnalyzer (OATask):
             list_ms_rel.append( ( ms_abs[0].get_id(), ms_rel, ms_abs[0] ) )
 
         return list_ms_rel
+    
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+
+        if not self.get_visualization(): return
+
+        for cluster in self._clusters:
+            cluster.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -310,3 +323,13 @@ class ClusterCentroid (Cluster):
     def get_membership(self, p_inst: Instance) -> float:
         feature_data = p_inst.get_feature_data()
         return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid )
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
+        self._centroid.init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        self._centroid.update_plot( p_kwargs=p_kwargs)    
