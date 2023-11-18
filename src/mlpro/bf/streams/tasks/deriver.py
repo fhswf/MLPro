@@ -135,8 +135,8 @@ class Deriver(StreamTask):
         except:
             l_data_new = None
         
-        if p_inst.get_time_stamp() is not None:
-            t_values_old = p_inst.get_time_stamp()
+        if p_inst.get_tstamp() is not None:
+            t_values_old = p_inst.get_tstamp()
         else:
             t_values_old = None
 

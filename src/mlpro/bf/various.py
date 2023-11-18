@@ -47,12 +47,10 @@
 ## --                                - logging
 ## -- 2023-04-12  2.1.1     MRD      Safe guarding open file with "with" 
 ## -- 2023-06-01  2.1.2     SY       Scientific Referencing to bibtex format
-## -- 2023-11-17  2.2.0     DA       Class TStamp: if a time stamp is not handed over it will 
-## --                                internally set to now()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2023-11-17)
+Ver. 2.1.2 (2023-06-01)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -661,13 +659,9 @@ class TStamp:
     This class provides elementry time stamp functionality for inherited classes.
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_tstamp: timedelta = None):
-        if p_tstamp is None:
-            self.set_tstamp(datetime.now())
-        else:
-            self.set_tstamp(p_tstamp)
+        self.set_tstamp(p_tstamp)
 
 
 ## -------------------------------------------------------------------------------------------------
