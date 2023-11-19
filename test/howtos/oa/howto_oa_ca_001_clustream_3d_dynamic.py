@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_ca_002_clustream_3d_static.py
+## -- Module  : howto_oa_ca_001_clustream_3d_dynamic.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-08-23  0.0.0     SY       Creation
 ## -- 2023-08-23  1.0.0     SY       First version release
+## -- 2023-11-19  1.0.1     DA       Turned on visualization/logging of clustering task
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-08-23)
+Ver. 1.0.1 (2023-11-19)
 
 This module demonstrates the combination of several tasks in a workflow, which includes:
 
@@ -21,7 +22,7 @@ This module demonstrates the combination of several tasks in a workflow, which i
 3) Wrapped CluStream Algorithm (River).
 
 Two data stream are incorporated in this module, such as static 3D point clouds and dynamic 3D point
-clouds. In this module, we demonstrate the workflow in static 3D point clouds.
+clouds. In this module, we demonstrate the workflow in dynamic 3D point clouds.
 
 This module is prepared for the MLPro-OA scientific paper and going to be stored as Code
 Ocean Capsule, thus the result is reproducible.
@@ -30,7 +31,7 @@ Ocean Capsule, thus the result is reproducible.
 
 
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.streams.clouds3d_static import StreamMLProStaticClouds3D
+from mlpro.bf.streams.streams.clouds3d_dynamic import StreamMLProDynamicClouds3D
 from mlpro.bf.various import Log
 
 from mlpro.oa.streams import *
@@ -56,15 +57,19 @@ else:
 
 
 
-# 1 Prepare a scenario for Static 3D Point Clouds
-class Static3DScenario(OAScenario):
+# 1 Prepare a scenario for Dynamic 3D Point Clouds
+class Dynamic3DScenario(OAScenario):
 
-    C_NAME = 'Static3DScenario'
+    C_NAME = 'Dynamic3DScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
-        # 1.1 Get stream from StreamMLProStaticClouds3D
-        stream = StreamMLProStaticClouds3D()
+        # 1.1 Get stream from StreamMLProDynamicClouds3D
+        stream = StreamMLProDynamicClouds3D(p_pattern = 'random', 
+                                            p_no_clouds = 8,
+                                            p_variance = 7.0, 
+                                            p_velocity = 1.0, 
+                                            p_logging = logging)
         stream.set_random_seed(3)
 
         # 1.2 Set up a stream workflow based on a custom stream task
@@ -100,11 +105,13 @@ class Static3DScenario(OAScenario):
 
         # Cluster Analyzer
         task_clusterer = WrRiverCluStream2MLPro(p_name='t3',
-                                                p_n_macro_clusters=4,
+                                                p_n_macro_clusters=3,
                                                 p_max_micro_clusters=40,
                                                 p_time_gap=3,
                                                 p_seed=0,
-                                                p_halflife=0.4)
+                                                p_halflife=0.4,
+                                                p_visualize=p_visualize,
+                                                p_logging=p_logging)
         workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_norm_minmax])
 
         # 1.3 Return stream and workflow
@@ -115,7 +122,7 @@ class Static3DScenario(OAScenario):
 
 
 # 2 Instantiate the stream scenario
-myscenario = Static3DScenario(
+myscenario = Dynamic3DScenario(
     p_mode=Mode.C_MODE_REAL,
     p_cycle_limit=cycle_limit,
     p_visualize=visualize,
