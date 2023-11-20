@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-22  0.0.0     SY       Creation
-## -- 2023-09-22  1.0.0     SY       Release of first version
+## -- 2023-11-20  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-09-22)
+Ver. 1.0.0 (2023-11-20)
 
 This module shows how to run a game, namely 2P Prisoners' Dilemma.
 
