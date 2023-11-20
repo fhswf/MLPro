@@ -16,10 +16,11 @@
 ## -- 2023-09-21  1.0.3     SY       Refactoring
 ## -- 2023-09-22  1.0.4     SY       Update __init__ and _setup of GTGame, GTTraining, and more
 ## -- 2023-09-06  1.0.5     SY       Refactoring
+## -- 2023-11-20  1.0.6     SY       Refactoring GTFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2023-09-22)
+Ver. 1.0.6 (2023-11-20)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -176,14 +177,11 @@ class GTFunction:
                 
             idx     = self._elem_ids.index(p_element_id)
             payoff  = self._payoff_map[idx]
-
+            
             el_strategy = []
             for el in self._elem_ids:
                 val = p_strategies.get_elem(el).get_values()
-                el_strategy.append(np.array([ i/sum(val) for i in val ]))
-
-            for pl in range(self._num_coals):
-                payoff = np.dot(payoff, el_strategy[-(pl+1)])
+                payoff = payoff[int(val)]
 
             return payoff
 
@@ -198,7 +196,7 @@ class GTFunction:
             el_strategy = []
             for el in self._elem_ids:
                 val = p_strategies.get_elem(el).get_values()
-                el_strategy.append(np.array([ i/sum(val) for i in val ]))
+                el_strategy.append(int(val))
 
             return tf(el_strategy)
 
