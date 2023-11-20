@@ -107,6 +107,7 @@ class Static3DScenario(OAScenario):
                                                 p_time_gap=3,
                                                 p_seed=0,
                                                 p_halflife=0.4,
+                                                p_time_window=10,
                                                 p_visualize=p_visualize,
                                                 p_logging=p_logging)
         workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_norm_minmax])
