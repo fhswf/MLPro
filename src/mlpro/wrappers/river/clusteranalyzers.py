@@ -476,9 +476,10 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
             center  = self._river_algo.centers[x]
 
             if len(self._clusters) != len(self._river_algo.centers):
-                self._clusters.append(
-                    ClusterCentroid(p_visualize=self.get_visualization())
-                    )
+                self._add_cluster( p_cluster = ClusterCentroid(p_visualize=self.get_visualization()) )
+                # self._clusters.append(
+                #     ClusterCentroid(p_visualize=self.get_visualization())
+                #     )
             self._clusters[x].get_centroid().set_values(list(center.values()))
 
         return self._clusters

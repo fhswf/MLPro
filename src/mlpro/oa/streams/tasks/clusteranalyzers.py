@@ -203,6 +203,15 @@ class ClusterAnalyzer (OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
+    def _add_cluster(self, p_cluster:Cluster):
+        self._clusters.append(p_cluster)
+
+        if not self.get_visualization(): return
+
+        p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
+
+
+## -------------------------------------------------------------------------------------------------
     def get_cluster_memberships( self, 
                                  p_inst : Instance,
                                  p_scope : int = C_MS_SCOPE_MAX ) -> List[Tuple[str, float, Cluster]]:
