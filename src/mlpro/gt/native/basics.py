@@ -6,21 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
-## -- 2023-06-02  1.0.0     SY       Release of first version
-## -- 2023-06-15  1.0.1     SY       Add solver configuration methods in GTTraining
-## -- 2023-06-28  1.0.2     SY       - Update solver configuration methods
-## --                                - Add is_zerosum(), _is_bestresponse() in class GTGame
-## --                                - Adjust _get_evaluation() in class GTGame
-## --                                - Enhancement of GTStrategy
-## --                                - Add TransferFunction as another option on GTFunction
-## -- 2023-09-21  1.0.3     SY       Refactoring
-## -- 2023-09-22  1.0.4     SY       Update __init__ and _setup of GTGame, GTTraining, and more
-## -- 2023-09-06  1.0.5     SY       Refactoring
-## -- 2023-11-20  1.0.6     SY       Refactoring GTFunction
+## -- 2023-11-20  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2023-11-20)
+Ver. 1.0.0 (2023-11-20)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -67,7 +57,7 @@ class GTStrategy (Action):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTFunction:
+class GTFunction (Persistent):
 
     C_TYPE                  = 'GT Function'
 
@@ -77,7 +67,9 @@ class GTFunction:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_func_type:int, p_dim_elems:list=None):
+    def __init__(self, p_func_type:int, p_dim_elems:list=None, p_logging=Log.C_LOG_ALL):
+        
+        super().__init__(p_id=None, p_logging=p_logging)
         
         self.C_FUNCTION_TYPE    = p_func_type
         self._elem_ids          = None
@@ -182,7 +174,7 @@ class GTFunction:
             for el in self._elem_ids:
                 val = p_strategies.get_elem(el).get_values()
                 payoff = payoff[int(val)]
-
+                    
             return payoff
 
         elif self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
@@ -196,7 +188,7 @@ class GTFunction:
             el_strategy = []
             for el in self._elem_ids:
                 val = p_strategies.get_elem(el).get_values()
-                el_strategy.append(int(val))
+                el_strategy.append(val)
 
             return tf(el_strategy)
 
@@ -206,7 +198,7 @@ class GTFunction:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTPayoffMatrix (TStamp):
+class GTPayoffMatrix (TStamp, Persistent):
 
     C_TYPE          = 'GT Payoff Matrix'
 
@@ -214,8 +206,10 @@ class GTPayoffMatrix (TStamp):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_function:GTFunction = None,
-                 p_player_ids:list = None):
-        
+                 p_player_ids:list = None,
+                 p_logging=Log.C_LOG_ALL):
+                     
+        Persistent.__init__(self, p_id=None, p_logging=p_logging)
         TStamp.__init__(self)
 
         self._function      = p_function
@@ -527,8 +521,7 @@ class GTCoalition (GTPlayer):
     C_COALITION_SUM         = 1
     C_COALITION_MIN         = 2
     C_COALITION_MAX         = 3
-    C_COALITION_CONCATENATE = 4
-    C_COALITION_CUSTOM      = 5
+    C_COALITION_CUSTOM      = 4
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -626,19 +619,17 @@ class GTCoalition (GTPlayer):
     
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
+        
         for pl in self._coop_players:
             pl.set_random_seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> ESpace:
-
-        if self.get_coalition_strategy() == self.C_COALITION_CONCATENATE:
-            return None
-        else:        
-            espace = ESpace()
-            espace.add_dim(Dimension( p_name_short='CoStr', p_name_long='Coalition Strategy', p_boundaries=[-np.inf,np.inf]))
-            return espace
+        
+        espace = ESpace()
+        espace.add_dim(Dimension( p_name_short='CoStr', p_name_long='Coalition Strategy', p_boundaries=[-np.inf,np.inf]))
+        return espace
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -647,15 +638,6 @@ class GTCoalition (GTPlayer):
         if self.get_coalition_strategy() == self.C_COALITION_CUSTOM:
 
             coalition_strategy  = self._custom_coalition_strategy(p_payoff)
-
-        elif self.get_coalition_strategy() == self.C_COALITION_CONCATENATE:
-
-            coalition_strategy  = GTStrategy()
-
-            for pl in self._coop_players:
-                strategy_pl     = pl.compute_strategy(p_payoff)
-                strategy_elem   = strategy_pl.get_elem(pl.get_id())
-                coalition_strategy.add_elem(pl.get_id(), strategy_elem)
 
         else:
 
@@ -813,17 +795,23 @@ class GTCompetition (GTCoalition):
         for coal in self._coalitions:
             strategy_coal = coal.compute_strategy(p_payoff)
             
-            if coal.get_coalition_strategy() == coal.C_COALITION_CONCATENATE:
-                pl_ids = strategy_coal.get_elem_ids()
-                for id in pl_ids:
-                    strategy_elem = strategy_coal.get_elem(id)
-                    strategy.add_elem(id, strategy_elem)
-
-            else:
-                strategy_elem = strategy_coal.get_elem(coal.get_id())
-                strategy.add_elem(coal.get_id(), strategy_elem)
+            strategy_elem = strategy_coal.get_elem(coal.get_id())
+            strategy.add_elem(coal.get_id(), strategy_elem)
 
         return strategy
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_strategy_space(self) -> ESpace:
+        
+        espace = ESpace()
+        
+        for x in range(len(self.get_coalitions())):
+            name_short = 'Coal' + str(x+1)
+            name_long = 'Coalition' + str(x+1)
+            espace.add_dim(Dimension( p_name_short=name_short, p_name_long=name_long, p_boundaries=[-np.inf,np.inf]))
+        
+        return espace
 
 
 
@@ -981,8 +969,9 @@ class GTGame (Scenario):
             if isinstance(self._model, GTCompetition):
                 payoff = []
                 for coal in self._model.get_coalitions():
-                    payoff.extend(self._get_evaluation(p_coalition_id=coal.get_id(),
-                                                       p_coalition=coal))
+                    payoff.append(self._get_evaluation(p_coalition_id=coal.get_id(),
+                                                       p_coalition=coal)
+                                  )
             else:
                 payoff = self._get_evaluation(p_coalition_id=self._model.get_id(),
                                               p_coalition=self._model)
@@ -994,16 +983,8 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _get_evaluation(self, p_coalition_id:str, p_coalition:GTCoalition) -> Union[float,list]:
         
-        if p_coalition.get_coalition_strategy() == p_coalition.C_COALITION_CONCATENATE:
-            players_ids = p_coalition.get_players_ids()
-            payoff = []
-            for id in players_ids:
-                payoff.append(self._payoff.get_payoff(self._strategies, id))
-                self._is_bestresponse(p_coalition_id, p_coalition)
-            return payoff
-        else:
-            self._is_bestresponse(p_coalition_id, p_coalition)
-            return self._payoff.get_payoff(self._strategies, p_coalition_id)
+        self._is_bestresponse(p_coalition_id, p_coalition)
+        return self._payoff.get_payoff(self._strategies, p_coalition_id)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1021,16 +1002,9 @@ class GTGame (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _is_bestresponse(self, p_coalition_id:str, p_coalition:GTCoalition) -> Union[list, float]:
+    def _is_bestresponse(self, p_coalition_id:str, p_coalition:GTCoalition) -> float:
 
-        if p_coalition.get_coalition_strategy() == p_coalition.C_COALITION_CONCATENATE:
-            players_ids = p_coalition.get_players_ids()
-            br_values = []
-            for id in players_ids:
-                br_values.append(self._payoff.best_response_value(self._strategies, id))
-            return br_values
-        else:
-            return self._payoff.best_response_value(self._strategies, p_coalition_id)
+        return self._payoff.best_response_value(self._strategies, p_coalition_id)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1063,8 +1037,8 @@ class GTTrainingResults (TrainingResults):
 
     C_NAME                  = 'GT Training Results'
 
-    C_FNAME_COAL_STRATEGIES = 'coalitions_stategies'
-    C_FNAME_COAL_PAYOFFS    = 'coalitions_payoffs'
+    C_FNAME_COAL_STRATEGIES = 'stategies'
+    C_FNAME_COAL_PAYOFFS    = 'payoffs'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1127,6 +1101,11 @@ class GTTraining (Training):
         except KeyError:
             self._collect_payoff = True
             self._kwargs['p_collect_payoff'] = self._collect_payoff
+            
+        try:
+            self._seed = kwargs['p_init_seed']
+        except:
+            self._seed = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1135,12 +1114,11 @@ class GTTraining (Training):
         results = super()._init_results()
 
         if self._collect_strategy:
-            strategy_space = Set()
-            results.ds_strategies = GTDataStoring(strategy_space)
+            results.ds_strategies = GTDataStoring(self._scenario._model.get_strategy_space())
 
         if self._collect_payoff:
             payoff_space = Set()
-            results.ds_payoffs = GTDataStoring(payoff_space)
+            results.ds_payoffs = GTDataStoring(self._scenario._model.get_strategy_space())
 
         self._scenario.connect_data_logger(p_ds_strategies=results.ds_strategies,
                                            p_ds_payoffs=results.ds_payoffs)
@@ -1151,7 +1129,8 @@ class GTTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _init_trial(self):
 
-        self._scenario.reset()
+        self._scenario.reset(p_seed=self._seed)
+        self._seed += 1
 
         if (self._results.ds_strategies and self._scenario._ds_strategies) is not None:
             self._results.ds_strategies.add_trial(self._results.num_trials)

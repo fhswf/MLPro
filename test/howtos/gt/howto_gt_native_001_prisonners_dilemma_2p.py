@@ -31,8 +31,8 @@ from pathlib import Path
 
 
 if __name__ == "__main__":
-    cycle_limit = 1
-    logging     = Log.C_LOG_WE
+    cycle_limit = 10
+    logging     = Log.C_LOG_ALL
     visualize   = False
     path        = str(Path.home())
 
