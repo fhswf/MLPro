@@ -10,10 +10,11 @@
 ## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
 ## -- 2023-06-03  1.0.2     DA       Renaming of method ClusterAnalyzer.get_cluster_memberships
 ## -- 2023-06-05  1.0.3     SY       Updating get_cluster_memberships, p_cls_cluster, and _adapt
+## -- 2023-11-20  1.0.4     SY       Update due to intorduction of visualization for ClusterCentroid
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2023-06-05)
+Ver. 1.0.4 (2023-11-20)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -138,6 +139,9 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         # update the model with a set of features
         self.log(self.C_LOG_TYPE_I, 'Cluster is adapted...')
         self._river_algo.learn_one(input_data)
+        
+        # visualization mechanism
+        self.get_clusters()
 
         return True
 
@@ -339,7 +343,8 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
             if len(self._clusters) != self._river_algo.n_clusters:
                 self._clusters.append(
-                    ClusterCentroid(p_cluster=cluster,
+                    ClusterCentroid(p_visualize=self.get_visualization(),
+                                    p_cluster=cluster,
                                     p_micro_cluster=micro_cluster)
                     )
             else:
@@ -472,7 +477,7 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
             if len(self._clusters) != len(self._river_algo.centers):
                 self._clusters.append(
-                    ClusterCentroid()
+                    ClusterCentroid(p_visualize=self.get_visualization())
                     )
             self._clusters[x].get_centroid().set_values(list(center.values()))
 
@@ -593,7 +598,8 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
             if len(self._clusters) != self._river_algo.n_clusters:
                 self._clusters.append(
-                    ClusterCentroid(p_cluster=cluster,
+                    ClusterCentroid(p_visualize=self.get_visualization(),
+                                    p_cluster=cluster,
                                     p_micro_cluster=micro_cluster,
                                     p_o_micro_cluster=o_micro_cluster)
                     )
@@ -706,7 +712,7 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
 
             if len(self._clusters) != len(self._river_algo.centers):
                 self._clusters.append(
-                    ClusterCentroid()
+                    ClusterCentroid(p_visualize=self.get_visualization())
                     )
             
             list_center = []
@@ -826,7 +832,7 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
 
             if len(self._clusters) != len(self._river_algo.centers):
                 self._clusters.append(
-                    ClusterCentroid()
+                    ClusterCentroid(p_visualize=self.get_visualization())
                     )
             
             list_center = []
