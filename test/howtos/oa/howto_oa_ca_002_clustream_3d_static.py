@@ -8,10 +8,11 @@
 ## -- 2023-08-23  0.0.0     SY       Creation
 ## -- 2023-08-23  1.0.0     SY       First version release
 ## -- 2023-11-19  1.0.1     DA       Turned on visualization/logging of clustering task
+## -- 2023-08-20  1.0.2     SY       Refactoring due to failed in Unittest
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-11-19)
+Ver. 1.0.2 (2023-11-20)
 
 This module demonstrates the combination of several tasks in a workflow, which includes:
 
@@ -83,7 +84,7 @@ class Static3DScenario(OAScenario):
         # Boundary detector 
         task_bd = BoundaryDetector(p_name='t1', 
                                    p_ada=True, 
-                                   p_visualize=True,   
+                                   p_visualize=p_visualize,   
                                    p_logging=p_logging)
         workflow.add_task(p_task = task_bd)
 
