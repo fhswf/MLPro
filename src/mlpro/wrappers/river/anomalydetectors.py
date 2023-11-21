@@ -9,7 +9,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-05-12)
+Ver. 1.0.0 (2023-06-23)
 
 This module provides wrapper functionalities to incorporate anomaly detector algorithms of the 
 River ecosystem. This module includes two algorithms from River that are embedded to MLPro, such as:
