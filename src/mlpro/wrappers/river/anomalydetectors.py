@@ -26,10 +26,29 @@ from mlpro.wrappers.river.basics import *
 from mlpro.oa.streams.basics import Instance, List
 from mlpro.oa.streams.tasks.anomalydetectors import *
 from river import anomaly
+from mlpro.wrappers.river.basics import WrapperRiver
 
-class HST(AnomalyDetector):
 
-    C_NAME          = 'HST Anomaly Detector'
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrAnomalyDetectorRiver2MLPro (WrapperRiver, AnomalyDetector):
+
+    C_TYPE = 'River Anomaly Detector'
+    C_NAME = 'River Anomlay Detector'
+    C_WRAPPED_PACKAGE = 'river'
+    C_MINIMUM_VERSION = '0.15.0'
+    C_SCIREF_AUTHOR = 'River'
+    C_SCIREF_URL = 'riverml.xyz'
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+
+class HST(WrAnomalyDetectorRiver2MLPro):
+
+    C_NAME          = 'River Half-Space Tree'
     C_TYPE          = 'Anomaly Detector'
 
 ## -------------------------------------------------------------------------------------------------
@@ -60,7 +79,7 @@ class HST(AnomalyDetector):
         self.sizeof_instance_list = p_sizeof_instance_list
     ## ------------------------------------------------------------------------------------------------
 
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst_new: List[Instance], p_inst_del: List):
 
         self.data_points.append(p_inst_new)
 
@@ -88,9 +107,22 @@ class HST(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SVM(AnomalyDetector):
+class WrAnomalyDetectorRiver2MLPro (WrapperRiver, AnomalyDetector):
 
-    C_NAME          = 'OneClassSVM Anomaly Detector'
+    C_TYPE = 'River Anomaly Detector'
+    C_NAME = 'River Anomlay Detector'
+    C_WRAPPED_PACKAGE = 'river'
+    C_MINIMUM_VERSION = '0.15.0'
+    C_SCIREF_AUTHOR = 'River'
+    C_SCIREF_URL = 'riverml.xyz'
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SVM(WrAnomalyDetectorRiver2MLPro):
+
+    C_NAME          = 'River One-Class SVM'
     C_TYPE          = 'Anomaly Detector'
 
 ## -------------------------------------------------------------------------------------------------
