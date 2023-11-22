@@ -24,6 +24,7 @@ https://scikit-learn.org
 
 """
 
+from mlpro.wrappers.sklearn import WrapperScikitLearn
 from mlpro.wrappers.sklearn.basics import *
 from mlpro.oa.streams.basics import Instance, List
 from mlpro.oa.streams.tasks.anomalydetectors import *
@@ -38,7 +39,19 @@ from datetime import datetime
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class LocalOutlierFactor(AnomalyDetector):
+class WrAnomalyDetectorRiver2MLPro(WrapperScikitLearn, AnomalyDetector):
+
+    C_TYPE = 'ScikitLearn Anomaly Detector'
+    C_NAME = 'ScikitLearn Anomlay Detector'
+    C_WRAPPED_PACKAGE = 'scikit-learn'
+    C_SCIREF_AUTHOR = 'Scikit-learn'
+    C_SCIREF_URL = 'scikit-learn.org'
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrSklearnLOF2MLPro(WrAnomalyDetectorRiver2MLPro):
 
     C_NAME          = 'LOF Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
@@ -69,7 +82,7 @@ class LocalOutlierFactor(AnomalyDetector):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst_new: list[Instance], p_inst_del: list):
 
         det_time = datetime.now()
         det_time = det_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -109,7 +122,7 @@ class LocalOutlierFactor(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OneClassSVM(AnomalyDetector):
+class WrSklearnOneClassSVM2MLPro(WrAnomalyDetectorRiver2MLPro):
 
     C_NAME          = 'One Class SVM Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
@@ -182,7 +195,7 @@ class OneClassSVM(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class IsolationForest(AnomalyDetector):
+class WrSklearnIsolationForest2MLPro(WrAnomalyDetectorRiver2MLPro):
 
     C_NAME          = 'Isolation Forest Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'

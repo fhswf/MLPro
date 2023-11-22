@@ -34,7 +34,7 @@ from mlpro.bf.streams.models import *
 from mlpro.bf.various import Log
 from mlpro.wrappers.openml import WrStreamProviderOpenML
 from mlpro.oa.streams import *
-from mlpro.wrappers.sklearn import IsolationForest
+from mlpro.wrappers.sklearn.anomalydetector import WrSklearnIsolationForest2MLPro
 
 
 
@@ -62,7 +62,7 @@ class AdScenario4ADif (OAScenario):
 
 
         # 3 Initiailise the lof anomaly detctor class
-        anomalydetector = IsolationForest(p_estimators=100, p_visualize = p_visualize, p_contamination=0.01)
+        anomalydetector = WrSklearnIsolationForest2MLPro(p_estimators=100, p_visualize = p_visualize, p_contamination=0.01)
 
         # 4 Add anomaly detection task to workflow
         workflow.add_task( p_task=anomalydetector )
