@@ -1,30 +1,33 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.pool.native.games
-## -- Module  : prisonersdilemma_2p
+## -- Module  : prisonersdilemma_3p
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-09-21  0.0.0     SY       Creation
-## -- 2023-11-20  1.0.0     SY       Release of first version
+## -- 2023-12-07  0.0.0     SY       Creation
+## -- 2023-12-07  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-11-20)
+Ver. 1.0.0 (2023-12-07)
 
-This module provides a 2-player game of Prisoners' Dilemma with random solver. In the near future,
-we are going to add more solvers and this howto is going to be updated accordingly.
+This module provides a 2-player game of Prisoners' Dilemma with greedy and random solvers.
+In the near future, we are going to add more solvers and this howto is going to be updated accordingly.
 
-The game consists of two competitors, where each competitor represents a prisonner.
-Both of them have a goal to minimize their prison sentences, where their length of sentences depend
+The game consists of three competitors, where each competitor represents a prisonner.
+All of them have a goal to minimize their prison sentences, where their length of sentences depend
 on their decision in front of the jury.
 
-If a prisoner pleads guilty, while another prisoner pleads not guilty. The guilty prisoner gets 8 years
+If a prisoner pleads guilty, while another prisoner pleads not guilty. The guilty prisoner gets 10 years
 of imprisonment, while the not guilty prisoner gets 1 year of imprisonment.
 
-If both of them plead guilty, then each of them gets 5 years of imprisonment.
+If two of them plead guilty, then each of them gets 5 years of imprisonment, while the not guilty prisoner
+gets 1 year.
 
-Meanwhile, if both of them plead not guilty, then each of them obtains 2 years of imprisonment.
+Meanwhile, if three of them plead not guilty, then each of them obtains 5 years of imprisonment.
+
+And if three of them plead guilty, then each of them obtains 2 years of imprisonment.
 
 To be noted, the decision making of the prisoners take place simultaneously, where:
 - Decision "0" means confess
@@ -41,7 +44,7 @@ from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PayoffFunction_PD2P (GTFunction):
+class PayoffFunction_PD3P (GTFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -49,12 +52,18 @@ class PayoffFunction_PD2P (GTFunction):
 
         self._add_payoff_matrix(
             p_idx=0,
-            p_payoff_matrix=np.array([[5, 8], [1, 2]]) # ([[(0,0), (0,1)], [(1,0), (1,1)]])
+            p_payoff_matrix=np.array([[2, 5, 5, 10], [1, 1, 1, 5]])
+            # ([[(0,0,0), (0,0,1), (0,1,0), (0,1,1)], [(1,0,0), (1,0,1), (1,1,0), (1,1,1)]])
         )
 
         self._add_payoff_matrix(
             p_idx=1,
-            p_payoff_matrix=np.array([[5, 1], [8, 2]])
+            p_payoff_matrix=np.array([[2, 5, 1, 1], [5, 10, 1, 5]])
+        )
+
+        self._add_payoff_matrix(
+            p_idx=2,
+            p_payoff_matrix=np.array([[2, 1, 5, 1], [5, 1, 10, 5]])
         )
          
         
