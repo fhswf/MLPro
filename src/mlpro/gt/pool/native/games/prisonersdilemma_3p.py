@@ -37,6 +37,7 @@ To be noted, the decision making of the prisoners take place simultaneously, whe
 
 from mlpro.gt.native.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
+from mlpro.gt.pool.native.solvers.greedypolicy import MinGreedyPolicy
          
         
         
@@ -72,28 +73,36 @@ class PayoffFunction_PD3P (GTFunction):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PrisonersDilemma2PGame (GTGame):
+class PrisonersDilemma3PGame (GTGame):
 
-    C_NAME  = 'PrisonersDilemma2PGame'
+    C_NAME  = 'PrisonersDilemma3PGame'
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         
         _strategy_space = MSpace()
-        _strategy_space.add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,1]))
+        _strategy_space.add_dim(Dimension('RStr','Z','Strategy','','','',[0,1]))
         
-        solver1 = RandomSolver(
+        solver1a = RandomSolver(
             p_strategy_space=_strategy_space,
             p_id=1,
             p_name="Random Solver",
             p_visualize=p_visualize,
             p_logging=p_logging
         )
+        
+        solver1b = MinGreedyPolicy(
+            p_strategy_space=_strategy_space,
+            p_id=1,
+            p_name="Min Greedy Solver",
+            p_visualize=p_visualize,
+            p_logging=p_logging
+        )
 
 
         p1 = GTPlayer(
-            p_solver=solver1,
+            p_solver=[solver1a,solver1b],
             p_name="Player of Prisoner 1",
             p_visualize=p_visualize,
             p_logging=p_logging,
@@ -107,15 +116,23 @@ class PrisonersDilemma2PGame (GTGame):
         coal1.add_player(p1)
 
 
-        solver2 = RandomSolver(
+        solver2a = RandomSolver(
             p_strategy_space=_strategy_space,
             p_id=2,
             p_visualize=p_visualize,
             p_logging=p_logging
         )
+        
+        solver2b = MinGreedyPolicy(
+            p_strategy_space=_strategy_space,
+            p_id=2,
+            p_name="Min Greedy Solver",
+            p_visualize=p_visualize,
+            p_logging=p_logging
+        )
 
         p2 = GTPlayer(
-            p_solver=solver2,
+            p_solver=[solver2a,solver2b],
             p_name="Player of Prisoner 2",
             p_visualize=p_visualize,
             p_logging=p_logging,
@@ -129,19 +146,50 @@ class PrisonersDilemma2PGame (GTGame):
         coal2.add_player(p2)
 
 
+        solver3a = RandomSolver(
+            p_strategy_space=_strategy_space,
+            p_id=3,
+            p_visualize=p_visualize,
+            p_logging=p_logging
+        )
+        
+        solver3b = MinGreedyPolicy(
+            p_strategy_space=_strategy_space,
+            p_id=3,
+            p_name="Min Greedy Solver",
+            p_visualize=p_visualize,
+            p_logging=p_logging
+        )
+
+        p2 = GTPlayer(
+            p_solver=[solver3a,solver3b],
+            p_name="Player of Prisoner 3",
+            p_visualize=p_visualize,
+            p_logging=p_logging,
+            p_random_solver=False
+        )
+
+        coal3 = GTCoalition(
+            p_name="Coalition of Prisoner 3",
+            p_coalition_type=GTCoalition.C_COALITION_SUM
+        )
+        coal2.add_player(p3)
+
+
         competition = GTCompetition(
             p_name="Prisoner's Dilemma Competition",
             p_logging=p_logging
             )
         competition.add_coalition(coal1)
         competition.add_coalition(coal2)
+        competition.add_coalition(coal3)
         
         coal_ids = competition.get_coalitions_ids()
 
         self._payoff = GTPayoffMatrix(
-            p_function=PayoffFunction_PD2P(
+            p_function=PayoffFunction_PD3P(
                 p_func_type=GTFunction.C_FUNC_PAYOFF_MATRIX,
-                p_dim_elems=[2,2]
+                p_dim_elems=[2,2,2]
                 ),
             p_player_ids=coal_ids
         )
