@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-21  0.0.0     SY       Creation
-## -- 2023-11-20  1.0.0     SY       Release of first version
+## -- 2023-12-07  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-11-20)
+Ver. 1.0.0 (2023-12-07)
 
 This module provides a 2-player game of Prisoners' Dilemma with random solver. In the near future,
 we are going to add more solvers and this howto is going to be updated accordingly.
