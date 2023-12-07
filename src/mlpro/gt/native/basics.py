@@ -68,7 +68,7 @@ class GTFunction (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_func_type:int, p_dim_elems:list=None, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_func_type:int, p_dim_elems:list=None, p_num_coalisions:int=None, p_logging=Log.C_LOG_ALL):
         
         super().__init__(p_id=None, p_logging=p_logging)
         
@@ -79,8 +79,11 @@ class GTFunction (Persistent):
 
             if p_dim_elems is None:
                 raise ParamError("p_dim_elems is not defined!")
+
+            if p_num_coalisions is None:
+                raise ParamError("p_num_coalisions is not defined!")
             
-            self._num_coals     = len(p_dim_elems)
+            self._num_coals     = p_num_coalisions
             dim_elems           = [self._num_coals]
             dim_elems.extend(p_dim_elems)
 

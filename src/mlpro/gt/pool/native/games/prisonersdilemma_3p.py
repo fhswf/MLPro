@@ -161,7 +161,7 @@ class PrisonersDilemma3PGame (GTGame):
             p_logging=p_logging
         )
 
-        p2 = GTPlayer(
+        p3 = GTPlayer(
             p_solver=[solver3a,solver3b],
             p_name="Player of Prisoner 3",
             p_visualize=p_visualize,
@@ -173,7 +173,7 @@ class PrisonersDilemma3PGame (GTGame):
             p_name="Coalition of Prisoner 3",
             p_coalition_type=GTCoalition.C_COALITION_SUM
         )
-        coal2.add_player(p3)
+        coal3.add_player(p3)
 
 
         competition = GTCompetition(
@@ -189,7 +189,8 @@ class PrisonersDilemma3PGame (GTGame):
         self._payoff = GTPayoffMatrix(
             p_function=PayoffFunction_PD3P(
                 p_func_type=GTFunction.C_FUNC_PAYOFF_MATRIX,
-                p_dim_elems=[2,2,2]
+                p_dim_elems=[2,4],
+                p_num_coalisions=3
                 ),
             p_player_ids=coal_ids
         )

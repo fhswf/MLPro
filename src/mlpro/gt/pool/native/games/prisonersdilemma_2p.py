@@ -132,7 +132,8 @@ class PrisonersDilemma2PGame (GTGame):
         self._payoff = GTPayoffMatrix(
             p_function=PayoffFunction_PD2P(
                 p_func_type=GTFunction.C_FUNC_PAYOFF_MATRIX,
-                p_dim_elems=[2,2]
+                p_dim_elems=[2,2],
+                p_num_coalisions=2
                 ),
             p_player_ids=coal_ids
         )
