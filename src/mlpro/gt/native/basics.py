@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
-## -- 2023-11-20  1.0.0     SY       Release of first version
+## -- 2023-12-07  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-11-20)
+Ver. 1.0.0 (2023-12-07)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -23,6 +23,7 @@ from mlpro.bf.mt import *
 from mlpro.bf.math import *
 from mlpro.bf.physics import *
 from typing import Union
+import statistics as st
         
         
 
@@ -521,7 +522,9 @@ class GTCoalition (GTPlayer):
     C_COALITION_SUM         = 1
     C_COALITION_MIN         = 2
     C_COALITION_MAX         = 3
-    C_COALITION_CUSTOM      = 4
+    C_COALITION_MEDIAN      = 4
+    C_COALITION_MODE        = 5
+    C_COALITION_CUSTOM      = 6
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -645,17 +648,47 @@ class GTCoalition (GTPlayer):
 
                 if self._coop_players.index(pl) == 0:
                     strategy_pl = pl.compute_strategy(p_payoff).get_sorted_values()
+                    strategies_array = None
+                    
                 else:
                     if self.get_coalition_strategy() == self.C_COALITION_MEAN:
-                        strategy_pl = (strategy_pl * pl + pl.compute_strategy(p_payoff).get_sorted_values()) / (pl + 1)
+                        if strategies_array is not None:
+                            strategies_array = np.append(strategies_array, strategy_pl)
+                        else:
+                            strategies_array = np.copy(strategy_pl)
+                            
                     elif self.get_coalition_strategy() == self.C_COALITION_SUM:
                         strategy_pl += pl.compute_strategy(p_payoff).get_sorted_values()
+                        
                     elif self.get_coalition_strategy() == self.C_COALITION_MIN:
                         strategy_pl = np.minimum(strategy_pl, pl.compute_strategy(p_payoff).get_sorted_values())
+                    
                     elif self.get_coalition_strategy() == self.C_COALITION_MAX:
                         strategy_pl = np.maximum(strategy_pl, pl.compute_strategy(p_payoff).get_sorted_values())
-
-            coalition_strategy = GTStrategy(self.get_id(), self.get_strategy_space(), strategy_pl)
+                    
+                    elif self.get_coalition_strategy() == self.C_COALITION_MEDIAN:
+                        if strategies_array is not None:
+                            strategies_array = np.append(strategies_array, strategy_pl)
+                        else:
+                            strategies_array = np.copy(strategy_pl)
+                    
+                    elif self.get_coalition_strategy() == self.C_COALITION_MODE:
+                        if strategies_array is not None:
+                            strategies_array = np.append(strategies_array, strategy_pl)
+                        else:
+                            strategies_array = np.copy(strategy_pl)
+                
+            if (self.get_coalition_strategy() == self.C_COALITION_MEAN) and (strategies_array is not None):
+                strategy_pl = np.mean(strategies_array)
+            elif (self.get_coalition_strategy() == self.C_COALITION_MEDIAN) and (strategies_array is not None):
+                strategy_pl = np.median(strategies_array)
+            elif (self.get_coalition_strategy() == self.C_COALITION_MODE) and (strategies_array is not None):
+                strategy_pl = st.mode(strategies_array)
+                
+            if type(strategy_pl) is np.ndarray:
+                coalition_strategy = GTStrategy(self.get_id(), self.get_strategy_space(), strategy_pl)
+            else:
+                coalition_strategy = GTStrategy(self.get_id(), self.get_strategy_space(), np.array([strategy_pl]))
         
         return coalition_strategy
 
