@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-07  0.0.0     SY       Creation
-## -- 2023-12-07  1.0.0     SY       Release of first version
+## -- 2023-12-08  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-07)
+Ver. 1.0.0 (2023-12-08)
 
 This module provides solver with greedy GT strategy. There are two variants, such as minimum greedy
 and maximum greedy.
@@ -38,13 +38,20 @@ class MaxGreedyPolicy (GTSolver):
     def _compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
 
         if p_payoff._function is not None:
-            my_strategy_values = np.zeros(self._strategy_space.get_num_dim())
+            stg_values              = np.zeros(self._strategy_space.get_num_dim())
 
-            idx = self.get_id()-1
-            best_payoff = np.max(p_payoff._function._payoff_map[idx])
-            payoff_matrix = p_payoff._function._payoff_map[idx]
-            my_strategy_values[0] = st.mode(np.where(payoff_matrix==best_payoff)[idx])
-            return GTStrategy(self._id, self._strategy_space, my_strategy_values)
+            idx                     = self.get_id()-1
+            payoff_matrix           = p_payoff._function._payoff_map[idx]
+            best_payoff             = np.max(p_payoff._function._payoff_map[idx])
+            
+            for p,x in enumerate(payoff_matrix):
+                try:
+                    y               = payoff_matrix[p].tolist().index(best_payoff)
+                    stg             = p_payoff._function._mapping_matrix[p][y]
+                    stg_values[0]   = stg[idx]
+                    return GTStrategy(self._id, self._strategy_space, stg_values)
+                except:
+                    pass
         else:
             return self._call_compute_strategy()
 
@@ -73,13 +80,20 @@ class MinGreedyPolicy (GTSolver):
     def _compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
 
         if p_payoff._function is not None:
-            my_strategy_values = np.zeros(self._strategy_space.get_num_dim())
+            stg_values              = np.zeros(self._strategy_space.get_num_dim())
 
-            idx = self.get_id()-1
-            payoff_matrix = p_payoff._function._payoff_map[idx]
-            least_payoff = np.min(p_payoff._function._payoff_map[idx])
-            my_strategy_values[0] = st.mode(np.where(payoff_matrix==least_payoff)[idx])
-            return GTStrategy(self._id, self._strategy_space, my_strategy_values)
+            idx                     = self.get_id()-1
+            payoff_matrix           = p_payoff._function._payoff_map[idx]
+            least_payoff            = np.min(p_payoff._function._payoff_map[idx])
+            
+            for p,x in enumerate(payoff_matrix):
+                try:
+                    y               = payoff_matrix[p].tolist().index(least_payoff)
+                    stg             = p_payoff._function._mapping_matrix[p][y]
+                    stg_values[0]   = stg[idx]
+                    return GTStrategy(self._id, self._strategy_space, stg_values)
+                except:
+                    pass
         else:
             return self._call_compute_strategy()
 
