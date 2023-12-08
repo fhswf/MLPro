@@ -10,10 +10,11 @@
 ## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
 ## -- 2023-06-05  1.0.2     SY       Renaming module
 ## -- 2023-08-23  1.0.3     SY       Refactoring
+## -- 2023-12-08  1.0.4     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2023-08-23)
+Ver. 1.0.4 (2023-12-08)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -134,7 +135,7 @@ class AdScenario4DBStream (OAScenario):
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
-    visualize   = True
+    visualize   = False
     cycle_limit = 12
     step_rate   = 1
 
@@ -183,9 +184,10 @@ else:
     
     
 river_centers       = myscenario.get_workflow()._tasks[0].get_algorithm().centers
+list_keys           = list(myscenario.get_workflow()._tasks[0].get_clusters().keys())
 
 for x in range(wr_n_clusters):
-    if list(river_centers[x].values()) == list(myscenario.get_workflow()._tasks[0].get_clusters()[x].get_centroid().get_values()):
+    if list(river_centers[x].values()) == list(myscenario.get_workflow()._tasks[0].get_clusters()[list_keys[x]].get_centroid().get_values()):
         print("The center of cluster %s from river and mlpro matches!"%(x+1))
     else:
         print("The center of cluster %s from river and mlpro does not match!"%(x+1))
