@@ -74,7 +74,7 @@ class RockPaperScissors (GTGame):
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         
         _strategy_space = MSpace()
-        _strategy_space.add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,1]))
+        _strategy_space.add_dim(Dimension('RStr','Z','Random Strategy','','','',[0,2]))
         
         solver1 = RandomSolver(
             p_strategy_space=_strategy_space,
@@ -132,7 +132,7 @@ class RockPaperScissors (GTGame):
 
         coal1 = GTCoalition(
             p_name="Coalition of Team 1",
-            p_coalition_type=GTCoalition.C_COALITION_SUM
+            p_coalition_type=GTCoalition.C_COALITION_MODE
         )
         coal1.add_player(p1_1)
         coal1.add_player(p1_2)
@@ -190,7 +190,7 @@ class RockPaperScissors (GTGame):
 
         coal2 = GTCoalition(
             p_name="Coalition of Team 2",
-            p_coalition_type=GTCoalition.C_COALITION_SUM
+            p_coalition_type=GTCoalition.C_COALITION_MODE
         )
         coal2.add_player(p2_1)
         coal2.add_player(p2_2)
