@@ -115,7 +115,7 @@ class PrisonersDilemma3PGame (GTGame):
             p_name="Player of Prisoner 1",
             p_visualize=p_visualize,
             p_logging=p_logging,
-            p_random_solver=False
+            p_random_solver=True
         )
 
         coal1 = GTCoalition(
@@ -145,7 +145,7 @@ class PrisonersDilemma3PGame (GTGame):
             p_name="Player of Prisoner 2",
             p_visualize=p_visualize,
             p_logging=p_logging,
-            p_random_solver=False
+            p_random_solver=True
         )
 
         coal2 = GTCoalition(
@@ -175,7 +175,7 @@ class PrisonersDilemma3PGame (GTGame):
             p_name="Player of Prisoner 3",
             p_visualize=p_visualize,
             p_logging=p_logging,
-            p_random_solver=False
+            p_random_solver=True
         )
 
         coal3 = GTCoalition(

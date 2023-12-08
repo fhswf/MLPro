@@ -511,6 +511,8 @@ class GTPlayer (GTSolver):
                     self._idx_solvers = 0
                 self._solver    = self._list_solvers[self._idx_solvers]
                 self._idx_solvers += 1
+                
+            p_name = self.get_name()
 
             GTSolver.__init__(self,
                             p_strategy_space = self._solver.get_strategy_space(),
@@ -519,7 +521,15 @@ class GTPlayer (GTSolver):
                             p_logging = self._logging,
                             **self._param)
             
-            self.log(self.C_LOG_TYPE_I, 'Player %s is switching to solver %s'%(self._id, self._solver.get_id()))
+            if p_name != '':
+                self.set_name(p_name)
+            else:
+                self.set_name(self.C_NAME)
+            
+            try:
+                self.log(self.C_LOG_TYPE_I, 'Player %s is switching to solver %s'%(self._id, self._solver.get_name()))
+            except:
+                self.log(self.C_LOG_TYPE_I, 'Player %s is switching to solver %s'%(self._id, self._solver.get_id()))
 
 
 
@@ -1165,7 +1175,6 @@ class GTTraining (Training):
             results.ds_strategies = GTDataStoring(self._scenario._model.get_strategy_space())
 
         if self._collect_payoff:
-            payoff_space = Set()
             results.ds_payoffs = GTDataStoring(self._scenario._model.get_strategy_space())
 
         self._scenario.connect_data_logger(p_ds_strategies=results.ds_strategies,
