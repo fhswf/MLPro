@@ -16,10 +16,13 @@
 ## --                                - refactoring
 ## --                                New Method ClusterAnalyzer.new_cluster_allowed()
 ## -- 2023-11-18  0.5.0     DA       Class ClusterCentroid: added plot functionality
+## -- 2023-12-08  0.6.0     DA       Class ClusterAnalyzer: 
+## --                                - changed internal cluster storage from list to dictionary
+## --                                - added method _remove_cluster()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2023-11-18)
+Ver. 0.6.0 (2023-12-08)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -165,7 +168,7 @@ class ClusterAnalyzer (OATask):
                           **p_kwargs )
 
         self._cls_cluster   = p_cls_cluster
-        self._clusters      = []
+        self._clusters      = {}
         self._cluster_limit = p_cluster_limit
 
 
@@ -185,30 +188,61 @@ class ClusterAnalyzer (OATask):
            True, if adding a new cluster allowed. False otherwise.
         """
 
-        return ( self._cluster_limit == 0 ) or ( len(self._clusters) < self._cluster_limit )
+        return ( self._cluster_limit == 0 ) or ( len(self._clusters.key()) < self._cluster_limit )
     
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[Cluster]:
+    def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters. 
 
         Returns
         -------
-        list_of_clusters : List[Cluster]
-            Current list of clusters.
+        dict_of_clusters : dict[Cluster]
+            Current dictionary of clusters.
         """
 
         return self._clusters
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _add_cluster(self, p_cluster:Cluster):
-        self._clusters.append(p_cluster)
+    def _add_cluster(self, p_cluster:Cluster) -> bool:
+        """
+        Protected method to be used to add a new cluster. Please use as part of your algorithm.
 
-        if not self.get_visualization(): return
+        Parameters
+        ----------
+        p_cluster : Cluster
+            Cluster object to be added.
 
-        p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
+        Returns
+        -------
+        successful : Bool
+            True, if the cluster has been added successfully. False otherwise.
+        """
+
+        if not self.new_cluster_allowed(): return False
+
+        self._clusters[p_cluster.get_id()] = p_cluster
+
+        if self.get_visualization(): 
+            p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
+
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_cluster(self, p_cluster:Cluster):
+        """
+        Protected method to remove an existing cluster. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_cluster : Cluster
+            Cluster object to be added.
+        """
+
+        del self._clusters[p_cluster.get_id()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -239,7 +273,7 @@ class ClusterAnalyzer (OATask):
         list_ms_abs     = []
         cluster_max_ms  = None
 
-        for cluster in self._clusters:
+        for cluster in self._clusters.values():
 
             ms_abs  = cluster.get_membership( p_inst = p_inst )
             sum_ms += ms_abs
@@ -275,7 +309,7 @@ class ClusterAnalyzer (OATask):
 
         if not self.get_visualization(): return
 
-        for cluster in self._clusters:
+        for cluster in self._clusters.values():
             cluster.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
 
 
@@ -287,7 +321,7 @@ class ClusterAnalyzer (OATask):
 
         if not self.get_visualization(): return
 
-        for cluster in self._clusters:
+        for cluster in self._clusters.values():
             cluster.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
 
 
