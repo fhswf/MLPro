@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
-## -- 2023-12-07  1.0.0     SY       Release of first version
+## -- 2023-12-08  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-07)
+Ver. 1.0.0 (2023-12-08)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -72,8 +72,8 @@ class GTFunction (Persistent):
         
         super().__init__(p_id=None, p_logging=p_logging)
         
-        self.C_FUNCTION_TYPE    = p_func_type
-        self._elem_ids          = None
+        self.C_FUNCTION_TYPE        = p_func_type
+        self._elem_ids              = None
 
         if self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
 
@@ -83,17 +83,24 @@ class GTFunction (Persistent):
             if p_num_coalisions is None:
                 raise ParamError("p_num_coalisions is not defined!")
             
-            self._num_coals     = p_num_coalisions
-            dim_elems           = [self._num_coals]
+            self._num_coals         = p_num_coalisions
+            dim_elems               = [self._num_coals]
             dim_elems.extend(p_dim_elems)
 
-            self._payoff_map    = np.zeros(dim_elems)
+            self._payoff_map        = np.zeros(dim_elems)
+            self._mapping_matrix    = self._setup_mapping_matrix()
             self._setup_payoff_matrix()
         
         elif self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
 
-            self._payoff_map    = {}
+            self._payoff_map        = {}
             self._setup_transfer_functions()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_mapping_matrix(self) -> np.ndarray:
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -174,12 +181,17 @@ class GTFunction (Persistent):
             idx     = self._elem_ids.index(p_element_id)
             payoff  = self._payoff_map[idx]
             
-            el_strategy = []
-            for el in self._elem_ids:
-                val = p_strategies.get_elem(el).get_values()
-                payoff = payoff[int(val)]
+            val = p_strategies.get_sorted_values()
+            
+            for p, x in enumerate(self._mapping_matrix.tolist()):
+                try:
+                    y = self._mapping_matrix.tolist()[p].index(val.tolist())
+                    return payoff[p][y]
+                except:
+                    pass
                     
-            return payoff
+            raise ParamError("The selected p_strategies has no matching in self._mapping_matrix!")
+        
 
         elif self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
 
