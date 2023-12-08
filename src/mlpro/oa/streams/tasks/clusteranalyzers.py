@@ -309,6 +309,8 @@ class ClusterAnalyzer (OATask):
 
         if not self.get_visualization(): return
 
+        super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+
         for cluster in self._clusters.values():
             cluster.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
 

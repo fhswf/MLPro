@@ -138,7 +138,7 @@ class Point (Element, Plottable):
             self._plot_pos,  = p_settings.axes.plot( self._values[0], 
                                                      self._values[1], 
                                                      marker='+', 
-                                                     color='blue', 
+                                                     color='red', # 2023-12-08 DA
                                                      linestyle='',
                                                      markersize=3 )
             
@@ -167,7 +167,7 @@ class Point (Element, Plottable):
                                                  self._values[1], 
                                                  self._values[2],
                                                  marker='+', 
-                                                 color='blue', 
+                                                 color='red',  # 2023-12-08 DA
                                                  linestyle='',
                                                  markersize=3 )
             
