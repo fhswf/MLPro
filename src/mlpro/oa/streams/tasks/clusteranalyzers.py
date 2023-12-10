@@ -19,10 +19,11 @@
 ## -- 2023-12-08  0.6.0     DA       Class ClusterAnalyzer: 
 ## --                                - changed internal cluster storage from list to dictionary
 ## --                                - added method _remove_cluster()
+## -- 2023-12-10  0.6.1     DA       Bugfix in method ClusterAnalyzer.get_cluster_membership()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2023-12-08)
+Ver. 0.6.1 (2023-12-10)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -273,7 +274,7 @@ class ClusterAnalyzer (OATask):
         list_ms_abs     = []
         cluster_max_ms  = None
 
-        for cluster in self._clusters.values():
+        for cluster in self.get_clusters().values():
 
             ms_abs  = cluster.get_membership( p_inst = p_inst )
             sum_ms += ms_abs

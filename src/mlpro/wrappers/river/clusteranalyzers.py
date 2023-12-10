@@ -148,7 +148,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[Cluster]:
+    def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters. To be defined according to each clusterer
         mechanism.
@@ -470,7 +470,7 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[ClusterCentroid]:
+    def get_clusters_bak(self) -> List[ClusterCentroid]:
         """
         This method returns the current list of clusters.
 
@@ -494,6 +494,31 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
         return self._clusters
 
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters_bak2(self) -> List[ClusterCentroid]:
+        """
+        This method returns the current list of clusters.
+
+        Returns
+        -------
+        list_of_clusters : List[ClusterCentroid]
+            Current list of clusters.
+            
+        """
+        
+        for center in self._river_algo.centers:
+
+            try:
+                related_cluster = self._clusters[center]
+            except:
+                related_cluster = ClusterCentroid( p_id=center, p_visualize=self.get_visualization())                
+                self._add_cluster( p_cluster = related_cluster )
+
+            related_cluster.get_centroid().set_values(list(center.values()))
+
+        return self._clusters
 
 
 
