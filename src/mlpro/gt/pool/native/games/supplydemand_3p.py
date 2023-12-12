@@ -38,8 +38,73 @@ going to add more solvers and this game is going to be updated accordingly.
 """
 
 from mlpro.gt.native.basics import *
+from mlpro.bf.physics.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
 from mlpro.gt.pool.native.solvers.greedypolicy import MaxGreedyPolicy
+         
+        
+        
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class TransferFunction_SD3P(TransferFunction):
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_function_parameters(self, p_args) -> bool:
+
+        if self.get_type() == self.C_TRF_FUNC_CUSTOM:
+            try:
+                self.demand         = p_args['demand']
+                self.price_seller_1 = p_args['price_seller_1']
+                self.price_seller_2 = p_args['price_seller_2']
+                self.price_seller_3 = p_args['price_seller_3']
+                self.prod_cost      = p_args['prod_cost']
+            except:
+                raise NotImplementedError('One/More parameters for this function is missing.')           
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _custom_function(self, p_input, p_range=None):
+
+        total_production = sum(p_input)
+
+        if total_production <= self.demand:
+
+            profit_seller_1 = p_input[0]*self.price_seller_1[int(p_input[0]-1)]-self.prod_cost
+            profit_seller_2 = p_input[1]*self.price_seller_2[int(p_input[1]-1)]-self.prod_cost
+            profit_seller_3 = p_input[2]*self.price_seller_3[int(p_input[2]-1)]-self.prod_cost
+
+            return [profit_seller_1, profit_seller_2, profit_seller_3]
+        
+        else:
+
+            price_seller_1  = self.price_seller_1[int(p_input[0]-1)]
+            price_seller_2  = self.price_seller_2[int(p_input[0]-1)]
+            price_seller_3  = self.price_seller_3[int(p_input[0]-1)]
+            list_of_prices  = [price_seller_1, price_seller_2, price_seller_3]
+            
+            sold_quantity   = 0
+            profit_seller   = [-self.prod_cost, -self.prod_cost, -self.prod_cost]
+
+            for x in range(len(list_of_prices)):
+
+                if sold_quantity < self.demand:
+                    min_price = min(list_of_prices)
+                    idx = list_of_prices.index(min_price)
+
+                    if (sold_quantity+p_input[idx]) <= self.demand:
+                        sold_quantity += p_input[idx]
+                        profit_seller[idx] += (p_input[idx]*list_of_prices[idx])
+                        list_of_prices[idx] = 100
+                    else:
+                        quantity = self.demand-sold_quantity
+                        sold_quantity += quantity
+                        profit_seller[idx] += quantity*list_of_prices[idx]
+
+            return profit_seller
          
         
         
@@ -53,6 +118,48 @@ class PayoffFunction_SD3P (GTFunction):
 ## -------------------------------------------------------------------------------------------------
     def _setup_transfer_functions(self):
 
+        raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class PayoffMatrix_SD3P (GTPayoffMatrix):
+
+
+## -------------------------------------------------------------------------------------------------
+    def _call_mapping(self, p_input:str, p_strategies:GTStrategy) -> float:
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _call_best_response(self, p_element_id:str) -> float:
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _call_zero_sum(self) -> bool:
+        
+        raise NotImplementedError
+         
+        
+        
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SupplyDemand_3P (GTGame):
+
+    C_NAME  = 'SupplyDemand_3P'
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
+        
         raise NotImplementedError
         
         
