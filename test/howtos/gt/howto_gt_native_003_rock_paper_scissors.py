@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-08  0.0.0     SY       Creation
-## -- 2023-12-08  1.0.0     SY       Release of first version
+## -- 2023-12-12  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-08)
+Ver. 1.0.0 (2023-12-12)
 
 This module shows how to run a duel of two coalitions of a game of Rock Paper Scissors.
 
@@ -41,8 +41,6 @@ else:
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None
-
-RPS_Game = RockPaperScissors()
 
 training = GTTraining(
         p_game_cls=RockPaperScissors,
