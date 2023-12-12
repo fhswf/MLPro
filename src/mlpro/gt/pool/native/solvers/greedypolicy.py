@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-07  0.0.0     SY       Creation
-## -- 2023-12-08  1.0.0     SY       Release of first version
+## -- 2023-12-12  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-08)
+Ver. 1.0.0 (2023-12-12)
 
 This module provides solver with greedy GT strategy. There are two variants, such as minimum greedy
 and maximum greedy.
@@ -37,7 +37,7 @@ class MaxGreedyPolicy (GTSolver):
 ## -------------------------------------------------------------------------------------------------
     def _compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
 
-        if p_payoff._function is not None:
+        if p_payoff._function.C_FUNCTION_TYPE == p_payoff._function.C_FUNC_PAYOFF_MATRIX:
             stg_values              = np.zeros(self._strategy_space.get_num_dim())
 
             idx                     = self.get_id()-1
@@ -53,7 +53,7 @@ class MaxGreedyPolicy (GTSolver):
                 except:
                     pass
         else:
-            return self._call_compute_strategy()
+            return self._call_compute_strategy(p_payoff)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ class MinGreedyPolicy (GTSolver):
 ## -------------------------------------------------------------------------------------------------
     def _compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
 
-        if p_payoff._function is not None:
+        if p_payoff._function.C_FUNCTION_TYPE == p_payoff._function.C_FUNC_PAYOFF_MATRIX:
             stg_values              = np.zeros(self._strategy_space.get_num_dim())
 
             idx                     = self.get_id()-1
