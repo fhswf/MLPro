@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
-## -- 2023-12-08  1.0.0     SY       Release of first version
+## -- 2023-12-12  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-08)
+Ver. 1.0.0 (2023-12-12)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -241,7 +241,7 @@ class GTPayoffMatrix (TStamp, Persistent):
 ## -------------------------------------------------------------------------------------------------
     def call_mapping(self, p_input:str, p_strategies:GTStrategy) -> float:
         
-        if self._function is not None:
+        if self._function.C_FUNCTION_TYPE == self._function.C_FUNC_PAYOFF_MATRIX:
             return self._function(p_input, p_strategies)
         else:
             return self._call_mapping(p_input, p_strategies)
@@ -257,7 +257,7 @@ class GTPayoffMatrix (TStamp, Persistent):
     def best_response_value(self, p_strategies:GTStrategy, p_element_id:str) -> float:
 
         payoff = self.get_payoff(p_strategies, p_element_id)
-        if self._function is not None:
+        if self._function.C_FUNCTION_TYPE == self._function.C_FUNC_PAYOFF_MATRIX:
             best_payoff = self._function.best_response(p_element_id)
         else:
             best_payoff = self._call_best_response(p_element_id)
@@ -279,7 +279,7 @@ class GTPayoffMatrix (TStamp, Persistent):
 ## -------------------------------------------------------------------------------------------------
     def zero_sum(self) -> bool:
         
-        if self._function is not None:
+        if self._function.C_FUNCTION_TYPE == self._function.C_FUNC_PAYOFF_MATRIX:
             return self._function.zero_sum()
         else:
             return self._call_zero_sum()
