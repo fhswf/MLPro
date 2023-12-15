@@ -68,7 +68,7 @@ class Static3DScenario(OAScenario):
 
         # 1.1 Get stream from StreamMLProStaticClouds3D
         stream = StreamMLProStaticClouds3D()
-        stream.set_random_seed(3)
+        # stream.set_random_seed(3)
 
         # 1.2 Set up a stream workflow based on a custom stream task
 
