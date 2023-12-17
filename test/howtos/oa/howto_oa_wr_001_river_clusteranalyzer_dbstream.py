@@ -11,10 +11,11 @@
 ## -- 2023-06-05  1.0.2     SY       Renaming module
 ## -- 2023-08-23  1.0.3     SY       Refactoring
 ## -- 2023-12-08  1.0.4     SY       Refactoring
+## -- 2023-12-17  1.0.5     SY       Refactoring unit test mode
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2023-12-08)
+Ver. 1.0.5 (2023-12-17)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -141,7 +142,7 @@ if __name__ == "__main__":
 
 else:
     # 1.2 Parameters for internal unit test
-    cycle_limit = 5
+    cycle_limit = 12
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     step_rate   = 1
