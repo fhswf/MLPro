@@ -14,10 +14,12 @@
 ## -- 2023-12-08  1.0.5     SY       Update due to new data type in ClusterCentroid
 ## -- 2023-12-15  1.0.6     SY/DA    Adjustments on classes WrClusterAnalyzerRiver2MLPro and 
 ## --                                WrRiverClustStream2MLPro
+## -- 2023-12-17  1.0.7     SY       Updates on classes WrRiverKMeans2MLPro, WrRiverDBStream2MLPro
+## --                                WrRiverStreamKMeans2MLPro, WrRiverDenStream2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2023-12-15)
+Ver. 1.0.7 (2023-12-17)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -152,6 +154,10 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_clusters(self):
+        """
+        This method is to update the centroids of each introduced cluster.
+        """
+
         raise NotImplementedError
 
 
@@ -330,48 +336,48 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[ClusterCentroid]:
+    def _update_clusters(self):
+        """
+        This method is to update the centroids of each introduced cluster.
+        """
+        
+        for _, (key, val) in enumerate(self._river_algo.micro_clusters.items()):
+            related_cluster = self._clusters[id(val)]
+            related_cluster.get_centroid().set_values(list(self._river_algo.centers[key].values()))
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters.
 
         Returns
         -------
-        list_of_clusters : List[ClusterCentroid]
+        dict_of_clusters : dict[Cluster]
             Current list of clusters.
             
         """
-        
-        list_keys = list(self._clusters.keys())
-        
-        for x in range(self._river_algo.n_clusters):
 
-            cluster         = self._river_algo.clusters[x]
-            micro_cluster   = self._river_algo.micro_clusters[x]
-            center          = self._river_algo.centers[x]
-            
+        list_keys_river = []
+        for _, (key, val) in enumerate(self._river_algo.micro_clusters.items()):
+            list_keys_river.append(id(val))
             try:
-                if id(micro_cluster) == list_keys[x]:
-                    self._clusters[list_keys[x]].p_cluster       = cluster
-                    self._clusters[list_keys[x]].p_micro_cluster = micro_cluster
-                else:
-                    self._remove_cluster(self._clusters[list_keys[x]])
-                    self._add_cluster(
-                        ClusterCentroid(
-                            p_id = id(micro_cluster),
-                            p_visualize=self.get_visualization(),
-                            p_cluster=cluster,
-                            p_micro_cluster=micro_cluster)
-                        )
+                related_cluster = self._clusters[id(val)]
             except:
-                self._add_cluster(
-                    ClusterCentroid(
-                        p_id = id(micro_cluster),
-                        p_visualize=self.get_visualization(),
-                        p_cluster=cluster,
-                        p_micro_cluster=micro_cluster)
+                related_cluster = ClusterCentroid(
+                    p_id = id(val),
+                    p_visualize=self.get_visualization(),
+                    p_cluster=self._river_algo.clusters[key],
+                    p_micro_cluster=val
                     )
-                
-            self._clusters[id(micro_cluster)].get_centroid().set_values(list(center.values()))
+                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)             
+                related_cluster.get_centroid().set_values(list(self._river_algo.centers[key].values()))
+                self._add_cluster( p_cluster = related_cluster )
+        
+        list_keys_mlpro = list(self._clusters.keys())
+        for x in list_keys_mlpro:
+            if x not in list_keys_river:
+                self._remove_cluster(self._clusters[x])
 
         return self._clusters
 
@@ -479,6 +485,10 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_clusters(self):
+        """
+        This method is to update the centroids of each introduced cluster.
+        """
+        
         for x in self._river_algo.centers.keys():
             related_cluster = self._clusters[x]
             related_cluster.get_centroid().set_values(list(self._river_algo.centers[x].values()))
@@ -491,7 +501,7 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
         Returns
         -------
-        dict_of_clusters : dict[ClusterCentroid]
+        dict_of_clusters : dict[Cluster]
             Current list of clusters.
             
         """
@@ -500,7 +510,7 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
             try:
                 related_cluster = self._clusters[x]
             except:
-                related_cluster = ClusterCentroid( p_id=x, p_visualize=self.get_visualization())   
+                related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization())   
                 related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)             
                 related_cluster.get_centroid().set_values(list(self._river_algo.centers[x].values()))
                 self._add_cluster( p_cluster = related_cluster )
@@ -599,58 +609,56 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[ClusterCentroid]:
+    def _update_clusters(self):
+        """
+        This method is to update the centroids of each introduced cluster.
+        """
+        
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters.
 
         Returns
         -------
-        list_of_clusters : List[Cluster]
+        dict_of_clusters : dict[ClusterCentroid]
             Current list of clusters.
             
         """
-        
+
         # dummy prediction
         if self.n_dummy_prediction == self._river_algo.n_samples_init+1:
             self._river_algo.predict_one({1: 0, 2: 0})
         else:
             self.n_dummy_prediction += 1
-            
-        list_keys = list(self._clusters.keys())
-        
-        for x in range(self._river_algo.n_clusters):
 
-            cluster         = self._river_algo.clusters[x]
-            micro_cluster   = self._river_algo.p_micro_clusters[x]
+        list_keys_river = []
+        for _, (key, val) in enumerate(self._river_algo.p_micro_clusters.items()):
+            list_keys_river.append(id(val))
             try:
-                o_micro_cluster = self._river_algo.o_micro_clusters[x]
+                related_cluster = self._clusters[id(val)]
             except:
-                o_micro_cluster = None
-            
-            try:
-                if id(micro_cluster) == list_keys[x]:
-                    self._clusters[list_keys[x]].p_cluster         = cluster
-                    self._clusters[list_keys[x]].p_micro_cluster   = micro_cluster
-                    self._clusters[list_keys[x]].p_o_micro_cluster = o_micro_cluster
-                else:
-                    self._remove_cluster(self._clusters[list_keys[x]])
-                    self._add_cluster(
-                        ClusterCentroid(
-                            p_id = id(micro_cluster),
-                            p_visualize=self.get_visualization(),
-                            p_cluster=cluster,
-                            p_micro_cluster=micro_cluster,
-                            p_o_micro_cluster=o_micro_cluster)
-                        )
-            except:
-                self._add_cluster(
-                    ClusterCentroid(
-                        p_id = id(micro_cluster),
-                        p_visualize=self.get_visualization(),
-                        p_cluster=cluster,
-                        p_micro_cluster=micro_cluster,
-                        p_o_micro_cluster=o_micro_cluster)
+                try:
+                    o_micro_cluster = self._river_algo.o_micro_clusters[key]
+                except:
+                    o_micro_cluster = None
+                related_cluster = ClusterCentroid(
+                    p_id = id(val),
+                    p_visualize=self.get_visualization(),
+                    p_cluster=self._river_algo.clusters[key],
+                    p_micro_cluster=val,
+                    p_o_micro_cluster=o_micro_cluster
                     )
+                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)
+                self._add_cluster( p_cluster = related_cluster )
+        
+        list_keys_mlpro = list(self._clusters.keys())
+        for x in list_keys_mlpro:
+            if x not in list_keys_river:
+                self._remove_cluster(self._clusters[x])
 
         return self._clusters
 
@@ -736,31 +744,41 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[ClusterCentroid]:
+    def _update_clusters(self):
+        """
+        This method is to update the centroids of each introduced cluster.
+        """
+        for x in self._river_algo.centers.keys():
+            related_cluster = self._clusters[x]
+            list_center = []
+            for y in range(len(self._river_algo.centers[x])):
+                list_center.append(self._river_algo.centers[x][y+1])
+            related_cluster.get_centroid().set_values(list_center)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters.
 
         Returns
         -------
-        list_of_clusters : List[ClusterCentroid]
+        dict_of_clusters : dict[Cluster]
             Current list of clusters.
             
         """
-        
-        for x in range(len(self._river_algo.centers)):
 
-            center  = self._river_algo.centers[x]
-
-            if len(self._clusters) != len(self._river_algo.centers):
-                self._add_cluster( p_cluster = ClusterCentroid(
-                    p_id=x,
-                    p_visualize=self.get_visualization()) )
-            
-            list_center = []
-            for y in range(len(self._river_algo.centers[x])):
-                list_center.append(self._river_algo.centers[x][y+1])
-            
-            self._clusters[x].get_centroid().set_values(list_center)
+        for x in self._river_algo.centers.keys():
+            try:
+                related_cluster = self._clusters[x]
+            except:
+                related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization())   
+                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)  
+                list_center = []
+                for y in range(len(self._river_algo.centers[x])):
+                    list_center.append(self._river_algo.centers[x][y+1])           
+                related_cluster.get_centroid().set_values(list_center)
+                self._add_cluster( p_cluster = related_cluster )
 
         return self._clusters
 
@@ -853,34 +871,47 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[ClusterCentroid]:
+    def _update_clusters(self):
+        """
+        This method is to update the centroids of each introduced cluster.
+        """
+        for x in self._river_algo.centers.keys():
+            related_cluster = self._clusters[x]
+            list_center = []
+            for y in range(len(self._river_algo.centers[x])):
+                list_center.append(self._river_algo.centers[x][y+1])
+            try:
+                related_cluster.get_centroid().set_values(list_center)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters.
 
         Returns
         -------
-        list_of_clusters : List[Cluster]
+        dict_of_clusters : dict[Cluster]
             Current list of clusters.
             
         """
-        
-        for x in range(len(self._river_algo.centers)):
 
-            center  = self._river_algo.centers[x]
-
-            if len(self._clusters) != len(self._river_algo.centers):
-                self._add_cluster( p_cluster = ClusterCentroid(
-                    p_id=x,
-                    p_visualize=self.get_visualization()) )
-            
-            list_center = []
-            for y in range(len(self._river_algo.centers[x])):
-                list_center.append(self._river_algo.centers[x][y+1])
-            
+        for x in self._river_algo.centers.keys():
             try:
-                self._clusters[x].get_centroid().set_values(list_center)
+                related_cluster = self._clusters[x]
             except:
-                pass
+                related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization())   
+                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)  
+                list_center = []
+                for y in range(len(self._river_algo.centers[x])):
+                    list_center.append(self._river_algo.centers[x][y+1])
+                try:          
+                    related_cluster.get_centroid().set_values(list_center)
+                except:
+                    pass
+                self._add_cluster( p_cluster = related_cluster )
 
         return self._clusters
 
