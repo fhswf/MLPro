@@ -17,15 +17,18 @@
 ## -- 2023-03-27  0.6.1     DA       Refactoring
 ## -- 2023-04-09  0.7.0     DA       Class OATask: new methods adapt(), _adapt(), adapt_reverse()
 ## -- 2023-05-15  0.7.1     DA       Class OATask: new parameter p_buffer_size
+## -- 2023-12-20  0.8.0     DA       Class OATask: new methods for renormalization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.1 (2023-05-15)
+Ver. 0.8.0 (2023-12-20)
 
 Core classes for online adaptive stream processing.
 """
 
 
+from mlpro.bf.math.normalizers import Normalizer
+from mlpro.bf.mt import Event
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.ml import *
@@ -167,6 +170,42 @@ class OATask (StreamTask, Model):
         """
 
         return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer:Normalizer):
+        """
+        Custom method to renormalize internally buffered data using the given normalizer object. 
+        This is necessary after an adaptation of a related predecessor normalizer task. See method
+        renormalize_on_event() for further details.
+        
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def renormalize_on_event(self, p_event_id: str, p_event_object: Event):
+        """
+        Event handler method to be registered on event Model.C_EVENT_ADAPTED of an online adaptive
+        normalizer task. It carries out the task-specific renormalization of internally buffered
+        data by calling the custom method _renormalize().
+
+        Parameters
+        ----------
+        p_event_id : str
+            Unique event id
+        p_event_object : Event
+            Event object with further context informations
+        """
+
+        self.log(Log.C_LOG_TYPE_I, 'Renormalization triggered')
+        self._renormalize( p_normalizer=p_event_object.get_raising_object() )
+        self.log(Log.C_LOG_TYPE_I, 'Renormalization completed')
 
 
 

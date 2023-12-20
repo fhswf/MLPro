@@ -10,10 +10,11 @@
 ## -- 2023-11-19  1.0.1     DA       Turned on visualization/logging of clustering task
 ## -- 2023-08-20  1.0.2     SY       Refactoring due to failed in Unittest
 ## -- 2023-12-10  1.0.3     DA       Increased number of macro clusters of CluStream to 8
+## -- 2023-12-20  1.1.0     DA       Added event-oriented renormalization to CluStream task
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2023-12-10)
+Ver. 1.1.0 (2023-12-20)
 
 This module demonstrates the combination of several tasks in a workflow, which includes:
 
@@ -87,6 +88,7 @@ class Static3DScenario(OAScenario):
                                    p_ada=True, 
                                    p_visualize=p_visualize,   
                                    p_logging=p_logging)
+        
         workflow.add_task(p_task = task_bd)
 
         # MinMax-Normalizer
@@ -99,6 +101,7 @@ class Static3DScenario(OAScenario):
             p_event_id=BoundaryDetector.C_EVENT_ADAPTED,
             p_event_handler=task_norm_minmax.adapt_on_event
             )
+        
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
         # Cluster Analyzer
@@ -111,6 +114,10 @@ class Static3DScenario(OAScenario):
                                                 p_time_window=10,
                                                 p_visualize=p_visualize,
                                                 p_logging=p_logging)
+        
+        task_norm_minmax.register_event_handler( p_event_id=NormalizerMinMax.C_EVENT_ADAPTED,
+                                                 p_event_handler=task_clusterer.renormalize_on_event )
+        
         workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_norm_minmax])
 
         # 1.3 Return stream and workflow

@@ -20,21 +20,22 @@
 ## --                                - changed internal cluster storage from list to dictionary
 ## --                                - added method _remove_cluster()
 ## -- 2023-12-10  0.6.1     DA       Bugfix in method ClusterAnalyzer.get_cluster_membership()
+## -- 2023-12-20  0.7.0     DA       Renormalization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.1 (2023-12-10)
+Ver. 0.7.0 (2023-12-20)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
 from matplotlib.figure import Figure
 from mlpro.bf.mt import Figure, PlotSettings
-from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
 from mlpro.oa.streams import OATask
+from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.math.geometry import Point
 from typing import List, Tuple
 
@@ -93,6 +94,22 @@ class Cluster (Id, Plottable):
         """
 
         raise NotImplementedError
+    
+
+ ## -------------------------------------------------------------------------------------------------
+    def renormalize(self, p_normalizer:Normalizer):
+        """
+        Custom method to renormalize internally buffered data using the given normalizer object. 
+        This method is called especially by method ClusterAnalyzer._renormalize().
+        
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+
+        pass
+   
 
 
 
@@ -328,6 +345,22 @@ class ClusterAnalyzer (OATask):
             cluster.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
 
 
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer: Normalizer):
+        """
+        Internal renormalization of all clusters. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+
+        for cluster in self._clusters.values():
+            cluster.renormalize( p_normalizer=p_normalizer )
+    
+
 
 
 
@@ -379,3 +412,9 @@ class ClusterCentroid (Cluster):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
         self._centroid.update_plot( p_kwargs=p_kwargs)    
+
+
+## -------------------------------------------------------------------------------------------------
+    def renormalize(self, p_normalizer: Normalizer):
+        self._centroid.set_values( p_normalizer.renormalize( self._centroid.get_values() ) )
+
