@@ -11,10 +11,11 @@
 ## -- 2023-08-20  1.0.2     SY       Refactoring due to failed in Unittest
 ## -- 2023-12-10  1.0.3     DA       Increased number of macro clusters of CluStream to 8
 ## -- 2023-12-20  1.1.0     DA       Added event-oriented renormalization to CluStream task
+## -- 2023-12-21  1.1.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-12-20)
+Ver. 1.1.1 (2023-12-21)
 
 This module demonstrates the combination of several tasks in a workflow, which includes:
 
@@ -107,10 +108,11 @@ class Static3DScenario(OAScenario):
         # Cluster Analyzer
         task_clusterer = WrRiverCluStream2MLPro(p_name='t3',
                                                 p_n_macro_clusters=8,
-                                                p_max_micro_clusters=40,
+                                                p_max_micro_clusters=100,
+                                                p_micro_cluster_r_factor=0.1,
                                                 p_time_gap=3,
                                                 p_seed=0,
-                                                p_halflife=0.4,
+                                                p_halflife=0.3,
                                                 p_time_window=10,
                                                 p_visualize=p_visualize,
                                                 p_logging=p_logging)
