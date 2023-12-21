@@ -16,10 +16,11 @@
 ## --                                WrRiverClustStream2MLPro
 ## -- 2023-12-17  1.0.7     SY       Updates on classes WrRiverKMeans2MLPro, WrRiverDBStream2MLPro
 ## --                                WrRiverStreamKMeans2MLPro, WrRiverDenStream2MLPro
+## -- 2023-12-21  1.0.8     SY       Add renormalization method on all wrapped algorithms
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2023-12-17)
+Ver. 1.0.8 (2023-12-21)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -42,6 +43,7 @@ https://www.riverml.xyz/
 
 from mlpro.bf.streams import Instance, List
 from mlpro.wrappers.river.basics import WrapperRiver
+from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster, ClusterCentroid
 from mlpro.bf.mt import Task as MLTask
 from mlpro.bf.various import Log
@@ -382,6 +384,27 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
         return self._clusters
 
 
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer:Normalizer):
+        """
+        Internal renormalization of all clusters. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+        
+        super()._renormalize(p_normalizer)
+
+        for cluster in self._clusters.values():
+            for val in self._river_algo.micro_clusters.values():
+                if id(val) == cluster.get_id():
+                    for mlpro_idx, river_idx in enumerate(val.center):
+                        val.center[river_idx] = cluster._centroid.get_values()[mlpro_idx]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -516,6 +539,26 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                 self._add_cluster( p_cluster = related_cluster )
 
         return self._clusters
+
+
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer:Normalizer):
+        """
+        Internal renormalization of all clusters. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+        
+        super()._renormalize(p_normalizer)
+
+        for cluster in self._clusters.values():
+            related_cluster = self._river_algo.centers[cluster.get_id()]
+            for mlpro_idx, river_idx in enumerate(related_cluster):
+                related_cluster[river_idx] = cluster._centroid.get_values()[mlpro_idx]
 
 
 
@@ -663,6 +706,22 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
         return self._clusters
 
 
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer:Normalizer):
+        """
+        Internal renormalization of all clusters. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+        
+        super()._renormalize(p_normalizer)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -783,6 +842,26 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
         return self._clusters
 
 
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer:Normalizer):
+        """
+        Internal renormalization of all clusters. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+        
+        super()._renormalize(p_normalizer)
+
+        for cluster in self._clusters.values():
+            related_cluster = self._river_algo.centers[cluster.get_id()]
+            for mlpro_idx, river_idx in enumerate(related_cluster):
+                related_cluster[river_idx] = cluster._centroid.get_values()[mlpro_idx]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -886,6 +965,7 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
                 pass
 
 
+
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> dict[Cluster]:
         """
@@ -914,6 +994,26 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
                 self._add_cluster( p_cluster = related_cluster )
 
         return self._clusters
+
+
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer:Normalizer):
+        """
+        Internal renormalization of all clusters. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+        
+        super()._renormalize(p_normalizer)
+
+        for cluster in self._clusters.values():
+            related_cluster = self._river_algo.centers[cluster.get_id()]
+            for mlpro_idx, river_idx in enumerate(related_cluster):
+                related_cluster[river_idx] = cluster._centroid.get_values()[mlpro_idx]
 
 
     
