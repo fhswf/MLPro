@@ -55,6 +55,8 @@ class Cluster (Id, Plottable):
         Optional external id.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_color : string
+        Color of the cluster during visualization.
     **p_kwargs
         Further optional keyword arguments.
     """
@@ -66,10 +68,13 @@ class Cluster (Id, Plottable):
                                 PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
+    C_CLUSTER_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id = None,
                   p_visualize : bool = False,
+                  p_color = 'red',
                   **p_kwargs ):
 
         self._kwargs = p_kwargs.copy()
@@ -449,9 +454,11 @@ class ClusterCentroid (Cluster):
         # 2 Plot a crosshair
         if self._plot_line1 is None:
             # 2.1 Add initial crosshair lines
-            self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]], color='red')[0]
-            self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]], color='red')[0]
-            self._plot_line3 = p_settings.axes.plot( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim, color='red')[0]
+            col_id = self.get_id() % len(self.C_CLUSTER_COLORS)
+            color = self.C_CLUSTER_COLORS[col_id]
+            self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]], color=color, linestyle='dashed')[0]
+            self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]], color=color, linestyle='dashed')[0]
+            self._plot_line3 = p_settings.axes.plot( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim, color=color, linestyle='dashed')[0]
         else:
             # 2.2 Update data of crosshair lines
             self._plot_line1.set_data_3d( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]] )
