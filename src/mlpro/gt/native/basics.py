@@ -542,6 +542,27 @@ class GTPayoffMatrix (TStamp, Persistent):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTSolver (Task, ScientificObject):
+    """
+    A class representing a solver (policy) in game theory.
+    
+    Parameters
+    ----------
+    p_strategy_space : MSpace
+        Strategy space of (first) player to be added. Default = None.
+    p_id : TYPE, optional
+        DESCRIPTION. The default is None.
+    p_visualize : bool, optional
+        DESCRIPTION. The default is False.
+    p_logging : TYPE, optional
+        DESCRIPTION. The default is Log.C_LOG_ALL.
+    **p_param : TYPE
+        DESCRIPTION.
+    
+    Returns
+    -------
+    None.
+    
+    """
 
     C_TYPE          = 'GT Solver'
     C_NAME          = '????'
