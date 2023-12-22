@@ -30,6 +30,7 @@ This module provides templates for cluster analysis to be used in the context of
 """
 
 from matplotlib.figure import Figure
+from mpl_toolkits.mplot3d.art3d import Line3D
 from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
@@ -108,8 +109,7 @@ class Cluster (Id, Plottable):
             Normalizer object to be applied on task-specific 
         """
 
-        pass
-   
+        pass 
 
 
 
@@ -406,12 +406,57 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
+        super().init_plot(p_figure, p_plot_settings, **p_kwargs)
         self._centroid.init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        self._plot_line1 = None
+        self._plot_line2 = None
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        self._plot_line1 : Line3D = None
+        self._plot_line2 : Line3D = None
+        self._plot_line3 : Line3D = None
+    
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-        self._centroid.update_plot( p_kwargs=p_kwargs)    
+        super().update_plot(**p_kwargs)
+        self._centroid.update_plot( p_kwargs=p_kwargs)   
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_2d(p_settings, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_3d(p_settings, **p_kwargs) 
+
+        # 1 Get coordinates
+        centroid = self._centroid.get_values()
+
+        xlim = p_settings.axes.get_xlim()
+        ylim = p_settings.axes.get_ylim()
+        zlim = p_settings.axes.get_zlim()
+
+
+        # 2 Plot a crosshair
+        if self._plot_line1 is None:
+            # 2.1 Add initial crosshair lines
+            self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]], color='red')[0]
+            self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]], color='red')[0]
+            self._plot_line3 = p_settings.axes.plot( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim, color='red')[0]
+        else:
+            # 2.2 Update data of crosshair lines
+            self._plot_line1.set_data_3d( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]] )
+            self._plot_line2.set_data_3d( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]] )
+            self._plot_line3.set_data_3d( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim )
 
 
 ## -------------------------------------------------------------------------------------------------
