@@ -223,17 +223,18 @@ class GTFunction (Persistent):
 ## -------------------------------------------------------------------------------------------------
     def best_response(self, p_element_id:str) -> float:
         """
-        A method to measure the highest possible payoff of a player in the related payoff map.
+        A method to measure the highest possible payoff of a player/coalition in the related payoff
+        map.
 
         Parameters
         ----------
         p_element_id : str
-            Id of a specific player.
+            Id of a specific player/coalition.
 
         Returns
         -------
         float
-            The highest possible payoff.
+            The highest possible payoff of a player/coalition.
 
         """
 
@@ -284,19 +285,19 @@ class GTFunction (Persistent):
     def __call__(self, p_element_id:str, p_strategies:GTStrategy) -> float:
         """
         A method to apply the mapping between the selected strategy and the payoff, in which it
-        returns the payoff for a player with respect to the selected strategy.
+        returns the payoff for a player/coalition with respect to the selected strategy.
 
         Parameters
         ----------
         p_element_id : str
-            Id of the player.
+            Id of the player/coalition.
         p_strategies : GTStrategy
-            Selected strategies by all players.
+            Selected strategies by all players/coalitions.
 
         Returns
         -------
         float
-            Payoff of the player.
+            Payoff of the player/coalition.
 
         """
 
@@ -345,6 +346,20 @@ class GTFunction (Persistent):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTPayoffMatrix (TStamp, Persistent):
+    """
+    A class representing a payoff matrix for a set of players in game theory, where it includes
+    GTFunction that has a mapping functionality.
+    
+    Parameters
+    ----------
+    p_function : GTFunction, optional
+        Defined GTFunction for mapping functionality. The default is None.
+    p_player_ids : list, optional
+        List of players ids. The default is None.
+    p_logging : TYPE, optional
+        Logging functionality. The default is Log.C_LOG_ALL.
+    
+    """
 
     C_TYPE          = 'GT Payoff Matrix'
 
@@ -364,12 +379,44 @@ class GTPayoffMatrix (TStamp, Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def get_payoff(self, p_strategies:GTStrategy, p_element_id:str) -> float:
+        """
+        A method to get the payoff for a player/coalition with respect to the selected strategies.
+
+        Parameters
+        ----------
+        p_strategies : GTStrategy
+            Selected strategies by all players/coalitions.
+        p_element_id : str
+            ID of a specific player/coalition.
+
+        Returns
+        -------
+        float
+            Payoff value.
+
+        """
 
         return self.call_mapping(p_element_id, p_strategies)
 
 
 ## -------------------------------------------------------------------------------------------------
     def call_mapping(self, p_input:str, p_strategies:GTStrategy) -> float:
+        """
+        A method to run the mapping from the payoff matrix.
+
+        Parameters
+        ----------
+        p_input : str
+            inputs of the payoff matrix.
+        p_strategies : GTStrategy
+            Selected strategies by all players/coalitions.
+
+        Returns
+        -------
+        float
+            Payoff of the player/coalition.
+
+        """
         
         if self._function.C_FUNCTION_TYPE == self._function.C_FUNC_PAYOFF_MATRIX:
             return self._function(p_input, p_strategies)
@@ -379,12 +426,46 @@ class GTPayoffMatrix (TStamp, Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def _call_mapping(self, p_input:str, p_strategies:GTStrategy) -> float:
+        """
+        If the payoff matrix does not use the standardized matrix by MLPro-GT. This method can be 
+        used by redefining it.
+
+        Parameters
+        ----------
+        p_input : str
+            inputs of the payoff matrix.
+        p_strategies : GTStrategy
+            Selected strategies by all players/coalitions.
+
+        Returns
+        -------
+        float
+            Payoff of the player/coalition.
+
+        """
         
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def best_response_value(self, p_strategies:GTStrategy, p_element_id:str) -> float:
+        """
+        A method to calculate the gap between the payoff of the taken strategy to the best response
+        value.
+
+        Parameters
+        ----------
+        p_strategies : GTStrategy
+            Selected strategies by all players/coalitions.
+        p_element_id : str
+            Id of a specific player/coalition.
+
+        Returns
+        -------
+        float
+            Current payoff - payoff from best response.
+
+        """
 
         payoff = self.get_payoff(p_strategies, p_element_id)
         if self._function.C_FUNCTION_TYPE == self._function.C_FUNC_PAYOFF_MATRIX:
@@ -402,12 +483,36 @@ class GTPayoffMatrix (TStamp, Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def _call_best_response(self, p_element_id:str) -> float:
+        """
+        If the payoff matrix does not use the standardized matrix by MLPro-GT. This method can be 
+        used to get the best response value by redefining it.
+
+        Parameters
+        ----------
+        p_element_id : str
+            Id of a specific player/coalition.
+
+        Returns
+        -------
+        float
+            The highest possible payoff of a player/coalition.
+
+        """
         
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def zero_sum(self) -> bool:
+        """
+        A method to check whether the game is a zero sum game by considering the payoff maps.
+
+        Returns
+        -------
+        bool
+            True means it is a zero sum game, otherwise no.
+
+        """
         
         if self._function.C_FUNCTION_TYPE == self._function.C_FUNC_PAYOFF_MATRIX:
             return self._function.zero_sum()
@@ -417,6 +522,16 @@ class GTPayoffMatrix (TStamp, Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def _call_zero_sum(self) -> bool:
+        """
+        If the payoff matrix does not use the standardized matrix by MLPro-GT. This method can be 
+        used to get the detect zero sum games by redefining it.
+
+        Returns
+        -------
+        bool
+            True means it is a zero sum game, otherwise no.
+
+        """
         
         raise NotImplementedError
 
