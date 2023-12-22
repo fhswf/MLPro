@@ -941,6 +941,20 @@ class GTPlayer (GTSolver):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTCoalition (GTPlayer):
+    """
+    A class representing a colation in game theory that contains a set of players or at least one
+    player.
+    
+    Parameters
+    ----------
+    p_name : str, optional
+        Name of a coalition. The default is " ".
+    p_coalition_type :
+        Type of coalitions. The default is None.
+    p_logging :
+        Logging setup. The default is Log.C_LOG_ALL.
+    
+    """
 
     C_TYPE  = 'GT Coalition'
     C_NAME  = ''
@@ -990,6 +1004,16 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging) -> None:
+        """
+        A metod to swith logging setup
+
+        Parameters
+        ----------
+        p_logging :
+            Loggin setup.
+
+        """
+        
         Log.switch_logging(self, p_logging=p_logging)
 
         for pl in self._coop_players:
@@ -998,11 +1022,30 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada:bool):
+        """
+        A method to switch adaptivity. In native GT, this is not necessary.
+
+        Parameters
+        ----------
+        p_ada : bool
+            adaptivity.
+
+        """
         pass
 
     
 ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
+        """
+        A method to set the logging level
+
+        Parameters
+        ----------
+        p_level :
+            Logging level.
+
+        """
+        
         Log.set_log_level(self, p_level)
 
         for pl in self._coop_players:
@@ -1011,6 +1054,15 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def add_player(self, p_player:GTPlayer):
+        """
+        A method to add a player to the coalition.
+
+        Parameters
+        ----------
+        p_player : GTPlayer
+            A GT player.
+
+        """
 
         self._coop_players.append(p_player)
         self._coop_players_ids.append(p_player.get_id())
@@ -1030,26 +1082,80 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def get_players(self) -> list:
+        """
+        A method to get a list of players in the coaltiion.
+
+        Returns
+        -------
+        list
+            List of GT Players.
+
+        """
+        
         return self._coop_players
                         
 
 ## -------------------------------------------------------------------------------------------------
     def get_players_ids(self) -> list:
+        """
+        A method to get the players' ids in the coalition.
+
+        Returns
+        -------
+        list
+            List of ids.
+
+        """
+        
         return self._coop_players_ids
                         
 
 ## -------------------------------------------------------------------------------------------------
     def get_player(self, p_player_id) -> GTPlayer:
+        """
+        A method to get the object of a specific player.
+
+        Parameters
+        ----------
+        p_player_id :
+            Id of a player.
+
+        Returns
+        -------
+        GTPlayer
+            Object of the player.
+
+        """
+        
         return self._coop_players[self._coop_players_ids.index(p_player_id)]
                         
 
 ## -------------------------------------------------------------------------------------------------
     def get_coalition_strategy(self) -> int:
+        """
+        A methof to get the coalition strategy.
+
+        Returns
+        -------
+        int
+            Coalition strategy.
+
+        """
+        
         return self._co_strategy
 
     
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
+        """
+        Resets the internal random generator using the given seed.
+
+        Parameters
+        ----------
+        p_seed :
+            Seeding.
+        
+        """
         
         for pl in self._coop_players:
             pl.set_random_seed(p_seed)
@@ -1057,6 +1163,15 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> ESpace:
+        """
+        A method to get the strategy space of the coalition.
+
+        Returns
+        -------
+        ESpace
+            Strategy space.
+
+        """
         
         espace = ESpace()
         espace.add_dim(Dimension( p_name_short='CoStr', p_name_long='Coalition Strategy', p_boundaries=[-np.inf,np.inf]))
@@ -1065,6 +1180,20 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+        """
+        A method to compute a combined strategy from the players in the coalition.
+
+        Parameters
+        ----------
+        p_payoff : GTPayoffMatrix
+            Payoff matrix of the coalition.
+
+        Returns
+        -------
+        GTStrategy
+            The computed strategy.
+
+        """
 
         if self.get_coalition_strategy() == self.C_COALITION_CUSTOM:
 
@@ -1123,6 +1252,15 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def _custom_coalition_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+        """
+        A method for customizing the coalition strategy.
+
+        Parameters
+        ----------
+        p_payoff : GTPayoffMatrix
+            The payoff matrix of the coalition.
+
+        """
 
         raise NotImplementedError
 
