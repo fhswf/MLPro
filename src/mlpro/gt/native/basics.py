@@ -1271,6 +1271,22 @@ class GTCoalition (GTPlayer):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTCompetition (GTCoalition):
+    """
+    A class representing a competition in game theory that contains a set of coalitions. This suits
+    for a competitive game.
+    
+    Parameters
+    ----------
+    p_name : str, optional
+        Name of the competition. The default is " ".
+    p_logging :
+        Logging setup. The default is Log.C_LOG_ALL.
+    
+    Returns
+    -------
+    None.
+    
+    """
 
     C_TYPE  = 'GT Competition'
     C_NAME  = ''
@@ -1303,6 +1319,16 @@ class GTCompetition (GTCoalition):
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging) -> None:
+        """
+        A metod to swith logging setup
+
+        Parameters
+        ----------
+        p_logging :
+            Loggin setup.
+
+        """
+        
         Log.switch_logging(self, p_logging=p_logging)
 
         for coal in self._coalitions:
@@ -1311,6 +1337,16 @@ class GTCompetition (GTCoalition):
     
 ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
+        """
+        A method to set the logging level
+
+        Parameters
+        ----------
+        p_level :
+            Logging level.
+
+        """
+        
         Log.set_log_level(self, p_level)
 
         for coal in self._coalitions:
@@ -1319,6 +1355,15 @@ class GTCompetition (GTCoalition):
 
 ## -------------------------------------------------------------------------------------------------
     def add_coalition(self, p_coalition:GTCoalition):
+        """
+        A method to add a coaltion to the competition.
+
+        Parameters
+        ----------
+        p_coalition : GTCoalition
+            A coalition.
+
+        """
 
         self._coalitions.append(p_coalition)
         self._coalitions_ids.append(p_coalition.get_id())
@@ -1340,21 +1385,64 @@ class GTCompetition (GTCoalition):
 
 ## -------------------------------------------------------------------------------------------------
     def get_coalitions(self) -> list:
+        """
+        A method to get the list of coalitions in the competition.
+
+        Returns
+        -------
+        list
+            List of coalitions.
+
+        """
+        
         return self._coalitions
                         
 
 ## -------------------------------------------------------------------------------------------------
     def get_coalitions_ids(self) -> list:
+        """
+        A method to get the list of coalitions' ids in the competition.
+
+        Returns
+        -------
+        list
+            List of coalitions' ids.
+
+        """
+        
         return self._coalitions_ids
                         
 
 ## -------------------------------------------------------------------------------------------------
     def get_coalition(self, p_coalition_id) -> GTCoalition:
+        """
+        A method to get the object of a specific coalition.
+
+        Parameters
+        ----------
+        p_coalition_id :
+            Coalition id.
+
+        Returns
+        -------
+        GTCoalition
+            Coalition object.
+
+        """
         return self._coalitions[self._coalitions_ids.index(p_coalition_id)]
                         
 
 ## -------------------------------------------------------------------------------------------------
     def get_players(self) -> list:
+        """
+        A method to get the list of players in the competition.
+
+        Returns
+        -------
+        list
+            List of players.
+
+        """
 
         players = []
         for coal in self._coalitions:
@@ -1365,6 +1453,15 @@ class GTCompetition (GTCoalition):
 
 ## -------------------------------------------------------------------------------------------------
     def get_players_ids(self) -> list:
+        """
+        A method to get the list of players' ids in the competition.
+
+        Returns
+        -------
+        list
+            List of players' ids.
+
+        """
 
         ids = []
         for coal in self._coalitions:
@@ -1375,12 +1472,35 @@ class GTCompetition (GTCoalition):
 
 ## -------------------------------------------------------------------------------------------------
     def get_player(self, p_player_id) -> GTPlayer:
+        """
+        A method to get the object of a player.
+
+        Parameters
+        ----------
+        p_player_id :
+            Player id.
+
+        Returns
+        -------
+        GTPlayer
+            Object of the player.
+
+        """
 
         return self.get_players()[self.get_players_ids().index(p_player_id)]
 
     
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
+        """
+        Resets the internal random generator using the given seed.
+
+        Parameters
+        ----------
+        p_seed :
+            Seeding.
+        
+        """
 
         for coal in self._coalitions:
             coal.set_random_seed(p_seed)
@@ -1388,6 +1508,20 @@ class GTCompetition (GTCoalition):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+        """
+        A method to compute the strategy of each coaltiion.
+
+        Parameters
+        ----------
+        p_payoff : GTPayoffMatrix
+            Payoff matrices.
+
+        Returns
+        -------
+        GTStrategy
+            The computed strategy.
+
+        """
 
         strategy = GTStrategy()
 
@@ -1402,6 +1536,15 @@ class GTCompetition (GTCoalition):
 
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> ESpace:
+        """
+        A method to get the strategy space of the competition.
+
+        Returns
+        -------
+        ESpace
+            Strategy space.
+
+        """
         
         espace = ESpace()
         
