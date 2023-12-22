@@ -356,7 +356,7 @@ class GTPayoffMatrix (TStamp, Persistent):
         Defined GTFunction for mapping functionality. The default is None.
     p_player_ids : list, optional
         List of players ids. The default is None.
-    p_logging : TYPE, optional
+    p_logging :
         Logging functionality. The default is Log.C_LOG_ALL.
     
     """
@@ -549,18 +549,14 @@ class GTSolver (Task, ScientificObject):
     ----------
     p_strategy_space : MSpace
         Strategy space of (first) player to be added. Default = None.
-    p_id : TYPE, optional
-        DESCRIPTION. The default is None.
+    p_id :
+        Id of a player. The default is None.
     p_visualize : bool, optional
-        DESCRIPTION. The default is False.
-    p_logging : TYPE, optional
-        DESCRIPTION. The default is Log.C_LOG_ALL.
-    **p_param : TYPE
-        DESCRIPTION.
-    
-    Returns
-    -------
-    None.
+        Allowing visualization. The default is False.
+    p_logging :
+        Logging setup. The default is Log.C_LOG_ALL.
+    **p_param :
+        additional parameters related to the policy.
     
     """
 
@@ -619,6 +615,11 @@ class GTSolver (Task, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_solver(self):
+        """
+        A method to setup a solver. This needs to be redefined based on each policy, but remains
+        optional.
+
+        """
 
         raise NotImplementedError
 
@@ -627,6 +628,7 @@ class GTSolver (Task, ScientificObject):
     def get_hyperparam(self) -> HyperParamTuple:
         """
         Returns the internal hyperparameter tuple to get access to single values.
+        
         """
 
         return self._hyperparam_tuple
@@ -634,6 +636,15 @@ class GTSolver (Task, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> MSpace:
+        """
+        A method to get the strategy space of a solver.
+
+        Returns
+        -------
+        MSpace
+            Strategy space.
+
+        """
         return self._strategy_space
 
 
@@ -641,6 +652,12 @@ class GTSolver (Task, ScientificObject):
     def set_random_seed(self, p_seed=None):
         """
         Resets the internal random generator using the given seed.
+
+        Parameters
+        ----------
+        p_seed :
+            Seeding.
+        
         """
 
         random.seed(p_seed)
@@ -648,12 +665,40 @@ class GTSolver (Task, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+        """
+        A method to compute a strategy from the solver.
+
+        Parameters
+        ----------
+        p_payoff : GTPayoffMatrix
+            Payoff matrix of a specific player.
+
+        Returns
+        -------
+        GTStrategy
+            The computed strategy.
+
+        """
         
         return self._compute_strategy(p_payoff)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+        """
+        A method to compute a strategy from the solver. This method needs to be redefined.
+
+        Parameters
+        ----------
+        p_payoff : GTPayoffMatrix
+            Payoff matrix of a specific player.
+
+        Returns
+        -------
+        GTStrategy
+            The computed strategy.
+
+        """
         
         raise NotImplementedError
 
