@@ -12,10 +12,11 @@
 ## -- 2023-08-23  1.0.3     SY       Refactoring
 ## -- 2023-12-08  1.0.4     SY       Refactoring
 ## -- 2023-12-17  1.0.5     SY       Refactoring unit test mode
+## -- 2023-12-22  1.0.6     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2023-12-17)
+Ver. 1.0.6 (2023-12-22)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -118,7 +119,9 @@ class AdScenario4DBStream (OAScenario):
                                           p_fading_factor = 0.05,
                                           p_cleanup_interval = 4,
                                           p_intersection_factor = 0.5,
-                                          p_minimum_weight = 1.0 )
+                                          p_minimum_weight = 1.0,
+                                          p_visualize=p_visualize, 
+                                          p_logging=p_logging )
 
         workflow.add_task( p_task=clusterer )
 
@@ -136,7 +139,7 @@ class AdScenario4DBStream (OAScenario):
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
-    visualize   = False
+    visualize   = True
     cycle_limit = 12
     step_rate   = 1
 

@@ -9,10 +9,11 @@
 ## -- 2023-06-05  1.0.0     SY       First version release
 ## -- 2023-08-23  1.0.1     SY       Refactoring
 ## -- 2023-12-17  1.0.2     SY       Refactoring unit test mode
+## -- 2023-12-22  1.0.3     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-12-17)
+Ver. 1.0.3 (2023-12-22)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -119,7 +120,9 @@ class AdScenario4DenStream (OAScenario):
                                            p_beta=0.5,
                                            p_mu=2.5,
                                            p_epsilon=0.5,
-                                           p_n_samples_init=10 )
+                                           p_n_samples_init=10,
+                                           p_visualize=p_visualize, 
+                                           p_logging=p_logging )
 
         workflow.add_task( p_task=clusterer )
 
