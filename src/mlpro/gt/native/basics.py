@@ -645,6 +645,7 @@ class GTSolver (Task, ScientificObject):
             Strategy space.
 
         """
+        
         return self._strategy_space
 
 
@@ -709,6 +710,25 @@ class GTSolver (Task, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTPlayer (GTSolver):
+    """
+    A class representing a player in game theory with at least one specific defined solver.
+    
+    Parameters
+    ----------
+    p_solver : Union[list, GTSolver]
+        A list of solvers or a solver.
+    p_name :
+        Name of the player. The default is ''.
+    p_visualize : bool, optional
+        Allowing visualization. The default is False.
+    p_logging :
+        Logging setup. The default is Log.C_LOG_ALL.
+    p_random_solver : bool, optional
+        Allowing random solver. The default is False.
+    **p_param :
+        Additional parameters for the player.
+    
+    """
 
     C_TYPE = 'GT Player'
     C_NAME = ''
@@ -758,6 +778,15 @@ class GTPlayer (GTSolver):
         
 ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_param):
+        """
+        A method to initiate the related hyperparameters.
+
+        Parameters
+        ----------
+        **p_param :
+            Additional parameters for the player.
+
+        """
         
         self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
         
@@ -771,6 +800,15 @@ class GTPlayer (GTSolver):
         
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
+        """
+        A metod to swith logging setup
+
+        Parameters
+        ----------
+        p_logging :
+            Loggin setup.
+
+        """
 
         super().switch_logging(p_logging)
         self.get_solver().switch_logging(p_logging)
@@ -778,6 +816,15 @@ class GTPlayer (GTSolver):
 
 ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
+        """
+        A method to set the logging level
+
+        Parameters
+        ----------
+        p_level :
+            Logging level.
+
+        """
 
         super().set_log_level(p_level)
         self.get_solver().set_log_level(p_level)
@@ -785,30 +832,75 @@ class GTPlayer (GTSolver):
 
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> MSpace:
+        """
+        A method to get the strategy space of a player.
+
+        Returns
+        -------
+        MSpace
+            Strategy space.
+
+        """
 
         return self.get_solver().get_strategy_space()
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
+        """
+        Resets the internal random generator using the given seed.
+
+        Parameters
+        ----------
+        p_seed :
+            Seeding.
+        
+        """
 
         self.get_solver().set_random_seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+        """
+        A method to compute a strategy from the solver.
+
+        Parameters
+        ----------
+        p_payoff : GTPayoffMatrix
+            Payoff matrix of a specific player.
+
+        Returns
+        -------
+        GTStrategy
+            The computed strategy.
+
+        """
 
         return self.get_solver().compute_strategy(p_payoff)
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_solver(self) -> GTSolver:
+        """
+        A method to get the solver of the player.
+
+        Returns
+        -------
+        GTSolver
+            Solver.
+
+        """
 
         return self._solver
 
 
 ## -------------------------------------------------------------------------------------------------
     def switch_solver(self):
+        """
+        A method to switch the solver, if the player has multiple solvers.
+
+        """
 
         if len(self._list_solvers) == 1:
             self._solver = self._list_solvers[0]
