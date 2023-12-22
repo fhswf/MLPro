@@ -106,16 +106,13 @@ class Static3DScenario(OAScenario):
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
         # Cluster Analyzer
-        task_clusterer = WrRiverCluStream2MLPro(p_name='t3',
-                                                p_n_macro_clusters=8,
-                                                p_max_micro_clusters=100,
-                                                p_micro_cluster_r_factor=0.1,
-                                                p_time_gap=3,
-                                                p_seed=0,
-                                                p_halflife=0.3,
-                                                p_time_window=10,
-                                                p_visualize=p_visualize,
-                                                p_logging=p_logging)
+        task_clusterer = WrRiverKMeans2MLPro( p_name='t3',
+                                             p_n_clusters=8,
+                                             p_halflife=0.1, 
+                                             p_sigma=3, 
+                                             p_seed=42,
+                                             p_visualize=p_visualize,
+                                             p_logging=p_logging )
         
         task_norm_minmax.register_event_handler( p_event_id=NormalizerMinMax.C_EVENT_ADAPTED,
                                                  p_event_handler=task_clusterer.renormalize_on_event )

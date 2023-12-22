@@ -17,10 +17,11 @@
 ## -- 2023-12-17  1.0.7     SY       Updates on classes WrRiverKMeans2MLPro, WrRiverDBStream2MLPro
 ## --                                WrRiverStreamKMeans2MLPro, WrRiverDenStream2MLPro
 ## -- 2023-12-21  1.0.8     SY       Add renormalization method on all wrapped algorithms
+## -- 2023-12-22  1.0.9     DA/SY    Bugfix 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.8 (2023-12-21)
+Ver. 1.0.9 (2023-12-22)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -372,7 +373,10 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                     p_cluster=self._river_algo.clusters[key],
                     p_micro_cluster=val
                     )
-                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)             
+                
+                if self.get_visualization():
+                    related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)             
+
                 related_cluster.get_centroid().set_values(list(self._river_algo.centers[key].values()))
                 self._add_cluster( p_cluster = related_cluster )
         
@@ -534,7 +538,10 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                 related_cluster = self._clusters[x]
             except:
                 related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization())   
-                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)             
+
+                if self.get_visualization():
+                    related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)             
+
                 related_cluster.get_centroid().set_values(list(self._river_algo.centers[x].values()))
                 self._add_cluster( p_cluster = related_cluster )
 
@@ -695,7 +702,10 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                     p_micro_cluster=val,
                     p_o_micro_cluster=o_micro_cluster
                     )
-                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)
+                
+                if self.get_visualization():
+                    related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)
+
                 self._add_cluster( p_cluster = related_cluster )
         
         list_keys_mlpro = list(self._clusters.keys())
@@ -831,8 +841,11 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
             try:
                 related_cluster = self._clusters[x]
             except:
-                related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization())   
-                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)  
+                related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization())  
+
+                if self.get_visualization(): 
+                    related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)  
+
                 list_center = []
                 for y in range(len(self._river_algo.centers[x])):
                     list_center.append(self._river_algo.centers[x][y+1])           
@@ -982,8 +995,11 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
             try:
                 related_cluster = self._clusters[x]
             except:
-                related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization())   
-                related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)  
+                related_cluster = ClusterCentroid(p_id=x, p_visualize=self.get_visualization()) 
+
+                if self.get_visualization():  
+                    related_cluster.init_plot(p_figure = self._figure, p_plot_settings=self._plot_settings)  
+
                 list_center = []
                 for y in range(len(self._river_algo.centers[x])):
                     list_center.append(self._river_algo.centers[x][y+1])
