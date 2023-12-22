@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
+## -- 2023-12-22  1.0.1     SY       Adding Docstring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-12)
+Ver. 1.0.1 (2023-12-22)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -32,6 +33,22 @@ import statistics as st
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTStrategy (Action):
+    """
+    A class representing a strategy for a player in game theory.
+    Objects of this class representations of (multi-)players. Every element
+    of the internal list is related to a player, and its partial subsection.
+    Strategy values for the first player can be added while object instantiation.
+    Strategy values of further player can be added by using method self.add_elem().
+
+    Parameters
+    ----------
+    p_player_id 
+        Unique id of (first) player to be added
+    p_strategy_space : Set
+        Strategy space of (first) player to be added. Default = None.
+    p_values : np.ndarray
+        Strategy values of (first) player to be added. Default = None.
+    """
 
     C_TYPE          = 'GT Strategy'
 
@@ -49,6 +66,14 @@ class GTStrategy (Action):
 
 ## -------------------------------------------------------------------------------------------------
     def get_player_ids(self) -> list:
+        """
+        A method to get the ids of (multi-)players that have been added to this class.
+
+        Returns
+        ----------
+        list
+            A list of players' ids.
+        """
 
         return self.get_agent_ids()
 
