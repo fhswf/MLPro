@@ -1562,6 +1562,15 @@ class GTCompetition (GTCoalition):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTDataStoring (DataStoring):
+    """
+    A method for data storing of the game.
+
+    Parameters
+    ----------
+    p_space : Set, optional
+        Spaces. The default is None.
+
+    """
 
     # Frame ID renamed
     C_VAR0          = 'Trial'
@@ -1575,6 +1584,7 @@ class GTDataStoring (DataStoring):
 
  ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_space:Set = None):
+        
         self.space = p_space
 
         # Initialization as an episodic detail data storage
@@ -1592,22 +1602,54 @@ class GTDataStoring (DataStoring):
 
 ## -------------------------------------------------------------------------------------------------
     def get_variables(self):
+        """
+        A method to get variables.
+
+        """
+        
         return self.variables
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_space(self):
+        """
+        A method to get space..
+
+        """
+        
         return self.space
 
 
 ## -------------------------------------------------------------------------------------------------
     def add_trial(self, p_trial_id):
+        """
+        A method to add a trial id into the data storing.
+
+        Parameters
+        ----------
+        p_trial_id : 
+            Trial id.
+
+        """
         self.add_frame(p_trial_id)
         self.current_trial = p_trial_id
 
 
 ## -------------------------------------------------------------------------------------------------
     def memorize_row(self, p_cycle_id, p_tstamp: timedelta, p_data):
+        """
+        A method to add data to the data storing
+
+        Parameters
+        ----------
+        p_cycle_id :
+            Cyle id.
+        p_tstamp : timedelta
+            Time stamp.
+        p_data :
+            Data to be stored.
+
+        """
 
         self.memorize(self.C_VAR_CYCLE, self.current_trial, p_cycle_id)
         self.memorize(self.C_VAR_DAY, self.current_trial, p_tstamp.days)
