@@ -1,32 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_ca_001_clustream_3d_dynamic.py
+## -- Module  : howto_oa_ca_002_run_kmeans_3d_dynamic.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-08-23  0.0.0     SY       Creation
-## -- 2023-08-23  1.0.0     SY       First version release
-## -- 2023-11-19  1.0.1     DA       Turned on visualization/logging of clustering task
-## -- 2023-08-20  1.0.2     SY       - Refactoring due to failed in Unittest
-## --                                - Add window to the workflow
+## -- 2023-12-22  0.0.0     SY       Creation
+## -- 2023-12-22  1.0.0     SY       First version release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-11-20)
+Ver. 1.0.0 (2023-12-22)
 
-This module demonstrates the combination of several tasks in a workflow, which includes:
-
-1) Window,
-
-2) Boundary Detector,
-
-3) Min/Max-Normalizer, and
-
-4) Wrapped CluStream Algorithm (River).
-
-Two data stream are incorporated in this module, such as static 3D point clouds and dynamic 3D point
-clouds. In this module, we demonstrate the workflow in dynamic 3D point clouds.
+This module demonstrates a task in a workflow, which is Wrapped KMeans Algorithm (River).
+In this module, we demonstrate the workflow in dynamic 3D point clouds.
 
 This module is prepared for the MLPro-OA scientific paper and going to be stored as Code
 Ocean Capsule, thus the result is reproducible.
@@ -89,46 +76,16 @@ class Dynamic3DScenario(OAScenario):
 
         # 1.2.2 Creation of tasks and add them to the workflow
       
-        # Window
-        task_window = Window(p_buffer_size=100, 
-                             p_delay=False,
-                             p_enable_statistics=True,
-                             p_name='t1',
-                             p_duplicate_data=True,
-                             p_visualize=p_visualize,
-                             p_logging=p_logging)
-        workflow.add_task(p_task=task_window)
-
-        # Boundary detector 
-        task_bd = BoundaryDetector(p_name='t2', 
-                                   p_ada=True, 
-                                   p_visualize=p_visualize,   
-                                   p_logging=p_logging)
-        workflow.add_task(p_task=task_bd, p_pred_tasks=[task_window])
-
-        # MinMax-Normalizer
-        task_norm_minmax = NormalizerMinMax(p_name='t3', 
-                                            p_ada=True,
-                                            p_visualize=p_visualize, 
-                                            p_logging=p_logging )
-
-        task_bd.register_event_handler(
-            p_event_id=BoundaryDetector.C_EVENT_ADAPTED,
-            p_event_handler=task_norm_minmax.adapt_on_event
-            )
-        workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
-
         # Cluster Analyzer
-        task_clusterer = WrRiverCluStream2MLPro(p_name='t4',
-                                                p_n_macro_clusters=3,
-                                                p_max_micro_clusters=40,
-                                                p_time_gap=3,
-                                                p_seed=0,
-                                                p_halflife=0.4,
-                                                p_time_window=10,
-                                                p_visualize=p_visualize,
-                                                p_logging=p_logging)
-        workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_norm_minmax])
+        task_clusterer = WrRiverKMeans2MLPro( p_name='t1',
+                                             p_n_clusters=8,
+                                             p_halflife=0.1, 
+                                             p_sigma=3, 
+                                             p_seed=42,
+                                             p_visualize=p_visualize,
+                                             p_logging=p_logging )
+        
+        workflow.add_task(p_task = task_clusterer)
 
         # 1.3 Return stream and workflow
         return stream, workflow
@@ -163,7 +120,7 @@ tp_delta            = tp_after - tp_before
 duraction_sec       = ( tp_delta.seconds * 1000000 + tp_delta.microseconds + 1 ) / 1000000
 myscenario.log(Log.C_LOG_TYPE_S, 'Duration [sec]:', round(duraction_sec,2), ', Cycles/sec:', round(cycle_limit/duraction_sec,2))
 
-clusters            = myscenario.get_workflow()._tasks[3].get_clusters()
+clusters            = myscenario.get_workflow()._tasks[0].get_clusters()
 number_of_clusters  = len(clusters)
 
 myscenario.log(Log.C_LOG_TYPE_I, '-------------------------------------------------------')
