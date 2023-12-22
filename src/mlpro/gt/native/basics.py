@@ -14,6 +14,7 @@
 Ver. 1.0.1 (2023-12-22)
 
 This module provides model classes for tasks related to a Native Game Theory.
+
 """
 
 
@@ -48,6 +49,7 @@ class GTStrategy (Action):
         Strategy space of (first) player to be added. Default = None.
     p_values : np.ndarray
         Strategy values of (first) player to be added. Default = None.
+        
     """
 
     C_TYPE          = 'GT Strategy'
@@ -73,6 +75,7 @@ class GTStrategy (Action):
         ----------
         list
             A list of players' ids.
+            
         """
 
         return self.get_agent_ids()
@@ -84,6 +87,22 @@ class GTStrategy (Action):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTFunction (Persistent):
+    """
+    A class representing a mapping functionality between strategies and payoffs in two possible
+    forms, such as payoff matrices or transfer functions.
+
+    Parameters
+    ----------
+    p_func_type : int 
+        Type of functions, either C_FUNC_PAYOFF_MATRIX or C_FUNC_TRANSFER_FCTS.
+    p_dim_elems : list
+        The dimension of payoff matrix. For transfer function, this can be avoided. Default = None.
+    p_num_coalisions : int
+        Number of coalisions. For transfer function, this can be avoided. Default = None.
+    p_logging
+        Log level (see constants C_LOG_*). Default: Log.C_LOG_ALL.
+        
+    """
 
     C_TYPE                  = 'GT Function'
 
@@ -124,18 +143,46 @@ class GTFunction (Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_mapping_matrix(self) -> np.ndarray:
+        """
+        A method to setup the mapping of the payoff matrix between strategies and payoffs.
+        This is only applicable for C_FUNC_PAYOFF_MATRIX.
+        This method needs to be redefined based on the setup of the game.
+
+        Returns
+        ----------
+        np.ndarray
+            Resulted mapping.
+            
+        """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_payoff_matrix(self):
+        """
+        A method to setup payoff matrices. This is only applicable for C_FUNC_PAYOFF_MATRIX.
+        This method needs to be redefined based on the setup of the game.
+        
+        """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _add_payoff_matrix(self, p_idx:int, p_payoff_matrix:np.ndarray):
+        """
+        A method to add a payoff matrix to the GTFunction class. This method is called during the
+        redifinition of _setup_payoff_matrix(). This is only applicable for C_FUNC_PAYOFF_MATRIX.
+ 
+        Parameters
+        ----------
+        p_idx : int
+            Id of the payoff matrix in the same order as the index of the players' ids in the list.
+        p_payoff_matrix : np.ndarray
+            Defined payoff matrix.
+
+        """
 
         if p_payoff_matrix.shape != self._payoff_map[p_idx-1].shape:
                 raise ParamError("The shape between p_payoff_matrix and each element of self._payoff_map does not match!")
@@ -145,18 +192,50 @@ class GTFunction (Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_transfer_functions(self):
+        """
+        A method to setup transfer functions. This is only applicable for C_FUNC_TRANSFER_FCTS.
+        This method needs to be redefined based on the setup of the game.
+        
+        """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _add_transfer_function(self, p_idx:int, p_transfer_fct:TransferFunction):
+        """
+        A method to add a transfer function to the GTFunction class. This method is called during
+        the redifinition of _setup_transfer_functions().
+        This is only applicable for C_FUNC_TRANSFER_FCTS.
+ 
+        Parameters
+        ----------
+        p_idx : int
+            Id of the payoff matrix in the same order as the index of the players' ids in the list.
+        p_transfer_fct : TransferFunction
+            Defined transfer function.
+
+        """
 
         self._payoff_map[p_idx] = p_transfer_fct
 
 
 ## -------------------------------------------------------------------------------------------------
     def best_response(self, p_element_id:str) -> float:
+        """
+        A method to measure the highest possible payoff of a player in the related payoff map.
+
+        Parameters
+        ----------
+        p_element_id : str
+            Id of a specific player.
+
+        Returns
+        -------
+        float
+            The highest possible payoff.
+
+        """
 
         if self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
 
@@ -173,6 +252,15 @@ class GTFunction (Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def zero_sum(self) -> bool:
+        """
+        A method to check whether the game is a zero sum game by considering the payoff maps.
+
+        Returns
+        -------
+        bool
+            True means it is a zero sum game, otherwise no.
+
+        """
 
         if self.C_FUNCTION_TYPE == self.C_FUNC_TRANSFER_FCTS:
 
@@ -194,6 +282,23 @@ class GTFunction (Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def __call__(self, p_element_id:str, p_strategies:GTStrategy) -> float:
+        """
+        A method to apply the mapping between the selected strategy and the payoff, in which it
+        returns the payoff for a player with respect to the selected strategy.
+
+        Parameters
+        ----------
+        p_element_id : str
+            Id of the player.
+        p_strategies : GTStrategy
+            Selected strategies by all players.
+
+        Returns
+        -------
+        float
+            Payoff of the player.
+
+        """
 
         if self.C_FUNCTION_TYPE == self.C_FUNC_PAYOFF_MATRIX:
 
