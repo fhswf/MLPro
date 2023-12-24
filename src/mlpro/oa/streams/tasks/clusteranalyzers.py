@@ -446,10 +446,13 @@ class ClusterCentroid (Cluster):
         # 1 Get coordinates
         centroid = self._centroid.get_values()
 
-        xlim = p_settings.axes.get_xlim()
-        ylim = p_settings.axes.get_ylim()
-        zlim = p_settings.axes.get_zlim()
+        ax_xlim  = p_settings.axes.get_xlim()
+        ax_ylim  = p_settings.axes.get_ylim()
+        ax_zlim  = p_settings.axes.get_zlim()
 
+        xlim     = [ min( ax_xlim[0], centroid[0] ), max(ax_xlim[1], centroid[0] ) ]
+        ylim     = [ min( ax_ylim[0], centroid[1] ), max(ax_ylim[1], centroid[1] ) ]
+        zlim     = [ min( ax_zlim[0], centroid[2] ), max(ax_zlim[1], centroid[2] ) ]
 
         # 2 Plot a crosshair
         if self._plot_line1 is None:
