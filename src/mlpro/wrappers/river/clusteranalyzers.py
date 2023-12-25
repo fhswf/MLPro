@@ -18,10 +18,11 @@
 ## --                                WrRiverStreamKMeans2MLPro, WrRiverDenStream2MLPro
 ## -- 2023-12-21  1.0.8     SY       Add renormalization method on all wrapped algorithms
 ## -- 2023-12-22  1.0.9     DA/SY    Bugfix 
+## -- 2023-12-25  1.0.10    DA       Bugfix in WrClusterAnalyzerRiver2MLPro._adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.9 (2023-12-22)
+Ver. 1.0.10 (2023-12-25)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -136,7 +137,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         first_instance = True
         for inst in p_inst_new:
             if first_instance:
-                feature_data    = inst.get_feature_data().get_values()
+                feature_data    = np.array(inst.get_feature_data().get_values())
                 first_instance  = False
             else:
                 feature_data    = np.append(feature_data, inst.get_feature_data().get_values())
@@ -873,6 +874,7 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
             related_cluster = self._river_algo.centers[cluster.get_id()]
             for mlpro_idx, river_idx in enumerate(related_cluster):
                 related_cluster[river_idx] = cluster._centroid.get_values()[mlpro_idx]
+
 
 
 

@@ -22,7 +22,8 @@ Ocean Capsule, thus the result is reproducible.
 
 
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.streams.clouds3d_static import StreamMLProStaticClouds3D
+#from mlpro.bf.streams.streams.clouds3d_static import StreamMLProStaticClouds3D
+from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 
 from mlpro.oa.streams import *
@@ -56,7 +57,9 @@ class Static3DScenario(OAScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get stream from StreamMLProStaticClouds3D
-        stream = StreamMLProStaticClouds3D()
+        stream = StreamMLProClouds3D8C2000Static()
+        
+#        StreamMLProStaticClouds3D()
         # stream.set_random_seed(3)
 
         # 1.2 Set up a stream workflow based on a custom stream task

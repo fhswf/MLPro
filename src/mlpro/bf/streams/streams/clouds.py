@@ -8,10 +8,11 @@
 ## -- 2023-08-29  0.0.0     SR       Creation
 ## -- 2023-08-29  1.0.0     SR       First draft implementation
 ## -- 2023-09-15  1.0.1     LSB      Bug Fix
+## -- 2023-12-25  1.0.2     DA       Bugfix in StreamMLProClouds._get_next()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-09-15)
+Ver. 1.0.2 (2023-12-25)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -81,7 +82,6 @@ class StreamMLProClouds (StreamMLProBase):
         self.C_NUM_INSTANCES = p_num_instances
         self.behaviour = str.lower(p_behaviour)
 
-
         StreamMLProBase.__init__(self,
                                  p_logging=p_logging,
                                  **p_kwargs)
@@ -102,6 +102,7 @@ class StreamMLProClouds (StreamMLProBase):
                                             p_logging=Log.C_LOG_NOTHING ) )
 
         return feature_space
+
 
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
@@ -145,6 +146,7 @@ class StreamMLProClouds (StreamMLProBase):
                     for j in range(self.num_dim):
                         self.centers_step[x][j] = (1/(self.num_dim**0.5))*self.velocity
 
+
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
 
@@ -155,29 +157,31 @@ class StreamMLProClouds (StreamMLProBase):
         if self.behaviour == 'dynamic':
             self.centers = self.centers + self.centers_step
 
-        id = random.randint(0, self.num_clouds)
+        id = random.randint(0, self.num_clouds - 1)
         if len(self.radii) == 1:
             radius = self.radii[0]
         else:
             radius = self.radii[id]
 
-        instance = []
+        feature_values = []
 
         for i in range(self.num_dim):
-            instance.append((random.random())*radius)
+            feature_value = random.random() * radius
             a = random.random()
-            if a<0.5:
-                instance[i] = instance[i]*(-1)
+            if a<0.5: feature_value *= -1
+            feature_values.append(feature_value)
 
-        instance = instance + self.centers[id]
-
-        feature_data = Element(self._feature_space)
-        feature_data.set_values(p_values=instance)
+        feature_values = feature_values + self.centers[id]
+        feature_data   = Element(self._feature_space)
+        feature_data.set_values(p_values=feature_values)
 
         self._index += 1
 
         return Instance( p_feature_data=feature_data )
     
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -213,6 +217,8 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
     
 
 
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
@@ -228,8 +234,8 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_radii : list = [100.0],
-                  p_velocity : float = 0.1,
+                  p_radii : list = [50.0],
+                  p_velocity : float = 0.0,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
@@ -245,6 +251,8 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
         self.behaviour = 'static'
         self.centers_step = []
     
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -279,6 +287,8 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
         self.behaviour = 'dynamic'
         self.centers_step = []
     
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
