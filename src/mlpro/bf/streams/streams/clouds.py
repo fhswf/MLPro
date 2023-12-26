@@ -289,8 +289,7 @@ class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds):
 
     C_ID                    = 'StreamMLProClouds3D8C10000Dynamic'
     C_NAME                  = 'Static Clouds 2D'
-    C_TYPE                  = 'Demo'
-    C_VERSION               = '1.0.0'
+    C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 3
     C_NUM_INSTANCES         = 10000
     C_SCIREF_ABSTRACT       = 'Demo stream provides 10000 3D instances randomly positioned around eight randomly moving centers.'
