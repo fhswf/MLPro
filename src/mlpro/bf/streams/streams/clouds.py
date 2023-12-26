@@ -9,10 +9,12 @@
 ## -- 2023-08-29  1.0.0     SR       First draft implementation
 ## -- 2023-09-15  1.0.1     LSB      Bug Fix
 ## -- 2023-12-25  1.0.2     DA       Bugfix in StreamMLProClouds._get_next()
+## -- 2023-12-26  1.0.3     DA       - Little refactoring of StreamMLProClouds._init_dataset()
+## --                                - Bugfix in StreamMLProClouds._get_next()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-12-25)
+Ver. 1.0.3 (2023-12-26)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -53,7 +55,7 @@ class StreamMLProClouds (StreamMLProBase):
 
     C_ID                    = 'CloudsNDim'
     C_NAME                  = 'Clouds N-Dim'
-    C_TYPE                  = 'Demo'
+    C_TYPE                  = 'Benchmark'
     C_VERSION               = '1.0.0'
     C_BEHAVIOUR             = ['static', 'dynamic']
     C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
@@ -73,7 +75,7 @@ class StreamMLProClouds (StreamMLProBase):
         if str.lower(p_behaviour) not in self.C_BEHAVIOUR:
             raise ValueError(f"Invalid value for behaviour, allowed values are {self.C_BEHAVIOUR}")
            
-        self.num_dim = int(p_num_dim)
+        self.num_dim = p_num_dim
         self.radii = p_radii
         self.num_clouds = int(p_num_clouds)
         self.velocity = p_velocity
@@ -114,37 +116,37 @@ class StreamMLProClouds (StreamMLProBase):
             seed = random.seed(32)
 
         # Compute the initial positions of the centers
-        for i in range(self.num_clouds):
+        for c in range(self.num_clouds):
 
             self.centers.append([])
 
-            for j in range(self.num_dim):
-                self.centers[i].append(random.randint(self.C_BOUNDARIES[0],
+            for d in range(self.num_dim):
+                self.centers[c].append(random.randint(self.C_BOUNDARIES[0],
                                                            self.C_BOUNDARIES[1]))
 
         if self.behaviour == 'dynamic':
 
             # Compute the final positions of the centers
-            for i in range(self.num_clouds):
+            for c in range(self.num_clouds):
 
                 self.centers_step.append([])
 
-                for j in range(self.num_dim):
-                    self.centers_step[i].append(random.randint(self.C_BOUNDARIES[0],
+                for d in range(self.num_dim):
+                    self.centers_step[c].append(random.randint(self.C_BOUNDARIES[0],
                                                            self.C_BOUNDARIES[1]))
 
-            for x in range(self.num_clouds):
+            for c in range(self.num_clouds):
 
                 mag = 0
-                for i in range(self.num_dim):
-                    mag = mag + (self.centers[x][i]-self.centers_step[x][0])**2
+                for c in range(self.num_dim):
+                    mag = mag + (self.centers[c][c]-self.centers_step[c][0])**2
                 mag = mag**0.5
                 if mag != 0:
-                    for j in range(self.num_dim):
-                        self.centers_step[x][j] = ((self.centers[x][j]-self.centers_step[x][j])/ mag)*self.velocity
+                    for d in range(self.num_dim):
+                        self.centers_step[c][d] = ((self.centers[c][d]-self.centers_step[c][d])/ mag)*self.velocity
                 else:
-                    for j in range(self.num_dim):
-                        self.centers_step[x][j] = (1/(self.num_dim**0.5))*self.velocity
+                    for d in range(self.num_dim):
+                        self.centers_step[c][d] = (1/(self.num_dim**0.5))*self.velocity
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -155,7 +157,8 @@ class StreamMLProClouds (StreamMLProBase):
         elif self._index == self.C_NUM_INSTANCES: raise StopIteration
 
         if self.behaviour == 'dynamic':
-            self.centers = self.centers + self.centers_step
+            for c in range(self.num_clouds):
+                self.centers[c] = np.array(self.centers[c]) + np.array(self.centers_step[c])
 
         id = random.randint(0, self.num_clouds - 1)
         if len(self.radii) == 1:
@@ -165,13 +168,13 @@ class StreamMLProClouds (StreamMLProBase):
 
         feature_values = []
 
-        for i in range(self.num_dim):
+        for c in range(self.num_dim):
             feature_value = random.random() * radius
             a = random.random()
             if a<0.5: feature_value *= -1
             feature_values.append(feature_value)
 
-        feature_values = feature_values + self.centers[id]
+        feature_values = np.array(feature_values) + np.array(self.centers[id])
         feature_data   = Element(self._feature_space)
         feature_data.set_values(p_values=feature_values)
 
@@ -189,32 +192,28 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
 
     C_ID                    = 'StreamMLProClouds2D4C1000Static'
     C_NAME                  = 'Static Clouds 2D'
-    C_TYPE                  = 'Demo'
-    C_VERSION               = '1.0.0'
+    C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 2
     C_NUM_INSTANCES         = 1000
     C_SCIREF_ABSTRACT       = 'Demo stream provides 1000 2D instances randomly positioned around four fixed centers.'
-    C_BOUNDARIES            = [-1000,1000]
+    C_BOUNDARIES            = [-100,100]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_radii : list = [100.0],
-                  p_velocity : float = 0.1,
+                  p_radii : list = [20.0],
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        StreamMLProClouds.__init__(self,
-                                 p_logging=p_logging,
-                                 **p_kwargs)
-        
-        self.num_dim = 2
-        self.radii = p_radii
-        self.num_clouds = 4
-        self.velocity = p_velocity
-        self.cloud_centers = []
-        self.behaviour = 'static'
-        self.centers_step = []
-    
+        StreamMLProClouds.__init__( self,
+                                    p_num_dim = self.C_NUM_DIMENSIONS,
+                                    p_num_instances = self.C_NUM_INSTANCES,
+                                    p_num_clouds = 4,
+                                    p_radii = p_radii,
+                                    p_behaviour = 'static',
+                                    p_velocity = 0.0,
+                                    p_logging = p_logging,
+                                    **p_kwargs )
+            
 
 
 
@@ -225,32 +224,28 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 
     C_ID                    = 'StreamMLProClouds3D8C2000Static'
     C_NAME                  = 'Static Clouds 3D'
-    C_TYPE                  = 'Demo'
-    C_VERSION               = '1.0.0'
+    C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 3
     C_NUM_INSTANCES         = 2000
     C_SCIREF_ABSTRACT       = 'Demo stream provides 2000 3D instances randomly positioned around eight fixed centers.'
-    C_BOUNDARIES            = [-1000,1000]
+    C_BOUNDARIES            = [-100,100]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_radii : list = [50.0],
-                  p_velocity : float = 0.0,
+                  p_radii : list = [20.0],
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        StreamMLProClouds.__init__(self,
-                                 p_logging=p_logging,
-                                 **p_kwargs)
-        
-        self.num_dim = 3
-        self.radii = p_radii
-        self.num_clouds = 8
-        self.velocity = p_velocity
-        self.cloud_centers = []
-        self.behaviour = 'static'
-        self.centers_step = []
-    
+        StreamMLProClouds.__init__( self,
+                                    p_num_dim = self.C_NUM_DIMENSIONS,
+                                    p_num_instances = self.C_NUM_INSTANCES,
+                                    p_num_clouds = 8,
+                                    p_radii = p_radii,
+                                    p_behaviour = 'static',
+                                    p_velocity = 0.0,
+                                    p_logging = p_logging,
+                                    **p_kwargs )
+
 
 
 
@@ -261,10 +256,9 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
 
     C_ID                    = 'StreamMLProClouds2D4C5000Dynamic'
     C_NAME                  = 'Dynamic Clouds 2D'
-    C_TYPE                  = 'Demo'
-    C_VERSION               = '1.0.0'
+    C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 2
-    C_NUM_INSTANCES         = 0
+    C_NUM_INSTANCES         = 5000
     C_SCIREF_ABSTRACT       = 'Demo stream provides 2000 2D instances randomly positioned around four randomly moving centers.'
     C_BOUNDARIES            = [-1000,1000]
 
@@ -275,18 +269,16 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        StreamMLProClouds.__init__(self,
-                                 p_logging=p_logging,
-                                 **p_kwargs)
+        StreamMLProClouds.__init__( self,
+                                    p_num_dim = self.C_NUM_DIMENSIONS,
+                                    p_num_instances = self.C_NUM_INSTANCES,
+                                    p_num_clouds = 4,
+                                    p_radii = p_radii,
+                                    p_behaviour = 'dynamic',
+                                    p_velocity = p_velocity,
+                                    p_logging = p_logging,
+                                    **p_kwargs )
         
-        self.num_dim = 2
-        self.radii = p_radii
-        self.num_clouds = 4
-        self.velocity = p_velocity
-        self.cloud_centers = []
-        self.behaviour = 'dynamic'
-        self.centers_step = []
-    
 
 
 
@@ -311,15 +303,13 @@ class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        StreamMLProClouds.__init__(self,
-                                 p_logging=p_logging,
-                                 **p_kwargs)
-        
-        self.num_dim = 3
-        self.radii = p_radii
-        self.num_clouds = 8
-        self.velocity = p_velocity
-        self.cloud_centers = []
-        self.behaviour = 'dynamic'
-        self.centers_step = []
+        StreamMLProClouds.__init__( self,
+                                    p_num_dim = self.C_NUM_DIMENSIONS,
+                                    p_num_instances = self.C_NUM_INSTANCES,
+                                    p_num_clouds = 8,
+                                    p_radii = p_radii,
+                                    p_behaviour = 'dynamic',
+                                    p_velocity = p_velocity,
+                                    p_logging = p_logging,
+                                    **p_kwargs )
     

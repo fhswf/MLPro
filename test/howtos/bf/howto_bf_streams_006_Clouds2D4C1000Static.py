@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_009_Clouds3D8C10000Dynamic.py
+## -- Module  : howto_bf_streams_006_Clouds2D4C1000Static.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-11-09  0.0.0     SP       Creation
 ## -- 2023-11-09  1.0.0     SP       First implementation
+## -- 2023-12-26  1.0.1     DA       Bugfixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-22)
+Ver. 1.0.1 (2023-12-26)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, stream tasks
 are added to a stream workflow. This in turn is combined with a stream of a stream provider to a
@@ -33,8 +34,6 @@ from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.tasks import Window
 from mlpro.bf.streams.models import StreamTask
-
-
 from mlpro.bf.various import Log
 
 
@@ -49,10 +48,11 @@ class MyTask (StreamTask):
     # needed for proper logging (see class mlpro.bf.various.Log)
     C_NAME      = 'My stream task'
 
-
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
         pass
+
+
 
 
 
@@ -64,14 +64,14 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = ''
+    C_NAME      = 'My stream scenario'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Import a native stream from MLPro
         provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = provider_mlpro.get_stream('StreamMLProClouds3D8C10000Dynamic', p_mode=p_mode, p_logging=p_logging)
+        stream = provider_mlpro.get_stream('StreamMLProClouds2D4C1000Static', p_mode=p_mode, p_logging=p_logging)
 
 
         # 2 Set up a stream workflow
@@ -85,7 +85,7 @@ class MyScenario (StreamScenario):
                               p_visualize = p_visualize, 
                               p_enable_statistics = True,
                               p_logging=logging )
-        task_empty = MyTask(p_name='t2')
+        task_empty = MyTask(p_name='t2', p_visualize=p_visualize, p_logging=p_logging)
 
 
         # 2.2 Create a workflow and add the tasks
@@ -96,8 +96,7 @@ class MyScenario (StreamScenario):
 
         # 2.2.1 Add the tasks to our workflow
         workflow.add_task( p_task=task_window1 )
-        workflow.add_task( p_task=task_empty )
-
+        workflow.add_task( p_task=task_empty, p_pred_tasks=[ task_window1 ] )
 
 
         # 3 Return stream and workflow
@@ -106,10 +105,11 @@ class MyScenario (StreamScenario):
 
 
 
+
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 100
+    cycle_limit = 500
     logging     = Log.C_LOG_ALL
     visualize   = True
   

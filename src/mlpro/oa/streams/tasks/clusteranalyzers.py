@@ -30,7 +30,7 @@ This module provides templates for cluster analysis to be used in the context of
 """
 
 from matplotlib.figure import Figure
-from mpl_toolkits.mplot3d.art3d import Line3D
+from mpl_toolkits.mplot3d.art3d import Line3D, Text3D
 from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
@@ -438,6 +438,29 @@ class ClusterCentroid (Cluster):
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_2d(p_settings, **p_kwargs)
 
+        # 1 Get coordinates
+        centroid = self._centroid.get_values()
+
+        ax_xlim  = p_settings.axes.get_xlim()
+        ax_ylim  = p_settings.axes.get_ylim()
+
+        xlim     = [ min( ax_xlim[0], centroid[0] ), max(ax_xlim[1], centroid[0] ) ]
+        ylim     = [ min( ax_ylim[0], centroid[1] ), max(ax_ylim[1], centroid[1] ) ]
+
+        # 2 Plot a crosshair
+        if self._plot_line1 is None:
+            # 2.1 Add initial crosshair lines
+            cluster_id = self.get_id()
+            col_id = cluster_id % len(self.C_CLUSTER_COLORS)
+            color = self.C_CLUSTER_COLORS[col_id]
+            self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], color=color, linestyle='dashed', lw=1, label='Cluster C' + str(cluster_id))[0]
+            self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, color=color, linestyle='dashed', lw=1)[0]
+            p_settings.axes.legend()
+        else:
+            # 2.2 Update data of crosshair lines
+            self._plot_line1.set_data( xlim, [centroid[1],centroid[1]] )
+            self._plot_line2.set_data( [centroid[0],centroid[0]], ylim )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
@@ -460,15 +483,17 @@ class ClusterCentroid (Cluster):
             cluster_id = self.get_id()
             col_id = cluster_id % len(self.C_CLUSTER_COLORS)
             color = self.C_CLUSTER_COLORS[col_id]
-            self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1, label='c' + str(cluster_id))[0]
-            self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1)[0]
-            self._plot_line3 = p_settings.axes.plot( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim, color=color, linestyle='dashed', lw=1)[0]
+            self._plot_line1 : Line3D = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1, label='Cluster C' + str(cluster_id))[0]
+            self._plot_line2 : Line3D = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1)[0]
+            self._plot_line3 : Line3D = p_settings.axes.plot( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim, color=color, linestyle='dashed', lw=1)[0]
+            self._plot_line1_t1 : Text3D = p_settings.axes.text(centroid[0], centroid[1], centroid[2], 'C' + str(cluster_id), color=color )
+            p_settings.axes.legend()
         else:
             # 2.2 Update data of crosshair lines
             self._plot_line1.set_data_3d( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]] )
             self._plot_line2.set_data_3d( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]] )
             self._plot_line3.set_data_3d( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim )
-
+            self._plot_line1_t1.set(position_3d=(centroid[0], centroid[1], centroid[2]))
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer: Normalizer):

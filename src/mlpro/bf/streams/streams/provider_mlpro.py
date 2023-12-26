@@ -10,10 +10,12 @@
 ## -- 2022-12-14  1.0.0     DA       First release
 ## -- 2023-03-03  1.0.1     SY       Add p_kwargs in StreamProviderMLPro and StreamMLProBase
 ## -- 2023-04-12  1.0.2     SY       Remove p_kwargs in StreamProviderMLPro
+## -- 2023-12-26  1.1.0     DA       StreamProviderMLPro.__init__(): recursive consideration of all 
+## --                                subclasses of class StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-12-14)
+Ver. 1.1.0 (2023-12-26)
 
 This module consists of a native stream provider and a template for builtin streams.
 
@@ -100,7 +102,6 @@ class StreamProviderMLPro (StreamProvider):
     C_SCIREF_AUTHOR = 'MLPro'
     C_SCIREF_URL    = 'https://mlpro.readthedocs.io'
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
@@ -109,11 +110,13 @@ class StreamProviderMLPro (StreamProvider):
         self._streams_by_id    = {}
         self._streams_by_name  = {}
 
-        for cls in StreamMLProBase.__subclasses__():
+        mlpro_stream_classes = StreamMLProBase.__subclasses__()
+        for cls in mlpro_stream_classes:
             stream = cls(p_logging=p_logging)
             self._stream_list.append(stream)
             self._streams_by_id[stream.get_id()] = stream
             self._streams_by_name[stream.get_name()] = stream
+            mlpro_stream_classes.extend(cls.__subclasses__())
 
 
 ## -------------------------------------------------------------------------------------------------
