@@ -103,7 +103,7 @@ class StreamProviderMLPro (StreamProvider):
     C_SCIREF_URL    = 'https://mlpro.readthedocs.io'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_seed = None, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
 
         self._stream_list      = []
@@ -112,7 +112,7 @@ class StreamProviderMLPro (StreamProvider):
 
         mlpro_stream_classes = StreamMLProBase.__subclasses__()
         for cls in mlpro_stream_classes:
-            stream = cls(p_logging=p_logging)
+            stream = cls(p_seed=p_seed, p_logging=p_logging)
             self._stream_list.append(stream)
             self._streams_by_id[stream.get_id()] = stream
             self._streams_by_name[stream.get_name()] = stream

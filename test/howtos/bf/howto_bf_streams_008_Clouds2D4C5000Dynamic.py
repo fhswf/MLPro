@@ -8,10 +8,11 @@
 ## -- 2023-11-09  0.0.0     SP       Creation
 ## -- 2023-11-09  1.0.0     SP       First implementation
 ## -- 2023-12-26  1.0.1     DA       Bugfixes
+## -- 2023-12-27  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-12-26)
+Ver. 1.1.0 (2023-12-27)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, stream tasks
 are added to a stream workflow. This in turn is combined with a stream of a stream provider to a
@@ -70,7 +71,7 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Import a native stream from MLPro
-        provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
+        provider_mlpro = StreamProviderMLPro(p_seed=6, p_logging=p_logging)
         stream = provider_mlpro.get_stream('StreamMLProClouds2D4C5000Dynamic', p_mode=p_mode, p_logging=p_logging)
 
 
@@ -79,7 +80,7 @@ class MyScenario (StreamScenario):
         # 2.1 Creation of tasks
 
         # 2.1 Set up and add a window task and an empty task
-        task_window1 = Window( p_buffer_size=30, 
+        task_window1 = Window( p_buffer_size=50, 
                                p_name = 't1', 
                                p_delay = True,
                                p_visualize = p_visualize, 
@@ -109,7 +110,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 500
+    cycle_limit = 1000
     logging     = Log.C_LOG_ALL
     visualize   = True
   
