@@ -1,0 +1,19 @@
+Dynamic Games
+===================
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   
+   dg/howto.*
+
+Native GT
+===================
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   coming soon...
+   
+   native/howto.*
