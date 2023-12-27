@@ -7,11 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
-## -- 2023-12-22  1.0.1     SY       Adding Docstring
+## -- 2023-12-27  1.0.1     SY       Adding Docstring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-12-22)
+Ver. 1.0.1 (2023-12-27)
 
 This module provides model classes for tasks related to a Native Game Theory.
 
@@ -1666,6 +1666,24 @@ class GTDataStoring (DataStoring):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTGame (Scenario):
+    """
+    A class representing a game in game theory.
+    
+    Parameters
+    ----------
+    p_mode :
+        Operation mode. See bf.ops.Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+    p_ada :
+        Boolean switch for adaptivity. In the native GT, this is always switched off.
+        The default is False.
+    p_cycle_limit :
+        Maximum number of cycles.. The default is 1.
+    p_visualize : bool, optional
+        Boolean switch for visualisation. The default is False.
+    p_logging :
+        Log level (see constants of class Log). The default is Log.C_LOG_ALL.
+    
+    """
 
     C_TYPE      = 'GT Game'
     C_NAME      = ''
@@ -1711,6 +1729,7 @@ class GTGame (Scenario):
         -------
         player : GTPlayer
             GTPlayer model (object of type GTPlayer, GTCoalition or GTCompetition).
+            
         """
 
         raise NotImplementedError
@@ -1719,18 +1738,12 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
         """
-        ........
+        A method to run a cycle in the defined game
 
         Returns
         -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        adapted : bool
-            True, if something within the scenario has adapted something in this cycle. False otherwise.
-        end_of_data : bool
-            True, if the end of the related data source has been reached. False otherwise.
+        False, False, False, False
+        
         """
 
         self.log(self.C_LOG_TYPE_I, 'Switch solvers...')
@@ -1766,6 +1779,22 @@ class GTGame (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_evaluation(self, p_coalition_id:str, p_coalition:GTCoalition) -> Union[float,list]:
+        """
+        A method to get the evaluation of a coalition in the form of payoff matrix.
+
+        Parameters
+        ----------
+        p_coalition_id : str
+            Coalition id.
+        p_coalition : GTCoalition
+            Coalition object.
+
+        Returns
+        -------
+        Union[float,list]
+            Payoff of the respective coalition.
+
+        """
         
         self._is_bestresponse(p_coalition_id, p_coalition)
         return self._payoff.get_payoff(self._strategies, p_coalition_id)
@@ -1775,24 +1804,71 @@ class GTGame (Scenario):
     def connect_data_logger(self,
                             p_ds_strategies:GTDataStoring = None,
                             p_ds_payoffs:GTDataStoring = None):
+        """
+        A method to connect connect with the data logger from GTDataStoring.
+
+        Parameters
+        ----------
+        p_ds_strategies : GTDataStoring, optional
+            Object of GTDataStoring of strategies. The default is None.
+        p_ds_payoffs : GTDataStoring, optional
+            Object of GTDataStoring of payoffs. The default is None.
+
+        """
+        
         self._ds_strategies = p_ds_strategies
         self._ds_payoffs    = p_ds_payoffs
 
 
 ## -------------------------------------------------------------------------------------------------
     def is_zerosum(self) -> bool:
+        """
+        A method to identify whether it is a zero-sum game.
+
+        Returns
+        -------
+        bool
+            True means zero-sum game, otherwise not.
+
+        """
         
         return self._payoff.zero_sum()
 
 
 ## -------------------------------------------------------------------------------------------------
     def _is_bestresponse(self, p_coalition_id:str, p_coalition:GTCoalition) -> float:
+        """
+        A method to identify whether the best response value of a coaltion.
+        
+
+        Parameters
+        ----------
+        p_coalition_id : str
+            Coalition id.
+        p_coalition : GTCoalition
+            Coalition object.
+
+        Returns
+        -------
+        float
+            The best response value.
+
+        """
 
         return self._payoff.best_response_value(self._strategies, p_coalition_id)
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_latency(self) -> timedelta:
+        """
+        A method to get the latency of the game
+
+        Returns
+        -------
+        timedelta
+            Latency.
+
+        """
 
         return self.C_LATENCY
     
@@ -1843,6 +1919,23 @@ class GTTrainingResults (TrainingResults):
 
 ## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename='summary.csv') -> bool:
+        """
+        A method to save the training results
+
+        Parameters
+        ----------
+        p_path :
+            Saving path.
+        p_filename :
+            Name and format of the file. The default is 'summary.csv'.
+
+        Returns
+        -------
+        bool
+            True means successful, otherwise failed.
+
+        """
+        
         if not super().save(p_path, p_filename=p_filename):
             return False
 
@@ -1850,6 +1943,8 @@ class GTTrainingResults (TrainingResults):
             self.ds_strategies.save_data(p_path, self.C_FNAME_COAL_STRATEGIES)
         if self.ds_payoffs is not None:
             self.ds_payoffs.save_data(p_path, self.C_FNAME_COAL_PAYOFFS)
+            
+        return True
 
 
 
@@ -1858,6 +1953,36 @@ class GTTrainingResults (TrainingResults):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTTraining (Training):
+    """
+    Template class for a GT training.
+
+    Parameters
+    ----------
+    p_game_cls 
+        Name of GT game class, compatible to/inherited from class GTGame.
+    p_cycle_limit : int
+        Maximum number of training cycles (0=no limit). Default = 0.
+    p_adaptation_limit : int
+        Maximum number of adaptations (0=no limit). Default = 0.
+    p_hpt : HyperParamTuner
+        Optional hyperparameter tuner (see class HyperParamTuner). Default = None.
+    p_hpt_trials : int
+        Optional number of hyperparameter tuning trials. Default = 0.        
+    p_path : str
+        Optional destination path to store training data. Default = None.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_WE.
+    p_collect_strategy
+        Collect data of selected strategies. Default = False.
+    p_collect_payoff
+        Collect data of obtained payoffs. Default = False.
+    p_init_seed
+        Seeding. Default = 0.
+
+
+    """
 
     C_TYPE          = 'GT Training'
     C_NAME          = 'Native GT Training'
@@ -1894,6 +2019,15 @@ class GTTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> GTTrainingResults:
+        """
+        A method to initialise data storing functionality.
+
+        Returns
+        -------
+        GTTrainingResults
+            Object of GTTrainingResults.
+
+        """
         
         results = super()._init_results()
 
@@ -1911,6 +2045,10 @@ class GTTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_trial(self):
+        """
+        A method to initialise a trial.
+
+        """
 
         self._scenario.reset(p_seed=self._seed)
         self._seed += 1
@@ -1924,12 +2062,25 @@ class GTTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _close_trial(self):
+        """
+        A method to close/stop a trial.
+
+        """
 
         self._results.num_trials += 1
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self) -> bool:
+        """
+        A method to run a cycle.
+
+        Returns
+        -------
+        bool
+            False.
+
+        """
 
         self._init_trial()
         self._scenario.run_cycle()
