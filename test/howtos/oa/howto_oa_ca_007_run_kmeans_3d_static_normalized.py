@@ -47,7 +47,7 @@ from mlpro.wrappers.river.clusteranalyzers import *
 
 # 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 2000
+    cycle_limit = 1200
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
@@ -69,8 +69,12 @@ class Static3DScenario(OAScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get stream from StreamMLProStaticClouds3D
-        stream = StreamMLProStaticClouds3D()
-        # stream.set_random_seed(3)
+        stream = StreamMLProClouds( p_num_dim = 3,
+                                    p_num_instances = 2000,
+                                    p_num_clouds = 5,
+                                    p_seed = 1,
+                                    p_radii = [100],
+                                    p_logging=Log.C_LOG_NOTHING )
 
         # 1.2 Set up a stream workflow based on a custom stream task
 
@@ -107,7 +111,7 @@ class Static3DScenario(OAScenario):
 
         # Cluster Analyzer
         task_clusterer = WrRiverKMeans2MLPro( p_name='t3',
-                                             p_n_clusters=8,
+                                             p_n_clusters=5,
                                              p_halflife=0.1, 
                                              p_sigma=3, 
                                              p_seed=42,

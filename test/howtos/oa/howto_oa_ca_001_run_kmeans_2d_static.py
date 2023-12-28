@@ -50,7 +50,7 @@ class Static3DScenario(OAScenario):
         # 1.2 Set up a stream workflow
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow(p_name='wf_3D',
+        workflow = OAWorkflow(p_name='wf_2D',
                               p_range_max=OAWorkflow.C_RANGE_NONE,
                               p_ada=p_ada,
                               p_visualize=p_visualize,
