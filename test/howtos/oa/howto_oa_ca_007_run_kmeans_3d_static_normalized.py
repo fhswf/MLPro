@@ -73,7 +73,8 @@ class Static3DScenario(OAScenario):
                                     p_num_instances = 2000,
                                     p_num_clouds = 5,
                                     p_seed = 1,
-                                    p_radii = [100],
+                                    p_radii = [100, 150, 200, 250, 300],
+                                    p_weights = [2,3,4,5,6],
                                     p_logging=Log.C_LOG_NOTHING )
 
         # 1.2 Set up a stream workflow based on a custom stream task
@@ -111,12 +112,13 @@ class Static3DScenario(OAScenario):
 
         # Cluster Analyzer
         task_clusterer = WrRiverKMeans2MLPro( p_name='t3',
-                                             p_n_clusters=5,
-                                             p_halflife=0.1, 
-                                             p_sigma=3, 
-                                             p_seed=42,
-                                             p_visualize=p_visualize,
-                                             p_logging=p_logging )
+                                              p_n_clusters=5,
+                                              p_halflife=0.1, 
+                                              p_sigma=0.5, 
+                                              p_mu=0.0,
+                                              p_seed=42,
+                                              p_visualize=p_visualize,
+                                              p_logging=p_logging )
         
         task_norm_minmax.register_event_handler( p_event_id=NormalizerMinMax.C_EVENT_ADAPTED,
                                                  p_event_handler=task_clusterer.renormalize_on_event )

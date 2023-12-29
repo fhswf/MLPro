@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_ca_001_clustream_3d_dynamic.py
+## -- Module  : howto_oa_ca_004_kmeans_2d_dynamic_normalized.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -70,17 +70,18 @@ class Dynamic3DScenario(OAScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get stream from StreamMLProDynamicClouds3D
-        stream = StreamMLProDynamicClouds3D(p_pattern = 'random', 
-                                            p_no_clouds = 8,
-                                            p_variance = 7.0, 
-                                            p_velocity = 1.0, 
-                                            p_logging = logging)
-        stream.set_random_seed(3)
+        stream = StreamMLProClouds( p_num_dim = 2,
+                                    p_num_instances = 2000,
+                                    p_num_clouds = 5,
+                                    p_seed = 1,
+                                    p_radii=[100],
+                                    p_velocity=1,
+                                    p_logging=Log.C_LOG_NOTHING )
 
         # 1.2 Set up a stream workflow based on a custom stream task
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow(p_name='wf_3D',
+        workflow = OAWorkflow(p_name='wf_2D',
                               p_range_max=OAWorkflow.C_RANGE_NONE,
                               p_ada=p_ada,
                               p_visualize=p_visualize,
@@ -119,15 +120,14 @@ class Dynamic3DScenario(OAScenario):
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
         # Cluster Analyzer
-        task_clusterer = WrRiverCluStream2MLPro(p_name='t4',
-                                                p_n_macro_clusters=3,
-                                                p_max_micro_clusters=40,
-                                                p_time_gap=3,
-                                                p_seed=0,
-                                                p_halflife=0.4,
-                                                p_time_window=10,
-                                                p_visualize=p_visualize,
-                                                p_logging=p_logging)
+        task_clusterer = WrRiverKMeans2MLPro( p_name='t4',
+                                             p_n_clusters=5,
+                                             p_halflife=0.1, 
+                                             p_sigma=0.5, 
+                                             p_seed=42,
+                                             p_visualize=p_visualize,
+                                             p_logging=p_logging )
+       
         workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_norm_minmax])
 
         # 1.3 Return stream and workflow

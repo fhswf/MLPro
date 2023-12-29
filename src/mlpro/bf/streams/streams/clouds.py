@@ -12,10 +12,11 @@
 ## -- 2023-12-26  1.0.3     DA       - Little refactoring of StreamMLProClouds._init_dataset()
 ## --                                - Bugfix in StreamMLProClouds._get_next()
 ## -- 2023-12-27  1.1.0     DA       Refactoring
+## -- 2023-12-29  1.2.0     DA       Class StreamMLProClouds: new parameter p_weights
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-12-27)
+Ver. 1.2.0 (2023-12-29)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -47,8 +48,10 @@ class StreamMLProClouds (StreamMLProBase):
         Number of clouds. Default = 4.
     p_radii : list
         Radii of the clouds. Default = 100.
-    p_behaviour : str
-        Type of the clouds - static or dynamic. Default = 'dynamic'
+    p_weights : list[]
+        Optional list of integer weights per cloud. For example, a list [1,2] causes the second cloud 
+        to be flooded with two times more instances than the first one. If empty or None, all clouds 
+        are flooded randomly but equally.
     p_velocity : foat
         Velocity for the centers in unit 1/di. Default = 0.0.
     p_seed 
@@ -68,22 +71,37 @@ class StreamMLProClouds (StreamMLProBase):
     def __init__( self,
                   p_num_dim : int = 3,
                   p_num_instances : int = 1000,
-                  p_num_clouds : int = 8,
+                  p_num_clouds : int = 4,
                   p_radii : list = [100.0],
+                  p_weights : list = [], 
                   p_velocity : float = 0.0,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        self.num_dim = p_num_dim
-        self.radii = p_radii
-        self.num_clouds = int(p_num_clouds)
-        self.velocity = p_velocity
-        self.centers = []
-        self.centers_step = []
-        self.C_NUM_INSTANCES = p_num_instances
+        self._num_dim         = p_num_dim
+        self._radii           = p_radii
+        self._num_clouds      = int(p_num_clouds)
+        self._velocity        = p_velocity
+        self._weights         = p_weights
+        self._cloud_ids       = []
+        self._num_cloud_ids   = 0
+        self._centers         = []
+        self._centers_step    = []
+
+        self.C_NUM_INSTANCES  = p_num_instances
 
         self.set_random_seed(p_seed=p_seed)
+
+        if ( self._weights is not None ) and ( len(self._weights) != 0 ):
+            if len(self._weights) != p_num_clouds:
+                raise ParamError('The number of weights (parameter p_weights) needs to be equal to the number of clouds (parameter p_num_clouds)')
+            
+            for c, weight in enumerate(self._weights):
+                for w in range(weight):
+                    self._cloud_ids.append(c)
+
+            self._num_cloud_ids = len(self._cloud_ids)
 
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
@@ -94,7 +112,7 @@ class StreamMLProClouds (StreamMLProBase):
     def _setup_feature_space(self) -> MSpace:
         feature_space : MSpace = MSpace()
 
-        for i in range(self.num_dim):
+        for i in range(self._num_dim):
             feature_space.add_dim( Feature( p_name_short = 'f_' + str(i),
                                             p_base_set = Feature.C_BASE_SET_R,
                                             p_name_long = 'Feature #' + str(i),
@@ -110,35 +128,35 @@ class StreamMLProClouds (StreamMLProBase):
     def _init_dataset(self):
 
         # 1 Compute the initial positions of the centers
-        for c in range(self.num_clouds):
+        for c in range(self._num_clouds):
 
-            center = np.zeros(self.num_dim)
+            center = np.zeros(self._num_dim)
 
-            for d in range(self.num_dim):
+            for d in range(self._num_dim):
                 center[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
 
-            self.centers.append(center)
+            self._centers.append(center)
 
 
         # 2 Commpute a vectorial step for each center based on the given velocity
-        if self.velocity != 0.0:
+        if self._velocity != 0.0:
 
-            for c in range(self.num_clouds):
+            for c in range(self._num_clouds):
 
-                center_step = np.zeros(self.num_dim)
+                center_step = np.zeros(self._num_dim)
                 dist = 0
 
-                for d in range(self.num_dim):
+                for d in range(self._num_dim):
                     center_step[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
                     dist = dist + center_step[d]**2
 
                 dist = dist**0.5
-                f    = self.velocity / dist
+                f    = self._velocity / dist
 
-                for d in range(self.num_dim):
+                for d in range(self._num_dim):
                     center_step[d] *= f 
                     
-                self.centers_step.append(center_step)
+                self._centers_step.append(center_step)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -150,30 +168,40 @@ class StreamMLProClouds (StreamMLProBase):
 
 
         # 1 Update of center positions
-        if self.velocity != 0.0:
-            for c in range(self.num_clouds):
-                self.centers[c] = self.centers[c] + self.centers_step[c]
+        if self._velocity != 0.0:
+            for c in range(self._num_clouds):
+                self._centers[c] = self._centers[c] + self._centers_step[c]
 
 
-        # 2 Generation of random point around a randomly selected center
-        c            = random.randint(0, self.num_clouds - 1)
-        center       = self.centers[c]
-        feature_data = Element(self._feature_space)
-        point_values = np.zeros(self.num_dim)
+        # 2 Determination of the cloud to be fed
+        if self._num_cloud_ids == 0:
+            # 2.1 Next cloud is found randomly
+            c = random.randint(0, self._num_clouds - 1)
 
-        if len(self.radii) == 1:
-            radius = self.radii[0]
         else:
-            radius = self.radii[c]
+            # 2.1 Next cloud is found by user requirement (see parameter p_weights)
+            c_id = random.randint(0, self._num_cloud_ids - 1)
+            c    = self._cloud_ids[c_id]
 
-        if self.num_dim == 2:
-            # 2.1 Generation of a random 2D point within a circle around the center
+
+        # 3 Generation of random point around a randomly selected center
+        center       = self._centers[c]
+        feature_data = Element(self._feature_space)
+        point_values = np.zeros(self._num_dim)
+
+        if len(self._radii) == 1:
+            radius = self._radii[0]
+        else:
+            radius = self._radii[c]
+
+        if self._num_dim == 2:
+            # 3.1 Generation of a random 2D point within a circle around the center
             radian          = random.random() * 2 * math.pi
             radius_rnd      = radius * random.random()
             point_values[0] = center[0] + math.cos(radian) * radius_rnd
             point_values[1] = center[1] + math.sin(radian) * radius_rnd
-        elif self.num_dim == 3:
-            # 2.2 Generation of a random 3D point within a sphere around the center
+        elif self._num_dim == 3:
+            # 3.2 Generation of a random 3D point within a sphere around the center
             radian1         = random.random() * 2 * math.pi
             radian2         = random.random() * 2 * math.pi
             radius_rnd      = radius * random.random()
@@ -181,8 +209,8 @@ class StreamMLProClouds (StreamMLProBase):
             point_values[1] = center[1] + math.sin(radian2) * radius_rnd
             point_values[2] = center[2] + math.sin(radian1) * math.cos(radian2) * radius_rnd
         else:
-            # 2.3 Generation of a random nD point in a hypercube with edge length (2 * radius) around the center
-            for d in range(self.num_dim):
+            # 3.3 Generation of a random nD point in a hypercube with edge length (2 * radius) around the center
+            for d in range(self._num_dim):
                 point_values[d] = center[d] + random.randint(0, 2 * radius) - radius
 
         feature_data.set_values(point_values)

@@ -8,10 +8,11 @@
 ## -- 2023-12-22  0.0.0     SY       Creation
 ## -- 2023-12-22  1.0.0     SY       First version release
 ## -- 2023-12-28  1.1.0     DA       Exchange of benchmark stream and number of clouds
+## -- 2023-12-29  1.2.0     DA       Adjustments on cloud sizes and weights
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-12-28)
+Ver. 1.2.0 (2023-12-29)
 
 This module demonstrates a task in a workflow, which is Wrapped KMeans Algorithm (River).
 In this module, we demonstrate the workflow in static 3D point clouds.
@@ -44,7 +45,8 @@ class Static3DScenario(OAScenario):
                                     p_num_instances = 2000,
                                     p_num_clouds = 5,
                                     p_seed = 1,
-                                    p_radii = [100],
+                                    p_radii = [100, 150, 200, 250, 300],
+                                    p_weights = [2,3,4,5,6],
                                     p_logging=Log.C_LOG_NOTHING )
         
 
@@ -64,7 +66,8 @@ class Static3DScenario(OAScenario):
         task_clusterer = WrRiverKMeans2MLPro( p_name='t1',
                                               p_n_clusters=5,
                                               p_halflife=0.1, 
-                                              p_sigma=3, 
+                                              p_sigma=3.0, 
+                                              p_mu=0.0,
                                               p_seed=42,
                                               p_visualize=p_visualize,
                                               p_logging=p_logging )
@@ -83,7 +86,7 @@ if __name__ == '__main__':
     cycle_limit = 1200
     logging     = Log.C_LOG_ALL
     visualize   = True
-    step_rate   = 1
+    step_rate   = 2
 else:
     cycle_limit = 2
     logging     = Log.C_LOG_NOTHING

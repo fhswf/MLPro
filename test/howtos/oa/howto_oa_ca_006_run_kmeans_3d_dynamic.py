@@ -44,7 +44,8 @@ class Static3DScenario(OAScenario):
                                     p_num_instances = 2000,
                                     p_num_clouds = 5,
                                     p_seed = 1,
-                                    p_radii = [100],
+                                    p_radii = [100, 150, 200, 250, 300],
+                                    p_weights = [2,3,4,5,6],
                                     p_velocity = 1, 
                                     p_logging=Log.C_LOG_NOTHING )
         
@@ -81,10 +82,10 @@ class Static3DScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 1200
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
-    step_rate   = 1
+    step_rate   = 2
 else:
     cycle_limit = 2
     logging     = Log.C_LOG_NOTHING
