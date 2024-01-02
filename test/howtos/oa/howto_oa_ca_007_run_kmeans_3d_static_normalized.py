@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_ca_002_clustream_3d_static.py
+## -- Module  : howto_oa_ca_007_run_kmeans_3d_static_normalized.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
