@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.gt.examples
-## -- Module  : howto_gt_native_002_prisonners_dilemma_3p.py
+## -- Module  : howto_gt_native_002_prisoners_dilemma_3p.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-07  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
+## -- 2024-01-05  1.0.1     SY       Renaming
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-12)
+Ver. 1.0.1 (2024-01-05)
 
 This module shows how to run a game, namely 3P Prisoners' Dilemma with two solvers, such as random
 solver and min greedy policy.
