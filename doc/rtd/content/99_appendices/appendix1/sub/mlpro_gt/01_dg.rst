@@ -13,7 +13,5 @@ Native GT
 .. toctree::
    :maxdepth: 1
    :glob:
-
-   coming soon...
    
    native/howto.*
