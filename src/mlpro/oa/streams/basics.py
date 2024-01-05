@@ -254,7 +254,7 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
                                  p_visualize = p_visualize,
                                  p_logging = p_logging,
                                  **p_kwargs )
-
+        
         AWorkflow.__init__( self,
                             p_name = p_name,
                             p_range_max = p_range_max,
@@ -263,6 +263,8 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
                             p_visualize = p_visualize,
                             p_logging = p_logging,
                             **p_kwargs )
+        
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------

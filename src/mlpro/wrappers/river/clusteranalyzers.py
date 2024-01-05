@@ -20,10 +20,11 @@
 ## -- 2023-12-22  1.0.9     DA/SY    Bugfix 
 ## -- 2023-12-25  1.0.10    DA       Bugfix in WrClusterAnalyzerRiver2MLPro._adapt()
 ## -- 2023-12-29  1.0.11    DA/SY    Disabled renormalization of CluStream, DBStream, DenStream
+## -- 2024-01-05  1.0.12    DA       All classed: refactoring of naming (C_NAME)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.11 (2023-12-29)
+Ver. 1.0.12 (2024-01-05)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -87,7 +88,6 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
     """
 
     C_TYPE              = 'River Cluster Analyzer'
-    C_NAME              = '????'
     
     C_WRAPPED_PACKAGE   = 'river'
     C_MINIMUM_VERSION   = '0.15.0'
@@ -106,8 +106,6 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         
         self._river_algo = p_river_algo
 
-        WrapperRiver.__init__(self, p_logging=p_logging)
-
         ClusterAnalyzer.__init__(self,
                                  p_cls_cluster=p_cls_cluster,
                                  p_name=p_name,
@@ -115,6 +113,8 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
                                  p_ada=p_ada,
                                  p_visualize=p_visualize,
                                  **p_kwargs)
+
+        WrapperRiver.__init__(self, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -307,7 +307,7 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
         
     """
 
-    C_NAME          = 'DBSTREAM'
+    C_TYPE          = 'River Cluster Analyzer DBSTREAM'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -459,7 +459,7 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
         
     """
 
-    C_NAME          = 'CluStream'
+    C_TYPE          = 'River Cluster Analyzer CluStream'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -603,7 +603,7 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
         
     """
 
-    C_NAME          = 'DenStream'
+    C_TYPE          = 'River Cluster Analyzer DenStream'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -754,7 +754,7 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
         
     """
 
-    C_NAME          = 'KMeans'
+    C_TYPE          = 'River Cluster Analyzer KMeans'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -903,7 +903,7 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
         
     """
 
-    C_NAME          = 'STREAMKMeans'
+    C_NAME          = 'River Cluster Analyzer STREAMKMeans'
 
 
 ## -------------------------------------------------------------------------------------------------

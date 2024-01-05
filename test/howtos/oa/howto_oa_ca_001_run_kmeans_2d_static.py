@@ -50,23 +50,23 @@ class Static3DScenario(OAScenario):
         # 1.2 Set up a stream workflow
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow(p_name='wf_2D',
-                              p_range_max=OAWorkflow.C_RANGE_NONE,
-                              p_ada=p_ada,
-                              p_visualize=p_visualize,
-                              p_logging=p_logging)
+        workflow = OAWorkflow( p_name='wf_2D',
+                               p_range_max=OAWorkflow.C_RANGE_NONE,
+                               p_ada=p_ada,
+                               p_visualize=p_visualize,
+                               p_logging=p_logging )
 
 
         # 1.2.2 Creation of tasks and add them to the workflow
 
         # Cluster Analyzer
         task_clusterer = WrRiverKMeans2MLPro( p_name='t1',
-                                             p_n_clusters=5,
-                                             p_halflife=0.1, 
-                                             p_sigma=3, 
-                                             p_seed=42,
-                                             p_visualize=p_visualize,
-                                             p_logging=p_logging )
+                                              p_n_clusters=5,
+                                              p_halflife=0.1, 
+                                              p_sigma=3, 
+                                              p_seed=42,
+                                              p_visualize=p_visualize,
+                                              p_logging=p_logging )
         
         workflow.add_task(p_task = task_clusterer)
 
