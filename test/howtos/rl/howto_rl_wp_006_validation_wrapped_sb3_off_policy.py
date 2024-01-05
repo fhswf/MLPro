@@ -17,10 +17,11 @@
 ## -- 2023-02-13  1.2.2     DA       Optimization of dark mode
 ## -- 2023-03-27  1.3.0     DA       Refactoring
 ## -- 2023-04-19  1.3.1     MRD      Refactor module import gym to gymnasium
+## -- 2024-01-05  1.3.2     DA       Batch size set to 200
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2023-04-19)
+Ver. 1.3.3 (2024-01-05)
 
 This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """
@@ -259,6 +260,7 @@ policy_sb3 = DQN(
     policy="MlpPolicy",
     learning_starts=12,
     buffer_size=24,
+    batch_size=200,
     env=gym_env,
     policy_kwargs=policy_kwargs,
     device="cpu",

@@ -528,6 +528,8 @@ class Task (Async, EventManager, Plottable, Persistent):
         self._num_predecessors  = 0
         self._ctr_predecessors  = 0
 
+        Id.__init__(self, p_id=p_id)
+
         if p_name is not None:
             self.set_name(p_name)
         else:
