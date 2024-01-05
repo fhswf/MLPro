@@ -1,5 +1,5 @@
 .. _Howto GT 003:
-Howto GT-003: Train Multi-Player in Potential Games
+Howto GT-DG-003: Train Multi-Player in Potential Games
 ===========================================================================
 
 **Prerequisites**

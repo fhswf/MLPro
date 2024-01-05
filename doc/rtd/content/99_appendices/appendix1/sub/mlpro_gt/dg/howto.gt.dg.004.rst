@@ -1,5 +1,5 @@
 .. _Howto GT 004:
-Howto GT-004: Train Multi-Player in Stackelberg Games
+Howto GT-DG-004: Train Multi-Player in Stackelberg Games
 ===========================================================================
 
 **Prerequisites**
