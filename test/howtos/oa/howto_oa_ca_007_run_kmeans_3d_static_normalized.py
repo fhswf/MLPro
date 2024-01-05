@@ -12,10 +12,11 @@
 ## -- 2023-12-10  1.0.3     DA       Increased number of macro clusters of CluStream to 8
 ## -- 2023-12-20  1.1.0     DA       Added event-oriented renormalization to CluStream task
 ## -- 2023-12-21  1.1.1     SY       Refactoring
+## -- 2024-01-05  1.1.2     SY       Updating KMeans parameters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-12-21)
+Ver. 1.1.2 (2024-01-05)
 
 This module demonstrates the combination of several tasks in a workflow, which includes:
 
@@ -113,10 +114,10 @@ class Static3DScenario(OAScenario):
         # Cluster Analyzer
         task_clusterer = WrRiverKMeans2MLPro( p_name='t3',
                                               p_n_clusters=5,
-                                              p_halflife=0.1, 
-                                              p_sigma=0.5, 
+                                              p_halflife=0.25, 
+                                              p_sigma=1.5, 
                                               p_mu=0.0,
-                                              p_seed=42,
+                                              p_seed=30,
                                               p_visualize=p_visualize,
                                               p_logging=p_logging )
         
