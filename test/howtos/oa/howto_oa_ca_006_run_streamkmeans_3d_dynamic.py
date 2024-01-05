@@ -1,20 +1,21 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_ca_002_run_kmeans_2d_dynamic.py
+## -- Module  : howto_oa_ca_006_run_streamkmeans_3d_dynamic.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-22  0.0.0     SY       Creation
 ## -- 2023-12-22  1.0.0     SY       First version release
 ## -- 2023-12-28  1.1.0     DA       Exchange of benchmark stream and number of clouds
+## -- 2024-01-05  1.1.1     SY       Replace algorithm to StreamKMeans
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-12-28)
+Ver. 1.1.1 (2024-01-05)
 
 This module demonstrates a task in a workflow, which is Wrapped KMeans Algorithm (River).
-In this module, we demonstrate the workflow in static 2D point clouds.
+In this module, we demonstrate the workflow in static 3D point clouds.
 
 This module is prepared for the MLPro-OA scientific paper and going to be stored as Code
 Ocean Capsule, thus the result is reproducible.
@@ -35,23 +36,25 @@ from mlpro.wrappers.river.clusteranalyzers import *
 # 1 Prepare a scenario for Static 3D Point Clouds
 class Static3DScenario(OAScenario):
 
-    C_NAME = 'Static2DScenario'
+    C_NAME = 'Static3DScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
-        stream = StreamMLProClouds( p_num_dim = 2,
+        stream = StreamMLProClouds( p_num_dim = 3,
                                     p_num_instances = 2000,
                                     p_num_clouds = 5,
                                     p_seed = 1,
-                                    p_radii=[100],
-                                    p_velocity=1,
+                                    p_radii = [100, 150, 200, 250, 300],
+                                    p_weights = [2,3,4,5,6],
+                                    p_velocity = 1, 
                                     p_logging=Log.C_LOG_NOTHING )
+        
 
         # 1.2 Set up a stream workflow
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow(p_name='wf_2D',
+        workflow = OAWorkflow(p_name='wf_3D',
                               p_range_max=OAWorkflow.C_RANGE_NONE,
                               p_ada=p_ada,
                               p_visualize=p_visualize,
@@ -62,12 +65,13 @@ class Static3DScenario(OAScenario):
 
         # Cluster Analyzer
         task_clusterer = WrRiverKMeans2MLPro( p_name='t1',
-                                             p_n_clusters=5,
-                                             p_halflife=0.1, 
-                                             p_sigma=3, 
-                                             p_seed=42,
-                                             p_visualize=p_visualize,
-                                             p_logging=p_logging )
+                                              p_chunk_size=100,
+                                              p_n_clusters=5,
+                                              p_halflife=0.5,
+                                              p_sigma=300,
+                                              p_seed=40,
+                                              p_visualize=p_visualize,
+                                              p_logging=p_logging )
         
         workflow.add_task(p_task = task_clusterer)
 
@@ -77,12 +81,13 @@ class Static3DScenario(OAScenario):
 
 
 
+
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 1000
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
-    step_rate   = 1
+    step_rate   = 2
 else:
     cycle_limit = 2
     logging     = Log.C_LOG_NOTHING
