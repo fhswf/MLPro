@@ -23,28 +23,28 @@ Note -> [initial node to next node] : [x/y/z]
      -> x = the travelling time, if only one player chooses this path
      -> y = the travelling time, if two players choose this path simulateneously
      -> z = the travelling time, if three players choose this path simulateneously
-1. Node S to Node 1 : [4/6/10]
-2. Node S to Node 2 : [3/4/5]
-3. Node 1 to Node 2 : [1/2/5]
-4. Node 1 to Node 3 : [3/5/6]
-5. Node 2 to Node 3 : [4/5/6]
-6. Node 2 to Node 4 : [3/6/9]
-7. Node 3 to Node T : [2/4/6]
-8. Node 4 to Node 3 : [1/2/7]
-8. Node 4 to Node T : [2/8/10]
+    1. Node S to Node 1 : [4/6/10]
+    2. Node S to Node 2 : [3/4/5]
+    3. Node 1 to Node 2 : [1/2/5]
+    4. Node 1 to Node 3 : [3/5/6]
+    5. Node 2 to Node 3 : [4/5/6]
+    6. Node 2 to Node 4 : [3/6/9]
+    7. Node 3 to Node T : [2/4/6]
+    8. Node 4 to Node 3 : [1/2/7]
+    8. Node 4 to Node T : [2/8/10]
 
 The main objective of each player is to reach the target points as fast as possible, while trying to
 avoid taking same actions with other players. This game represents a common scenario in industries,
 e.g. AGV routing plan, mobile robots, logistics, and many more.
 
 7 potential pathways can be selected by each player, such as:
-1) S -> 1 -> 2 -> 3 -> T
-2) S -> 1 -> 3 -> T
-3) S -> 1 -> 2 -> 4 -> 3 -> T
-4) S -> 1 -> 2 -> 4 -> T
-5) S -> 2 -> 4 -> T
-6) S -> 2 -> 4 -> 3 -> T
-7) S -> 2 -> 3 -> T
+    1) S -> 1 -> 2 -> 3 -> T
+    2) S -> 1 -> 3 -> T
+    3) S -> 1 -> 2 -> 4 -> 3 -> T
+    4) S -> 1 -> 2 -> 4 -> T
+    5) S -> 2 -> 4 -> T
+    6) S -> 2 -> 4 -> 3 -> T
+    7) S -> 2 -> 3 -> T
 
 In this example, we are going to apply different solvers for each player, where Player 1 utilizes 
 a min greedy policy, Player 2 utilizes a combination of a min greedy policy and a random policy, and
