@@ -5,42 +5,58 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-12-12  0.0.0     SY       Creation
-## -- 2023-12-12  1.0.0     SY       Release of first version
+## -- 2024-01-12  0.0.0     SY       Creation
+## -- 2024-01-12  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-12)
+Ver. 1.0.0 (2024-01-12)
 
-This module provides a 3-player game of supply and demand games, where each player represents a seller.
-Each seller has the capability to produce the same product with a quantity between 1-5 items everyday.
-The production cost of producing 1-5 items are constant, which is 5€. Therefore, the seller needs to 
-sell an item with higher price, if they produce less amount.
+This module provides a 3-player game of routing problems, where each player has to move simultaneously
+from the starting node to the target node. We also set up this game as a congestion game, which means
+that if multiple players select the same path, then the travelling time for both players are increased.
 
-The tables below show the sales price based on the quantity produced by each seller:
-            Seller 1                       Seller 2                       Seller 3            
-    Price (€)       Quantity        Price (€)       Quantity        Price (€)       Quantity    
-        15              1               10              1               8               1
-        12              2               8               2               7               2
-        9               3               6               3               6               3
-        6               4               4               4               5               4
-        3               5               2               5               4               5
+The routing network is illustrated in the RTD file: [url - coming soon]
+Node S represents the starting node, while node T denotes the target node. Here are the information of
+the routing network:
+Note -> [initial node to next node] : [x/y/z]
+     -> x = the travelling time, if only one player chooses this path
+     -> y = the travelling time, if two players choose this path simulateneously
+     -> z = the travelling time, if three players choose this path simulateneously
+1. Node S to Node 1 : [4/6/10]
+2. Node S to Node 2 : [3/4/5]
+3. Node 1 to Node 2 : [1/2/5]
+4. Node 1 to Node 3 : [3/5/6]
+5. Node 2 to Node 3 : [4/5/6]
+6. Node 2 to Node 4 : [3/6/9]
+7. Node 3 to Node T : [2/4/6]
+8. Node 4 to Node 3 : [1/2/7]
+8. Node 4 to Node T : [2/8/10]
 
-The market demand of the products is 10 products/day. The buyer will always firstly buy the products
-with less prices. Therefore, each player needs an individual strategy in the competitive manner to 
-select the quantity of the produced products in a day in order to maximize their profit.
+The main objective of each player is to reach the target points as fast as possible, while trying to
+avoid taking same actions with other players. This game represents a common scenario in industries,
+e.g. AGV routing plan, mobile robots, logistics, and many more.
 
-In this example, we are going to apply different solvers for each seller, where Seller 1 and 2 utilize
-max greedy policy. This means that they always select the best possible outcomes without caring what
-the other sellers are doing. Meanwhile, Seller 3 utilized random solver. In the near future, we are
-going to add more solvers and this game is going to be updated accordingly.
+7 potential pathways can be selected by each player, such as:
+1) S -> 1 -> 2 -> 3 -> T
+2) S -> 1 -> 3 -> T
+3) S -> 1 -> 2 -> 4 -> 3 -> T
+4) S -> 1 -> 2 -> 4 -> T
+5) S -> 2 -> 4 -> T
+6) S -> 2 -> 4 -> 3 -> T
+7) S -> 2 -> 3 -> T
+
+In this example, we are going to apply different solvers for each player, where Player 1 utilizes 
+a min greedy policy, Player 2 utilizes a combination of a min greedy policy and a random policy, and
+Player 3 utilizes a random policy. In the near future, we are going to add more solvers and
+this game is going to be updated accordingly.
 
 """
 
 from mlpro.gt.native.basics import *
 from mlpro.bf.physics.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
-from mlpro.gt.pool.native.solvers.greedypolicy import MaxGreedyPolicy
+from mlpro.gt.pool.native.solvers.greedypolicy import MinGreedyPolicy
          
         
         
@@ -48,63 +64,75 @@ from mlpro.gt.pool.native.solvers.greedypolicy import MaxGreedyPolicy
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class TransferFunction_SD3P(TransferFunction):
+class TransferFunction_Routing3P(TransferFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
     def _set_function_parameters(self, p_args) -> bool:
 
-        if self.get_type() == self.C_TRF_FUNC_CUSTOM:
-            try:
-                self.demand         = p_args['p_demand']
-                self.price_seller_1 = p_args['p_price_seller_1']
-                self.price_seller_2 = p_args['p_price_seller_2']
-                self.price_seller_3 = p_args['p_price_seller_3']
-                self.prod_cost      = p_args['p_prod_cost']
-            except:
-                raise NotImplementedError('One/More parameters for this function is missing.')           
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def _custom_function(self, p_input, p_range=None):
 
-        total_production = sum(p_input)
-
-        if total_production <= self.demand:
-
-            profit_seller_1 = p_input[0]*self.price_seller_1[int(p_input[0]-1)]-self.prod_cost
-            profit_seller_2 = p_input[1]*self.price_seller_2[int(p_input[1]-1)]-self.prod_cost
-            profit_seller_3 = p_input[2]*self.price_seller_3[int(p_input[2]-1)]-self.prod_cost
-
-            return [profit_seller_1, profit_seller_2, profit_seller_3]
+        path = {
+            1 : ['S','1','2','3','T'],
+            2 : ['S','1','3','T'],
+            3 : ['S','1','2','4','3','T'],
+            4 : ['S','1','2','4','T'],
+            5 : ['S','2','4','T'],
+            6 : ['S','2','4','3','T'],
+            7 : ['S','2','3','T']
+        }
         
-        else:
+        time_matrix = {
+            'S_1' : [4,6,10],
+            'S_2' : [3,4,5],
+            '1_2' : [1,2,5],
+            '1_3' : [3,5,6],
+            '2_3' : [4,5,6],
+            '2_4' : [3,6,9],
+            '3_T' : [2,4,6],
+            '4_3' : [1,2,7],
+            '4_T' : [2,8,10]
+        }
+        
+        time = [0, 0, 0]
+        reached = [False, False, False]
+        
+        n_iter = max(max(len(path[p_input[0]]), len(path[p_input[1]])), len(path[p_input[2]]))
+        for x in range(n_iter):
+            if x == 0:
+                pass
+            else:
+                for pl in range(3):
+                    if reached[pl] is False:
+                        pl_path = path[p_input[pl]]
+                        if pl == 0:
+                            n1_path = path[p_input[1]]
+                            n2_path = path[p_input[2]]
+                        elif pl == 1:
+                            n1_path = path[p_input[0]]
+                            n2_path = path[p_input[2]]
+                        elif pl == 2:
+                            n1_path = path[p_input[0]]
+                            n2_path = path[p_input[1]]
+                        
+                        str_time = pl_path[x-1]+'_'+pl_path[x]
+                        if (pl_path[x-1]==n1_path[x-1]==n2_path[x-1]) and (pl_path[x]==n1_path[x]==n2_path[x]):
+                            time[pl] += time_matrix[str_time][2]
+                        elif (pl_path[x-1]==n1_path[x-1]) and (pl_path[x]==n1_path[x]):
+                            time[pl] += time_matrix[str_time][1]
+                        elif (pl_path[x-1]==n2_path[x-1]) and (pl_path[x]==n2_path[x]):
+                            time[pl] += time_matrix[str_time][1]
+                        else:
+                            time[pl] += time_matrix[str_time][0]
+                        
+                        if pl_path[x] == 'T':
+                            reached[pl] = True
 
-            price_seller_1  = self.price_seller_1[int(p_input[0]-1)]
-            price_seller_2  = self.price_seller_2[int(p_input[1]-1)]
-            price_seller_3  = self.price_seller_3[int(p_input[2]-1)]
-            list_of_prices  = [price_seller_1, price_seller_2, price_seller_3]
-            
-            sold_quantity   = 0
-            profit_seller   = [-self.prod_cost, -self.prod_cost, -self.prod_cost]
-
-            for x in range(len(list_of_prices)):
-
-                if sold_quantity < self.demand:
-                    min_price = min(list_of_prices)
-                    idx = list_of_prices.index(min_price)
-
-                    if (sold_quantity+p_input[idx]) <= self.demand:
-                        sold_quantity += p_input[idx]
-                        profit_seller[idx] += (p_input[idx]*list_of_prices[idx])
-                        list_of_prices[idx] = 100
-                    else:
-                        quantity = self.demand-sold_quantity
-                        sold_quantity += quantity
-                        profit_seller[idx] += quantity*list_of_prices[idx]
-
-            return profit_seller
+        return time
          
         
         
@@ -112,21 +140,16 @@ class TransferFunction_SD3P(TransferFunction):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PayoffFunction_SD3P (GTFunction):
+class PayoffFunction_Routing3P(GTFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_transfer_functions(self):
 
-        TF = TransferFunction_SD3P(
-            p_name="TransferFunction_SD3P",
-            p_type=TransferFunction.C_TRF_FUNC_CUSTOM,
-            p_demand=10,
-            p_price_seller_1=[15,12,9,6,3],
-            p_price_seller_2=[10,8,6,4,2],
-            p_price_seller_3=[8,7,6,5,4],
-            p_prod_cost=5
-            )
+        TF = TransferFunction_Routing3P(
+            p_name="TransferFunction_Routing3P",
+            p_type=TransferFunction.C_TRF_FUNC_CUSTOM
+        )
 
         self._add_transfer_function(p_idx=0, p_transfer_fct=TF)
         self._add_transfer_function(p_idx=1, p_transfer_fct=TF)
@@ -138,7 +161,7 @@ class PayoffFunction_SD3P (GTFunction):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PayoffMatrix_SD3P (GTPayoffMatrix):
+class PayoffMatrix_Routing3P(GTPayoffMatrix):
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -153,22 +176,8 @@ class PayoffMatrix_SD3P (GTPayoffMatrix):
 ## -------------------------------------------------------------------------------------------------
     def _call_best_response(self, p_element_id:str) -> float:
 
-        idx = self._elem_ids.index(p_element_id)
-        tf  = self._function._payoff_map[idx]
-
-        if idx == 0:
-            prices = tf.price_seller_1
-        elif idx == 1:
-            prices = tf.price_seller_2
-        elif idx == 2:
-            prices = tf.price_seller_3
-        
-        response = []
-        for x, y in enumerate(prices):
-            response.append(y*(x+1))
-        
-        return max(response)
-
+        # S -> 2 -> 4 -> T without congestion
+        return 8
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -182,47 +191,15 @@ class PayoffMatrix_SD3P (GTPayoffMatrix):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MaxGreedyPolicy_SD3P_P1(MaxGreedyPolicy):
+class MinGreedyPolicy_Routing3P(MinGreedyPolicy):
 
 
 ## -------------------------------------------------------------------------------------------------
     def _call_compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
         
+        # S -> 2 -> 4 -> T without congestion
         stg_values  = np.zeros(self._strategy_space.get_num_dim())
-
-        tf          = p_payoff._function._payoff_map[0]
-        prices      = tf.price_seller_1
-        
-        response    = []
-        for x, y in enumerate(prices):
-            response.append(y*(x+1))
-        
-        stg_values[0] = response.index(max(response))+1
-        
-        return GTStrategy(self._id, self._strategy_space, stg_values)
-         
-        
-        
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MaxGreedyPolicy_SD3P_P2(MaxGreedyPolicy):
-
-
-## -------------------------------------------------------------------------------------------------
-    def _call_compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
-        
-        stg_values  = np.zeros(self._strategy_space.get_num_dim())
-
-        tf      = p_payoff._function._payoff_map[1]
-        prices  = tf.price_seller_2
-        
-        response = []
-        for x, y in enumerate(prices):
-            response.append(y*(x+1))
-        
-        stg_values[0] = response.index(max(response))+1
+        stg_values[0] = 5
         
         return GTStrategy(self._id, self._strategy_space, stg_values)
 
@@ -233,59 +210,64 @@ class MaxGreedyPolicy_SD3P_P2(MaxGreedyPolicy):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SupplyDemand_3P (GTGame):
+class Routing_3P (GTGame):
 
-    C_NAME  = 'SupplyDemand_3P'
+    C_NAME  = 'Routing_3P'
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         
         _strategy_space = MSpace()
-        _strategy_space.add_dim(Dimension('RStr','Z','Strategy','','','',[1,5]))
+        _strategy_space.add_dim(Dimension('RStr','Z','Strategy','','','',[1,7]))
         
-        solver1 = MaxGreedyPolicy_SD3P_P1(
+        solver1 = MinGreedyPolicy_Routing3P(
             p_strategy_space=_strategy_space,
             p_id=0,
-            p_name="Max Greedy Solver",
+            p_name="Min Greedy Solver",
             p_visualize=p_visualize,
             p_logging=p_logging
         )
 
-
         p1 = GTPlayer(
             p_solver=solver1,
-            p_name="Seller 1",
+            p_name="Player 1",
             p_visualize=p_visualize,
             p_logging=p_logging,
             p_random_solver=True
         )
 
         coal1 = GTCoalition(
-            p_name="Coalition of Seller 1",
+            p_name="Coalition of Player 1",
             p_coalition_type=GTCoalition.C_COALITION_SUM
         )
         coal1.add_player(p1)
         
-        solver2 = MaxGreedyPolicy_SD3P_P2(
+        solver2a = MinGreedyPolicy_Routing3P(
             p_strategy_space=_strategy_space,
             p_id=1,
-            p_name="Max Greedy Solver",
+            p_name="Min Greedy Solver",
+            p_visualize=p_visualize,
+            p_logging=p_logging
+        )
+        
+        solver2b = RandomSolver(
+            p_strategy_space=_strategy_space,
+            p_id=1,
             p_visualize=p_visualize,
             p_logging=p_logging
         )
 
-
         p2 = GTPlayer(
-            p_solver=solver2,
-            p_name="Seller 2",
+            p_solver=[solver2a, solver2b],
+            p_name="Player 2",
             p_visualize=p_visualize,
             p_logging=p_logging,
             p_random_solver=True
         )
 
         coal2 = GTCoalition(
-            p_name="Coalition of Seller 2",
+            p_name="Coalition of Player 2",
             p_coalition_type=GTCoalition.C_COALITION_SUM
         )
         coal2.add_player(p2)
@@ -299,20 +281,20 @@ class SupplyDemand_3P (GTGame):
 
         p3 = GTPlayer(
             p_solver=solver3,
-            p_name="Seller 3",
+            p_name="Player 3",
             p_visualize=p_visualize,
             p_logging=p_logging,
             p_random_solver=True
         )
 
         coal3 = GTCoalition(
-            p_name="Coalition of Seller 3",
+            p_name="Coalition of Player 3",
             p_coalition_type=GTCoalition.C_COALITION_SUM
         )
         coal3.add_player(p3)
 
         competition = GTCompetition(
-            p_name="Supply Demand 3 Sellers Competition",
+            p_name="3P Routing Competition",
             p_logging=p_logging
             )
         competition.add_coalition(coal1)
@@ -321,8 +303,8 @@ class SupplyDemand_3P (GTGame):
         
         coal_ids = competition.get_coalitions_ids()
 
-        self._payoff = PayoffMatrix_SD3P(
-            p_function=PayoffFunction_SD3P(
+        self._payoff = PayoffMatrix_Routing3P(
+            p_function=PayoffFunction_Routing3P(
                 p_func_type=GTFunction.C_FUNC_TRANSFER_FCTS
                 ),
             p_player_ids=coal_ids
