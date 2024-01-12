@@ -1,17 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.pool.native.games
-## -- Module  : supplydemand_3p.py
+## -- Module  : routingproblems_3p.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-12  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
-## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-12)
+Ver. 1.0.0 (2023-12-12)
 
 This module provides a 3-player game of supply and demand games, where each player represents a seller.
 Each seller has the capability to produce the same product with a quantity between 1-5 items everyday.
