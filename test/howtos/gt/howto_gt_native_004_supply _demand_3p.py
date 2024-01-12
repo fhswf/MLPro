@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-12  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
+## -- 2024-01-12  1.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-12)
+Ver. 1.0.1 (2024-01-12)
 
 This module shows how to run a 3 sellers competition game of supply and demand.
 
@@ -41,8 +42,6 @@ else:
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None
-
-SD3P_Game = SupplyDemand_3P()
 
 training = GTTraining(
         p_game_cls=SupplyDemand_3P,
