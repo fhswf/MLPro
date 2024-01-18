@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-01-12  0.0.0     SY       Creation
-## -- 2024-01-12  1.0.0     SY       Release of first version
+## -- 2024-01-18  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-01-12)
+Ver. 1.0.0 (2024-01-18)
 
 This module provides a 3-player game of routing problems, where each player has to move simultaneously
 from the starting node to the target node. We also set up this game as a congestion game, which means
@@ -100,35 +100,56 @@ class TransferFunction_Routing3P(TransferFunction):
         
         time = [0, 0, 0]
         reached = [False, False, False]
+        p_input = [int(x) for x in p_input]
         
         n_iter = max(max(len(path[p_input[0]]), len(path[p_input[1]])), len(path[p_input[2]]))
         for x in range(n_iter):
-            if x == 0:
-                pass
-            else:
+            if x != 0:
                 for pl in range(3):
                     if reached[pl] is False:
                         pl_path = path[p_input[pl]]
                         if pl == 0:
                             n1_path = path[p_input[1]]
                             n2_path = path[p_input[2]]
+                            n1_reached = reached[1]
+                            n2_reached = reached[2]
                         elif pl == 1:
                             n1_path = path[p_input[0]]
                             n2_path = path[p_input[2]]
+                            n1_reached = reached[0]
+                            n2_reached = reached[2]
                         elif pl == 2:
                             n1_path = path[p_input[0]]
-                            n2_path = path[p_input[1]]
-                        
+                            n2_path = path[p_input[1]] 
+                            n1_reached = reached[0]
+                            n2_reached = reached[1]               
                         str_time = pl_path[x-1]+'_'+pl_path[x]
-                        if (pl_path[x-1]==n1_path[x-1]==n2_path[x-1]) and (pl_path[x]==n1_path[x]==n2_path[x]):
-                            time[pl] += time_matrix[str_time][2]
-                        elif (pl_path[x-1]==n1_path[x-1]) and (pl_path[x]==n1_path[x]):
-                            time[pl] += time_matrix[str_time][1]
-                        elif (pl_path[x-1]==n2_path[x-1]) and (pl_path[x]==n2_path[x]):
-                            time[pl] += time_matrix[str_time][1]
-                        else:
+
+                        if n1_reached and n2_reached:
                             time[pl] += time_matrix[str_time][0]
-                        
+                        elif (not n1_reached) and n2_reached:
+                            if (pl_path[x-1]==n1_path[x-1]) and (pl_path[x]==n1_path[x]):
+                                time[pl] += time_matrix[str_time][1]
+                            else:
+                                time[pl] += time_matrix[str_time][0]
+                        elif (not n2_reached) and n1_reached:
+                            if (pl_path[x-1]==n2_path[x-1]) and (pl_path[x]==n2_path[x]):
+                                time[pl] += time_matrix[str_time][1]
+                            else:
+                                time[pl] += time_matrix[str_time][0]
+                        else:
+                            if (pl_path[x-1]==n1_path[x-1]==n2_path[x-1]) and (pl_path[x]==n1_path[x]==n2_path[x]):
+                                time[pl] += time_matrix[str_time][2]
+                            elif (pl_path[x-1]==n1_path[x-1]) and (pl_path[x]==n1_path[x]):
+                                time[pl] += time_matrix[str_time][1]
+                            elif (pl_path[x-1]==n2_path[x-1]) and (pl_path[x]==n2_path[x]):
+                                time[pl] += time_matrix[str_time][1]
+                            else:
+                                time[pl] += time_matrix[str_time][0]
+                                
+                for pl in range(3):
+                    if reached[pl] is False:
+                        pl_path = path[p_input[pl]]
                         if pl_path[x] == 'T':
                             reached[pl] = True
 
