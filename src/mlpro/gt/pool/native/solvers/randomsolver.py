@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.pool.native.solvers
-## -- Module  : randomsolver
+## -- Module  : randomsolver.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-09-21  0.0.0     SY       Creation
 ## -- 2023-09-22  1.0.0     SY       Release of first version
+## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-09-22)
+Ver. 1.0.1 (2024-01-12)
 
 This module provides solver with random GT strategy.
 """
