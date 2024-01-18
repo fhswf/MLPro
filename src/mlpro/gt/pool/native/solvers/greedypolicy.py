@@ -7,11 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-07  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
-## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
+## -- 2024-01-18  1.0.1     SY       Refactoring: Module Name, MinGreedyPolicy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-12)
+Ver. 1.0.1 (2024-01-18)
 
 This module provides solver with greedy GT strategy. There are two variants, such as minimum greedy
 and maximum greedy.
@@ -96,7 +96,7 @@ class MinGreedyPolicy (GTSolver):
                 except:
                     pass
         else:
-            return self._call_compute_strategy()
+            return self._call_compute_strategy(p_payoff)
 
 
 ## -------------------------------------------------------------------------------------------------
