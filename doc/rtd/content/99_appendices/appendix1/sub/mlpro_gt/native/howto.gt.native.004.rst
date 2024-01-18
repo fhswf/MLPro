@@ -37,4 +37,4 @@ Howto GT-Native-004: 3P Supply and Demand
 
 **Cross Reference**
 
-+ :ref:`API Reference: Native Game Theory <_target_api_gt_native>`
++ :ref:`API Reference: Native Game Theory <target_api_gt_native>`
