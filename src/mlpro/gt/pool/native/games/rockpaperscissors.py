@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.pool.native.games
-## -- Module  : rockpaperscissors
+## -- Module  : rockpaperscissors.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-08  0.0.0     SY       Creation
 ## -- 2023-12-08  1.0.0     SY       Release of first version
+## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-08)
+Ver. 1.0.1 (2024-01-12)
 
 This module provides a duel of two coalitions of a game of Rock Paper Scissors with random solver.
 In the near future, we are going to add more solvers and this howto is going to be updated accordingly.
