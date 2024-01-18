@@ -40,4 +40,4 @@ Howto GT-Native-003: Rock, Paper, Scissors
 
 **Cross Reference**
 
-+ :ref:`API Reference: Native Game Theory <_target_api_gt_native>`
++ :ref:`API Reference: Native Game Theory <target_api_gt_native>`
