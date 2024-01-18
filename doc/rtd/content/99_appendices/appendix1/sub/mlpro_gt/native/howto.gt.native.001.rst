@@ -26,4 +26,4 @@ Howto GT-Native-001: 2P Prisoners' Dilemma
 
 **Cross Reference**
 
-+ :ref:`API Reference: Native Game Theory <_target_api_gt_native>`
++ :ref:`API Reference: Native Game Theory <target_api_gt_native>`
