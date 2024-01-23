@@ -1,6 +1,6 @@
 .. _target_gb_gt:
 Game Boards
------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There are three main possibilities to set up a game board in MLPro, such as,
 

@@ -1,6 +1,6 @@
 .. _target_players_GT:
 Players
--------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the game theoretical approach, the player takes decisions based on the actual states in a game. 
 A game contains two or more players that can be working cooperatively or compete with each other.

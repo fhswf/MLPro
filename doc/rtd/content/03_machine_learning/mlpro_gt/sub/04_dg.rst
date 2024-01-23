@@ -1,0 +1,10 @@
+.. _target_doc_gt:
+MLPro-GT-DG: Dynamic Games
+---------------------------------
+
+.. toctree::
+   :maxdepth: 2
+   
+   dg/gameboard
+   dg/players
+   dg/games
