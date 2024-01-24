@@ -1,3 +1,4 @@
+.. _target_native_gt_setup_coal:
 Coalition
 """"""""""""""""""""""""""
 
@@ -35,8 +36,10 @@ Coalition
                 coal1.add_player(p2)
                 ...
 
-- **Prerequisite**
+- **Prerequisites**
     
-    (1) To set up a solver, please refer to :ref:`solvers page in MLPro-GT-Native section <target_native_solvers_page>`.
+    - To set up a game, please refer to :ref:`games page <target_native_games_page>`.
     
-    (2) To set up a player, please refer to :ref:`setup player page in MLPro-GT-Native section <target_native_gt_setup_player>`.
+    - To set up a solver, please refer to :ref:`solvers page <target_native_solvers_page>`.
+    
+    - To set up a player, please refer to :ref:`setup player page <target_native_gt_setup_player>`.
