@@ -2,7 +2,8 @@
 Game Boards
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-There are three main possibilities to set up a game board in MLPro, such as,
+A game board is a "place" where players perform and interact to each other in game theory.
+There are three main possibilities to set up a game board in MLPro-GT-DG, such as:
 
    (1) the user can develop a custom game board,
 
