@@ -1,3 +1,4 @@
+.. _target_howto_natgt:
 Dynamic Games
 ===================
 

@@ -50,3 +50,7 @@ After following the below step-by-step guideline, we expect the user understands
 
    (d) :ref:`MLPro-GT-Native: Games <target_native_games_page>`
 
+**4. Access HowTo Files related to MLPro-GT-Native**
+   For better understanding of the applications, you can direct to our sample applications in the following page:
+
+   (a) :ref:`HowTo MLPro-GT-Native <target_howto_natgt>`
