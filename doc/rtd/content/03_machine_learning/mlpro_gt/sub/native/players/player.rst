@@ -1,9 +1,10 @@
+.. _target_native_gt_setup_player:
 Player
 """"""""""""""""""""""""""
 
 - **Setup a Player**
 
-    Setting up a player in a game in MLPro-GT-Native is very simple, as following:
+    Setting up a player for a game in MLPro-GT-Native is very simple, as following:
 
     .. code-block:: python
         
@@ -39,5 +40,7 @@ Player
                 )
 
                 ...
+
+- **Prerequisite**
     
     To set up a solver, please refer to :ref:`solvers page in MLPro-GT-Native section <target_native_solvers_page>`.
