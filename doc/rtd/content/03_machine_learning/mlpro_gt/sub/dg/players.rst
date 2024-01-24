@@ -15,9 +15,10 @@ The three main tasks of the player are as follows,
 
    (3) Optimize their policy based on the state and the selected action.
 
-In MLPro, you can customize your GT-based policy or import the provided policies in the pool of objects (unavailable at the moment).
+In MLPro, you can customize your GT-based policy or import the provided policies in the pool of objects.
 
 .. toctree::
    :maxdepth: 1
    
    players/custompolicies
+   players/pool
