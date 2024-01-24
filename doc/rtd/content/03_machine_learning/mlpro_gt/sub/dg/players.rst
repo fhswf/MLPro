@@ -7,7 +7,7 @@ A game contains two or more players that can be working cooperatively or compete
 Each player is supplied with a policy, where the policy can be used for the decision-making process and also optimized.
 The decision-making of the player is in the form of the next action.
 
-The three main tasks of the player are as follows,
+The three main tasks of the player are as follows:
 
    (1) Compute new action based on the current state.
 
