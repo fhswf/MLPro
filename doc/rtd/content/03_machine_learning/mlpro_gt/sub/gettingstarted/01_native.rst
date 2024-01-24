@@ -39,10 +39,14 @@ After following the below step-by-step guideline, we expect the user understands
    (b) `Section 5 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
 
 **4. Understanding Players, Strategies, Payoffs, and Games in MLPro-GT-Native**
-   To be added...
+   We provide the definition of each main component of game theory in our documentation page, including howto setup each component.
+   For better understanding, you can direct to the following pages:
 
-**5. Additional Guidance**
-   After following the previous steps, we hope that you could practice MLPro-GT and start using this subpackage for your GT-related activities.
-   For more advanced features, we highly recommend you to check out the following howto files:
+   (a) :ref:`MLPro-GT-Native: Player, Coalition, Competition <target_native_pl_page>`
 
-   To be added...
+   (b) :ref:`MLPro-GT-Native: Payoff <target_native_payoff_page>`
+
+   (c) :ref:`MLPro-GT-Native: Solvers <target_native_solvers_page>`
+
+   (d) :ref:`MLPro-GT-Native: Games <target_native_games_page>`
+
