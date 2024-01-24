@@ -13,7 +13,7 @@ Player
 
         class MyGame(GTGame):
 
-        C_NAME  = 'MyGame'
+            C_NAME  = 'MyGame'
 
             def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
                 
@@ -43,7 +43,7 @@ Player
 
 - **Prerequisites**
     
-    - To set up a game, please refer to :ref:`games page in MLPro-GT-Native section <target_native_games_page>`.
+    - To set up a game, please refer to :ref:`games page <target_native_games_page>`.
     
-    - To set up a solver, please refer to :ref:`solvers page in MLPro-GT-Native section <target_native_solvers_page>`.
+    - To set up a solver, please refer to :ref:`solvers page <target_native_solvers_page>`.
     

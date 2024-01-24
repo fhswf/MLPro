@@ -11,7 +11,7 @@ Competition
 
         class MyGame(GTGame):
 
-        C_NAME  = 'MyGame'
+            C_NAME  = 'MyGame'
 
             def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
                 
