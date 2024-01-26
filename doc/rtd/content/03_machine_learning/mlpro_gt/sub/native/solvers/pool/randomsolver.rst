@@ -16,7 +16,7 @@ The random solvers can be imported via:
 
 .. code-block:: python
 
-    import mlpro.gt.pool.native.solvers.randomsolver
+    from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
     
 
 **Cross Reference**
