@@ -1,7 +1,7 @@
 Competition
 """"""""""""""""""""""""""
 
-- **Setup a Player**
+- **Setup a Competition**
 
     Setting up a competition for a game in MLPro-GT-Native is very simple, as following:
 
