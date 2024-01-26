@@ -1,4 +1,8 @@
 Solvers Pool
 """"""""""""""""""""""""""
 
-To be added...
+.. toctree::
+   :maxdepth: 1
+   
+   pool/randomsolver
+   pool/minmaxgreedy

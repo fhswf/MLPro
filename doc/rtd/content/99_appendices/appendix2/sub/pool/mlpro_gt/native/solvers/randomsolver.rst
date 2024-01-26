@@ -1,3 +1,4 @@
+.. _target_native_pool_gt_solvers_random:
 Random Solver
 =======================
 
