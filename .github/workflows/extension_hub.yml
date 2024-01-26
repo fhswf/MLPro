@@ -28,7 +28,6 @@ jobs:
 
       - name: S3 Commit changes
         run: |
-          git branch --set-upstream-to origin/main
           git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
           git commit --message 'MLPro extension hub updated'
         continue-on-error: true
