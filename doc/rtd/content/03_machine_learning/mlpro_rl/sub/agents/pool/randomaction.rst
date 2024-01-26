@@ -20,7 +20,7 @@ This Random Action Generator policy can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.policies.randomgenerator
+    from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
     
 
 **Cross Reference**
