@@ -24,7 +24,7 @@ This game can be imported, as follows:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.envs.bglp
+    from mlpro.gt.pool.native.games.prisonersdilemma_2p import PrisonersDilemma2PGame
 
 **Player, Coalition, and Competition**
 
@@ -38,9 +38,9 @@ The outcomes and associated payoffs for each player depend on the combination of
 +------------------------------------+-------------------------------------------------------+-------------------------------------------------------+
 |                                    |                Player 2: Confess                      |                Player 2: Not Confess                  |
 +====================================+=======================================================+=======================================================+
-|      **Player 1: Confess**         |            (5, 5)                                     |                  (8, 1)                               |
+|      **Player 1: Confess**         |            (2, 2)                                     |                  (8, 1)                               |
 +------------------------------------+-------------------------------------------------------+-------------------------------------------------------+
-|      **Player 2: Not Confess**     |            (1, 8)                                     |                  (2, 2)                               |
+|      **Player 2: Not Confess**     |            (1, 8)                                     |                  (5, 5)                               |
 +------------------------------------+-------------------------------------------------------+-------------------------------------------------------+
 
 **Solvers**
