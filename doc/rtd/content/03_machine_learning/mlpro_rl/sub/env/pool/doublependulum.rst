@@ -13,7 +13,7 @@ The double pendulum environment can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.envs.doublependulum
+    from mlpro.rl.pool.envs.doublependulum import *
 
 The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to 'up', 'down', 'random'. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro's sample implementation examples.
 

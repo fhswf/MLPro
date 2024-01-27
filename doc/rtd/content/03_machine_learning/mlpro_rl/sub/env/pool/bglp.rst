@@ -33,7 +33,7 @@ The BGLP environment can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.envs.bglp
+    from mlpro.rl.pool.envs.bglp import BGLP
 
 
 **Prerequisites**
