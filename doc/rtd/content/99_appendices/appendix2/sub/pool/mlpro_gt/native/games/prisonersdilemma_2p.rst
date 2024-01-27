@@ -1,3 +1,4 @@
+.. _target_api_gt_pool_2pprisoners:
 2P Prisoners Dilemma
 =======================
 
