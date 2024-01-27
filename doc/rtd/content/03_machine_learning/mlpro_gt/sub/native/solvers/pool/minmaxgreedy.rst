@@ -1,8 +1,5 @@
 Min-Max Greedy Solvers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: mlpro.gt.pool.native.solvers.greedypolicy
-    
     
 **General Information**
 
