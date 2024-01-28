@@ -1,3 +1,4 @@
+.. _target_api_gt_pool_3psd:
 3P Supply and Demand
 =======================
 
