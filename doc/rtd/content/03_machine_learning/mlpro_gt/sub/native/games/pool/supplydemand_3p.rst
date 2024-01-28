@@ -35,7 +35,7 @@ Each player in the game represent each seller. They need to compete or cooperate
 
 **Payoff Function**
 
-The tables below show the sales price per product based on the quantity produced by each seller:
+The table below shows the sales price per product based on the quantity produced by each seller:
 
 +------------------------------+-----------------------------------------+----------------------------------------+----------------------------------------+----------------------------------------+----------------------------------------+
 |                                       Seller 1                         |                             Seller 2                                            |                             Seller 3                                            |
