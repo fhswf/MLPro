@@ -44,10 +44,11 @@
 ## -- 2022-12-21  2.0.4     SY       Update _recognize_space due to howto_rl_wp_003
 ## -- 2023-02-21  2.1.0     DA       Class WrEnvPZOO2MLPro: specific implementations for load(), _save()
 ## -- 2023-03-26  2.2.0     DA       Class WrEnvPZOO2MLPro: refactoring of persistence
+## -- 2024-01-23  2.3.0     SY       Debug due to introduction of PettingZoo version 1.24.3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2023-03-26)
+Ver. 2.3.0 (2023-01-23)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -129,15 +130,16 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
         
+        self._zoo_env.reset()
         if p_state_space is not None: 
             self._state_space = p_state_space
         else:
-            self._state_space = self._recognize_space(self._zoo_env.observation_spaces, "observation")
+            self._state_space = self._recognize_space(self._zoo_env.observation_space, "observation")
         
         if p_action_space is not None: 
             self._action_space = p_action_space
         else:
-            self._action_space = self._recognize_space(self._zoo_env.action_spaces, "action")
+            self._action_space = self._recognize_space(self._zoo_env.action_space, "action")
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -188,17 +190,17 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         if dict_name == "observation":
             space.add_dim(Dimension(p_name_short='0', p_base_set='DO'))
         elif dict_name == "action":
-            for k in p_zoo_space:
-                if isinstance(p_zoo_space[k], gymnasium.spaces.Discrete):
+            for k in self._zoo_env.agents:
+                if isinstance(p_zoo_space(k), gymnasium.spaces.Discrete):
                     space.add_dim(Dimension(p_name_short=k, p_base_set=Dimension.C_BASE_SET_Z,
-                                            p_boundaries=[0, int(p_zoo_space[k].n-1)]))
+                                            p_boundaries=[0, int(p_zoo_space(k).n-1)]))
                 else:
                     try:
-                        shape_dim = len(p_zoo_space[k].shape)
+                        shape_dim = len(p_zoo_space(k).shape)
                         for i in range(shape_dim):
-                            for d in range(p_zoo_space[k].shape[i]):
+                            for d in range(p_zoo_space(k).shape[i]):
                                 space.add_dim(Dimension(p_name_short=str(d_idx), p_base_set=Dimension.C_BASE_SET_R,
-                                                        p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                                                        p_boundaries=[p_zoo_space(k).low[d], p_zoo_space(k).high[d]]))
                                 d_idx += 1
                     except:
                         space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
@@ -242,15 +244,15 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         action_sorted = p_action.get_sorted_values()
         agent_num = 0
         
-        for k in self._zoo_env.action_spaces:
-            dtype = self._zoo_env.action_spaces[k].dtype
+        for k in self._zoo_env.agents:
+            dtype = self._zoo_env.action_space(k).dtype
     
             if ( dtype == np.int32 ) or ( dtype == np.int64 ):
                 action_sorted_agent = action_sorted[agent_num].round(0)
             else:
                 action_sorted_agent = action_sorted[agent_num]
     
-            action_zoo = action_sorted_agent.astype(self._zoo_env.action_spaces[k].dtype)
+            action_zoo = action_sorted_agent.astype(self._zoo_env.action_space(k).dtype)
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
             observation, reward_zoo, termination, truncation, info = self._zoo_env.last()

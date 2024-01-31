@@ -35,10 +35,11 @@
 ## -- 2023-02-22  2.3.0     SY       Refactoring
 ## -- 2023-03-27  2.3.1     DA       Method BGLP._compute_reward(): refactoring of reward type
 ## --                                Reward.C_TYPE_EVERY_AGENT
+## -- 2023-08-22  2.3.2     SY       Storing power consumption per actuator in data storing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.1 (2023-03-27)
+Ver. 2.3.2 (2023-08-22)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -849,7 +850,16 @@ class BGLP (Environment):
         self.reward             = np.zeros((len(self.acts),1))
         self.con_res_to_act     = [[-1,0],[0,1],[1,2],[2,3],[3,4],[4,-1]]
         
-        self.data_lists         = ["time","overflow","power","demand"]
+        self.data_lists         = ["time",
+                                   "total overflow",
+                                   "total power",
+                                   "demand",
+                                   "power act1",
+                                   "power act2",
+                                   "power act3",
+                                   "power act4",
+                                   "power act5"]
+        
         self.data_storing       = DataStoring(self.data_lists)
         self.data_frame         = None
         
@@ -975,7 +985,7 @@ class BGLP (Environment):
             overflow_diff, demand_diff, power_diff, transport_diff, margin_diff = self.get_status(self.t, self._demand)
             self.overflow_t     += overflow_diff
             self.demand_t       += demand_diff
-            self.power_t       += power_diff
+            self.power_t        += power_diff
             self.transport_t    += transport_diff
             self.margin_t       += margin_diff
             self.t              += self.t_step
@@ -986,9 +996,14 @@ class BGLP (Environment):
         self._state = self.collect_substates()
         
         self.data_storing.memorize("time",str(self.data_frame),self.t)
-        self.data_storing.memorize("overflow",str(self.data_frame), (sum(self.overflow_t[:])/self.t_set).item())
-        self.data_storing.memorize("power",str(self.data_frame), (sum(self.power_t[:])/self.t_set).item())
+        self.data_storing.memorize("total overflow",str(self.data_frame), (sum(self.overflow_t[:])/self.t_set).item())
+        self.data_storing.memorize("total power",str(self.data_frame), (sum(self.power_t[:])/self.t_set).item())
         self.data_storing.memorize("demand",str(self.data_frame), (self.demand_t[-1]/self.t_set).item())
+        self.data_storing.memorize("power act1",str(self.data_frame), (self.power_t[0]/self.t_set).item())
+        self.data_storing.memorize("power act2",str(self.data_frame), (self.power_t[1]/self.t_set).item())
+        self.data_storing.memorize("power act3",str(self.data_frame), (self.power_t[2]/self.t_set).item())
+        self.data_storing.memorize("power act4",str(self.data_frame), (self.power_t[3]/self.t_set).item())
+        self.data_storing.memorize("power act5",str(self.data_frame), (self.power_t[4]/self.t_set).item())
 
         return self._state
 

@@ -1,8 +1,0 @@
-Dynamic Programming
-===================
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-   
-   dp/howto.*
