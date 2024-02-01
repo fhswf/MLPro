@@ -35,7 +35,7 @@ class ClusterGenerator:
         }
         self.clusters.append(cluster)
 
-    def generate_clusters(self):
+    def generate_clusters(self, X):
         data = []
         for cluster in self.clusters:
             center = cluster["center"]
