@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-18  0.0.0     DA       Creation
+## -- 2023-12-28  1.0.0     DA       Finalized class Point
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-04-18)
+Ver. 1.0.0 (2023-12-28)
 
 This module provides class for geometric objects like points, etc.
 
@@ -138,7 +139,7 @@ class Point (Element, Plottable):
             self._plot_pos,  = p_settings.axes.plot( self._values[0], 
                                                      self._values[1], 
                                                      marker='+', 
-                                                     color='blue', 
+                                                     color='red', # 2023-12-08 DA
                                                      linestyle='',
                                                      markersize=3 )
             
@@ -153,6 +154,8 @@ class Point (Element, Plottable):
                                                       np.array([self._values[1]]),
                                                       np.array([self._point_vel[0]]),
                                                       np.array([self._point_vel[1]]),
+                                                      units = 'dots',
+                                                      width = 2,
                                                       scale = 1,
                                                       color='red' )
 
@@ -167,7 +170,7 @@ class Point (Element, Plottable):
                                                  self._values[1], 
                                                  self._values[2],
                                                  marker='+', 
-                                                 color='blue', 
+                                                 color='red',  # 2023-12-08 DA
                                                  linestyle='',
                                                  markersize=3 )
             

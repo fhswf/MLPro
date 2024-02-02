@@ -2,7 +2,7 @@
 MLPro-MPPS
 ======
 
-An extension feature of MLPro related to a simulation of multi-purpose production systems (MPPS)
+An extension feature of MLPro related to a simulation framework for multi-purpose production systems (MPPS)
 
 
 .. list-table::

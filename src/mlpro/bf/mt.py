@@ -32,10 +32,11 @@
 ## -- 2023-01-01  1.8.0     DA       Refactoring of plot settings
 ## -- 2023-02-15  1.8.1     DA       Class Task: changed default range to C_RANGE_THREAD
 ## -- 2023-03-27  1.9.0     DA       Class Task: added parent class Persistent
+## -- 2024-01-05  1.9.1     DA       Class Task: bugfix in __init__() regarding name generation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2023-03-27)
+Ver. 1.9.1 (2024-01-05)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -527,19 +528,19 @@ class Task (Async, EventManager, Plottable, Persistent):
         self._num_predecessors  = 0
         self._ctr_predecessors  = 0
 
+        Id.__init__(self, p_id=p_id)
+
+        if p_name is not None:
+            self.set_name(p_name)
+        else:
+            self.set_name(str(self.get_id()))
+            
         Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         Persistent.__init__(self, p_id=p_id, p_logging=p_logging)
 
         self._custom_run_method = self._get_custom_run_method()
-        name = self.get_name()
-        if name != '': name = name + ' '
-        if p_name is not None:
-            self.set_name(name + p_name)
-        else:
-            self.set_name(name + str(self.get_id()))
-
         self._autorun(p_autorun=p_autorun, p_kwargs=self._kwargs)
 
 
