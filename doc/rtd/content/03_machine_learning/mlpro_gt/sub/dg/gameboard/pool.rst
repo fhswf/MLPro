@@ -1,5 +1,5 @@
 Game board Pool
---------------
+""""""""""""""""""""""""""
 
 .. toctree::
    :maxdepth: 1

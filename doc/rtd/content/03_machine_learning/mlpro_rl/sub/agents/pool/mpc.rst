@@ -28,7 +28,7 @@ This MPC policy can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.actionplanner.mpc
+    from mlpro.rl.pool.actionplanner.mpc import MPC
 
 Multiprocessing has also been incorporated into MPC, which allows parallel computations.
 Depending on the number of planning horizon, but we believe that this reduces the training time massively.
@@ -41,5 +41,5 @@ Depending on the number of planning horizon, but we believe that this reduces th
 
 **Citation**
 
-If you apply this environment in your research or work, please :ref:`cite <target_publications>` us and the `original paper <https://ieeexplore.ieee.org/document/7989202>`_.
+If you apply this policy in your research or work, please :ref:`cite <target_publications>` us and the `original paper <https://ieeexplore.ieee.org/document/7989202>`_.
 

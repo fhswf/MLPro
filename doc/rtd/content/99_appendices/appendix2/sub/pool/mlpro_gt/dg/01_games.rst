@@ -1,5 +1,5 @@
 Game Boards
-===========
+---------------------
 
 .. toctree::
    :maxdepth: 1
