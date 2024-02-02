@@ -21,9 +21,9 @@ The minimum greedy can be imported via:
     
 
 **Cross Reference**
-    + :ref:`API Reference <target_native_pool_gt_solvers_random>`
     + :ref:`Howto GT-Native-002: 3P Prisoners Dilemma <Howto GTN 002>`
     + :ref:`Howto GT-Native-005: 3P Routing Problems <Howto GTN 005>`
+    + :ref:`API Reference <target_native_pool_gt_solvers_random>`
 
 
 **Citation**

@@ -63,8 +63,8 @@ Here, the first value in each pair represents the payoff to the row coalition, a
 
 **Cross References**
 
-    + :ref:`API Reference <target_api_gt_pool_rps>`
     + :ref:`Howto GT-Native-003: Rock, Paper, Scissors <Howto GTN 003>`
+    + :ref:`API Reference <target_api_gt_pool_rps>`
 
 **Citation**
 

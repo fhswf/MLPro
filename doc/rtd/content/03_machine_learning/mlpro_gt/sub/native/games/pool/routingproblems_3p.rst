@@ -86,8 +86,8 @@ The figure below shows the traveling time from one node to another, where each p
 
 **Cross References**
 
-    + :ref:`API Reference <target_api_gt_pool_3pconges>`
     + :ref:`Howto GT-Native-005: 3P Routing Problems <Howto GTN 005>`
+    + :ref:`API Reference <target_api_gt_pool_3pconges>`
 
 **Citation**
 

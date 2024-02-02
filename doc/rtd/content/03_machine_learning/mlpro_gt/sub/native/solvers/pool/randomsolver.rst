@@ -17,8 +17,9 @@ The random solvers can be imported via:
     
 
 **Cross Reference**
-    + :ref:`API Reference <target_native_pool_gt_solvers_random>`
+
     + :ref:`Howto GT-Native-001: 2P Prisoners Dilemma <Howto GTN 001>`
+    + :ref:`API Reference <target_native_pool_gt_solvers_random>`
 
 
 **Citation**

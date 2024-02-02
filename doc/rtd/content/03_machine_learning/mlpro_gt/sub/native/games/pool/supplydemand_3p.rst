@@ -67,8 +67,8 @@ The table below shows the sales price per product based on the quantity produced
 
 **Cross References**
 
-    + :ref:`API Reference <target_api_gt_pool_3psd>`
     + :ref:`Howto GT-Native-004: 3P Supply and Demand <Howto GTN 004>`
+    + :ref:`API Reference <target_api_gt_pool_3psd>`
 
 **Citation**
 

@@ -1,5 +1,5 @@
-MLPro-GT-Native
--------------------
+MLPro-GT-Native - Native Games
+------------------------------
 
 Here is a concise series to introduce all users to the MLPro-GT-Native in a practical way, whether you are a first-timer or an experienced MLPro user.
 

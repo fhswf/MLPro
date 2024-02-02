@@ -1,5 +1,5 @@
 .. _target_doc_gt_native:
-MLPro-GT-Native
+MLPro-GT-Native - Native Games
 ---------------------------------
 
 .. toctree::

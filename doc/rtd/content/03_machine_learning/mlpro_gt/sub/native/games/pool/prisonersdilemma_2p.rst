@@ -55,8 +55,8 @@ The outcomes and associated payoffs for each player depend on the combination of
 
 **Cross References**
 
-    + :ref:`API Reference <target_api_gt_pool_2pprisoners>`
     + :ref:`Howto GT-Native-001: 2P Prisoners Dilemma <Howto GTN 001>`
+    + :ref:`API Reference <target_api_gt_pool_2pprisoners>`
 
 **Citation**
 

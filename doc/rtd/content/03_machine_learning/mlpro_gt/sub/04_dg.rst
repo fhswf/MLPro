@@ -1,5 +1,5 @@
 .. _target_doc_gt:
-MLPro-GT-DG
+MLPro-GT-DG - Dynamic Games
 ---------------------------------
 
 .. toctree::

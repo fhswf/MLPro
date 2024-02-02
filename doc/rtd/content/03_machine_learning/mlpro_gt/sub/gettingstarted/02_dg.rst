@@ -1,5 +1,5 @@
-MLPro-GT-DG
--------------------
+MLPro-GT-DG - Dynamic Games
+---------------------------
 
 Here is a concise series to introduce all users to the MLPro-GT-DG in a practical way, whether you are a first-timer or an experienced MLPro user.
 
