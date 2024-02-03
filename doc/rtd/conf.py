@@ -23,7 +23,7 @@ copyright = "2024 South Westphalia University of Applied Sciences, Germany"
 author = "Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya et al"
 
 # The full version, including alpha/beta/rc tags
-release = "1.3.0"
+release = "1.3.1"
 
 
 # -- General configuration ---------------------------------------------------
