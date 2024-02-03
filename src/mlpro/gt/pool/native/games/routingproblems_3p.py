@@ -7,16 +7,16 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-01-12  0.0.0     SY       Creation
 ## -- 2024-01-18  1.0.0     SY       Release of first version
+## -- 2024-01-28  1.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-01-18)
+Ver. 1.0.1 (2024-01-28)
 
 This module provides a 3-player game of routing problems, where each player has to move simultaneously
 from the starting node to the target node. We also set up this game as a congestion game, which means
 that if multiple players select the same path, then the travelling time for both players are increased.
 
-The routing network is illustrated in the RTD file: [url - coming soon]
 Node S represents the starting node, while node T denotes the target node. Here are the information of
 the routing network:
 Note -> [initial node to next node] : [x/y/z]

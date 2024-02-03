@@ -20,7 +20,7 @@ This multicartpole environment can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.envs.multicartpole
+    from mlpro.rl.pool.envs.multicartpole import MulitCartPole
 
 
 The multicartpole environment can simulate 'n' number of cartpole-v1 environmments simultaneously, where the parameter 'n' can be set while instantiating the environment. The multicartpole environment can be instantiated as an mlpro environment class by including

@@ -1,5 +1,5 @@
 Reusing RL Environments
---------------------------
+""""""""""""""""""""""""""
 
 - **Transfering RL Environment to GT Game Board**
 

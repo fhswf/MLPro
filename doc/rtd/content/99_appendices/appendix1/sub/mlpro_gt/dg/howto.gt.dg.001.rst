@@ -1,5 +1,5 @@
 .. _Howto GT 001:
-Howto GT-001: Run Multi-Player with Own Policy
+Howto GT-DG-001: Run Multi-Player with Own Policy
 ===========================================================================
 
 **Prerequisites**

@@ -1,5 +1,5 @@
 .. _Howto GT 002:
-Howto GT-002: Train Multi-Player
+Howto GT-DG-002: Train Multi-Player
 ===========================================================================
 
 **Prerequisites**

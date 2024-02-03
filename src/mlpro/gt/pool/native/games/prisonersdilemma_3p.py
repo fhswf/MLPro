@@ -8,10 +8,11 @@
 ## -- 2023-12-07  0.0.0     SY       Creation
 ## -- 2023-12-08  1.0.0     SY       Release of first version
 ## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
+## -- 2024-01-27  1.0.2     SY       Refactoring: Payoff Matrix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-12)
+Ver. 1.0.2 (2024-01-27)
 
 This module provides a 2-player game of Prisoners' Dilemma with greedy and random solvers.
 In the near future, we are going to add more solvers and this howto is going to be updated accordingly.
@@ -26,7 +27,7 @@ of imprisonment, while the not guilty prisoner gets 1 year of imprisonment.
 If two of them plead guilty, then each of them gets 5 years of imprisonment, while the not guilty prisoner
 gets 1 year.
 
-Meanwhile, if three of them plead not guilty, then each of them obtains 5 years of imprisonment.
+Meanwhile, if three of them plead not guilty, then each of them obtains 15 years of imprisonment.
 
 And if three of them plead guilty, then each of them obtains 2 years of imprisonment.
 
@@ -63,18 +64,18 @@ class PayoffFunction_PD3P (GTFunction):
 
         self._add_payoff_matrix(
             p_idx=0,
-            p_payoff_matrix=np.array([[2, 5, 5, 10], [1, 1, 1, 5]])
+            p_payoff_matrix=np.array([[2, 5, 5, 10], [1, 1, 1, 15]])
             # ([[(0,0,0), (0,0,1), (0,1,0), (0,1,1)], [(1,0,0), (1,0,1), (1,1,0), (1,1,1)]])
         )
 
         self._add_payoff_matrix(
             p_idx=1,
-            p_payoff_matrix=np.array([[2, 5, 1, 1], [5, 10, 1, 5]])
+            p_payoff_matrix=np.array([[2, 5, 1, 1], [5, 10, 1, 15]])
         )
 
         self._add_payoff_matrix(
             p_idx=2,
-            p_payoff_matrix=np.array([[2, 1, 5, 1], [5, 1, 10, 5]])
+            p_payoff_matrix=np.array([[2, 1, 5, 1], [5, 1, 10, 15]])
         )
          
         
