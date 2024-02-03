@@ -1,0 +1,18 @@
+.. _target_howto_natgt:
+Dynamic Games
+===================
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   
+   dg/howto.*
+
+Native GT
+===================
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   
+   native/howto.*

@@ -25,9 +25,9 @@ MLPro provides complete, standardized, and reusable functionalities to support y
 - Advanced training/tuning funktionalities with separate evaluation and progress detection
 - Growing pool of reuseable environments of automation and robotics
 
-#### c) MLPro-GT: Sub-Package for Cooperative Game Theory
-- Templates for (potential based) game boards
-- Templates for cooperative multi-players
+#### c) MLPro-GT: Sub-Package for Native Game Theory and Dynamic Games
+- Templates for native game theory regardless number of players and type of games
+- Templates for multi-players in dynamic games, including game boards, players, and many more
 - Reuse of advanced training/tuning classes and multi-agent environments of sub-package MLPro-RL
 
 #### d) Numerous executable self study examples
@@ -54,7 +54,7 @@ The Documentation is available here: [https://mlpro.readthedocs.io/](https://mlp
 ## Project and Team
 Project MLPro was started in 2021 by the [Group for Automation Technology and Learning Systems at the South Westphalia University of Applied Sciences, Germany](https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php).
 
-MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono) and further [contributors](https://github.com/fhswf/MLPro/graphs/contributors). 
+MLPro is designed and developed by [Detlef Arend](https://github.com/detlefarend), [Steve Yuwono](https://github.com/steveyuwono), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), and further [contributors](https://github.com/fhswf/MLPro/graphs/contributors). 
 
 
 ## How to contribute

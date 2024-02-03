@@ -20,7 +20,7 @@ This Random Action Generator policy can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.policies.randomgenerator
+    from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
     
 
 **Cross Reference**
@@ -29,5 +29,5 @@ This Random Action Generator policy can be imported via:
 
 **Citation**
 
-If you apply this environment in your research or work, please :ref:`cite <target_publications>` us.
+If you apply this policy in your research or work, please :ref:`cite <target_publications>` us.
 

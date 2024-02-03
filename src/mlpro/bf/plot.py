@@ -29,10 +29,11 @@
 ## -- 2023-02-23  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
 ## -- 2023-04-10  2.9.1     MRD      Turn on Tkinter backend for macos
 ## -- 2023-05-01  2.9.2     DA       Turn off Tkinter backend for macos due to workflow problems
+## -- 2023-12-28  2.10.0    DA       Method Plottable._init_plot_3d(): init 3D view perspective
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.2 (2023-05-01)
+Ver. 2.10.0 (2023-12-28)
 
 This module provides various classes related to data plotting.
 """
@@ -384,6 +385,7 @@ class Plottable:
 
         if p_settings.axes is None:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id, projection='3d' )
+            p_settings.axes.set_proj_type(proj_type='persp', focal_length=0.3)
 
 
 ## -------------------------------------------------------------------------------------------------
