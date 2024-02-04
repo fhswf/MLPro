@@ -27,7 +27,7 @@ Release Checklist
 
 
 **2 Release**
-- [ ] 2.1 Create a new release
+- [ ] 2.1 Create a new [release](https://github.com/fhswf/MLPro/releases)
 - [ ] 2.2 Generate/complete release notes
 - [ ] 2.3 Commit new release and observe the action log
 - [ ] 2.4 Activate new release in [ReadTheDocs](https://readthedocs.org) as user mlpro-admin
