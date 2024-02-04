@@ -2,8 +2,8 @@
 name: Sprint Planning
 about: 'Sprint Planning: Preparation, agenda, discussions, special topics,...'
 title: Sprint Planning
-labels: admin, quality, sprint planning
-assignees: detlefarend, rizkydiprasetya, steveyuwono
+labels: admin, quality
+assignees: detlefarend, steveyuwono
 
 ---
 
