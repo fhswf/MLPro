@@ -64,7 +64,7 @@ class StreamMLProPOutliers (StreamMLProBase):
         self._fct_methods     = []
 
         for fct in p_functions:
-            self._fct_methods.append( getattr(self, 'self._fct_' + fct) )
+            self._fct_methods.append( getattr(self, '_fct_' + fct) )
 
         self.set_random_seed(p_seed=p_seed)
 
