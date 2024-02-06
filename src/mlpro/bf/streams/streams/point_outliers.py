@@ -55,9 +55,9 @@ class StreamMLProPOutliers (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_num_dim : int = 5,
+                  p_num_dim : int = 4,
                   p_num_instances : int = 1000,
-                  p_functions : list[str] = ['sin', 'cos', 'tan', 'const', 'lin'],
+                  p_functions : list[str] = ['sin', 'cos', 'const', 'lin'],
                   p_outlier_frequency : int = 50,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
@@ -135,14 +135,6 @@ class StreamMLProPOutliers (StreamMLProBase):
             return random.random() * 6 - 3
 
         return math.cos( p_x * math.pi / 180 )
-
-
-## -------------------------------------------------------------------------------------------------
-    def _fct_tan(self, p_x, p_outlier : bool):
-        if p_outlier:
-            return random.random() * 6 - 3
-
-        return math.tan( p_x * math.pi / 180 )
 
 
 ## -------------------------------------------------------------------------------------------------
