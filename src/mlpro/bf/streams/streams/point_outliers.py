@@ -6,12 +6,14 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-02-05  0.0.0     DA       Creation
+## -- 2024-02-06  1.0.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2024-02-05)
+Ver. 1.0.0 (2024-02-05)
 
-This module provides ...
+This module provides a multivariate benchmark stream with configurable baselines per feature and
+additional random point outliers.
 
 """
 
@@ -27,8 +29,8 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProPOutliers (StreamMLProBase):
     """
-    This demo stream provides self.C_NUM_INSTANCES n-dimensional instances randomly positioned around
-    centers which may or may not move over time.
+    This benchmark stream provides multidimensional instances with configurable baselines 
+    per feature. Additionally, random point outliers per feature are induced.
 
     p_num_dim : int
         The number of dimensions or features of the data. Default = 3.
@@ -36,32 +38,36 @@ class StreamMLProPOutliers (StreamMLProBase):
         Total number of instances. The value '0' means indefinite. Default = 1000.
     p_functions : list[str]
         List of mathematical functions per feature. 
+    p_outlier_frequency : int
+        Average frequency of random point outliers.
     p_seed 
         Seeding value for the random generator. Default = None (no seeding).
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     """
 
-    C_ID                    = 'CloudsNDim'
-    C_NAME                  = 'Clouds N-Dim'
+    C_ID                    = 'PointOutliersND'
+    C_NAME                  = 'Point Outliers N-Dim'
     C_TYPE                  = 'Benchmark'
     C_VERSION               = '1.0.0'
-    C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
-    C_BOUNDARIES            = [-1000,1000]
+    C_SCIREF_ABSTRACT       = 'This benchmark stream provides multidimensional instances with configurable baselines per feature. Additionally, random point outliers per feature are induced.'
+    C_BOUNDARIES            = [0,0]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_num_dim : int = 5,
                   p_num_instances : int = 1000,
                   p_functions : list[str] = ['sin', 'cos', 'tan', 'const', 'lin'],
+                  p_outlier_frequency : int = 50,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        self._num_dim         = len(p_functions)
-        self.C_NUM_INSTANCES  = p_num_instances
-        self._functions       = p_functions
-        self._fct_methods     = []
+        self._num_dim            = len(p_functions)
+        self.C_NUM_INSTANCES     = p_num_instances
+        self._functions          = p_functions
+        self.p_outlier_frequency = p_outlier_frequency
+        self._fct_methods        = []
 
         for fct in p_functions:
             self._fct_methods.append( getattr(self, '_fct_' + fct) )
@@ -94,7 +100,6 @@ class StreamMLProPOutliers (StreamMLProBase):
         pass
 
 
-
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
 
@@ -106,7 +111,8 @@ class StreamMLProPOutliers (StreamMLProBase):
         feature_data = Element(self._feature_space)     
 
         for fct_method in self._fct_methods:
-            values.append( fct_method(self._index) )   
+            outlier = random.randint(1,self.p_outlier_frequency) == 1
+            values.append( fct_method(self._index, outlier) )   
 
         feature_data.set_values(values)
 
@@ -116,25 +122,40 @@ class StreamMLProPOutliers (StreamMLProBase):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _fct_sin(self, p_x):
+    def _fct_sin(self, p_x, p_outlier : bool):
+        if p_outlier:
+            return random.random() * 6 - 3
+
         return math.sin( p_x * math.pi / 180 )
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _fct_cos(self, p_x):
+    def _fct_cos(self, p_x, p_outlier : bool):
+        if p_outlier:
+            return random.random() * 6 - 3
+
         return math.cos( p_x * math.pi / 180 )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _fct_tan(self, p_x):
+    def _fct_tan(self, p_x, p_outlier : bool):
+        if p_outlier:
+            return random.random() * 6 - 3
+
         return math.tan( p_x * math.pi / 180 )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _fct_const(self, p_x):
+    def _fct_const(self, p_x, p_outlier : bool):
+        if p_outlier:
+            return random.random() * 6 - 2
+
         return 1.0
     
     
 ## -------------------------------------------------------------------------------------------------
-    def _fct_lin(self, p_x):
+    def _fct_lin(self, p_x, p_outlier : bool):
+        if p_outlier:
+            return p_x + random.random() * 20 - 10
+
         return p_x    
