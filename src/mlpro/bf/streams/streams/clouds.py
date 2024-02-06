@@ -13,10 +13,11 @@
 ## --                                - Bugfix in StreamMLProClouds._get_next()
 ## -- 2023-12-27  1.1.0     DA       Refactoring
 ## -- 2023-12-29  1.2.0     DA       Class StreamMLProClouds: new parameter p_weights
+## -- 2024-02-06  1.2.1     DA       Class StreamMLProClouds3D8C10000Dynamic: corrections on constants
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-12-29)
+Ver. 1.2.1 (2024-02-06)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -227,7 +228,7 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
 
-    C_ID                    = 'StreamMLProClouds2D4C1000Static'
+    C_ID                    = 'Clouds2D4C1000Static'
     C_NAME                  = 'Static Clouds 2D'
     C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 2
@@ -258,7 +259,7 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 
-    C_ID                    = 'StreamMLProClouds3D8C2000Static'
+    C_ID                    = 'Clouds3D8C2000Static'
     C_NAME                  = 'Static Clouds 3D'
     C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 3
@@ -289,7 +290,7 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
 
-    C_ID                    = 'StreamMLProClouds2D4C5000Dynamic'
+    C_ID                    = 'Clouds2D4C5000Dynamic'
     C_NAME                  = 'Dynamic Clouds 2D'
     C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 2
@@ -321,8 +322,8 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds):
 
-    C_ID                    = 'StreamMLProClouds3D8C10000Dynamic'
-    C_NAME                  = 'Static Clouds 2D'
+    C_ID                    = 'Clouds3D8C10000Dynamic'
+    C_NAME                  = 'Dynamic Clouds 3D'
     C_VERSION               = '1.0.1'
     C_NUM_DIMENSIONS        = 3
     C_NUM_INSTANCES         = 10000

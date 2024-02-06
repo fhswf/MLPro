@@ -1,6 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.examples
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Module  : howto_bf_streams_001_accessing_native_data_from_mlpro.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -13,7 +12,7 @@
 """
 Ver. 1.0.2 (2023-02-02)
 
-This module demonstrates the use of native generic data streams provided by MLPro. To this regard,
+This module demonstrates the basic use of native generic data streams provided by MLPro. To this regard,
 all data streams of the related provider class will be determined and iterated. 
 
 You will learn:
