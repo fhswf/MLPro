@@ -20,7 +20,6 @@ gymnasium>=0.29
 sphinxcontrib-napoleon
 sphinx-copybutton
 sphinx_multitoc_numbering
-openml
 sphinx
 sphinx_rtd_theme
 sphinxcontrib-jquery
