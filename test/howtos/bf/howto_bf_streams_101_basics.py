@@ -1,16 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.examples
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Module  : howto_bf_streams_101_basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
 ## -- 2022-12-14  1.0.0     DA       First implementation
+## -- 2024-02-06  1.1.0     DA       Replaced the native stream by Clouds3D8C2000Static
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-14)
+Ver. 1.1.0 (2024-02-06)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -67,7 +67,7 @@ class MyScenario (StreamScenario):
 
         # 1 Import a stream from OpenML
         provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = provider_mlpro.get_stream('StaticClouds3D', p_logging=p_logging)
+        stream = provider_mlpro.get_stream('Clouds3D8C2000Static', p_logging=p_logging)
 
         # 2 Set up a stream workflow 
         workflow = StreamWorkflow( p_name='wf1', 
