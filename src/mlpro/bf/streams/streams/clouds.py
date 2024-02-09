@@ -14,10 +14,11 @@
 ## -- 2023-12-27  1.1.0     DA       Refactoring
 ## -- 2023-12-29  1.2.0     DA       Class StreamMLProClouds: new parameter p_weights
 ## -- 2024-02-06  1.2.1     DA       Class StreamMLProClouds3D8C10000Dynamic: corrections on constants
+## -- 2024-02-09  1.2.2     DA       Completion of class documentations
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-02-06)
+Ver. 1.2.2 (2024-02-09)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -38,9 +39,11 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds (StreamMLProBase):
     """
-    This demo stream provides self.C_NUM_INSTANCES n-dimensional instances randomly positioned around
-    centers which may or may not move over time.
+    This benchmark stream class generates freely configurable random point clouds of any number, size
+    and dimensionality. Optionally, the centers of the clouds are static or in motion.
 
+    Parameters
+    ----------
     p_num_dim : int
         The number of dimensions or features of the data. Default = 3.
     p_num_instances : int
@@ -227,6 +230,20 @@ class StreamMLProClouds (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
+    """
+    This benchmark stream generates 1000 2-dimensional instances that form 4 static random point clouds.
+
+    See also: class StreamMLProClouds
+
+    Parameters
+    ----------
+    p_radii : list
+        Radii of the clouds. Default = 20.
+    p_seed 
+        Seeding value for the random generator. Default = None (no seeding).
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    """
 
     C_ID                    = 'Clouds2D4C1000Static'
     C_NAME                  = 'Static Clouds 2D'
@@ -258,6 +275,20 @@ class StreamMLProClouds2D4C1000Static (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
+    """
+    This benchmark stream generates 2000 3-dimensional instances that form 8 static random point clouds.
+
+    See also: class StreamMLProClouds
+
+    Parameters
+    ----------
+    p_radii : list
+        Radii of the clouds. Default = 20.
+    p_seed 
+        Seeding value for the random generator. Default = None (no seeding).
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    """
 
     C_ID                    = 'Clouds3D8C2000Static'
     C_NAME                  = 'Static Clouds 3D'
@@ -289,6 +320,20 @@ class StreamMLProClouds3D8C2000Static (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
+    """
+    This benchmark stream generates 5000 2-dimensional instances that form 4 dynamic random point clouds.
+
+    See also: class StreamMLProClouds
+
+    Parameters
+    ----------
+    p_radii : list
+        Radii of the clouds. Default = 100.
+    p_seed 
+        Seeding value for the random generator. Default = None (no seeding).
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    """
 
     C_ID                    = 'Clouds2D4C5000Dynamic'
     C_NAME                  = 'Dynamic Clouds 2D'
@@ -321,6 +366,20 @@ class StreamMLProClouds2D4C5000Dynamic (StreamMLProClouds):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds3D8C10000Dynamic (StreamMLProClouds):
+    """
+    This benchmark stream generates 10000 3-dimensional instances that form 8 dynamic random point clouds.
+
+    See also: class StreamMLProClouds
+
+    Parameters
+    ----------
+    p_radii : list
+        Radii of the clouds. Default = 100.
+    p_seed 
+        Seeding value for the random generator. Default = None (no seeding).
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    """
 
     C_ID                    = 'Clouds3D8C10000Dynamic'
     C_NAME                  = 'Dynamic Clouds 3D'
