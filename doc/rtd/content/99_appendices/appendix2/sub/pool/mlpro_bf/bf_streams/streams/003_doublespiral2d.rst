@@ -1,3 +1,4 @@
+.. _api_streams_doublespiral:
 2D Double Spiral
 ================
 

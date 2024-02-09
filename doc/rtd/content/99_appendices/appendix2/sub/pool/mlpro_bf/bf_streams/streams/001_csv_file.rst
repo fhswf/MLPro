@@ -1,4 +1,4 @@
-.. _ap2_csv_files:
+.. _api_streams_csv_files:
 Data from CSV files
 ===================
 
