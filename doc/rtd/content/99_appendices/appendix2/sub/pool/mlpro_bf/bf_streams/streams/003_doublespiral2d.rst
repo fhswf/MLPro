@@ -1,4 +1,4 @@
-.. _api_streams_doublespiral:
+.. _target_api_streams_doublespiral:
 2D Double Spiral
 ================
 

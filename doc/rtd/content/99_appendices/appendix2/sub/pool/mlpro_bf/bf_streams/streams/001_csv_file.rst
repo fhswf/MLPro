@@ -1,4 +1,4 @@
-.. _api_streams_csv_files:
+.. _target_api_streams_csv_files:
 Data from CSV files
 ===================
 

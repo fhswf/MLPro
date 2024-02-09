@@ -18,5 +18,4 @@ Howto BF-STREAMS-001: Accessing Native Data From MLPro
 
 
 **Cross Reference**
-
     - :ref:`API Reference: Streams <target_ap_bf_streams>`

@@ -1,4 +1,4 @@
-.. _api_streams_clouds:
+.. _target_api_streams_clouds:
 Random Point Clouds (2D, 3D, ND)
 ================================
 

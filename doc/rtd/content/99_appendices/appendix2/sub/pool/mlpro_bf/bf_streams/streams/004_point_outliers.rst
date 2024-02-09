@@ -1,6 +1,6 @@
-.. _api_streams_point_outliers:
-Point Outliers
-==============
+.. _target_api_streams_point_outliers:
+Multivariate Point Outliers
+===========================
 
 .. automodule:: mlpro.bf.streams.streams.point_outliers
    :members:

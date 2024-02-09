@@ -1,4 +1,4 @@
-.. _api_streams_rnd10d:
+.. _target_api_streams_rnd10d:
 10D Random Instances
 ====================
 
