@@ -104,6 +104,8 @@ class HowtoTester(Log):
 
 
 
+sys.path.append('src')
+
 tester = HowtoTester()
 howtos = tester.get_howtos( sys.path[0] + os.sep + 'howtos' )
 
