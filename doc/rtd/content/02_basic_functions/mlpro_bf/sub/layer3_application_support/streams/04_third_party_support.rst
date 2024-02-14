@@ -67,29 +67,17 @@ River
 -----
 River is a machine learning library designed for streaming data. It is used for real-time analytics and online
 machine learning where data is constantly evolving. River provides various online learning algorithms that are
-optimized for processing streaming data. MLPro supports River's datasets as data sources, which
+optimized for processing streaming data. MLPro supports River's data streams as data sources, which
 can be used to build machine learning models that are optimized for streaming data.
 
-River datasets include specialized datasets for online machine learning which is commonly used for evaluating online
+River includes specialized data streams for online machine learning which are commonly used for evaluating online
 learning algorithms. MLPro standardizes the access to the River streams, making it easier to incorporate them into
-stream processing workflows. While MLPro currently supports River as a data resource, future updates will include
-standardized support for algorithms in River.
-
-Learn more: `River ML <https://riverml.xyz/latest/>`_
-
-You can import River Stream Provider wrapper as following:
-
-.. code-block:: python
-
-    # Importing River Stream Provider
-    from mlpro.wrappers.river import WrStreamProviderRiver
-
-
-Learn more in the Howto section of MLPro, in appendix 01 section.
+stream processing workflows. To this regard, wrapper classes and example files are provided in the related
+MLPro extension MLPro-Int-River.
 
 
 **Cross References**
-
-- :ref:`Howto BF-STREAMS-053: Accessing Data from River <Howto BF STREAMS 053>`
-- :ref:`Wrapper River <Wrapper River>`
+    - `River - Online machine learning in Python <https://riverml.xyz>`_ 
+    - `MLPro-Int-River - Integration of River into MLPro <https://mlpro-int-river.readthedocs.io>`_ 
+ 
 
