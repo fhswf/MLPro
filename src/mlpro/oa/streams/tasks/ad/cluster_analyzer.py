@@ -37,4 +37,10 @@ class ClusterAnalyzer:
             return None
         velocity = (self.cluster_centers - previous_centers) / time_interval
         return velocity
+    
+    def calculate_acceleration(self):
+        pass
+
+    def find_outliers(self):
+        pass
 
