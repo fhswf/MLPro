@@ -24,7 +24,6 @@ extras_require={
         "pygame==2.1.2",
         "pymunk==6.4.0",
         "multiprocess==0.70.14",
-        "river==0.14.0",
         "scikit-learn==1.2.0",
         "optuna==3.0.5",
         "hyperopt==0.2.7",
