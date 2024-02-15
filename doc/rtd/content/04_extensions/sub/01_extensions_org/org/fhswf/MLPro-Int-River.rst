@@ -10,9 +10,9 @@ MLPro: Integration River
     * - **Topics**
       - machine-learning, mlpro-extension, online-machine-learning, river, wrapper
     * - **Version**
-      - v0.1.2  - Streams and Cluster Analysis
+      - v0.1.3  - Minor Fixes
     * - **Last update**
-      - Wed, 14 Feb 2024 20:51:56 GMT
+      - Thu, 15 Feb 2024 11:41:02 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-River
     * - **URL**
