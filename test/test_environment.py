@@ -16,10 +16,11 @@
 ## -- 2022-09-02  1.0.5     SY       Add DoublePendulumS7 and DoublePendulumS4
 ## -- 2022-09-13  1.0.5     SY       Add Sim_MPPS
 ## -- 2022-11-22  1.0.6     SY       Remove Sim_MPPS
+## -- 2024-02-16  1.0.7     SY       Remove Multi-Cartpole
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2022-11-22)
+Ver. 1.0.7 (2024-02-16)
 
 Unit test classes for environment.
 """
@@ -32,13 +33,12 @@ from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.envs.gridworld import GridWorld
-from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS7
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
 
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole, DoublePendulumS7, DoublePendulumS4])
+@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, DoublePendulumS7, DoublePendulumS4])
 def test_environment(env_cls):
     env = env_cls(p_visualize=False)
     assert isinstance(env, Environment)
