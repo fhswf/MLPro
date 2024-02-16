@@ -20,10 +20,11 @@
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-02-13  1.1.2     DA       Optimization of dark mode
 ## -- 2023-04-19  1.1.3     MRD      Refactor module import gym to gymnasium
+## -- 2024-02-16  1.1.4     SY       Wrapper Relocation from MLPro to MLPro-Int-Gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2023-04-19)
+Ver. 1.1.4 (2024-02-16)
 
 This module shows how to train agent with SB3 Wrapper for On- and Off-Policy Algorithms
 
@@ -39,7 +40,7 @@ You will learn:
 import gymnasium as gym
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from mlpro.rl.models import *
-from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from collections import deque
 from pathlib import Path

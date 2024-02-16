@@ -18,10 +18,11 @@
 ## -- 2023-03-27  1.3.0     DA       Refactoring
 ## -- 2023-04-19  1.3.1     MRD      Refactor module import gym to gymnasium
 ## -- 2024-01-05  1.3.2     DA       Batch size set to 200
+## -- 2024-02-16  1.3.3     SY       Wrapper Relocation from MLPro to MLPro-Int-Gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2024-01-05)
+Ver. 1.3.3 (2024-02-16)
 
 This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """
@@ -34,7 +35,7 @@ from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.bf.plot import DataPlotting
 from mlpro.rl import *
-from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 

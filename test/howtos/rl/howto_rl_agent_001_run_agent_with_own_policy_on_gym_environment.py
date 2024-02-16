@@ -22,10 +22,11 @@
 ## -- 2022-11-07  1.3.0     DA       Refactoring 
 ## -- 2023-01-14  1.3.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-04-19  1.3.2     MRD      Refactor module import gym to gymnasium
+## -- 2024-02-16  1.3.3     SY       Wrapper Relocation from MLPro to MLPro-Int-Gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2023-04-19)
+Ver. 1.3.3 (2024-02-16)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 MLPro framework.
@@ -47,7 +48,7 @@ You will learn:
 
 from mlpro.bf.math import *
 from mlpro.rl import *
-from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
 import gymnasium as gym
 import random
 

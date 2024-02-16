@@ -11,11 +11,12 @@
 ## -- 2023-03-10  1.0.3     SY       Refactoring
 ## -- 2023-03-27  1.0.4     DA       Refactoring
 ## -- 2023-04-19  1.0.5     MRD      Refactor module import gym to gymnasium
-## -- 2023-07-15  1.0.6     LSB       Refactoring
+## -- 2023-07-15  1.0.6     LSB      Refactoring
+## -- 2024-02-16  1.0.7     SY       Wrapper Relocation from MLPro to MLPro-Int-Gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2023-07-15)
+Ver. 1.0.7 (2024-02-16)
 
 This module shows how to train a single agent in MBRL and load it again to do some extra cycles.
 
@@ -38,7 +39,7 @@ import gymnasium as gym
 import torch
 from stable_baselines3 import PPO
 from mlpro.rl import *
-from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
 from pathlib import Path
