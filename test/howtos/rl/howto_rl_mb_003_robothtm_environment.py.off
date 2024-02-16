@@ -21,10 +21,11 @@
 ## -- 2023-03-10  2.0.2     SY       Renumbering module
 ## -- 2023-07-03  2.0.3     SY       Minor Refacoring due to reduntant batch size handling in input preproc
 ## -- 2023-08-21  2.0.4     MRD      Change transformation to scipy
+## -- 2024-02-16  2.0.5     SY       Wrapper Relocation from MLPro to MLPro-Int-SB3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2023-08-21)
+Ver. 2.0.5 (2024-02-16)
 
 This module demonstrates model-based reinforcement learning (MBRL) with native algorithm and
 action planner using MPC.
@@ -51,7 +52,7 @@ from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
-from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from mlpro.sl.pool.afct.pytorch import *
 from mlpro.sl import *
 from mlpro.rl.pool.actionplanner.mpc import MPC

@@ -15,10 +15,11 @@
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -- 2023-02-02  1.2.0     DA       Refactoring 
 ## -- 2023-02-23  1.3.0     DA       Renamed
+## -- 2024-02-16  1.3.1     SY       Wrapper Relocation from MLPro to MLPro-Int-SB3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2023-02-23)
+Ver. 1.3.1 (2024-02-16)
 
 This module shows how to train a wrapped SB3 policy on MLPro's native Robothtm environment.
 
@@ -38,7 +39,7 @@ from mlpro.bf.plot import DataPlotting
 from mlpro.rl import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
-from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from pathlib import Path
 
 
