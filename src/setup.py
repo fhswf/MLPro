@@ -22,7 +22,7 @@ extras_require={
         "scikit-learn==1.2.0",
         "optuna==3.0.5",
         "hyperopt==0.2.7",
-        "pyglet==1.5.27"
+        "pandas==2.1.3"
     ],
 },
 
