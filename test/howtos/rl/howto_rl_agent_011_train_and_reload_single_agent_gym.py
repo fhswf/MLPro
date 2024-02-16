@@ -23,7 +23,7 @@
 ## -- 2023-03-04  1.3.0     DA       Renamed
 ## -- 2023-03-27  1.3.1     DA       Refactoring
 ## -- 2023-04-19  1.3.2     MRD      Refactor module import gym to gymnasium
-## -- 2024-02-16  1.3.3     SY       Wrapper Relocation from MLPro to MLPro-Int-Gymnasium
+## -- 2024-02-16  1.3.3     SY       Wrapper Relocation from MLPro to MLPro-Int-Gymnasium, -SB3
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -46,7 +46,7 @@ import gymnasium as gym
 from stable_baselines3 import PPO
 from mlpro.rl import *
 from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
-from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from pathlib import Path
 
 

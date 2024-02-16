@@ -8,10 +8,11 @@
 ## -- 2023-03-07  0.0.0     MRD      Creation
 ## -- 2023-03-07  1.0.0     MRD      Released first version
 ## -- 2023-03-27  1.0.1     DA       Refactoring
+## -- 2024-02-16  1.0.2     SY       Wrapper Relocation from MLPro to MLPro-Int-SB3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-03-27)
+Ver. 1.0.2 (2024-02-16)
 
 This module shows how to train a single agent with SB3 Policy on Cartpole Continuous MuJoCo Environment.
 
@@ -30,7 +31,7 @@ You will learn:
 
 from stable_baselines3 import PPO
 from mlpro.rl import *
-from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from mlpro.rl.pool.envs.cartpole import CartpoleMujocoContinuous
 from pathlib import Path
 
