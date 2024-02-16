@@ -13,7 +13,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-04-19)
+Ver. 1.1.2 (2023-04-19)
 
 Unit test classes for SARBuffer.
 """
@@ -28,7 +28,6 @@ from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.sarsbuffer.PrioritizedBuffer import PrioritizedBuffer
 from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy
-import random
 
 
 
@@ -41,7 +40,7 @@ def test_buffer(buffer_cls):
         C_NAME      = 'Matrix'
 
         def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
-            self._env       = BGLP(p_logging=p_logging, cycle_limit=100)
+            self._env = BGLP(p_logging=p_logging, cycle_limit=100)
 
             class MyDummyPol(MyDummyPolicy):
                 C_BUFFER_CLS = buffer_cls
