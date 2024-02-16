@@ -9,6 +9,7 @@
 ## -- 2021-09-27  1.0.0     WB       Release First Version
 ## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -- 2023-04-19  1.1.1     MRD      Refactor module import gym to gymnasium
+## -- 2024-02-16  1.1.2     SY       Replace gym environment to BGLP to remove dependency
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -25,7 +26,7 @@ from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.rl.models import *
-from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.sarsbuffer.PrioritizedBuffer import PrioritizedBuffer
 from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy
@@ -44,11 +45,7 @@ def test_buffer(buffer_cls):
         C_NAME      = 'Matrix'
 
         def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
-            if p_visualize:
-                gym_env     = gym.make('CartPole-v1', render_mode="human")
-            else:
-                gym_env     = gym.make('CartPole-v1')
-            self._env   = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
+            self._env       = BGLP(p_logging=p_logging, cycle_limit=100)
 
             class MyDummyPol(MyDummyPolicy):
                 C_BUFFER_CLS = buffer_cls
