@@ -10,9 +10,9 @@ None
     * - **Topics**
       - hyperparameter-tuning, machine-learning, mlpro-extension, optuna, wrapper
     * - **Version**
-      - 0.1.3 
+      - 0.1.4 
     * - **Last update**
-      - Sun, 18 Feb 2024 05:25:29 GMT
+      - Mon, 19 Feb 2024 15:49:51 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-Optuna
     * - **URL**
