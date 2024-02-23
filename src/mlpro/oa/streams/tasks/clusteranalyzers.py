@@ -557,27 +557,62 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
-        if self._plot_line1 is not None: self._plot_line1.remove()
-        if self._plot_line2 is not None: self._plot_line2.remove()
-        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
-        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
-        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
-        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
-        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
+        if self._plot_line1 is not None: 
+            self._plot_line1.remove()
+            self._plot_line1 = None
+        if self._plot_line2 is not None: 
+            self._plot_line2.remove()
+            self._plot_line2 = None
+        if self._plot_line1_t1 is not None: 
+            self._plot_line1_t1.remove()
+            self._plot_line1_t1 = None
+
+        if self._plot_line1_t2 is not None: 
+            self._plot_line1_t2.remove()
+            self._plot_line1_t2 = None
+        if self._plot_line1_t3 is not None: 
+            self._plot_line1_t3.remove()
+            self._plot_line1_t3 = None
+        if self._plot_line1_t4 is not None: 
+            self._plot_line1_t4.remove()
+            self._plot_line1_t4 = None
+        if self._plot_line1_t5 is not None: 
+            self._plot_line1_t5.remove()
+            self._plot_line1_t5 = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_3d(self):
-        if self._plot_line1 is not None: self._plot_line1.remove()
-        if self._plot_line2 is not None: self._plot_line2.remove()
-        if self._plot_line3 is not None: self._plot_line3.remove()
-        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
-        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
-        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
-        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
-        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
-        if self._plot_line1_t6 is not None: self._plot_line1_t6.remove()
-        if self._plot_line1_t7 is not None: self._plot_line1_t7.remove()
+        if self._plot_line1 is not None: 
+            self._plot_line1.remove()
+            self._plot_line1 = None
+        if self._plot_line2 is not None: 
+            self._plot_line2.remove()
+            self._plot_line2 = None
+        if self._plot_line3 is not None: 
+            self._plot_line3.remove()
+            self._plot_line3 = None
+        if self._plot_line1_t1 is not None: 
+            self._plot_line1_t1.remove()
+            self._plot_line1_t1 = None
+        if self._plot_line1_t2 is not None: 
+            self._plot_line1_t2.remove()
+            self._plot_line1_t2 = None
+        if self._plot_line1_t3 is not None: 
+            self._plot_line1_t3.remove()
+            self._plot_line1_t3 = None
+        if self._plot_line1_t4 is not None: 
+            self._plot_line1_t4.remove()
+            self._plot_line1_t4 = None
+        if self._plot_line1_t5 is not None: 
+            self._plot_line1_t5.remove()
+            self._plot_line1_t5 = None
+        if self._plot_line1_t6 is not None: 
+            self._plot_line1_t6.remove()
+            self._plot_line1_t6 = None
+        if self._plot_line1_t7 is not None: 
+            self._plot_line1_t7.remove()
+            self._plot_line1_t7 = None
     
 
 ## -------------------------------------------------------------------------------------------------
