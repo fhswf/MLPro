@@ -6,11 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-08  0.0.0     SP       Creation
-## -- 2023-                 SP       Release
+## -- 2023-09-12  1.0.0     SP       Release
+## -- 2023-11-21  1.0.1     SP       Time Stamp update
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-06-23)
+Ver. 1.0.1 (2023-11-21)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
@@ -58,6 +59,16 @@ class AnomalyDetector(OATask):
     ## ------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
         pass
+
+
+    ## ------------------------------------------------------------------------------------------------
+    def _raise_anomaly(self, p_event_id:str, p_event_object:Event, p_instance : Instance):
+
+        time_stamp = p_instance.get_time_stamp()
+
+        self._raise_event(p_event_id, p_event_object)
+        print(time_stamp)
+
 
 
 
@@ -112,10 +123,9 @@ class AnomalyDetectorCB(AnomalyDetector):
         
         if len(self.centroids[-2]) != len(self.centroids[-1]):
             anomaly = p_inst_new
-
         differences = [abs(a - b) for a, b in zip(self.centroids[0], self.centroids[-1])]
         if any(difference >= self.centroid_thre for difference in differences):
-            anomlay = p_inst_new
+            anomaly = p_inst_new
 
         if anomaly != None:
             self.counter += 1
@@ -131,6 +141,8 @@ class AnomalyDetectorCB(AnomalyDetector):
 class AnomalyEvent (Event):
 
     C_TYPE     = 'Event'
+
+
 
     C_NAME     = 'Anomaly'
 
