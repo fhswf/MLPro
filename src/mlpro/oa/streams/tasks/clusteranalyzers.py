@@ -22,10 +22,12 @@
 ## -- 2023-12-10  0.6.1     DA       Bugfix in method ClusterAnalyzer.get_cluster_membership()
 ## -- 2023-12-20  0.7.0     DA       Renormalization
 ## -- 2024-02-23  0.8.0     DA       Class ClusterCentroid: implementation of methods _remove_plot*
+## -- 2024-02-24  0.8.1.    DA       Method ClusterAnalyzer._remove_cluster() explicitely removes
+## --                                the plot of a cluster before removal of the cluster itself
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2024-02-23)
+Ver. 0.8.1 (2024-02-24)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -267,6 +269,7 @@ class ClusterAnalyzer (OATask):
             Cluster object to be added.
         """
 
+        p_cluster.remove_plot(p_refresh=True)
         del self._clusters[p_cluster.get_id()]
 
 

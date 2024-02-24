@@ -33,10 +33,13 @@
 ## -- 2024-02-23  2.11.0    DA       Class Plottable: new methods
 ## --                                - _remove_plot_2d(), _remove_plot_3d(), _remove_plot_nd()
 ## --                                - __del__() 
+## -- 2024-02-24  2.11.1    DA       Class Plottable:
+## --                                - new methods remove_plot(), _remove_plot()
+## --                                - new methods refresh_plot(), _refresh_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.11.0 (2024-02-23)
+Ver. 2.11.1 (2024-02-24)
 
 This module provides various classes related to data plotting.
 """
@@ -359,6 +362,45 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def refresh_plot(self, p_force:bool=False):
+        """
+        Refreshes the plot.
+
+        Parameters
+        ----------
+        p_force : bool = False
+            On True the plot is updated even if it is embedded in a foreign host figure.
+        """
+    
+        # 1 Plot functionality turned on?
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+        
+
+         # 1 Object has own figure or refresh is forced by caller?
+        if not self._plot_own_figure and not p_force: return
+            
+        if self._plot_own_figure:
+            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
+        
+
+        # 2 Refresh plot
+        if ( self._plot_step_counter==0 ) or p_force: self._refresh_plot()
+            
+
+## -------------------------------------------------------------------------------------------------
+    def _refresh_plot(self):
+        """
+        Custom method to refresh the plot. Default implementation assumes standard use of Matplotlib.
+        """
+
+        self._figure.canvas.draw()
+        self._figure.canvas.flush_events()
+    
+
+## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure:Figure, p_settings:PlotSettings):
         """
         Custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
@@ -450,11 +492,7 @@ class Plottable:
         self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
 
         # 3 Update content of own(!) figure after self._plot_step_rate calls
-        if self._plot_own_figure:
-            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
-            if self._plot_step_counter==0: 
-                self._figure.canvas.draw()
-                self._figure.canvas.flush_events()
+        self.refresh_plot(p_force=False)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -506,6 +544,31 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh:bool = True):
+        """"
+        Removes the plot and optionally refreshes the display.
+
+        Parameters
+        ----------
+        p_refresh : bool = True
+            On True the display is refreshed after removal
+        """
+
+        # 1 Plot functionality turned on?
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+            
+         # 2 Call _remove_plot method of current view
+        view = self._plot_settings.view
+        self._plot_methods[view][2]()
+
+        # 3 Optionally refresh
+        if p_refresh: self.refresh_plot(p_force=False)
+    
+
+## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
         """
         Custom method to remove 2D plot artifacts when object is destroyed.
@@ -533,16 +596,8 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __del__(self):
-        # 1 Plot functionality turned on?
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
-            
-         # 2 Call _remove_plot method of current view
-        view = self._plot_settings.view
-        self._plot_methods[view][2]()
+    # def __del__(self):
+    #     self.remove_plot(p_refresh=True)
 
 
 
