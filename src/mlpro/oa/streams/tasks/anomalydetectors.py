@@ -60,14 +60,16 @@ class AnomalyDetector(OATask):
                          **p_kwargs)
         
         self.data_points = []
-        self.instance_id = 0
-        self.anomaly_counter = 0
-        self.anomaly_scores = []
-        self.anomalies = [ [], [], [], []]
-        self.anomaly_type = 'Point Anomaly'
-        self.time_of_occurance = 0
+        self.inst_id = 0
+        self.inst_value = 0
+        self.ano_counter = 0
+        self.ano_scores = []
+        self.anomalies = {'inst_id':[], 'inst_value':[], 'ano_score':[],
+                          'ano_type':[], 'time_of_occ':[]}
+        self.ano_type = 'Point Anomaly'
+        self.time_of_occ = 0
         self.plot_update_counter = 0
-        #self.anomalies = [['instance'],['feature'],['type'],['time']]
+        self.consec_count = 1 
 
 
 ## ------------------------------------------------------------------------------------------------
@@ -81,18 +83,21 @@ class AnomalyDetector(OATask):
         self._raise_event(p_event_id, p_event_object)
 
 
-## ------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
     def def_anomalies(self):
-        self.anomalies[0].append(self.instance_id)
-        self.anomalies[1].append(2)
-        self.anomalies[2].append(self.anomaly_type)
-        self.anomalies[3].append(self.time_of_occurance)
 
-        if len(self.anomalies[0]) > 100:
+        self.time_of_occ = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.ano_type = self.get_anomaly_type()
+
+        self.anomalies['inst_id'].append(self.inst_id)
+        self.anomalies['inst_value'].append(self.inst_value)
+        self.anomalies['ano_score'].append(self.ano_scores)
+        self.anomalies['ano_type'].append(self.ano_type)
+        self.anomalies['time_of_occ'].append(self.time_of_occ)
+
+        if len(self.anomalies['inst_id']) > 100:
              for i in range(len(self.anomalies)):
                  self.anomalies[i].pop(0)
-
-        print(self.anomalies)
 
 
     """## -------------------------------------------------------------------------------------------------
@@ -100,18 +105,41 @@ class AnomalyDetector(OATask):
         self._plot_line1 = None
         self._plot_line1_t1 : Text = None"""
 
+
+# ------------------------------------------------------------------------------------------------
+    def get_anomaly_type(self):
+        self.ano_type = 'Point Anomaly'
+
+
+        if len(self.anomalies['inst_id']) > 1:
+            if int(self.anomalies['inst_id'][-1]) - 1 == int(self.anomalies['inst_id'][-2]):
+                self.consec_count +=1
+                if self.consec_count > 2:
+                    self.ano_type = 'Group Anomaly'
+                    return self.ano_type
+                else:
+                    self.ano_type = 'Point Anomaly'
+                    return self.ano_type
+            else:
+                self.consec_count = 1
+                self.ano_type = 'Point Anomaly'
+                return self.ano_type
+        else:
+            self.ano_type = 'Point Anomaly'
+            return self.ano_type
+
                  
-## -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_nd(p_settings, **p_kwargs)
 
-        if self.plot_update_counter < len(self.anomalies[0]):
+        if self.plot_update_counter < len(self.anomalies['inst_id']):
 
             ylim  = p_settings.axes.get_ylim()
-            label = str(self.anomalies[2][-1]) + ' at ' + str(self.anomalies[3][-1])
-            self._plot_line1 = p_settings.axes.plot( [self.anomalies[0][-1], self.anomalies[0][-1]], ylim,
+            label = str(self.anomalies['ano_type'][-1][0])
+            self._plot_line1 = p_settings.axes.plot( [self.anomalies['inst_id'][-1], self.anomalies['inst_id'][-1]], ylim,
                                                     color='r', linestyle='dashed', lw=1, label=label)[0]
-            self._plot_line1_t1 = p_settings.axes.text(self.anomalies[0][-1], 0, label, color='r' )
+            self._plot_line1_t1 = p_settings.axes.text(self.anomalies['inst_id'][-1], 0, label, color='r' )
 
             self.plot_update_counter = self.plot_update_counter + 1
 
@@ -139,6 +167,7 @@ class LocalOutlierFactor(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_neighbours = 10,
+                 p_delay = 3,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -157,19 +186,19 @@ class LocalOutlierFactor(AnomalyDetector):
         
         self.num_neighbours = p_neighbours
         self.lof = LOF(self.num_neighbours)
+        self.delay = p_delay
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
-        det_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         self.adapt(p_inst_new, p_inst_del)
 
         # Determine if data point is an anomaly based on its outlier score
-        if -1 in self.anomaly_scores:
-            self.anomaly_counter = self.anomaly_counter + 1
-            print("Anomaly detected", self.anomaly_counter)
+        if -1 in self.ano_scores:
+            self.ano_counter += 1
             self.def_anomalies()
-            print(self.instance_id)
+            print(self.ano_type)
 
         
         
@@ -188,28 +217,28 @@ class LocalOutlierFactor(AnomalyDetector):
             else:
                 feature_data = inst
 
-        values = feature_data.get_values()
-        self.instance_id = inst.get_id()
+        self.inst_value = feature_data.get_values()
+        self.inst_id = inst.get_id()
+        print(self.inst_id)
         
-        self.anomaly_scores = []
+        self.ano_scores = []
         if len(self.data_points) == 0:
-            for i in range(len(values)):
+            for i in range(len(self.inst_value)):
                 self.data_points.append([])
 
         i=0
-        for value in values:
+        for value in self.inst_value:
             self.data_points[i].append(value)
             i=i+1
 
         if len(self.data_points[0]) > 100:
-            for i in range(len(values)):
+            for i in range(len(self.inst_value)):
                 self.data_points[i].pop(0)
 
-        if len(self.data_points[0]) >= 3:
-            for i in range(len(values)):
+        if len(self.data_points[0]) >= self.delay:
+            for i in range(len(self.inst_value)):
                 scores = self.lof.fit_predict(np.array(self.data_points[i]).reshape(-1, 1))
-                self.anomaly_scores.append(scores[-1])
-        print(self.anomaly_scores)
+                self.ano_scores.append(scores[-1])
 
 
 ## -------------------------------------------------------------------------------------------------
