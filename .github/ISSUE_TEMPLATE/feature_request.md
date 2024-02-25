@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest an idea for this project
 title: 'Idea: ...'
 labels: idea
-assignees: rizkydiprasetya, detlefarend, steveyuwono
+assignees: detlefarend, steveyuwono
 
 ---
 

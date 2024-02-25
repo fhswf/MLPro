@@ -1,7 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_005_sampler.py
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Module  : howto_bf_streams_020_sampler.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

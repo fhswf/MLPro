@@ -1,6 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.examples
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Module  : howto_bf_streams_002_accessing_data_from_csv_files.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

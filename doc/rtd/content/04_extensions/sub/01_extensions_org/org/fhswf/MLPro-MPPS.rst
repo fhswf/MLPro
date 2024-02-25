@@ -10,9 +10,9 @@ An extension feature of MLPro related to a simulation framework for multi-purpos
     * - **Topics**
       - machine-learning, mlpro-extension, python, simulation-environment
     * - **Version**
-      - v1.2.1 
+      - v1.2.2 
     * - **Last update**
-      - Fri, 05 Jan 2024 09:51:22 GMT
+      - Wed, 21 Feb 2024 10:24:07 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-MPPS
     * - **URL**
