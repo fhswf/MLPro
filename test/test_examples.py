@@ -103,6 +103,7 @@ class HowtoTester(Log):
         return file_list
 
 
+sys.path.append('src')
 
 tester = HowtoTester()
 howtos = tester.get_howtos( sys.path[0] + os.sep + 'howtos' )
