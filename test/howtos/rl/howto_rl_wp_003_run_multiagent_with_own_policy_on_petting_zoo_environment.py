@@ -27,10 +27,11 @@
 ## -- 2022-11-07  1.3.0     DA       Refactoring
 ## -- 2023-02-21  1.4.0     DA       Added save + reload + rerun steps to demonstrate/validate
 ## --                                persistence of pettingzoo scenarios
+## -- 2024-01-23  1.4.1     SY       Debug due to introduction of PettingZoo version 1.24.3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2023-02-21)
+Ver. 1.4.1 (2023-01-23)
 
 This module shows how to run an own policy inside the MLPro standard agent model with a wrapped
 Petting Zoo environment.
@@ -75,7 +76,7 @@ class PBScenario (RLScenario):
         
         multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_visualize=p_visualize, p_logging=p_logging)
         agent_idx           = 0
-        for k in self._env._zoo_env.action_spaces:
+        for k in self._env._zoo_env.agents:
             agent_name      = "Agent_"+str(agent_idx)
             as_ids          = self._env.get_action_space().get_dim_ids()
             agent_ospace    = self._env.get_state_space()
@@ -185,7 +186,7 @@ if __name__ == '__main__':
     # 3.5 In demo mode we save, reload and rerun the entire scenario to demonstrate persistence
     myscenario.save(path, 'dummy')
     input('\nPress ENTER to reload and run again...\n')
-    myscenario = PBScenario.load(path + os.sep + 'scenario')
+    myscenario = PBScenario.load(path, 'dummy')
     myscenario.reset(1)
     myscenario.run() 
 

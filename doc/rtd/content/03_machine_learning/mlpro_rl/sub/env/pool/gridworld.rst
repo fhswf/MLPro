@@ -33,7 +33,7 @@ This Grid World environment can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.envs.gridworld
+    from mlpro.rl.pool.envs.gridworld import GridWorld
     
 **Prerequisites**
 

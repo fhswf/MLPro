@@ -16,7 +16,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-08-23)
+Ver. 1.1.2 (2023-08-23)
 
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 

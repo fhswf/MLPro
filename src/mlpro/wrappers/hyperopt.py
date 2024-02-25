@@ -17,10 +17,11 @@
 ## -- 2022-03-25  1.0.7     SY       Change methods names (SetupSpaces to setup_spaces)
 ## -- 2022-08-14  1.1.0     DA       Introduction of root class Wrapper
 ## -- 2022-10-17  1.1.1     SY       Refactoring due to unit test
+## -- 2023-04-12  1.1.2     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-10-17)
+Ver. 1.1.2 (2023-04-12)
 
 This module provides a wrapper class for hyperparameter tuning by reusing the Hyperopt framework.
 
@@ -35,7 +36,7 @@ from mlpro.bf.ml import *
 from mlpro.bf.math import *
 from mlpro.bf.various import *
 from mlpro.rl.models import *
-from mlpro.gt.models import *
+from mlpro.gt.dynamicgames import *
 import os
 
 

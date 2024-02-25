@@ -29,10 +29,17 @@
 ## -- 2023-02-23  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
 ## -- 2023-04-10  2.9.1     MRD      Turn on Tkinter backend for macos
 ## -- 2023-05-01  2.9.2     DA       Turn off Tkinter backend for macos due to workflow problems
+## -- 2023-12-28  2.10.0    DA       Method Plottable._init_plot_3d(): init 3D view perspective
+## -- 2024-02-23  2.11.0    DA       Class Plottable: new methods
+## --                                - _remove_plot_2d(), _remove_plot_3d(), _remove_plot_nd()
+## --                                - __del__() 
+## -- 2024-02-24  2.11.1    DA       Class Plottable:
+## --                                - new methods remove_plot(), _remove_plot()
+## --                                - new methods refresh_plot(), _refresh_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.2 (2023-05-01)
+Ver. 2.11.1 (2024-02-24)
 
 This module provides various classes related to data plotting.
 """
@@ -264,9 +271,9 @@ class Plottable:
         self.set_plot_settings( p_plot_settings=p_plot_settings )
 
         # 2.2 Dictionary with methods for initialization and update of a plot per view 
-        self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
-                               PlotSettings.C_VIEW_3D : [ self._init_plot_3d, self._update_plot_3d ], 
-                               PlotSettings.C_VIEW_ND : [ self._init_plot_nd, self._update_plot_nd ] }
+        self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d, self._remove_plot_2d ], 
+                               PlotSettings.C_VIEW_3D : [ self._init_plot_3d, self._update_plot_3d, self._remove_plot_3d ], 
+                               PlotSettings.C_VIEW_ND : [ self._init_plot_nd, self._update_plot_nd, self._remove_plot_nd ] }
 
 
         # 3 Setup the Matplotlib host figure if no one is provided as parameter
@@ -303,6 +310,16 @@ class Plottable:
 ## -------------------------------------------------------------------------------------------------
     def get_visualization(self) -> bool:
         return self._visualize
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_plot_step_rate(self, p_step_rate:int):
+        if p_step_rate > 0: self._plot_step_rate = p_step_rate
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_plot_detail_level(self, p_detail_level:int):
+        self._plot_detail_level = max(0, p_detail_level)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -345,6 +362,45 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def refresh_plot(self, p_force:bool=False):
+        """
+        Refreshes the plot.
+
+        Parameters
+        ----------
+        p_force : bool = False
+            On True the plot is updated even if it is embedded in a foreign host figure.
+        """
+    
+        # 1 Plot functionality turned on?
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+        
+
+         # 1 Object has own figure or refresh is forced by caller?
+        if not self._plot_own_figure and not p_force: return
+            
+        if self._plot_own_figure:
+            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
+        
+
+        # 2 Refresh plot
+        if ( self._plot_step_counter==0 ) or p_force: self._refresh_plot()
+            
+
+## -------------------------------------------------------------------------------------------------
+    def _refresh_plot(self):
+        """
+        Custom method to refresh the plot. Default implementation assumes standard use of Matplotlib.
+        """
+
+        self._figure.canvas.draw()
+        self._figure.canvas.flush_events()
+    
+
+## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure:Figure, p_settings:PlotSettings):
         """
         Custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
@@ -384,6 +440,7 @@ class Plottable:
 
         if p_settings.axes is None:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id, projection='3d' )
+            p_settings.axes.set_proj_type(proj_type='persp', focal_length=0.3)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -435,11 +492,7 @@ class Plottable:
         self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
 
         # 3 Update content of own(!) figure after self._plot_step_rate calls
-        if self._plot_own_figure:
-            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
-            if self._plot_step_counter==0: 
-                self._figure.canvas.draw()
-                self._figure.canvas.flush_events()
+        self.refresh_plot(p_force=False)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -491,13 +544,60 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_plot_step_rate(self, p_step_rate:int):
-        if p_step_rate > 0: self._plot_step_rate = p_step_rate
+    def remove_plot(self, p_refresh:bool = True):
+        """"
+        Removes the plot and optionally refreshes the display.
+
+        Parameters
+        ----------
+        p_refresh : bool = True
+            On True the display is refreshed after removal
+        """
+
+        # 1 Plot functionality turned on?
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+            
+         # 2 Call _remove_plot method of current view
+        view = self._plot_settings.view
+        self._plot_methods[view][2]()
+
+        # 3 Optionally refresh
+        if p_refresh: self.refresh_plot(p_force=False)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        """
+        Custom method to remove 2D plot artifacts when object is destroyed.
+        """
+
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_plot_detail_level(self, p_detail_level:int):
-        self._plot_detail_level = max(0, p_detail_level)
+    def _remove_plot_3d(self):
+        """
+        Custom method to remove 3D plot artifacts when object is destroyed.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        """
+        Custom method to remove nd plot artifacts when object is destroyed.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    # def __del__(self):
+    #     self.remove_plot(p_refresh=True)
 
 
 

@@ -15,18 +15,33 @@
 ## --                                - new parameter p_scope
 ## --                                - refactoring
 ## --                                New Method ClusterAnalyzer.new_cluster_allowed()
+## -- 2023-11-18  0.5.0     DA       Class ClusterCentroid: added plot functionality
+## -- 2023-12-08  0.6.0     DA       Class ClusterAnalyzer: 
+## --                                - changed internal cluster storage from list to dictionary
+## --                                - added method _remove_cluster()
+## -- 2023-12-10  0.6.1     DA       Bugfix in method ClusterAnalyzer.get_cluster_membership()
+## -- 2023-12-20  0.7.0     DA       Renormalization
+## -- 2024-02-23  0.8.0     DA       Class ClusterCentroid: implementation of methods _remove_plot*
+## -- 2024-02-24  0.8.1     DA       Method ClusterAnalyzer._remove_cluster() explicitely removes
+## --                                the plot of a cluster before removal of the cluster itself
+## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2023-06-03)
+Ver. 0.8.2 (2024-02-24)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
+from matplotlib.figure import Figure
+from matplotlib.text import Text
+from mpl_toolkits.mplot3d.art3d import Line3D, Text3D
+from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
 from mlpro.oa.streams import OATask
+from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.math.geometry import Point
 from typing import List, Tuple
 
@@ -45,6 +60,8 @@ class Cluster (Id, Plottable):
         Optional external id.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_color : string
+        Color of the cluster during visualization.
     **p_kwargs
         Further optional keyword arguments.
     """
@@ -56,10 +73,13 @@ class Cluster (Id, Plottable):
                                 PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
+    C_CLUSTER_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id = None,
                   p_visualize : bool = False,
+                  p_color = 'red',
                   **p_kwargs ):
 
         self._kwargs = p_kwargs.copy()
@@ -85,6 +105,21 @@ class Cluster (Id, Plottable):
         """
 
         raise NotImplementedError
+    
+
+ ## -------------------------------------------------------------------------------------------------
+    def renormalize(self, p_normalizer:Normalizer):
+        """
+        Custom method to renormalize internally buffered data using the given normalizer object. 
+        This method is called especially by method ClusterAnalyzer._renormalize().
+        
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+
+        pass 
 
 
 
@@ -161,7 +196,7 @@ class ClusterAnalyzer (OATask):
                           **p_kwargs )
 
         self._cls_cluster   = p_cls_cluster
-        self._clusters      = []
+        self._clusters      = {}
         self._cluster_limit = p_cluster_limit
 
 
@@ -181,22 +216,63 @@ class ClusterAnalyzer (OATask):
            True, if adding a new cluster allowed. False otherwise.
         """
 
-        return ( self._cluster_limit == 0 ) or ( len(self._clusters) < self._cluster_limit )
+        return ( self._cluster_limit == 0 ) or ( len(self._clusters.key()) < self._cluster_limit )
     
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> List[Cluster]:
+    def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters. 
 
         Returns
         -------
-        list_of_clusters : List[Cluster]
-            Current list of clusters.
+        dict_of_clusters : dict[Cluster]
+            Current dictionary of clusters.
         """
 
         return self._clusters
     
+
+## -------------------------------------------------------------------------------------------------
+    def _add_cluster(self, p_cluster:Cluster) -> bool:
+        """
+        Protected method to be used to add a new cluster. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_cluster : Cluster
+            Cluster object to be added.
+
+        Returns
+        -------
+        successful : Bool
+            True, if the cluster has been added successfully. False otherwise.
+        """
+
+        if not self.new_cluster_allowed(): return False
+
+        self._clusters[p_cluster.get_id()] = p_cluster
+
+        if self.get_visualization(): 
+            p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
+
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_cluster(self, p_cluster:Cluster):
+        """
+        Protected method to remove an existing cluster. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_cluster : Cluster
+            Cluster object to be added.
+        """
+
+        p_cluster.remove_plot(p_refresh=True)
+        del self._clusters[p_cluster.get_id()]
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_cluster_memberships( self, 
@@ -226,7 +302,7 @@ class ClusterAnalyzer (OATask):
         list_ms_abs     = []
         cluster_max_ms  = None
 
-        for cluster in self._clusters:
+        for cluster in self.get_clusters().values():
 
             ms_abs  = cluster.get_membership( p_inst = p_inst )
             sum_ms += ms_abs
@@ -255,6 +331,17 @@ class ClusterAnalyzer (OATask):
             list_ms_rel.append( ( ms_abs[0].get_id(), ms_rel, ms_abs[0] ) )
 
         return list_ms_rel
+    
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+
+        if not self.get_visualization(): return
+
+        super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+
+        for cluster in self._clusters.values():
+            cluster.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -265,9 +352,25 @@ class ClusterAnalyzer (OATask):
 
         if not self.get_visualization(): return
 
-        for cluster in self._clusters:
+        for cluster in self._clusters.values():
             cluster.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
 
+
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer: Normalizer):
+        """
+        Internal renormalization of all clusters. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+
+        for cluster in self._clusters.values():
+            cluster.renormalize( p_normalizer=p_normalizer )
+    
 
 
 
@@ -310,3 +413,189 @@ class ClusterCentroid (Cluster):
     def get_membership(self, p_inst: Instance) -> float:
         feature_data = p_inst.get_feature_data()
         return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid )
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
+        super().init_plot(p_figure, p_plot_settings, **p_kwargs)
+        self._centroid.init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        self._plot_line1 = None
+        self._plot_line2 = None
+        self._plot_line1_t1 : Text = None
+        self._plot_line1_t2 : Text = None
+        self._plot_line1_t3 : Text = None
+        self._plot_line1_t4 : Text = None
+        self._plot_line1_t5 : Text = None
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        self._plot_line1 : Line3D = None
+        self._plot_line2 : Line3D = None
+        self._plot_line3 : Line3D = None
+        self._plot_line1_t1 : Text3D = None
+        self._plot_line1_t2 : Text3D = None
+        self._plot_line1_t3 : Text3D = None
+        self._plot_line1_t4 : Text3D = None
+        self._plot_line1_t5 : Text3D = None
+        self._plot_line1_t6 : Text3D = None
+        self._plot_line1_t7 : Text3D = None
+    
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        super().update_plot(**p_kwargs)
+        self._centroid.update_plot( p_kwargs=p_kwargs)   
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_2d(p_settings, **p_kwargs)
+
+        # 1 Get coordinates
+        centroid = self._centroid.get_values()
+        ax_xlim  = p_settings.axes.get_xlim()
+        ax_ylim  = p_settings.axes.get_ylim()
+        xlim     = [ min( ax_xlim[0], centroid[0] ), max(ax_xlim[1], centroid[0] ) ]
+        ylim     = [ min( ax_ylim[0], centroid[1] ), max(ax_ylim[1], centroid[1] ) ]
+
+        # 2 Plot a crosshair
+        if self._plot_line1 is None:
+            # 2.1 Add initial crosshair lines
+            cluster_id = self.get_id()
+            col_id = cluster_id % len(self.C_CLUSTER_COLORS)
+            color = self.C_CLUSTER_COLORS[col_id]
+            label = ' C' + str(cluster_id) + ' '
+            self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], color=color, linestyle='dashed', lw=1, label=label)[0]
+            self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, color=color, linestyle='dashed', lw=1)[0]
+            self._plot_line1_t1 = p_settings.axes.text(centroid[0], centroid[1], label, color=color )
+            self._plot_line1_t2 = p_settings.axes.text(xlim[0], centroid[1], label, ha='right', va='center', color=color )
+            self._plot_line1_t3 = p_settings.axes.text(xlim[1], centroid[1], label, ha='left',va='center', color=color )
+            self._plot_line1_t4 = p_settings.axes.text(centroid[0], ylim[0], label, ha='center', va='top', color=color )
+            self._plot_line1_t5 = p_settings.axes.text(centroid[0], ylim[1], label, ha='center', va='bottom',color=color )
+            p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', shadow=True, draggable=True)
+        else:
+            # 2.2 Update data of crosshair lines
+            self._plot_line1.set_data( xlim, [centroid[1],centroid[1]] )
+            self._plot_line2.set_data( [centroid[0],centroid[0]], ylim )
+            self._plot_line1_t1.set(position=(centroid[0], centroid[1]) )
+            self._plot_line1_t2.set(position=(xlim[0], centroid[1]))
+            self._plot_line1_t3.set(position=(xlim[1], centroid[1]))
+            self._plot_line1_t4.set(position=(centroid[0], ylim[0]))
+            self._plot_line1_t5.set(position=(centroid[0], ylim[1]))
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_3d(p_settings, **p_kwargs) 
+
+        # 1 Get coordinates
+        centroid = self._centroid.get_values()
+        ax_xlim  = p_settings.axes.get_xlim()
+        ax_ylim  = p_settings.axes.get_ylim()
+        ax_zlim  = p_settings.axes.get_zlim()
+        xlim     = [ min( ax_xlim[0], centroid[0] ), max(ax_xlim[1], centroid[0] ) ]
+        ylim     = [ min( ax_ylim[0], centroid[1] ), max(ax_ylim[1], centroid[1] ) ]
+        zlim     = [ min( ax_zlim[0], centroid[2] ), max(ax_zlim[1], centroid[2] ) ]
+
+
+        # 2 Determine label text alignments
+        ap = p_settings.axes.get_axis_position()
+
+        if ap[0]: 
+            t2_ha='left' 
+            t3_ha='right'
+        else: 
+            t2_ha='right'
+            t3_ha='left'
+
+        if ap[1]: 
+            t4_ha='right' 
+            t5_ha='left'
+        else: 
+            t4_ha='left'
+            t5_ha='right'
+
+        t6_va='top' 
+        t7_va='bottom'
+
+
+        # 3 Plot a crosshair with label texts
+        if self._plot_line1 is None:
+            # 3.1 Add initial crosshair lines
+            cluster_id = self.get_id()
+            col_id = cluster_id % len(self.C_CLUSTER_COLORS)
+            color = self.C_CLUSTER_COLORS[col_id]
+            label = ' C' + str(cluster_id) + ' '
+            self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1, label=label)[0]
+            self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1)[0]
+            self._plot_line3 = p_settings.axes.plot( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim, color=color, linestyle='dashed', lw=1)[0]
+
+            self._plot_line1_t1 = p_settings.axes.text(centroid[0], centroid[1], centroid[2], label, color=color )
+            self._plot_line1_t2 = p_settings.axes.text(xlim[0], centroid[1], centroid[2], label, ha=t2_ha, va='center', color=color )
+            # self._plot_line1_t3 = p_settings.axes.text(xlim[1], centroid[1], centroid[2], label, ha=t3_ha, va='center', color=color )
+            self._plot_line1_t4 = p_settings.axes.text(centroid[0], ylim[0], centroid[2], label, ha=t4_ha, va='center', color=color )
+            # self._plot_line1_t5 = p_settings.axes.text(centroid[0], ylim[1], centroid[2], label, ha=t5_ha, va='center', color=color )
+            self._plot_line1_t6 = p_settings.axes.text(centroid[0], centroid[1], zlim[0], label, ha='center', va=t6_va, color=color )
+            # self._plot_line1_t7 = p_settings.axes.text(centroid[0], centroid[1], zlim[1], label, ha='center', va=t7_va, color=color )
+
+            p_settings.axes.legend(title='Clusters', alignment='left', loc='right', shadow=True, draggable=True)
+        else:
+            # 3.2 Update data of crosshair lines
+            self._plot_line1.set_data_3d( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]] )
+            self._plot_line2.set_data_3d( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]] )
+            self._plot_line3.set_data_3d( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim )
+
+            self._plot_line1_t1.set(position_3d=(centroid[0], centroid[1], centroid[2]))
+            self._plot_line1_t2.set(position_3d=(xlim[0], centroid[1], centroid[2]), ha=t2_ha)
+            # self._plot_line1_t3.set(position_3d=(xlim[1], centroid[1], centroid[2]), ha=t3_ha)
+            self._plot_line1_t4.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=t4_ha)
+            # self._plot_line1_t5.set(position_3d=(centroid[0], ylim[1], centroid[2]), ha=t5_ha)
+            self._plot_line1_t6.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=t6_va)
+            # self._plot_line1_t7.set(position_3d=(centroid[0], centroid[1], zlim[1]), va=t7_va)
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh: bool = True):
+        self._centroid.remove_plot(p_refresh=p_refresh)
+        return super().remove_plot(p_refresh=p_refresh)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        if self._plot_line1 is not None: self._plot_line1.remove()
+        if self._plot_line2 is not None: self._plot_line2.remove()
+        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
+        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
+        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
+        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
+        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_3d(self):
+        if self._plot_line1 is not None: self._plot_line1.remove()
+        if self._plot_line2 is not None: self._plot_line2.remove()
+        if self._plot_line3 is not None: self._plot_line3.remove()
+        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
+        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
+        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
+        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
+        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
+        if self._plot_line1_t6 is not None: self._plot_line1_t6.remove()
+        if self._plot_line1_t7 is not None: self._plot_line1_t7.remove()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def renormalize(self, p_normalizer: Normalizer):
+        self._centroid.set_values( p_normalizer.renormalize( self._centroid.get_values() ) )
+

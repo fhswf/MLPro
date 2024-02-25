@@ -6,7 +6,7 @@ interactive ML applications for graphical validation, presentation and education
 
 **Key features are:**
 
-- Platform-indepe ndend framework for creation of own UI scenarios
+- Platform-independend framework for creation of own UI scenarios
 - Ready-to-run application „SciUI“ auto-detects and starts own scenarios
 - Focus on real-time visualization and interaction 
 - Based on Python standards Tkinter and MatPlotLib

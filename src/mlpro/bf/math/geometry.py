@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-18  0.0.0     DA       Creation
+## -- 2023-12-28  1.0.0     DA       Finalized class Point
+## -- 2024-02-23  1.1.0     DA       Class Point: implementation of methods _renmove_plot*
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-04-18)
+Ver. 1.1.0 (2024-02-23)
 
 This module provides class for geometric objects like points, etc.
 
@@ -138,7 +140,7 @@ class Point (Element, Plottable):
             self._plot_pos,  = p_settings.axes.plot( self._values[0], 
                                                      self._values[1], 
                                                      marker='+', 
-                                                     color='blue', 
+                                                     color='red', # 2023-12-08 DA
                                                      linestyle='',
                                                      markersize=3 )
             
@@ -153,6 +155,8 @@ class Point (Element, Plottable):
                                                       np.array([self._values[1]]),
                                                       np.array([self._point_vel[0]]),
                                                       np.array([self._point_vel[1]]),
+                                                      units = 'dots',
+                                                      width = 2,
                                                       scale = 1,
                                                       color='red' )
 
@@ -167,7 +171,7 @@ class Point (Element, Plottable):
                                                  self._values[1], 
                                                  self._values[2],
                                                  marker='+', 
-                                                 color='blue', 
+                                                 color='red',  # 2023-12-08 DA
                                                  linestyle='',
                                                  markersize=3 )
             
@@ -192,4 +196,20 @@ class Point (Element, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
         pass
-    
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        if self._plot_pos is not None: self._plot_pos.remove()
+        if self._plot_vel is not None: self._plot_vel.remove()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_3d(self):
+        if self._plot_pos is not None: self._plot_pos.remove()
+        if self._plot_vel is not None: self._plot_vel.remove()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        pass        

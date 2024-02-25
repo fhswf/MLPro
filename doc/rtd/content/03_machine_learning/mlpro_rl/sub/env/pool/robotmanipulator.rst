@@ -33,7 +33,7 @@ This robotinhtm environment can be imported via:
 
 .. code-block:: python
 
-    import mlpro.rl.pool.envs.robotinhtm
+    from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 
 
 **Prerequisites**
