@@ -70,6 +70,14 @@ class AnomalyDetector(OATask):
         print(time_stamp)
 
 
+    ## ------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
+        super().init_plot(p_figure, p_plot_settings, **p_kwargs)
+        self._centroid.init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    
 
 
 ## -------------------------------------------------------------------------
