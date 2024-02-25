@@ -82,6 +82,9 @@ class Dataset(Log):
                  p_output_cls = C_CLS_ELEM,
                  p_feature_dataset = None,
                  p_label_dataset = None,
+                 p_features:list[str] = None,
+                 p_labels:list[str] = None,
+                 p_label_indexes:list = None,
                  p_batch_size : int = 1,
                  p_drop_short : bool = False,
                  p_shuffle : bool = False,
@@ -94,8 +97,18 @@ class Dataset(Log):
 
         Log.__init__(self, p_logging = p_logging)
         self._output_cls = p_output_cls
-        self._feature_dataset = p_feature_dataset
-        self._label_dataset = p_label_dataset
+        self._features = p_features
+        self._labels = p_labels
+        self._label_indexes = p_label_indexes
+
+
+        if p_feature_dataset is not None and p_label_dataset is not None:
+            self._feature_dataset = p_feature_dataset
+            self._label_dataset = p_label_dataset
+        elif p_label_dataset:
+            raise ParamError("Please also provide feature dataset as p_dataset.")
+
+
         self._batch_size = p_batch_size
         self._last_batch = False
 
@@ -222,7 +235,6 @@ class Dataset(Log):
         """
         return len(self._feature_dataset)
 
-
 ## -------------------------------------------------------------------------------------------------
     def set_mode(self, p_mode):
         """
@@ -253,8 +265,7 @@ class Dataset(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def setup_spaces():
+    def setup_spaces(self):
         """
         This is a static custom method to return the feature and label space of the dataset.
 
@@ -263,8 +274,26 @@ class Dataset(Log):
         Feature Space, Label Space
             A tuple of feature and label space, respectively.
         """
+        feature_space = ESpace()
+        label_space = ESpace()
+        if self._features is not None:
+            for i,feature in enumerate(self._features):
+                feature_space.add_dim(Dimension(p_name_long=feature, p_name_short=f'F{i}_{feature[0:5]}'))
+        else:
+            for i in range(len(self.get_data(0)[0].get_values())):
+                feature_space.add_dim(Dimension(p_name_long=f"Feature {i}", p_name_short=f'F_{i}'))
 
-        return None, None
+        if self._labels is not None:
+            for i,label in enumerate(self._labels):
+               label_space.add_dim(Dimension(p_name_long=label, p_name_short=f'L{i}_{label[0:5]}'))
+        elif self._label_dataset is not None:
+            for i in range(len(self.get_data(0)[1].get_values())):
+                label_space.add_dim(Dimension(p_name_long=f"Label {i}", p_name_short=f'L_{i}'))
+        elif self._label_indexes:
+            for i in range(len(self._label_indexes)):
+                label_space.add_dim(Dimension(p_name_long=f"Label {i}", p_name_short=f'L_{i}'))
+
+        return feature_space, label_space
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_split(self):
@@ -301,10 +330,6 @@ class Dataset(Log):
         p_kwargs: dict
             Additional key worded arguments for custom reset.
 
-        Returns
-        -------
-        Returns the value returned by the custom reset method.
-
         """
         # Shuffle the entire indices
         if not self._split:
@@ -322,10 +347,9 @@ class Dataset(Log):
                 random.shuffle(self._indexes_test)
 
         self._last_batch = False
-        ret_val = self._reset(p_seed=p_seed, p_shuffle=p_shuffle, **p_kwargs)
+        self._reset(p_seed=p_seed, p_shuffle=p_shuffle, **p_kwargs)
         self.log(Log.C_LOG_TYPE_I, "Dataset is reset.")
 
-        return ret_val
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed, p_shuffle = False, **p_kwargs):
@@ -361,24 +385,29 @@ class Dataset(Log):
             The data instance at the given instance.
         """
         # 1. Fetch feature and label data and normalize if needed
+        features = self._feature_dataset[p_index]
         if self._normalize:
-            features = self._normalizer_feature_data.normalize(p_data=self._feature_dataset[p_index])
-            labels = self._normalizer_label_data.normalize(p_data=self._label_dataset[p_index])
-        else:
-            features = self._feature_dataset[p_index]
+            features = self._normalizer_feature_data.normalize(p_data=features)
+        if self._label_indexes:
+            labels = []
+            for id in self._label_indexes:
+                labels.append(features.pop(id))
+                label_obj = self._output_cls(self._label_space)
+                label_obj.set_values(labels)
+        elif self._label_dataset is not None:
             labels = self._label_dataset[p_index]
-
-        # 2. Create specific output object, based on the output class
-        if self._output_cls == Element:
-            feature_obj = self._output_cls(self._feature_space)
-            feature_obj.set_values(features)
+            if self._normalize:
+                labels = self._normalizer_label_data.normalize(p_data=labels)
             label_obj = self._output_cls(self._label_space)
             label_obj.set_values(labels)
+        feature_obj = self._output_cls(self._feature_space)
+        feature_obj.set_values(features)
 
-        else:
-            raise ParamError("The output class is not yet supported for this item")
 
-        return feature_obj, label_obj
+        try:
+            return feature_obj, label_obj
+        except:
+            return feature_obj
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -430,10 +459,13 @@ class Dataset(Log):
 
         feature_element = BatchElement(self._feature_space)
         feature_element.set_values([val[0].get_values()])
-        label_element = BatchElement(self._label_space)
-        label_element.set_values([val[1].get_values()])
+        if self._label_dataset is not None:
+            label_element = BatchElement(self._label_space)
+            label_element.set_values([val[1].get_values()])
 
-        return [(feature_element, label_element)]
+            return [(feature_element, label_element)]
+
+        return feature_element
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -481,18 +513,22 @@ class Dataset(Log):
             for index in indexes:
                 vals = self.get_data(index)
                 feature_values.append(vals[0].get_values())
-                label_values.append(vals[1].get_values())
+                if self._label_dataset is not None or self._label_indexes:
+                    label_values.append(vals[1].get_values())
             feature_batch = BatchElement(self._feature_space)
             feature_batch.set_values(feature_values)
-            label_batch = BatchElement(self._label_space)
-            label_batch.set_values(label_values)
+            if self._label_dataset is not None or self._label_indexes:
+                label_batch = BatchElement(self._label_space)
+                label_batch.set_values(label_values)
+                return [(feature_batch, label_batch)]
 
+            return [(feature_batch)]
 
         else:
             raise ParamError("This output class is not yet supported for this dataset")
 
 
-        return [(feature_batch, label_batch)]
+
 
 
 
@@ -547,6 +583,7 @@ class SASDataset(Dataset):
                  p_action_fname,
                  p_state_space : ESpace,
                  p_action_space : ESpace,
+                 p_op_state_indexes:list[int] = None,
                  p_episode_col = 'Episode ID',
                  p_delimiter = '\t',
                  p_drop_columns = ['Episode ID', 'Cycle', 'Day', 'Second', 'Microsecond'],
@@ -571,7 +608,7 @@ class SASDataset(Dataset):
 
         self._state_space = p_state_space.copy(True)
         self._action_space = p_action_space.copy(True)
-
+        self._op_state_indexes = p_op_state_indexes
         # feature_space, label_space = self.setup_spaces()
 
 
@@ -601,12 +638,16 @@ class SASDataset(Dataset):
             A tuple of feature and label space of the dataset.
         """
 
-        label_space = self._state_space.copy()
-
-        for dim in self._action_space.get_dims():
-            self._state_space.add_dim(dim)
+        if self._op_state_indexes:
+            label_space = self._state_space.spawn(p_id_list=[self._state_space.get_dim_ids()[i] for i in self._op_state_indexes])
+        else:
+            label_space = self._state_space.copy()
 
         feature_space = self._state_space.copy(p_new_dim_ids=True)
+
+        for dim in self._action_space.get_dims():
+            feature_space.add_dim(dim)
+
 
         return feature_space, label_space
 
@@ -666,3 +707,20 @@ class SASDataset(Dataset):
 
         return input, output
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_data(self, p_index):
+
+        if self._op_state_indexes:
+            features = self._feature_dataset[p_index]
+            labels = [self._label_dataset[p_index][i] for i in self._op_state_indexes]
+
+            feature_obj = BatchElement(self._feature_space)
+            feature_obj.set_values(features)
+            label_obj = BatchElement(self._label_space)
+            label_obj.set_values(labels)
+
+            return feature_obj, label_obj
+
+        else:
+            Dataset.get_data(self, p_index= p_index)
