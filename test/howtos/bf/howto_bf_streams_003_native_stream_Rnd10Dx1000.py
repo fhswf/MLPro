@@ -1,54 +1,34 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_101_basics.py
+## -- Module  : howto_bf_streams_003_native_stream_Rnd10Dx1000.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-10-27  0.0.0     DA       Creation
-## -- 2022-12-14  1.0.0     DA       First implementation
-## -- 2024-02-06  1.1.0     DA       Replaced the native stream by Clouds3D8C2000Static
+## -- 2024-02-06  1.0.0     DA       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-02-06)
+Ver. 1.0.0 (2024-02-06)
 
-This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
-a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
-a custom task only. The stream scenario is used to process some instances.
+This module demonstrates and visualizes the native stream Rnd10Dx1000 which generates 1000
+10-dimensional random instances.
 
 You will learn:
 
-1) How to implement an own custom stream task.
+1) The properties and use of native stream Rnd10Dx1000.
 
-2) How to set up a stream workflow based on stream tasks.
+2) How to set up a stream workflow without a stream task.
 
 3) How to set up a stream scenario based on a stream and a processing stream workflow.
 
-4) How to run a stream scenario dark or with visualization.
+4) How to run a stream scenario dark or with default visualization.
 
 """
 
 
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MyTask (StreamTask):
-    """
-    Demo implementation of a stream task with custom method _run().
-    """
-
-    # needed for proper logging (see class mlpro.bf.various.Log)
-    C_NAME      = 'Custom'
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
-        pass
-
+from mlpro.bf.various import Log
 
 
 
@@ -60,24 +40,22 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'Demo'
+    C_NAME      = 'My stream scenario'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize: bool, p_logging):
+    def _setup(self, p_mode, p_visualize:bool, p_logging):
 
-        # 1 Import a stream from OpenML
-        provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = provider_mlpro.get_stream('Clouds3D8C2000Static', p_logging=p_logging)
+        # 1 Import a native stream from MLPro
+        provider_mlpro = StreamProviderMLPro(p_seed=1, p_logging=p_logging)
+        stream = provider_mlpro.get_stream('Rnd10Dx1000', p_mode=p_mode, p_logging=p_logging)
 
-        # 2 Set up a stream workflow 
+
+        # 2 Set up a stream workflow
         workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=Task.C_RANGE_NONE, 
+                                   p_range_max=StreamWorkflow.C_RANGE_NONE, 
                                    p_visualize=p_visualize,
                                    p_logging=logging )
 
-        # 2.1 Set up and add an own custom task
-        task = MyTask( p_name='t1', p_visualize=p_visualize, p_logging=logging )
-        workflow.add_task( p_task=task )
 
         # 3 Return stream and workflow
         return stream, workflow
@@ -85,10 +63,11 @@ class MyScenario (StreamScenario):
 
 
 
+
 # 1 Preparation of demo/unit test mode
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 721
+    cycle_limit = 200
     logging     = Log.C_LOG_ALL
     visualize   = True
   

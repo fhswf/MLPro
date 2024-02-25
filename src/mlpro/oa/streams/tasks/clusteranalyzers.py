@@ -21,10 +21,14 @@
 ## --                                - added method _remove_cluster()
 ## -- 2023-12-10  0.6.1     DA       Bugfix in method ClusterAnalyzer.get_cluster_membership()
 ## -- 2023-12-20  0.7.0     DA       Renormalization
+## -- 2024-02-23  0.8.0     DA       Class ClusterCentroid: implementation of methods _remove_plot*
+## -- 2024-02-24  0.8.1     DA       Method ClusterAnalyzer._remove_cluster() explicitely removes
+## --                                the plot of a cluster before removal of the cluster itself
+## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2023-12-20)
+Ver. 0.8.2 (2024-02-24)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -266,6 +270,7 @@ class ClusterAnalyzer (OATask):
             Cluster object to be added.
         """
 
+        p_cluster.remove_plot(p_refresh=True)
         del self._clusters[p_cluster.get_id()]
 
 
@@ -552,6 +557,42 @@ class ClusterCentroid (Cluster):
             # self._plot_line1_t5.set(position_3d=(centroid[0], ylim[1], centroid[2]), ha=t5_ha)
             self._plot_line1_t6.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=t6_va)
             # self._plot_line1_t7.set(position_3d=(centroid[0], centroid[1], zlim[1]), va=t7_va)
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh: bool = True):
+        self._centroid.remove_plot(p_refresh=p_refresh)
+        return super().remove_plot(p_refresh=p_refresh)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        if self._plot_line1 is not None: self._plot_line1.remove()
+        if self._plot_line2 is not None: self._plot_line2.remove()
+        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
+        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
+        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
+        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
+        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_3d(self):
+        if self._plot_line1 is not None: self._plot_line1.remove()
+        if self._plot_line2 is not None: self._plot_line2.remove()
+        if self._plot_line3 is not None: self._plot_line3.remove()
+        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
+        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
+        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
+        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
+        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
+        if self._plot_line1_t6 is not None: self._plot_line1_t6.remove()
+        if self._plot_line1_t7 is not None: self._plot_line1_t7.remove()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
