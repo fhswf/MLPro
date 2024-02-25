@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Package : mlpro.wrappers
 ## -- Module  : mujoco.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

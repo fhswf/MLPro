@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : test_pool_policies
+## -- Module  : test_pool_policies.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -9,20 +9,19 @@
 ## -- 2022-05-19  1.0.1     SY       Add RandomGenerator policy
 ## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -- 2023-04-19  1.1.1     MRD      Refactor module import gym to gymnasium
+## -- 2024-02-16  1.1.2     SY       Replace gym environment to BGLP to remove dependency
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-04-19)
+Ver. 1.1.2 (2023-04-19)
 
 Unit test classes for policies.
 """
 
 
 import pytest
-import gymnasium as gym
-import numpy as np
 from mlpro.rl import *
-from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
@@ -39,8 +38,7 @@ def test_pool_policies(policy_cls):
 
         def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
             # 1 Setup environment
-            gym_env     = gym.make('CartPole-v1')
-            self._env   = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging) 
+            self._env = BGLP(p_logging=p_logging, cycle_limit=100)
 
             # 2 Setup and return standard single-agent with own policy
             return Agent(
