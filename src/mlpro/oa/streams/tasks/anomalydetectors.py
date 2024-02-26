@@ -8,11 +8,11 @@
 ## -- 2023-06-08  0.0.0     SP       Creation
 ## -- 2023-09-12  1.0.0     SP       Release
 ## -- 2023-11-21  1.0.1     SP       Time Stamp update
-## -- 2024-02-25  1.0.2     SP       Visualisation update
+## -- 2024-02-25  1.1.0     SP       Visualisation update
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-02-25)
+Ver. 1.1.0 (2023-02-25)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
