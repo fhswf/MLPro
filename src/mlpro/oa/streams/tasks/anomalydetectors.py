@@ -38,8 +38,6 @@ class AnomalyDetector(OATask):
     C_NAME          = 'Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
     C_EVENT_ANOMALY = 'ANOMALY'
-    C_ANOMALY_TYPES = ['Point Anomaly', 'Group Anomaly', 'Contextual Anomaly']
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -60,16 +58,18 @@ class AnomalyDetector(OATask):
                          **p_kwargs)
         
         self.data_points = []
+        self.data_size = 100
         self.inst_id = 0
         self.inst_value = 0
         self.ano_counter = 0
         self.ano_scores = []
         self.anomalies = {'inst_id':[], 'inst_value':[], 'ano_score':[],
                           'ano_type':[], 'time_of_occ':[]}
-        self.ano_type = 'Point Anomaly'
+        self.ano_type = 'Anomaly'
         self.time_of_occ = 0
         self.plot_update_counter = 0
-        self.consec_count = 1 
+        self.consec_count = 1
+        self.group_anomalies = []
 
 
 ## ------------------------------------------------------------------------------------------------
@@ -78,17 +78,16 @@ class AnomalyDetector(OATask):
 
 
 ## ------------------------------------------------------------------------------------------------
-    def _raise_anomaly(self, p_event_id:str, p_event_object:Event, p_instance : Instance):
-        time_stamp = p_instance.get_time_stamp()
-        self._raise_event(p_event_id, p_event_object)
+    def raise_anomaly_event(self, p_instance : Instance):
 
+        p_instance = p_instance
+        self.time_of_occ = p_instance.get_tstamp()
+        self.inst_id = p_instance.get_id()
+        p_event_id = "Anomaly_" + str(self.ano_counter)
+        #self.time_of_occ = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.ano_type = self.get_anomaly_type(p_instance)
 
-# ------------------------------------------------------------------------------------------------
-    def def_anomalies(self):
-
-        self.time_of_occ = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.ano_type = self.get_anomaly_type()
-
+        self.ano_counter += 1
         self.anomalies['inst_id'].append(self.inst_id)
         self.anomalies['inst_value'].append(self.inst_value)
         self.anomalies['ano_score'].append(self.ano_scores)
@@ -99,21 +98,23 @@ class AnomalyDetector(OATask):
              for i in range(len(self.anomalies)):
                  self.anomalies[i].pop(0)
 
+        if self.ano_type == 'Point Anomaly':
+            event = PointAnomaly(p_raising_object=self, p_det_time=str(self.time_of_occ), p_instance=p_instance)
+        elif self.ano_type == 'Group Anomaly':
+            #To be changed
+            event = GroupAnomaly(self, p_det_time=self.time_of_occ, p_instances=self.group_anomalies)
 
-    """## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-        self._plot_line1 = None
-        self._plot_line1_t1 : Text = None"""
+        self._raise_event(event.C_NAME, event)
 
 
 # ------------------------------------------------------------------------------------------------
-    def get_anomaly_type(self):
+    def get_anomaly_type(self, p_instance):
         self.ano_type = 'Point Anomaly'
-
 
         if len(self.anomalies['inst_id']) > 1:
             if int(self.anomalies['inst_id'][-1]) - 1 == int(self.anomalies['inst_id'][-2]):
                 self.consec_count +=1
+                self.group_anomalies.append(p_instance)
                 if self.consec_count > 2:
                     self.ano_type = 'Group Anomaly'
                     return self.ano_type
@@ -123,9 +124,12 @@ class AnomalyDetector(OATask):
             else:
                 self.consec_count = 1
                 self.ano_type = 'Point Anomaly'
+                self.group_anomalies = []
+                self.group_anomalies.append(p_instance)
                 return self.ano_type
         else:
             self.ano_type = 'Point Anomaly'
+            self.group_anomalies.append(p_instance)
             return self.ano_type
 
                  
@@ -142,108 +146,6 @@ class AnomalyDetector(OATask):
             self._plot_line1_t1 = p_settings.axes.text(self.anomalies['inst_id'][-1], 0, label, color='r' )
 
             self.plot_update_counter = self.plot_update_counter + 1
-
-
-"""## ------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure: Figure = None, p_plot_settings : PlotSettings= None, **p_kwargs):
-        super().init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure:Figure, p_settings:PlotSettings):
-        if p_settings.axes is None:
-            p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id )"""
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class LocalOutlierFactor(AnomalyDetector):
-    C_NAME          = 'LOF Anomaly Detector'
-    C_TYPE          = 'Anomaly Detector'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_neighbours = 10,
-                 p_delay = 3,
-                 p_name:str = None,
-                 p_range_max = StreamTask.C_RANGE_THREAD,
-                 p_ada : bool = True,
-                 p_duplicate_data : bool = False,
-                 p_visualize : bool = False,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_kwargs):
-
-        super().__init__(p_name = p_name,
-                         p_range_max = p_range_max,
-                         p_ada = p_ada,
-                         p_duplicate_data = p_duplicate_data,
-                         p_visualize = p_visualize,
-                         p_logging = p_logging,
-                         **p_kwargs)
-        
-        self.num_neighbours = p_neighbours
-        self.lof = LOF(self.num_neighbours)
-        self.delay = p_delay
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
-
-        self.adapt(p_inst_new, p_inst_del)
-
-        # Determine if data point is an anomaly based on its outlier score
-        if -1 in self.ano_scores:
-            self.ano_counter += 1
-            self.def_anomalies()
-            print(self.ano_type)
-
-        
-        
-        """event_obj = AnomalyEvent(p_raising_object=self, p_det_time=det_time,
-                                     p_instance=str(self.data_points[-1]))
-            handler = self.event_handler
-            self.register_event_handler(event_obj.C_NAME, handler)
-            self._raise_event(event_obj.C_NAME, event_obj)"""
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new):
-        for inst in p_inst_new:
-            if isinstance(inst, Instance):
-                feature_data = inst.get_feature_data()
-            else:
-                feature_data = inst
-
-        self.inst_value = feature_data.get_values()
-        self.inst_id = inst.get_id()
-        print(self.inst_id)
-        
-        self.ano_scores = []
-        if len(self.data_points) == 0:
-            for i in range(len(self.inst_value)):
-                self.data_points.append([])
-
-        i=0
-        for value in self.inst_value:
-            self.data_points[i].append(value)
-            i=i+1
-
-        if len(self.data_points[0]) > 100:
-            for i in range(len(self.inst_value)):
-                self.data_points[i].pop(0)
-
-        if len(self.data_points[0]) >= self.delay:
-            for i in range(len(self.inst_value)):
-                scores = self.lof.fit_predict(np.array(self.data_points[i]).reshape(-1, 1))
-                self.ano_scores.append(scores[-1])
-
-
-## -------------------------------------------------------------------------------------------------
-    def event_handler(self, p_event_id, p_event_object:Event):
-        self.log(Log.C_LOG_TYPE_I, 'Received event id', p_event_id)
 
 
 
@@ -321,8 +223,9 @@ class AnomalyEvent (Event):
     C_NAME     = 'Anomaly'
 
 # -------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str, p_instance: str, **p_kwargs):
-        pass
+    def __init__(self, p_raising_object, p_det_time : str, **p_kwargs):
+        super().__init__(p_raising_object=p_raising_object,
+                         p_tstamp=p_det_time, **p_kwargs)
 
 
 
@@ -335,8 +238,9 @@ class PointAnomaly (AnomalyEvent):
     C_NAME      = 'Point Anomaly'
 
 # -------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str, p_instance : str, p_deviation : float, **p_kwargs):
-        pass
+    def __init__(self, p_raising_object, p_det_time : str=None, p_instance : str=None,
+                 p_deviation : float=None, **p_kwargs):
+        super().__init__(p_raising_object=p_raising_object, p_det_time=p_det_time, **p_kwargs)
 
 
 
@@ -349,9 +253,10 @@ class GroupAnomaly (AnomalyEvent):
     C_NAME      = 'Group Anomaly'
 
 # -------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str, p_instances : list, p_mean : float, p_mean_deviation : float, **p_kwargs):
-        pass
-
+    def __init__(self, p_raising_object, p_det_time : str, p_instances : list=None,
+                 p_mean : float=None, p_mean_deviation : float=None, **p_kwargs):
+        super().__init__(p_raising_object=p_raising_object,
+                         p_det_time=p_det_time, **p_kwargs)
 
 
 
@@ -363,8 +268,9 @@ class ContextualAnomaly (AnomalyEvent):
     C_NAME      = 'Contextual Anomaly'
 
 # -------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time :str, p_instance: str,  **p_kwargs):
-        pass
+    def __init__(self, p_raising_object, p_det_time :str, p_instances: str,  **p_kwargs):
+        super().__init__(p_raising_object=p_raising_object,
+                         p_det_time=p_det_time, **p_kwargs)
 
 
 
@@ -378,7 +284,8 @@ class DriftEvent (AnomalyEvent):
 
 # -------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_det_time : str, p_magnitude : float, p_rate : float, **p_kwargs):
-        pass
+        super().__init__(p_raising_object=p_raising_object,
+                         p_det_time=p_det_time, **p_kwargs)
 
 
 
@@ -392,7 +299,8 @@ class DriftEventCB (DriftEvent):
 
 # -------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_det_time : str, **p_kwargs):
-        pass
+        super().__init__(p_raising_object=p_raising_object,
+                         p_det_time=p_det_time, **p_kwargs)
 
 
 
