@@ -37,7 +37,6 @@ class AnomalyDetector(OATask):
 
     C_NAME          = 'Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
-    C_EVENT_ANOMALY = 'ANOMALY'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -63,8 +62,8 @@ class AnomalyDetector(OATask):
         self.inst_value = 0
         self.ano_counter = 0
         self.ano_scores = []
-        self.anomalies = {'inst_id':[], 'inst_value':[], 'ano_score':[],
-                          'ano_type':[], 'time_of_occ':[]}
+        self.anomalies = {'inst_id':[], 'inst_value':[], 'ano_score':[], 'ano_type':[],
+                          'time_of_occ':[]}
         self.ano_type = 'Anomaly'
         self.time_of_occ = 0
         self.plot_update_counter = 0
@@ -72,19 +71,16 @@ class AnomalyDetector(OATask):
         self.group_anomalies = []
 
 
-## ------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
         pass
 
 
-## ------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def raise_anomaly_event(self, p_instance : Instance):
-
         p_instance = p_instance
         self.time_of_occ = p_instance.get_tstamp()
         self.inst_id = p_instance.get_id()
-        p_event_id = "Anomaly_" + str(self.ano_counter)
-        #self.time_of_occ = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.ano_type = self.get_anomaly_type(p_instance)
 
         self.ano_counter += 1
@@ -95,19 +91,20 @@ class AnomalyDetector(OATask):
         self.anomalies['time_of_occ'].append(self.time_of_occ)
 
         if len(self.anomalies['inst_id']) > 100:
-             for i in range(len(self.anomalies)):
-                 self.anomalies[i].pop(0)
+             for x in self.anomalies:
+                 self.anomalies[x].pop(0)
 
         if self.ano_type == 'Point Anomaly':
-            event = PointAnomaly(p_raising_object=self, p_det_time=str(self.time_of_occ), p_instance=p_instance)
+            event = PointAnomaly(p_raising_object=self, p_det_time=str(self.time_of_occ),
+                                 p_instance=p_instance)
         elif self.ano_type == 'Group Anomaly':
-            #To be changed
-            event = GroupAnomaly(self, p_det_time=self.time_of_occ, p_instances=self.group_anomalies)
+            event = GroupAnomaly(self, p_det_time=self.time_of_occ,
+                                 p_instances=self.group_anomalies)
 
         self._raise_event(event.C_NAME, event)
 
 
-# ------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_anomaly_type(self, p_instance):
         self.ano_type = 'Point Anomaly'
 
@@ -133,32 +130,35 @@ class AnomalyDetector(OATask):
             return self.ano_type
 
                  
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_nd(p_settings, **p_kwargs)
 
         if self.plot_update_counter < len(self.anomalies['inst_id']):
-
             ylim  = p_settings.axes.get_ylim()
             label = str(self.anomalies['ano_type'][-1][0])
-            self._plot_line1 = p_settings.axes.plot( [self.anomalies['inst_id'][-1], self.anomalies['inst_id'][-1]], ylim,
-                                                    color='r', linestyle='dashed', lw=1, label=label)[0]
+            self._plot_line1 = p_settings.axes.plot([self.anomalies['inst_id'][-1], self.anomalies['inst_id'][-1]],
+                                                    ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
             self._plot_line1_t1 = p_settings.axes.text(self.anomalies['inst_id'][-1], 0, label, color='r' )
-
             self.plot_update_counter = self.plot_update_counter + 1
 
 
 
 
 
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorCB(AnomalyDetector):
+    """
+    This is the base class for cluster-based online anomaly detectors. It raises an event when an
+    anomaly is detected in a cluster dataset.
+
+    """
 
     C_TYPE = 'Cluster based Anomaly Detector'
 
 
-## ------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_threshold = 5.0,
                  p_centroid_threshold = 1.0,
@@ -186,7 +186,7 @@ class AnomalyDetectorCB(AnomalyDetector):
         self.centroids = []
 
 
-# -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, center: float, centroids: list):
         anomaly = None
         self.centroids.append(centroids)
@@ -215,14 +215,19 @@ class AnomalyDetectorCB(AnomalyDetector):
 
 
 
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class AnomalyEvent (Event):
+    """
+    This is the base class for anomaly events which can be raised by the anomaly detectors when an
+    anomaly is detected.
+
+    """
 
     C_TYPE     = 'Event'
     C_NAME     = 'Anomaly'
 
-# -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_det_time : str, **p_kwargs):
         super().__init__(p_raising_object=p_raising_object,
                          p_tstamp=p_det_time, **p_kwargs)
@@ -231,13 +236,17 @@ class AnomalyEvent (Event):
 
 
 
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class PointAnomaly (AnomalyEvent):
+    """
+    Event class for anomaly events when point anomalies are detected.
+    
+    """
 
     C_NAME      = 'Point Anomaly'
 
-# -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_det_time : str=None, p_instance : str=None,
                  p_deviation : float=None, **p_kwargs):
         super().__init__(p_raising_object=p_raising_object, p_det_time=p_det_time, **p_kwargs)
@@ -246,13 +255,17 @@ class PointAnomaly (AnomalyEvent):
 
 
 
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class GroupAnomaly (AnomalyEvent):
+    """
+    Event class for anomaly events when group anomalies are detected.
+    
+    """
 
     C_NAME      = 'Group Anomaly'
 
-# -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_det_time : str, p_instances : list=None,
                  p_mean : float=None, p_mean_deviation : float=None, **p_kwargs):
         super().__init__(p_raising_object=p_raising_object,
@@ -261,9 +274,13 @@ class GroupAnomaly (AnomalyEvent):
 
 
 
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class ContextualAnomaly (AnomalyEvent):
+    """
+    Event class for anomaly events when contextual anomalies are detected
+    
+    """
 
     C_NAME      = 'Contextual Anomaly'
 
@@ -276,13 +293,17 @@ class ContextualAnomaly (AnomalyEvent):
 
 
 
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class DriftEvent (AnomalyEvent):
+    """
+    Event class to be raised when drift is detected.
+    
+    """
 
     C_NAME      = 'Drift'
 
-# -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_det_time : str, p_magnitude : float, p_rate : float, **p_kwargs):
         super().__init__(p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
@@ -291,17 +312,18 @@ class DriftEvent (AnomalyEvent):
 
 
 
-## -------------------------------------------------------------------------
-## -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class DriftEventCB (DriftEvent):
+    """
+    Event class to be raised when cluster drift is detected.
+    
+    """
 
     C_NAME      = 'Cluster based Drift'
 
-# -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_raising_object, p_det_time : str, **p_kwargs):
         super().__init__(p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
-
-
-
 
