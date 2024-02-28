@@ -20,8 +20,6 @@ from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.basics import Instance, List
 import numpy as np
 from matplotlib.text import Text
-from sklearn.neighbors import LocalOutlierFactor as LOF
-from datetime import datetime
 
 
 
