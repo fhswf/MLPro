@@ -16,10 +16,114 @@ Ver. 1.1.0 (2023-02-25)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
+from matplotlib.figure import Figure
+from mlpro.bf.plot import PlotSettings
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.basics import Instance, List
 import numpy as np
 from matplotlib.text import Text
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Anomaly (Id, Plottable):
+    """
+    Base class for an Anomaly. 
+
+    Parameters
+    ----------
+    p_id
+        Optional external id.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_color : string
+        Color of the anomaly during visualization.
+    **p_kwargs
+        Further optional keyword arguments.
+    """
+
+    C_PLOT_ACTIVE           = True
+    C_PLOT_STANDALONE       = False
+    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
+                                PlotSettings.C_VIEW_3D, 
+                                PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
+
+    C_CLUSTER_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_id = None,
+                  p_visualize : bool = False,
+                  p_color = 'red',
+                  **p_kwargs ):
+
+        self._kwargs = p_kwargs.copy()
+        Id.__init__( self, p_id = p_id )
+        Plottable.__init__( self, p_visualize = p_visualize )
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self):
+        return self._id
+
+
+## -------------------------------------------------------------------------------------------------
+    def is_visualize(self):
+        return self._visualize
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_kwargs(self):
+        return self._kwargs
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        return super()._init_plot_2d(p_figure, p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        return super()._init_plot_3d(p_figure, p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        return super()._init_plot_nd(p_figure, p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+        return super()._update_plot_2d(p_settings, **p_kwargs)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+        return super()._update_plot_3d(p_settings, **p_kwargs)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+        return super()._update_plot_nd(p_settings, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        return super()._remove_plot_2d()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_3d(self):
+        return super()._remove_plot_3d()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        return super()._remove_plot_nd()
+
 
 
 
@@ -141,6 +245,21 @@ class AnomalyDetector(OATask):
             self.plot_update_counter = self.plot_update_counter + 1
 
 
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+        return super().init_plot(p_figure, p_plot_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, p_inst_new: List[Instance] = None, p_inst_del: List[Instance] = None, **p_kwargs):
+        return super().update_plot(p_inst_new, p_inst_del, **p_kwargs)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh: bool = True):
+        return super().remove_plot(p_refresh)
+
+    
 
 
 
