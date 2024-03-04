@@ -140,6 +140,9 @@ class AnomalyDetector(OATask):
     C_NAME          = 'Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
 
+    C_PLOT_ACTIVE           = True
+    C_PLOT_STANDALONE       = False
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_name:str = None,
@@ -171,12 +174,65 @@ class AnomalyDetector(OATask):
         self.plot_update_counter = 0
         self.consec_count = 1
         self.group_anomalies = []
+        self._anomalies      = {}
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
         pass
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_anomalies(self) -> dict[Anomaly]:
+        """
+        This method returns the current list of anomalies. 
+
+        Returns
+        -------
+        dict_of_anomalies : dict[Anomaly]
+            Current dictionary of anomalies.
+        """
+
+        return self._anomalies
+    
+
+## -------------------------------------------------------------------------------------------------
+    def add_anomaly(self, p_anomaly:Anomaly) -> bool:
+        """
+        Method to be used to add a new anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : Anomaly
+            Anomaly object to be added.
+
+        Returns
+        -------
+        successful : Bool
+            True, if the anomaly has been added successfully. False otherwise.
+        """
+
+        self._anomalies[p_anomaly.get_id()] = p_anomaly
+
+        if self.get_visualization(): 
+            p_anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
+
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_anomaly(self, p_anomaly:Anomaly):
+        """
+        Method to remove an existing anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : Anomlay
+            Anomlay object to be added.
+        """
+
+        p_anomaly.remove_plot(p_refresh=True)
+        del self._anomalies[p_anomaly.get_id()]
 
 ## -------------------------------------------------------------------------------------------------
     def raise_anomaly_event(self, p_instance : Instance):
