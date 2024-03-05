@@ -107,7 +107,14 @@ class Anomaly (Id, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
-        return super()._update_plot_nd(p_settings, **p_kwargs)
+
+        super()._update_plot_nd(p_settings, **p_kwargs)
+
+        ylim  = p_settings.axes.get_ylim()
+        label = str('P')
+        self._plot_line1 = p_settings.axes.plot([self.anomalies['inst_id'][-1], self.anomalies['inst_id'][-1]],
+                                                ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
+        self._plot_line1_t1 = p_settings.axes.text(self.anomalies['inst_id'][-1], 0, label, color='r' )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -303,16 +310,31 @@ class AnomalyDetector(OATask):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
-        return super().init_plot(p_figure, p_plot_settings)
+
+        if not self.get_visualization(): return
+
+        super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+
+        for anomaly in self._anomalies.values():
+            anomaly.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
     
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, p_inst_new: List[Instance] = None, p_inst_del: List[Instance] = None, **p_kwargs):
-        return super().update_plot(p_inst_new, p_inst_del, **p_kwargs)
+    
+        if not self.get_visualization(): return
+
+        super().update_plot(p_inst_new, p_inst_del, **p_kwargs)
+
+        for anomaly in self._anomalies.values():
+            anomaly.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
     def remove_plot(self, p_refresh: bool = True):
+
+        self._anomalies.remove_plot(p_refresh=p_refresh)
+
         return super().remove_plot(p_refresh)
 
     
