@@ -28,6 +28,9 @@ from matplotlib.text import Text
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+# Combine with event and use _plot methods there.... Save events inside dictionary.. Call particular event to remove it
+# firts remove plot and then remove the event from dictionary. The init plot in ad furthernierates over the dictionary and
+# changes are seen..The init update and remove methods in AD are for scenearios
 class Anomaly (Id, Plottable):
     """
     Base class for an Anomaly. 
@@ -50,8 +53,6 @@ class Anomaly (Id, Plottable):
                                 PlotSettings.C_VIEW_3D, 
                                 PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
-
-    C_CLUSTER_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -94,31 +95,11 @@ class Anomaly (Id, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def get_kwargs(self):
         return self._kwargs
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-        return super()._init_plot_2d(p_figure, p_settings)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        return super()._init_plot_3d(p_figure, p_settings)
-    
+      
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
         return super()._init_plot_nd(p_figure, p_settings)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
-        return super()._update_plot_2d(p_settings, **p_kwargs)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
-        return super()._update_plot_3d(p_settings, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -132,16 +113,6 @@ class Anomaly (Id, Plottable):
                                                 ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
         self._plot_line1_t1 = p_settings.axes.text(self.instance[-1].get_id(), 0, label, color='r' )
 
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_2d(self, p_refresh: bool = True):
-        return super()._remove_plot_2d(p_refresh=p_refresh)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_3d(self, p_refresh: bool = True):
-        return super()._remove_plot_3d(p_refresh=p_refresh)
-    
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self, p_refresh: bool = True):
@@ -227,7 +198,7 @@ class AnomalyDetector(OATask):
             True, if the anomaly has been added successfully. False otherwise.
         """
         self.group_anomalies.append(p_anomaly)
-        self.group_anomalies_instances.append(p_anomaly.get_instance()[0])
+        self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
 
         if len(self.group_anomalies_instances) > 1:
 
@@ -239,7 +210,9 @@ class AnomalyDetector(OATask):
                         self.group_anomalies[i].remove_plot()
                         self.remove_anomaly(self.group_anomalies[i])
                     self.ano_id -= 2
-                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly', p_visualize=self.visualize)
+                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_visualize=self.visualize,
+                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
+
                     self._anomalies[anomaly.get_id()] = anomaly
                     self.group_anomalies = []
                     self.group_anomalies.append(anomaly)
@@ -249,7 +222,8 @@ class AnomalyDetector(OATask):
                     self.group_anomalies[0].remove_plot()
                     self.remove_anomaly(self.group_anomalies[0])
                     self.ano_id -= 1
-                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly', p_visualize=self.visualize)
+                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_visualize=self.visualize,
+                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
                     self._anomalies[anomaly.get_id()] = anomaly
                     self.group_anomalies = []
                     self.group_anomalies.append(anomaly)
@@ -286,26 +260,17 @@ class AnomalyDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def raise_anomaly_event(self, p_instance : Instance):
-
-        #self.time_of_occ = p_instance.get_tstamp()
-        #self.ano_type = self.get_anomaly_type(p_instance)
-        #self.anomalies['ano_type'].append(self.ano_type)
+    def raise_anomaly_event(self, p_instance : list[Instance]):
 
         self.ano_id +=1
 
-        anomaly = Anomaly(p_id=self.ano_id, p_instance=p_instance, p_anomaly_type='Point Anomaly', p_visualize=self.visualize)
+        event = PointAnomaly(p_id=self.ano_id, p_instance=p_instance, p_visualize=self.visualize,
+                             p_raising_object=self, p_det_time=str(p_instance[-1].get_tstamp()))
 
-        anomaly = self.add_anomaly(p_anomaly=anomaly)
+        event = self.add_anomaly(p_anomaly=event)
 
-        anomaly.update_plot()
-
-        if anomaly.get_anomaly_type() == 'Point Anomaly':
-            event = PointAnomaly(p_raising_object=self, p_det_time=str(anomaly.get_instance()[-1].get_tstamp()),
-                                 p_instance=p_instance)
-        elif anomaly.get_anomaly_type() == 'Group Anomaly':
-            event = GroupAnomaly(self, p_det_time=anomaly.get_instance()[-1].get_tstamp(),
-                                 p_instances=self.group_anomalies)
+        if self.get_visualization(): 
+            event.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
         self._raise_event(event.C_NAME, event)
 
@@ -335,9 +300,14 @@ class AnomalyDetector(OATask):
 ## -------------------------------------------------------------------------------------------------
     def remove_plot(self, p_refresh: bool = True):
 
-        self._anomalies.remove_plot(p_refresh=p_refresh)
+        if not self.get_visualization(): return
 
-        return super().remove_plot(p_refresh)
+        super().remove_plot()
+
+        for anomaly in self._anomalies.values():
+            anomaly.remove_plot()
+
+
 
     
 
@@ -414,20 +384,56 @@ class AnomalyDetectorCB(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyEvent (Event):
+class AnomalyEvent (Event, Plottable):
     """
     This is the base class for anomaly events which can be raised by the anomaly detectors when an
     anomaly is detected.
 
+    Parameters
+    ----------
+    p_id
+        Optional external id.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_color : string
+        Color of the anomaly during visualization.
+    **p_kwargs
+        Further optional keyword arguments.
     """
 
     C_TYPE     = 'Event'
     C_NAME     = 'Anomaly'
+    C_PLOT_ACTIVE           = True
+    C_PLOT_STANDALONE       = False
+    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
+                                PlotSettings.C_VIEW_3D, 
+                                PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str, **p_kwargs):
+    def __init__(self,
+                 p_id : int = None,
+                 p_instance : Instance = None,
+                 p_visualize : bool = False,
+                 p_raising_object : object = None,
+                 p_det_time : str = None,
+                 **p_kwargs):
         super().__init__(p_raising_object=p_raising_object,
                          p_tstamp=p_det_time, **p_kwargs)
+        Plottable.__init__( self, p_visualize = p_visualize )
+
+        self.id = p_id
+        self.instance = p_instance
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self):
+        return self.id
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_instance(self):
+        return self.instance
 
 
 
@@ -444,11 +450,33 @@ class PointAnomaly (AnomalyEvent):
     C_NAME      = 'Point Anomaly'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str=None, p_instance : str=None,
-                 p_deviation : float=None, **p_kwargs):
-        super().__init__(p_raising_object=p_raising_object, p_det_time=p_det_time, **p_kwargs)
+    def __init__(self,
+                 p_id : int = None,
+                 p_instance : Instance = None,
+                 p_visualize : bool = False,
+                 p_raising_object : object = None,
+                 p_det_time : str = None,
+                 p_deviation : float=None,
+                 **p_kwargs):
+        super().__init__(p_id=p_id, p_instance=p_instance, p_visualize=p_visualize,
+                         p_raising_object=p_raising_object, p_det_time=p_det_time,
+                         **p_kwargs)
 
 
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_nd(p_settings, **p_kwargs)
+    
+        ylim  = p_settings.axes.get_ylim()
+        label = self.C_NAME[0]
+        self._plot_line1 = p_settings.axes.plot([self.get_instance()[-1].get_id(), self.get_instance()[-1].get_id()],
+                                                ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
+        self._plot_line1_t1 = p_settings.axes.text(self.get_instance()[-1].get_id(), 0, label, color='r' )
+
+    
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        return super()._remove_plot_nd()
 
 
 
