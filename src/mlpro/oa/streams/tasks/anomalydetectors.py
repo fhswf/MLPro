@@ -56,6 +56,8 @@ class Anomaly (Id, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id = None,
+                  p_instance = None,
+                  p_anomaly_type = None,
                   p_visualize : bool = False,
                   p_color = 'red',
                   **p_kwargs ):
@@ -64,10 +66,24 @@ class Anomaly (Id, Plottable):
         Id.__init__( self, p_id = p_id )
         Plottable.__init__( self, p_visualize = p_visualize )
 
+        self.id = p_id
+        self.anomaly_type = p_anomaly_type
+        self.instance = p_instance
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self):
-        return self._id
+        return self.id
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_instance(self):
+        return self.instance
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_anomaly_type(self):
+        return self.anomaly_type
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -112,9 +128,9 @@ class Anomaly (Id, Plottable):
 
         ylim  = p_settings.axes.get_ylim()
         label = str('P')
-        self._plot_line1 = p_settings.axes.plot([self.anomalies['inst_id'][-1], self.anomalies['inst_id'][-1]],
+        self._plot_line1 = p_settings.axes.plot([self.instance[-1].get_id(), self.instance[-1].get_id()],
                                                 ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
-        self._plot_line1_t1 = p_settings.axes.text(self.anomalies['inst_id'][-1], 0, label, color='r' )
+        self._plot_line1_t1 = p_settings.axes.text(self.instance[-1].get_id(), 0, label, color='r' )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -172,15 +188,16 @@ class AnomalyDetector(OATask):
         self.data_size = 100
         self.inst_id = 0
         self.inst_value = 0
-        self.ano_counter = 0
         self.ano_scores = []
         self.anomalies = {'inst_id':[], 'inst_value':[], 'ano_score':[], 'ano_type':[],
                           'time_of_occ':[]}
         self.ano_type = 'Anomaly'
+        self.ano_id = 0
         self.time_of_occ = 0
         self.plot_update_counter = 0
         self.consec_count = 1
         self.group_anomalies = []
+        self.group_anomalies_instances = []
         self._anomalies      = {}
 
 
@@ -218,13 +235,45 @@ class AnomalyDetector(OATask):
         successful : Bool
             True, if the anomaly has been added successfully. False otherwise.
         """
+        self.group_anomalies.append(p_anomaly)
+        self.group_anomalies_instances.append(p_anomaly.get_instance[0])
 
-        self._anomalies[p_anomaly.get_id()] = p_anomaly
+        if len(self.group_anomalies_instances) > 1:
 
-        if self.get_visualization(): 
-            p_anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
+            if int(p_anomaly.get_instance[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
 
-        return True
+                if len(self.group_anomalies) == 3:
+
+                    for i in range(2):
+                        self.group_anomalies[i].remove_plot()
+                        self.remove_anomaly(self.group_anomalies[i])
+                    self.ano_id -= 2
+                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly')
+                    self._anomalies[anomaly.get_id()] = anomaly
+                    self.group_anomalies = []
+                    self.group_anomalies.append(anomaly)
+                    return anomaly
+
+                elif len(self.group_anomalies) > 3:
+                    self.group_anomalies[0].remove_plot()
+                    self.remove_anomaly(self.group_anomalies[0])
+                    self.ano_id -= 1
+                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly')
+                    self._anomalies[anomaly.get_id()] = anomaly
+                    self.group_anomalies = []
+                    self.group_anomalies.append(anomaly)
+                    return anomaly
+                    
+                else:
+                    self._anomalies[p_anomaly.get_id()] = p_anomaly
+            else:
+                self.group_anomalies = []
+                self.group_anomalies_instances = []
+                self.group_anomalies.append(p_anomaly)
+                self.group_anomalies_instances.append(p_anomaly.get_instance[0])
+                self._anomalies[p_anomaly.get_id()] = p_anomaly
+        else:
+            self._anomalies[p_anomaly.get_id()] = p_anomaly
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -241,23 +290,22 @@ class AnomalyDetector(OATask):
         p_anomaly.remove_plot(p_refresh=True)
         del self._anomalies[p_anomaly.get_id()]
 
+
 ## -------------------------------------------------------------------------------------------------
     def raise_anomaly_event(self, p_instance : Instance):
-        p_instance = p_instance
-        self.time_of_occ = p_instance.get_tstamp()
-        self.inst_id = p_instance.get_id()
+
+        #self.time_of_occ = p_instance.get_tstamp()
         self.ano_type = self.get_anomaly_type(p_instance)
-
-        self.ano_counter += 1
-        self.anomalies['inst_id'].append(self.inst_id)
-        self.anomalies['inst_value'].append(self.inst_value)
-        self.anomalies['ano_score'].append(self.ano_scores)
         self.anomalies['ano_type'].append(self.ano_type)
-        self.anomalies['time_of_occ'].append(self.time_of_occ)
 
-        if len(self.anomalies['inst_id']) > 100:
-             for x in self.anomalies:
-                 self.anomalies[x].pop(0)
+        self.ano_id +=1
+
+        anomaly = Anomaly(p_id=self.ano_id, p_instance=list(p_instance), p_anomaly_type='Point Anomaly')
+
+        anomaly = self.add_anomaly(p_anomaly=anomaly)
+
+        if self.get_visualization(): 
+            anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
         if self.ano_type == 'Point Anomaly':
             event = PointAnomaly(p_raising_object=self, p_det_time=str(self.time_of_occ),
@@ -296,6 +344,8 @@ class AnomalyDetector(OATask):
 
                  
 ## -------------------------------------------------------------------------------------------------
+        
+        #to be deleted
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_nd(p_settings, **p_kwargs)
 
