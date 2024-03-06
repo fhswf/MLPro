@@ -134,17 +134,17 @@ class Anomaly (Id, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _remove_plot_2d(self):
-        return super()._remove_plot_2d()
+    def _remove_plot_2d(self, p_refresh: bool = True):
+        return super()._remove_plot_2d(p_refresh=p_refresh)
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _remove_plot_3d(self):
-        return super()._remove_plot_3d()
+    def _remove_plot_3d(self, p_refresh: bool = True):
+        return super()._remove_plot_3d(p_refresh=p_refresh)
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _remove_plot_nd(self):
+    def _remove_plot_nd(self, p_refresh: bool = True):
         return super()._remove_plot_nd()
 
 
@@ -189,6 +189,7 @@ class AnomalyDetector(OATask):
         self.group_anomalies = []
         self.group_anomalies_instances = []
         self._anomalies      = {}
+        self.visualize = p_visualize
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -238,7 +239,7 @@ class AnomalyDetector(OATask):
                         self.group_anomalies[i].remove_plot()
                         self.remove_anomaly(self.group_anomalies[i])
                     self.ano_id -= 2
-                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly')
+                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly', p_visualize=self.visualize)
                     self._anomalies[anomaly.get_id()] = anomaly
                     self.group_anomalies = []
                     self.group_anomalies.append(anomaly)
@@ -248,7 +249,7 @@ class AnomalyDetector(OATask):
                     self.group_anomalies[0].remove_plot()
                     self.remove_anomaly(self.group_anomalies[0])
                     self.ano_id -= 1
-                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly')
+                    anomaly = Anomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_anomaly_type='Group Anomaly', p_visualize=self.visualize)
                     self._anomalies[anomaly.get_id()] = anomaly
                     self.group_anomalies = []
                     self.group_anomalies.append(anomaly)
@@ -293,12 +294,11 @@ class AnomalyDetector(OATask):
 
         self.ano_id +=1
 
-        anomaly = Anomaly(p_id=self.ano_id, p_instance=p_instance, p_anomaly_type='Point Anomaly')
+        anomaly = Anomaly(p_id=self.ano_id, p_instance=p_instance, p_anomaly_type='Point Anomaly', p_visualize=self.visualize)
 
         anomaly = self.add_anomaly(p_anomaly=anomaly)
 
-        if self.get_visualization(): 
-            anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings())
+        anomaly.update_plot()
 
         if anomaly.get_anomaly_type() == 'Point Anomaly':
             event = PointAnomaly(p_raising_object=self, p_det_time=str(anomaly.get_instance()[-1].get_tstamp()),
