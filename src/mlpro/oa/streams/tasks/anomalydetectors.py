@@ -184,8 +184,6 @@ class AnomalyDetector(OATask):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        self.data_points = []
-        self.data_size = 100
         self.ano_type = 'Anomaly'
         self.ano_id = 0
         self.group_anomalies = []
@@ -303,10 +301,10 @@ class AnomalyDetector(OATask):
             anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings())
 
         if anomaly.get_anomaly_type() == 'Point Anomaly':
-            event = PointAnomaly(p_raising_object=self, p_det_time=str(self.time_of_occ),
+            event = PointAnomaly(p_raising_object=self, p_det_time=str(anomaly.get_instance()[-1].get_tstamp()),
                                  p_instance=p_instance)
         elif anomaly.get_anomaly_type() == 'Group Anomaly':
-            event = GroupAnomaly(self, p_det_time=self.time_of_occ,
+            event = GroupAnomaly(self, p_det_time=anomaly.get_instance()[-1].get_tstamp(),
                                  p_instances=self.group_anomalies)
 
         self._raise_event(event.C_NAME, event)
