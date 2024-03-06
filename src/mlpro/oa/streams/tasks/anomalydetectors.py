@@ -240,7 +240,7 @@ class AnomalyDetector(OATask):
 
         if len(self.group_anomalies_instances) > 1:
 
-            if int(p_anomaly.get_instance[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
+            if int(p_anomaly.get_instance()[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
 
                 if len(self.group_anomalies) == 3:
 
@@ -266,14 +266,17 @@ class AnomalyDetector(OATask):
                     
                 else:
                     self._anomalies[p_anomaly.get_id()] = p_anomaly
+                    return p_anomaly
             else:
                 self.group_anomalies = []
                 self.group_anomalies_instances = []
                 self.group_anomalies.append(p_anomaly)
-                self.group_anomalies_instances.append(p_anomaly.get_instance[0])
+                self.group_anomalies_instances.append(p_anomaly.get_instance()[0])
                 self._anomalies[p_anomaly.get_id()] = p_anomaly
+                return p_anomaly
         else:
             self._anomalies[p_anomaly.get_id()] = p_anomaly
+            return p_anomaly
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -305,7 +308,7 @@ class AnomalyDetector(OATask):
         anomaly = self.add_anomaly(p_anomaly=anomaly)
 
         if self.get_visualization(): 
-            anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
+            anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings())
 
         if anomaly.get_anomaly_type() == 'Point Anomaly':
             event = PointAnomaly(p_raising_object=self, p_det_time=str(self.time_of_occ),
