@@ -127,7 +127,7 @@ class Anomaly (Id, Plottable):
         super()._update_plot_nd(p_settings, **p_kwargs)
 
         ylim  = p_settings.axes.get_ylim()
-        label = str('P')
+        label = str(self.get_anomaly_type())[0]
         self._plot_line1 = p_settings.axes.plot([self.instance[-1].get_id(), self.instance[-1].get_id()],
                                                 ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
         self._plot_line1_t1 = p_settings.axes.text(self.instance[-1].get_id(), 0, label, color='r' )
