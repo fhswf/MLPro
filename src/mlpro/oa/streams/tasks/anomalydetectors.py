@@ -207,7 +207,6 @@ class AnomalyDetector(OATask):
                 if len(self.group_anomalies) == 3:
 
                     for i in range(2):
-                        self.group_anomalies[i].remove_plot()
                         self.remove_anomaly(self.group_anomalies[i])
                     self.ano_id -= 2
                     anomaly = GroupAnomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_visualize=self.visualize,
@@ -219,7 +218,6 @@ class AnomalyDetector(OATask):
                     return anomaly
 
                 elif len(self.group_anomalies) > 3:
-                    self.group_anomalies[0].remove_plot()
                     self.remove_anomaly(self.group_anomalies[0])
                     self.ano_id -= 1
                     anomaly = GroupAnomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_visualize=self.visualize,
@@ -302,10 +300,10 @@ class AnomalyDetector(OATask):
 
         if not self.get_visualization(): return
 
-        super().remove_plot()
+        super().remove_plot(p_refresh=p_refresh)
 
         for anomaly in self._anomalies.values():
-            anomaly.remove_plot()
+            anomaly.remove_plot(p_refresh=p_refresh)
 
 
 
@@ -476,7 +474,10 @@ class PointAnomaly (AnomalyEvent):
     
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self):
-        return super()._remove_plot_nd()
+        if self._plot_line1 is not None: self._plot_line1.remove()
+        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
+
+
 
 
 
@@ -495,6 +496,24 @@ class GroupAnomaly (AnomalyEvent):
                  p_mean : float=None, p_mean_deviation : float=None, **p_kwargs):
         super().__init__(p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_nd(p_settings, **p_kwargs)
+    
+        ylim  = p_settings.axes.get_ylim()
+        label = self.C_NAME[0]
+        self._plot_line1 = p_settings.axes.plot([self.get_instance()[-1].get_id(), self.get_instance()[-1].get_id()],
+                                                ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
+        self._plot_line1_t1 = p_settings.axes.text(self.get_instance()[-1].get_id(), 0, label, color='r' )
+
+    
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        if self._plot_line1 is not None: self._plot_line1.remove()
+        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
+
 
 
 
