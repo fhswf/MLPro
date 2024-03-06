@@ -236,7 +236,7 @@ class AnomalyDetector(OATask):
             True, if the anomaly has been added successfully. False otherwise.
         """
         self.group_anomalies.append(p_anomaly)
-        self.group_anomalies_instances.append(p_anomaly.get_instance[0])
+        self.group_anomalies_instances.append(p_anomaly.get_instance()[0])
 
         if len(self.group_anomalies_instances) > 1:
 
@@ -295,69 +295,28 @@ class AnomalyDetector(OATask):
     def raise_anomaly_event(self, p_instance : Instance):
 
         #self.time_of_occ = p_instance.get_tstamp()
-        self.ano_type = self.get_anomaly_type(p_instance)
-        self.anomalies['ano_type'].append(self.ano_type)
+        #self.ano_type = self.get_anomaly_type(p_instance)
+        #self.anomalies['ano_type'].append(self.ano_type)
 
         self.ano_id +=1
 
-        anomaly = Anomaly(p_id=self.ano_id, p_instance=list(p_instance), p_anomaly_type='Point Anomaly')
+        anomaly = Anomaly(p_id=self.ano_id, p_instance=p_instance, p_anomaly_type='Point Anomaly')
 
         anomaly = self.add_anomaly(p_anomaly=anomaly)
 
         if self.get_visualization(): 
             anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
-        if self.ano_type == 'Point Anomaly':
+        if anomaly.get_anomaly_type() == 'Point Anomaly':
             event = PointAnomaly(p_raising_object=self, p_det_time=str(self.time_of_occ),
                                  p_instance=p_instance)
-        elif self.ano_type == 'Group Anomaly':
+        elif anomaly.get_anomaly_type() == 'Group Anomaly':
             event = GroupAnomaly(self, p_det_time=self.time_of_occ,
                                  p_instances=self.group_anomalies)
 
         self._raise_event(event.C_NAME, event)
 
-
-## -------------------------------------------------------------------------------------------------
-    def get_anomaly_type(self, p_instance):
-        self.ano_type = 'Point Anomaly'
-
-        if len(self.anomalies['inst_id']) > 1:
-            if int(self.anomalies['inst_id'][-1]) - 1 == int(self.anomalies['inst_id'][-2]):
-                self.consec_count +=1
-                self.group_anomalies.append(p_instance)
-                if self.consec_count > 2:
-                    self.ano_type = 'Group Anomaly'
-                    return self.ano_type
-                else:
-                    self.ano_type = 'Point Anomaly'
-                    return self.ano_type
-            else:
-                self.consec_count = 1
-                self.ano_type = 'Point Anomaly'
-                self.group_anomalies = []
-                self.group_anomalies.append(p_instance)
-                return self.ano_type
-        else:
-            self.ano_type = 'Point Anomaly'
-            self.group_anomalies.append(p_instance)
-            return self.ano_type
-
                  
-## -------------------------------------------------------------------------------------------------
-        
-        #to be deleted
-    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
-        super()._update_plot_nd(p_settings, **p_kwargs)
-
-        if self.plot_update_counter < len(self.anomalies['inst_id']):
-            ylim  = p_settings.axes.get_ylim()
-            label = str(self.anomalies['ano_type'][-1][0])
-            self._plot_line1 = p_settings.axes.plot([self.anomalies['inst_id'][-1], self.anomalies['inst_id'][-1]],
-                                                    ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
-            self._plot_line1_t1 = p_settings.axes.text(self.anomalies['inst_id'][-1], 0, label, color='r' )
-            self.plot_update_counter = self.plot_update_counter + 1
-
-
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
 
