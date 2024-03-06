@@ -186,16 +186,8 @@ class AnomalyDetector(OATask):
         
         self.data_points = []
         self.data_size = 100
-        self.inst_id = 0
-        self.inst_value = 0
-        self.ano_scores = []
-        self.anomalies = {'inst_id':[], 'inst_value':[], 'ano_score':[], 'ano_type':[],
-                          'time_of_occ':[]}
         self.ano_type = 'Anomaly'
         self.ano_id = 0
-        self.time_of_occ = 0
-        self.plot_update_counter = 0
-        self.consec_count = 1
         self.group_anomalies = []
         self.group_anomalies_instances = []
         self._anomalies      = {}
