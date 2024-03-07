@@ -22,102 +22,7 @@ from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.basics import Instance, List
 import numpy as np
 from matplotlib.text import Text
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-# Combine with event and use _plot methods there.... Save events inside dictionary.. Call particular event to remove it
-# firts remove plot and then remove the event from dictionary. The init plot in ad furthernierates over the dictionary and
-# changes are seen..The init update and remove methods in AD are for scenearios
-class Anomaly (Id, Plottable):
-    """
-    Base class for an Anomaly. 
-
-    Parameters
-    ----------
-    p_id
-        Optional external id.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_color : string
-        Color of the anomaly during visualization.
-    **p_kwargs
-        Further optional keyword arguments.
-    """
-
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
-    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
-                                PlotSettings.C_VIEW_3D, 
-                                PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_id = None,
-                  p_instance = None,
-                  p_anomaly_type = None,
-                  p_visualize : bool = False,
-                  p_color = 'red',
-                  **p_kwargs ):
-
-        self._kwargs = p_kwargs.copy()
-        Id.__init__( self, p_id = p_id )
-        Plottable.__init__( self, p_visualize = p_visualize )
-
-        self.id = p_id
-        self.anomaly_type = p_anomaly_type
-        self.instance = p_instance
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        return self.id
-    
-
-## -------------------------------------------------------------------------------------------------
-    def get_instance(self):
-        return self.instance
-    
-
-## -------------------------------------------------------------------------------------------------
-    def get_anomaly_type(self):
-        return self.anomaly_type
-
-
-## -------------------------------------------------------------------------------------------------
-    def is_visualize(self):
-        return self._visualize
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_kwargs(self):
-        return self._kwargs
-      
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
-        return super()._init_plot_nd(p_figure, p_settings)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
-
-        super()._update_plot_nd(p_settings, **p_kwargs)
-
-        ylim  = p_settings.axes.get_ylim()
-        label = str(self.get_anomaly_type())[0]
-        self._plot_line1 = p_settings.axes.plot([self.instance[-1].get_id(), self.instance[-1].get_id()],
-                                                ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
-        self._plot_line1_t1 = p_settings.axes.text(self.instance[-1].get_id(), 0, label, color='r' )
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_nd(self, p_refresh: bool = True):
-        return super()._remove_plot_nd()
-
+import matplotlib.patches as patches
 
 
 
@@ -169,13 +74,13 @@ class AnomalyDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_anomalies(self) -> dict[Anomaly]:
+    def get_anomalies(self):
         """
         This method returns the current list of anomalies. 
 
         Returns
         -------
-        dict_of_anomalies : dict[Anomaly]
+        dict_of_anomalies : dict[AnomalyEvent]
             Current dictionary of anomalies.
         """
 
@@ -183,7 +88,7 @@ class AnomalyDetector(OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def add_anomaly(self, p_anomaly:Anomaly) -> bool:
+    def add_anomaly(self, p_anomaly) -> bool:
         """
         Method to be used to add a new anomaly. Please use as part of your algorithm.
 
@@ -243,7 +148,7 @@ class AnomalyDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def remove_anomaly(self, p_anomaly:Anomaly):
+    def remove_anomaly(self, p_anomaly):
         """
         Method to remove an existing anomaly. Please use as part of your algorithm.
 
@@ -252,7 +157,7 @@ class AnomalyDetector(OATask):
         p_anomaly : Anomlay
             Anomlay object to be added.
         """
-
+        #if p_anomaly.C_NAME == 'Point Anomaly':
         p_anomaly.remove_plot(p_refresh=True)
         del self._anomalies[p_anomaly.get_id()]
 
@@ -307,10 +212,8 @@ class AnomalyDetector(OATask):
 
 
 
+
     
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorCB(AnomalyDetector):
@@ -500,19 +403,46 @@ class GroupAnomaly (AnomalyEvent):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+        """
+        Draw a shaded rectangular region on a plot.
+
+        Parameters:
+        ax (matplotlib.axes.Axes): The axes object to draw the shaded region on.
+        x1, x2 (float): x-coordinates of the left and right edges of the rectangle.
+        y1, y2 (float): y-coordinates of the bottom and top edges of the rectangle.
+        color (str): Color of the shaded region.
+        alpha (float): Transparency of the shaded region (default is 0.5).
+        """
         super()._update_plot_nd(p_settings, **p_kwargs)
     
-        ylim  = p_settings.axes.get_ylim()
         label = self.C_NAME[0]
-        self._plot_line1 = p_settings.axes.plot([self.get_instance()[-1].get_id(), self.get_instance()[-1].get_id()],
-                                                ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
-        self._plot_line1_t1 = p_settings.axes.text(self.get_instance()[-1].get_id(), 0, label, color='r' )
+        x1 = self.get_instance()[0].get_id()
+        x2 = self.get_instance()[-1].get_id()
+        a=[]
+        b=[]
+        for instance in self.get_instance():
+            a.append(instance.get_feature_data().get_values())
+        for x in a:
+            b.extend(x)
+        y1 = min(b)
+        y2 = max(b)
+
+        rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=0, edgecolor='none', facecolor='yellow', alpha=0.01)
+        self._plot_rectangle = p_settings.axes.add_patch(rect)
+        self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
 
     
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self):
-        if self._plot_line1 is not None: self._plot_line1.remove()
-        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
+        """
+        Remove all shaded regions from a plot.
+
+        """
+
+        if self._plot_rectangle is not None: self._plot_rectangle .remove()
+        if self._plot_rectangle_t is not None: self._plot_rectangle_t.remove()
+
+
 
 
 
