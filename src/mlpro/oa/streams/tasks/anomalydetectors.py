@@ -362,6 +362,9 @@ class PointAnomaly (AnomalyEvent):
         super().__init__(p_id=p_id, p_instance=p_instance, p_visualize=p_visualize,
                          p_raising_object=p_raising_object, p_det_time=p_det_time,
                          **p_kwargs)
+        
+        self.id = p_id
+        self.instance = p_instance
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -395,10 +398,21 @@ class GroupAnomaly (AnomalyEvent):
     C_NAME      = 'Group Anomaly'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str, p_instances : list=None,
-                 p_mean : float=None, p_mean_deviation : float=None, **p_kwargs):
-        super().__init__(p_raising_object=p_raising_object,
-                         p_det_time=p_det_time, **p_kwargs)
+    def __init__(self,
+                 p_id : int = None,
+                 p_instances : Instance = None,
+                 p_visualize : bool = False,
+                 p_raising_object : object = None,
+                 p_det_time : str = None,
+                 p_mean : float=None,
+                 p_mean_deviation : float=None,,
+                 **p_kwargs):
+        super().__init__(p_id=p_id, p_instance=p_instances, p_visualize=p_visualize,
+                         p_raising_object=p_raising_object, p_det_time=p_det_time,
+                         **p_kwargs)
+        
+        self.id = p_id
+        self.instance = p_instances
         
 
 ## -------------------------------------------------------------------------------------------------
