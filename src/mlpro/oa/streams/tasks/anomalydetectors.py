@@ -114,7 +114,7 @@ class AnomalyDetector(OATask):
                     for i in range(2):
                         self.remove_anomaly(self.group_anomalies[i])
                     self.ano_id -= 2
-                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_visualize=self.visualize,
+                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
                              p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
 
                     self._anomalies[anomaly.get_id()] = anomaly
@@ -125,7 +125,7 @@ class AnomalyDetector(OATask):
                 elif len(self.group_anomalies_instances) > 3:
                     self.remove_anomaly(self.group_anomalies[0])
                     self.ano_id -= 1
-                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instance=self.group_anomalies_instances, p_visualize=self.visualize,
+                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
                              p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
                     self._anomalies[anomaly.get_id()] = anomaly
                     self.group_anomalies = []
