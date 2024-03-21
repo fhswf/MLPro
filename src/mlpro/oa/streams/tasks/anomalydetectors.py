@@ -473,7 +473,14 @@ class GroupAnomaly (AnomalyEvent):
         
         self.id = p_id
         self.instance = p_instances
-        
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        self._rect = None
+        self._plot_rectangle = None
+        self._plot_rectangle_t : Text = None
+
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
@@ -501,9 +508,18 @@ class GroupAnomaly (AnomalyEvent):
         y1 = min(b)
         y2 = max(b)
 
-        rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=0, edgecolor='none', facecolor='yellow', alpha=0.01)
-        self._plot_rectangle = p_settings.axes.add_patch(rect)
-        self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
+        if self._rect is None:
+            self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=0, edgecolor='none', facecolor='yellow', alpha=0.3)
+            self._plot_rectangle = p_settings.axes.add_patch(self._rect)
+            self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
+
+        else:
+            self._rect.set_x(x1)
+            self._rect.set_y(y1)
+            self._rect.set_width(x2 - x1)
+            self._rect.set_height(y2 - y1)
+            self._plot_rectangle_t.set_position(((x1+x2)/2, 0))
+
 
     
 ## -------------------------------------------------------------------------------------------------
