@@ -246,14 +246,10 @@ class AnomalyDetectorExtended(AnomalyDetector):
                     return anomaly
 
                 elif len(self.group_anomalies_instances) > 3:
-                    self.remove_anomaly(self.group_anomalies[0])
                     self.ano_id -= 1
-                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
-                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
-                    self._anomalies[anomaly.get_id()] = anomaly
-                    self.group_anomalies = []
-                    self.group_anomalies.append(anomaly)
-                    return anomaly
+                    self.group_anomalies[0].set_instances(self.group_anomalies_instances)
+                    self.group_anomalies.pop(-1)
+                    return self.group_anomalies[0]
                     
                 else:
                     self._anomalies[p_anomaly.get_id()] = p_anomaly
@@ -268,7 +264,6 @@ class AnomalyDetectorExtended(AnomalyDetector):
         else:
             self._anomalies[p_anomaly.get_id()] = p_anomaly
             return p_anomaly
-
 
 
 
@@ -472,7 +467,12 @@ class GroupAnomaly (AnomalyEvent):
                          **p_kwargs)
         
         self.id = p_id
-        self.instance = p_instances
+        self.instances = p_instances
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_instances(self, p_instances):
+        self.instances = p_instances
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -519,7 +519,6 @@ class GroupAnomaly (AnomalyEvent):
             self._rect.set_width(x2 - x1)
             self._rect.set_height(y2 - y1)
             self._plot_rectangle_t.set_position(((x1+x2)/2, 0))
-
 
     
 ## -------------------------------------------------------------------------------------------------
