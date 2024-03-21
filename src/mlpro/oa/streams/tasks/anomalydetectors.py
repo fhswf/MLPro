@@ -168,6 +168,22 @@ class AnomalyDetector(OATask):
             anomaly.remove_plot(p_refresh=p_refresh)
 
 
+## -------------------------------------------------------------------------------------------------
+    def _renormalize(self, p_normalizer: Normalizer):
+        """
+        Internal renormalization of all anomaly instances. See method OATask.renormalize_on_event() for further
+        information.
+
+        Parameters
+        ----------
+        p_normalizer : Normalizer
+            Normalizer object to be applied on task-specific 
+        """
+
+        for anomaly in self._anomalies.values():
+            anomaly.get_instance().renormalize( p_normalizer=p_normalizer)
+
+
 
 
 
