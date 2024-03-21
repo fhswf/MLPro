@@ -222,8 +222,8 @@ class AnomalyDetectorExtended(AnomalyDetector):
 
         Returns
         -------
-        successful : Bool
-            True, if the anomaly has been added successfully. False otherwise.
+        p_anomaly : Anomaly
+            Modified Anomaly object.
         """
         self.group_anomalies.append(p_anomaly)
         self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
