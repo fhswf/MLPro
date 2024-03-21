@@ -31,7 +31,7 @@ import matplotlib.patches as patches
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetector(OATask):
     """
-    This is the base class for multivariate online anomaly detectors. It raises an event when an
+    This is the base class for online anomaly detectors. It raises an event when an
     anomaly is detected.
 
     """
@@ -60,10 +60,7 @@ class AnomalyDetector(OATask):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        self.ano_type = 'Anomaly'
         self.ano_id = 0
-        self.group_anomalies = []
-        self.group_anomalies_instances = []
         self._anomalies      = {}
         self.visualize = p_visualize
 
@@ -88,7 +85,7 @@ class AnomalyDetector(OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def add_anomaly(self, p_anomaly) -> bool:
+    def add_anomaly(self, p_anomaly):
         """
         Method to be used to add a new anomaly. Please use as part of your algorithm.
 
@@ -99,52 +96,12 @@ class AnomalyDetector(OATask):
 
         Returns
         -------
-        successful : Bool
-            True, if the anomaly has been added successfully. False otherwise.
+        p_anomaly : Anomaly
+            Added Anomaly object.
         """
-        self.group_anomalies.append(p_anomaly)
-        self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
 
-        if len(self.group_anomalies_instances) > 1:
-
-            if int(p_anomaly.get_instance()[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
-
-                if len(self.group_anomalies_instances) == 3:
-
-                    for i in range(2):
-                        self.remove_anomaly(self.group_anomalies[i])
-                    self.ano_id -= 2
-                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
-                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
-
-                    self._anomalies[anomaly.get_id()] = anomaly
-                    self.group_anomalies = []
-                    self.group_anomalies.append(anomaly)
-                    return anomaly
-
-                elif len(self.group_anomalies_instances) > 3:
-                    self.remove_anomaly(self.group_anomalies[0])
-                    self.ano_id -= 1
-                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
-                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
-                    self._anomalies[anomaly.get_id()] = anomaly
-                    self.group_anomalies = []
-                    self.group_anomalies.append(anomaly)
-                    return anomaly
-                    
-                else:
-                    self._anomalies[p_anomaly.get_id()] = p_anomaly
-                    return p_anomaly
-            else:
-                self.group_anomalies = []
-                self.group_anomalies_instances = []
-                self.group_anomalies.append(p_anomaly)
-                self.group_anomalies_instances.append(p_anomaly.get_instance()[0])
-                self._anomalies[p_anomaly.get_id()] = p_anomaly
-                return p_anomaly
-        else:
-            self._anomalies[p_anomaly.get_id()] = p_anomaly
-            return p_anomaly
+        self._anomalies[p_anomaly.get_id()] = p_anomaly
+        return p_anomaly
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -213,7 +170,110 @@ class AnomalyDetector(OATask):
 
 
 
-    
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AnomalyDetectorExtended(AnomalyDetector):
+    """
+    This is the base class for multivariate online anomaly detectors. It raises an event when an
+    anomaly is detected. This class has the added functionality to differentiate between different
+    types of anomalies.
+
+    """
+
+    C_NAME          = 'Anomaly Detector'
+    C_TYPE          = 'Anomaly Detector'
+
+    C_PLOT_ACTIVE           = True
+    C_PLOT_STANDALONE       = False
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_name:str = None,
+                 p_range_max = StreamTask.C_RANGE_THREAD,
+                 p_ada : bool = True,
+                 p_duplicate_data : bool = False,
+                 p_visualize : bool = False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+
+        super().__init__(p_name = p_name,
+                         p_range_max = p_range_max,
+                         p_ada = p_ada,
+                         p_duplicate_data = p_duplicate_data,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging,
+                         **p_kwargs)
+        
+        self.group_anomalies = []
+        self.group_anomalies_instances = []
+        self._anomalies      = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_anomaly(self, p_anomaly):
+        """
+        Method to be used to add a new anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : Anomaly
+            Anomaly object to be added.
+
+        Returns
+        -------
+        successful : Bool
+            True, if the anomaly has been added successfully. False otherwise.
+        """
+        self.group_anomalies.append(p_anomaly)
+        self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
+
+        if len(self.group_anomalies_instances) > 1:
+
+            if int(p_anomaly.get_instance()[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
+
+                if len(self.group_anomalies_instances) == 3:
+
+                    for i in range(2):
+                        self.remove_anomaly(self.group_anomalies[i])
+                    self.ano_id -= 2
+                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
+                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
+
+                    self._anomalies[anomaly.get_id()] = anomaly
+                    self.group_anomalies = []
+                    self.group_anomalies.append(anomaly)
+                    return anomaly
+
+                elif len(self.group_anomalies_instances) > 3:
+                    self.remove_anomaly(self.group_anomalies[0])
+                    self.ano_id -= 1
+                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
+                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
+                    self._anomalies[anomaly.get_id()] = anomaly
+                    self.group_anomalies = []
+                    self.group_anomalies.append(anomaly)
+                    return anomaly
+                    
+                else:
+                    self._anomalies[p_anomaly.get_id()] = p_anomaly
+                    return p_anomaly
+            else:
+                self.group_anomalies = []
+                self.group_anomalies_instances = []
+                self.group_anomalies.append(p_anomaly)
+                self.group_anomalies_instances.append(p_anomaly.get_instance()[0])
+                self._anomalies[p_anomaly.get_id()] = p_anomaly
+                return p_anomaly
+        else:
+            self._anomalies[p_anomaly.get_id()] = p_anomaly
+            return p_anomaly
+
+
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorCB(AnomalyDetector):
