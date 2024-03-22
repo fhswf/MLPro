@@ -25,5 +25,4 @@ Howto BF-STREAMS-002: Accessing Data From CSV Files
 
 
 **Cross Reference**
-
-    - :ref:`API Reference: Data from CSV files <ap2_csv_files>`
+    - :ref:`API Reference: Data from CSV files <api_streams_csv_files>`
