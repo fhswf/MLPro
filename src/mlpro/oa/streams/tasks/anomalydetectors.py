@@ -61,7 +61,8 @@ class AnomalyDetector(OATask):
                          **p_kwargs)
         
         self.ano_id = 0
-        self._anomalies      = {}
+        self._anomalies = {}
+        self.ano_scores = []
         self.visualize = p_visualize
 
 
@@ -120,12 +121,13 @@ class AnomalyDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def raise_anomaly_event(self, p_instance : list[Instance]):
+    def raise_anomaly_event(self, p_instance : list[Instance], p_ano_scores):
 
         self.ano_id +=1
 
-        event = PointAnomaly(p_id=self.ano_id, p_instance=p_instance, p_visualize=self.visualize,
-                             p_raising_object=self, p_det_time=str(p_instance[-1].get_tstamp()))
+        event = PointAnomaly(p_id=self.ano_id, p_instance=p_instance, p_ano_scores=p_ano_scores,
+                             p_visualize=self.visualize, p_raising_object=self,
+                             p_det_time=str(p_instance[-1].get_tstamp()))
 
         event = self.add_anomaly(p_anomaly=event)
 
@@ -205,6 +207,7 @@ class AnomalyDetectorExtended(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_group_anomaly_det = True,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -223,7 +226,8 @@ class AnomalyDetectorExtended(AnomalyDetector):
         
         self.group_anomalies = []
         self.group_anomalies_instances = []
-        self._anomalies      = {}
+        self.group_ano_scores = []
+        self.group_anomaly_det = p_group_anomaly_det
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -241,42 +245,52 @@ class AnomalyDetectorExtended(AnomalyDetector):
         p_anomaly : Anomaly
             Modified Anomaly object.
         """
-        self.group_anomalies.append(p_anomaly)
-        self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
 
-        if len(self.group_anomalies_instances) > 1:
+        if self.group_anomaly_det:
+            self.group_anomalies.append(p_anomaly)
+            self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
+            self.group_ano_scores.append(p_anomaly.get_ano_scores())
 
-            if int(p_anomaly.get_instance()[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
+            if len(self.group_anomalies_instances) > 1:
 
-                if len(self.group_anomalies_instances) == 3:
+                if int(p_anomaly.get_instance()[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
 
-                    for i in range(2):
-                        self.remove_anomaly(self.group_anomalies[i])
-                    self.ano_id -= 2
-                    anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances, p_visualize=self.visualize,
-                             p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
+                    if len(self.group_anomalies_instances) == 3:
 
-                    self._anomalies[anomaly.get_id()] = anomaly
-                    self.group_anomalies = []
-                    self.group_anomalies.append(anomaly)
-                    return anomaly
+                        for i in range(2):
+                            self.remove_anomaly(self.group_anomalies[i])
+                        self.ano_id -= 2
+                        anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances,
+                                               p_ano_scores=self.group_ano_scores, p_visualize=self.visualize,
+                                p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
 
-                elif len(self.group_anomalies_instances) > 3:
-                    self.ano_id -= 1
-                    self.group_anomalies[0].set_instances(self.group_anomalies_instances)
-                    self.group_anomalies.pop(-1)
-                    return self.group_anomalies[0]
-                    
+                        self._anomalies[anomaly.get_id()] = anomaly
+                        self.group_anomalies = []
+                        self.group_anomalies.append(anomaly)
+                        return anomaly
+
+                    elif len(self.group_anomalies_instances) > 3:
+                        self.ano_id -= 1
+                        self.group_anomalies[0].set_instances(self.group_anomalies_instances, self.group_ano_scores)
+                        self.group_anomalies.pop(-1)
+                        return self.group_anomalies[0]
+                        
+                    else:
+                        self._anomalies[p_anomaly.get_id()] = p_anomaly
+                        return p_anomaly
                 else:
+                    self.group_anomalies = []
+                    self.group_anomalies_instances = []
+                    self.group_ano_scores = []
+                    self.group_anomalies.append(p_anomaly)
+                    self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
+                    self.group_ano_scores.append(p_anomaly.get_ano_scores())
                     self._anomalies[p_anomaly.get_id()] = p_anomaly
                     return p_anomaly
             else:
-                self.group_anomalies = []
-                self.group_anomalies_instances = []
-                self.group_anomalies.append(p_anomaly)
-                self.group_anomalies_instances.append(p_anomaly.get_instance()[0])
                 self._anomalies[p_anomaly.get_id()] = p_anomaly
                 return p_anomaly
+            
         else:
             self._anomalies[p_anomaly.get_id()] = p_anomaly
             return p_anomaly
@@ -386,6 +400,7 @@ class AnomalyEvent (Event, Plottable):
     def __init__(self,
                  p_id : int = None,
                  p_instance : Instance = None,
+                 p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  p_det_time : str = None,
@@ -396,6 +411,7 @@ class AnomalyEvent (Event, Plottable):
 
         self.id = p_id
         self.instance = p_instance
+        self.ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -406,6 +422,11 @@ class AnomalyEvent (Event, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def get_instance(self):
         return self.instance
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_ano_scores(self):
+        return self.ano_scores
 
 
 
@@ -425,17 +446,19 @@ class PointAnomaly (AnomalyEvent):
     def __init__(self,
                  p_id : int = None,
                  p_instance : Instance = None,
+                 p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  p_det_time : str = None,
                  p_deviation : float=None,
                  **p_kwargs):
-        super().__init__(p_id=p_id, p_instance=p_instance, p_visualize=p_visualize,
-                         p_raising_object=p_raising_object, p_det_time=p_det_time,
-                         **p_kwargs)
+        super().__init__(p_id=p_id, p_instance=p_instance, p_ano_scores=p_ano_scores,
+                         p_visualize=p_visualize, p_raising_object=p_raising_object,
+                         p_det_time=p_det_time, **p_kwargs)
         
         self.id = p_id
         self.instance = p_instance
+        self.ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -472,23 +495,26 @@ class GroupAnomaly (AnomalyEvent):
     def __init__(self,
                  p_id : int = None,
                  p_instances : Instance = None,
+                 p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  p_det_time : str = None,
                  p_mean : float=None,
                  p_mean_deviation : float=None,
                  **p_kwargs):
-        super().__init__(p_id=p_id, p_instance=p_instances, p_visualize=p_visualize,
-                         p_raising_object=p_raising_object, p_det_time=p_det_time,
-                         **p_kwargs)
+        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
+                         p_visualize=p_visualize, p_raising_object=p_raising_object,
+                         p_det_time=p_det_time, **p_kwargs)
         
         self.id = p_id
         self.instances = p_instances
+        p_ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_instances(self, p_instances):
+    def set_instances(self, p_instances, p_ano_scores):
         self.instances = p_instances
+        self.ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
