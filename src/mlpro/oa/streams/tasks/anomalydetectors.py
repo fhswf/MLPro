@@ -78,7 +78,7 @@ class AnomalyDetector(OATask):
 
         Returns
         -------
-        dict_of_anomalies : dict[AnomalyEvent]
+        dict_of_anomalies : dict[Anomaly]
             Current dictionary of anomalies.
         """
 
@@ -359,7 +359,7 @@ class AnomalyDetectorCB(AnomalyDetector):
 
         if anomaly != None:
             self.anomaly_counter += 1
-            event_obj = AnomalyEvent(p_raising_object=self, p_kwargs=self.data_points[-1]) 
+            event_obj = Anomaly(p_raising_object=self, p_kwargs=self.data_points[-1]) 
             handler = self.event_handler
             self.register_event_handler(event_obj.C_NAME, handler)
             self._raise_event(event_obj.C_NAME, event_obj)
@@ -370,7 +370,7 @@ class AnomalyDetectorCB(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyEvent (Event, Plottable):
+class Anomaly (Event, Plottable):
     """
     This is the base class for anomaly events which can be raised by the anomaly detectors when an
     anomaly is detected.
@@ -434,7 +434,7 @@ class AnomalyEvent (Event, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PointAnomaly (AnomalyEvent):
+class PointAnomaly (Anomaly):
     """
     Event class for anomaly events when point anomalies are detected.
     
@@ -483,7 +483,7 @@ class PointAnomaly (AnomalyEvent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GroupAnomaly (AnomalyEvent):
+class GroupAnomaly (Anomaly):
     """
     Event class for anomaly events when group anomalies are detected.
     
@@ -581,7 +581,7 @@ class GroupAnomaly (AnomalyEvent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ContextualAnomaly (AnomalyEvent):
+class ContextualAnomaly (Anomaly):
     """
     Event class for anomaly events when contextual anomalies are detected
     
@@ -600,7 +600,7 @@ class ContextualAnomaly (AnomalyEvent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftEvent (AnomalyEvent):
+class DriftEvent (Anomaly):
     """
     Event class to be raised when drift is detected.
     
