@@ -466,11 +466,6 @@ class PointAnomaly (Anomaly):
         self._plot_line1 = None
         self._plot_line1_t1 : Text = None
 
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
-        super()._update_plot_nd(p_settings, **p_kwargs)
-    
         ylim  = p_settings.axes.get_ylim()
         label = self.C_NAME[0]
         self._plot_line1 = p_settings.axes.plot([self.get_instance()[-1].get_id(), self.get_instance()[-1].get_id()],
