@@ -462,6 +462,12 @@ class PointAnomaly (Anomaly):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        self._plot_line1 = None
+        self._plot_line1_t1 : Text = None
+
+
+## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_nd(p_settings, **p_kwargs)
     
