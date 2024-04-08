@@ -5,9 +5,9 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-11-20  0.0.0     SP       Creation
-## -- 2024-01-02  1.0.0     SP       First draft implementation
-## -- 2024-03-24  1.0.0     SP       Completion of class documentations
+## -- 2023-11-20  0.0.0     SK       Creation
+## -- 2024-01-02  1.0.0     SK       First draft implementation
+## -- 2024-03-24  1.0.0     SK       Completion of class documentations
 ## -------------------------------------------------------------------------------------------------
 
 """
