@@ -12,7 +12,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-02-25)
+Ver. 1.1.0 (2024-02-25)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
@@ -36,7 +36,6 @@ class AnomalyDetector(OATask):
 
     """
 
-    C_NAME          = 'Anomaly Detector'
     C_TYPE          = 'Anomaly Detector'
 
     C_PLOT_ACTIVE           = True
@@ -452,6 +451,7 @@ class PointAnomaly (Anomaly):
                  p_det_time : str = None,
                  p_deviation : float=None,
                  **p_kwargs):
+        
         super().__init__(p_id=p_id, p_instance=p_instance, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
@@ -459,6 +459,16 @@ class PointAnomaly (Anomaly):
         self.id = p_id
         self.instance = p_instance
         self.ano_scores = p_ano_scores
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        return super()._init_plot_2d(p_figure, p_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        return super()._init_plot_3d(p_figure, p_settings)        
 
 
 ## -------------------------------------------------------------------------------------------------
