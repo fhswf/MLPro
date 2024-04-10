@@ -5,8 +5,8 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-08-29  0.0.0     SR       Creation
-## -- 2023-08-29  1.0.0     SR       First draft implementation
+## -- 2023-08-29  0.0.0     SK       Creation
+## -- 2023-08-29  1.0.0     SK       First draft implementation
 ## -- 2023-09-15  1.0.1     LSB      Bug Fix
 ## -- 2023-12-25  1.0.2     DA       Bugfix in StreamMLProClouds._get_next()
 ## -- 2023-12-26  1.0.3     DA       - Little refactoring of StreamMLProClouds._init_dataset()
