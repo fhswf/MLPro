@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Package : mlpro.wrappers
 ## -- Module  : mujoco.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -30,11 +30,12 @@
 ## --                                 value by its dimnesion short name. Add docstring.
 ## -- 2023-04-14  1.2.6     MRD       Add camera fovy to the state
 ## -- 2023-04-14  1.2.7     MRD       Add depth data to the state, simplify _get_camera_data
+## -- 2024-04-10  1.2.8     DA        Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.2.7  (2023-04-14)
+Ver. 1.2.8  (2024-04-10)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -48,7 +49,7 @@ from threading import Lock
 from lxml import etree
 
 from mlpro.rl.models import *
-from mlpro.wrappers.models import Wrapper
+from mlpro.wrappers.basics import Wrapper
 
 
 
