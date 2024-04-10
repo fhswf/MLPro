@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_mb_002_grid_world_environment.py
+## -- Module  : howto_rl_mb_001_grid_world_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -17,11 +17,12 @@
 ## -- 2023-03-08  2.0.1     SY       Refactoring
 ## -- 2023-03-10  2.0.2     SY       Refactoring
 ## -- 2023-05-04  2.0.3     SY       Refactoring
-## -- 2023-05-04  2.0.4     LSB       Refactoring
+## -- 2023-05-04  2.0.4     LSB      Refactoring
+## -- 2024-02-16  2.0.5     SY       Renaming Module
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2023-07-15)
+Ver. 2.0.5 (2024-02-16)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem as well as using
 PyTorch-based MLP network from MLPro-SL's pool of objects.
