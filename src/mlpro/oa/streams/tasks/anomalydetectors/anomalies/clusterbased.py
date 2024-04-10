@@ -9,10 +9,12 @@
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
+## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-02-25)
+Ver. 1.2.0 (2024-04-10)
+
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
@@ -24,12 +26,12 @@ This module provides templates for anomaly detection to be used in the context o
 # from matplotlib.text import Text
 # import matplotlib.patches as patches
 
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.driftanomaly import DriftEvent
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.driftanomaly import DriftAnomaly
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftEventCB (DriftEvent):
+class DriftEventCB (DriftAnomaly):
     """
     Event class to be raised when cluster drift is detected.
     

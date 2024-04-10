@@ -14,6 +14,7 @@
 
 """
 Ver. 1.2.0 (2024-04-10)
+
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
