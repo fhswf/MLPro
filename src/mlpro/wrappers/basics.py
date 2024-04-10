@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.wrappers
-## -- Module  : models
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -39,10 +39,7 @@ Ver. 1.8.1 (2023-01-14)
 This module provides model classes for wrappers in the MLPro project.
 """
 
-# from datetime import datetime, timedelta
-# from time import sleep
-# import dill as pkl
-# import os
+
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 
