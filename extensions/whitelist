@@ -5,3 +5,6 @@ fhswf/MLPro-Int-scikit-learn
 fhswf/MLPro-Int-Optuna
 fhswf/MLPro-Int-Hyperopt
 fhswf/MLPro-Int-OpenML
+fhswf/MLPro-Int-Gymnasium
+fhswf/MLPro-Int-PettingZoo
+fhswf/MLPro-Int-SB3
