@@ -18,15 +18,11 @@ Ver. 1.2.0 (2024-04-10)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
-#from matplotlib.figure import Figure
-#from mlpro.bf.plot import PlotSettings
 from mlpro.oa.streams.basics import *
-#import numpy as np
-#from matplotlib.text import Text
-#import matplotlib.patches as patches
-
 from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly, DriftEventCB
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
+
+
 
 
 
