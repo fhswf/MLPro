@@ -33,7 +33,6 @@ from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorPAGA(AnomalyDetector):
-#class AnomalyDetectorExtended(AnomalyDetector):
     """
     This is the base class for multivariate online anomaly detectors. It raises an event when an
     anomaly is detected. This class has the added functionality to differentiate between different
@@ -72,7 +71,7 @@ class AnomalyDetectorPAGA(AnomalyDetector):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_anomaly(self, p_anomaly):
+    def _buffer_anomaly(self, p_anomaly):
         """
         Method to be used to add a new anomaly. Please use as part of your algorithm.
 
@@ -94,31 +93,33 @@ class AnomalyDetectorPAGA(AnomalyDetector):
 
             if len(self.group_anomalies_instances) > 1:
 
-                if int(p_anomaly.get_instance()[0].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
+                if int(p_anomaly.get_instance()[-1].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
 
                     if len(self.group_anomalies_instances) == 3:
 
                         for i in range(2):
                             self.remove_anomaly(self.group_anomalies[i])
-                        self.ano_id -= 2
-                        anomaly = GroupAnomaly(p_id=self.ano_id, p_instances=self.group_anomalies_instances,
-                                               p_ano_scores=self.group_ano_scores, p_visualize=self.visualize,
-                                p_raising_object=self, p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
-
+                        self._ano_id -= 2
+                        anomaly = GroupAnomaly(p_instances=self.group_anomalies_instances,
+                                               p_ano_scores=self.group_ano_scores, p_visualize=self._visualize,
+                                               p_raising_object=self,
+                                               p_det_time=str(p_anomaly.get_instance()[-1].get_tstamp()))
+                        anomaly.set_id( p_id = self._get_next_anomaly_id() )
                         self._anomalies[anomaly.get_id()] = anomaly
                         self.group_anomalies = []
                         self.group_anomalies.append(anomaly)
                         return anomaly
 
                     elif len(self.group_anomalies_instances) > 3:
-                        self.ano_id -= 1
                         self.group_anomalies[0].set_instances(self.group_anomalies_instances, self.group_ano_scores)
                         self.group_anomalies.pop(-1)
                         return self.group_anomalies[0]
                         
                     else:
+                        p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
                         self._anomalies[p_anomaly.get_id()] = p_anomaly
                         return p_anomaly
+                    
                 else:
                     self.group_anomalies = []
                     self.group_anomalies_instances = []
@@ -126,12 +127,15 @@ class AnomalyDetectorPAGA(AnomalyDetector):
                     self.group_anomalies.append(p_anomaly)
                     self.group_anomalies_instances.append(p_anomaly.get_instance()[-1])
                     self.group_ano_scores.append(p_anomaly.get_ano_scores())
+                    p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
                     self._anomalies[p_anomaly.get_id()] = p_anomaly
                     return p_anomaly
             else:
+                p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
                 self._anomalies[p_anomaly.get_id()] = p_anomaly
                 return p_anomaly
             
         else:
+            p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
             self._anomalies[p_anomaly.get_id()] = p_anomaly
             return p_anomaly

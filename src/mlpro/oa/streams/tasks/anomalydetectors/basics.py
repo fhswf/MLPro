@@ -105,6 +105,7 @@ class AnomalyDetector(OATask):
 
         p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
         self._anomalies[p_anomaly.get_id()] = p_anomaly
+        return p_anomaly
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -125,11 +126,7 @@ class AnomalyDetector(OATask):
 ## -------------------------------------------------------------------------------------------------
     def _raise_anomaly_event(self, p_anomaly : Anomaly ):
 
-        # event = PointAnomaly(p_id=self.ano_id, p_instance=p_instance, p_ano_scores=p_ano_scores,
-        #                      p_visualize=self.visualize, p_raising_object=self,
-        #                      p_det_time=str(p_instance[-1].get_tstamp()))
-
-        self._buffer_anomaly(p_anomaly=p_anomaly)
+        p_anomaly = self._buffer_anomaly(p_anomaly=p_anomaly)
 
         if self.get_visualization(): 
             p_anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
