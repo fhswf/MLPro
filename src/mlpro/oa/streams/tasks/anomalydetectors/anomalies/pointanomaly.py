@@ -38,7 +38,6 @@ class PointAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_id : int = None,
                  p_instance : Instance = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
@@ -47,11 +46,10 @@ class PointAnomaly (Anomaly):
                  p_deviation : float=None,
                  **p_kwargs):
         
-        super().__init__(p_id=p_id, p_instance=p_instance, p_ano_scores=p_ano_scores,
+        super().__init__(p_instance=p_instance, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
         
-        self.id = p_id
         self.instance = p_instance
         self.ano_scores = p_ano_scores
 

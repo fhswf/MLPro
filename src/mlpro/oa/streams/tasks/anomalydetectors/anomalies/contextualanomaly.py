@@ -39,6 +39,14 @@ class ContextualAnomaly (Anomaly):
     C_NAME      = 'Contextual'
 
 # -------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time :str, p_instances: str,  **p_kwargs):
-        super().__init__(p_raising_object=p_raising_object,
+    def __init__(self,
+                 p_instances : Instance = None,
+                 p_ano_scores : list = None,
+                 p_visualize : bool = False,
+                 p_raising_object : object = None,
+                 p_det_time : str = None,
+                 **p_kwargs):
+        
+        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
+                         p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)

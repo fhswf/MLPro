@@ -21,7 +21,7 @@ This module provides templates for anomaly detection to be used in the context o
 # from matplotlib.figure import Figure
 # from mlpro.bf.plot import PlotSettings
 # from mlpro.oa.streams.basics import *
-# from mlpro.oa.streams.basics import Instance, List
+from mlpro.oa.streams.basics import Instance, List
 # import numpy as np
 # from matplotlib.text import Text
 # import matplotlib.patches as patches
@@ -40,6 +40,14 @@ class DriftEventCB (DriftAnomaly):
     C_NAME      = 'Cluster based Drift'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str, **p_kwargs):
-        super().__init__(p_raising_object=p_raising_object,
+    def __init__(self,
+                 p_instances : Instance = None,
+                 p_ano_scores : list = None,
+                 p_visualize : bool = False,
+                 p_raising_object : object = None,
+                 p_det_time : str = None,
+                 **p_kwargs):
+        
+        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
+                         p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)

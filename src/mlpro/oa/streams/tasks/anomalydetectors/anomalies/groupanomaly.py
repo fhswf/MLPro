@@ -40,20 +40,18 @@ class GroupAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_id : int = None,
                  p_instances : Instance = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  p_det_time : str = None,
-                 p_mean : float=None,
-                 p_mean_deviation : float=None,
+                 p_mean : float= None,
+                 p_mean_deviation : float = None,
                  **p_kwargs):
-        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
+        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
         
-        self.id = p_id
         self.instances = p_instances
         p_ano_scores = p_ano_scores
 

@@ -38,6 +38,16 @@ class DriftAnomaly (Anomaly):
     C_NAME      = 'Drift'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_det_time : str, p_magnitude : float, p_rate : float, **p_kwargs):
-        super().__init__(p_raising_object=p_raising_object,
+    def __init__(self,
+                 p_instances : Instance = None,
+                 p_ano_scores : list = None,
+                 p_visualize : bool = False,
+                 p_raising_object : object = None,
+                 p_det_time : str = None,
+                 p_magnitude : float = None,
+                 p_rate : float = None,
+                 **p_kwargs):
+        
+        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
+                         p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
