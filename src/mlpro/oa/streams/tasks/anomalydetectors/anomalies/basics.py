@@ -10,14 +10,16 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-04-11  1.3.0     DA       Class Anomaly: extensions on methods update_plot_*
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-10)
+Ver. 1.3.0 (2024-04-11)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
+from matplotlib.figure import Figure
 from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
@@ -67,16 +69,62 @@ class Anomaly (Id, Event, Plottable):
                         p_tstamp=p_det_time, **p_kwargs)
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self.instance = p_instance
+        self.instance : Instance = p_instance
         self.ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_instance(self):
+    def get_instance(self) -> Instance:
         return self.instance
     
 
 ## -------------------------------------------------------------------------------------------------
     def get_ano_scores(self):
         return self.ano_scores
+    
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot( self, 
+                     p_axlimits_changed : bool = False,
+                     p_xlim = None,
+                     p_ylim = None,
+                     p_zlim = None,
+                     **p_kwargs):
+        
+        return super().update_plot( p_axlimits_changed = p_axlimits_changed,
+                                    p_xlim = p_xlim,
+                                    p_ylim = p_ylim,
+                                    p_zlim = p_zlim,
+                                    **p_kwargs)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d( self, 
+                         p_settings: PlotSettings, 
+                         p_axlimits_changed : bool, 
+                         P_xlim,
+                         p_ylim,
+                         **p_kwargs ):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d( self, 
+                         p_settings: PlotSettings, 
+                         p_axlimits_changed : bool, 
+                         P_xlim,
+                         p_ylim,
+                         p_zlim,
+                         **p_kwargs ):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd( self, 
+                         p_settings: PlotSettings, 
+                         p_axlimits_changed : bool, 
+                         p_ylim,
+                         **p_kwargs ):
+        pass
+
 

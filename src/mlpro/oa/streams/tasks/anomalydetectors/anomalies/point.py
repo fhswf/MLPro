@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies
-## -- Module  : pointanomaly.py
+## -- Module  : point.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -68,13 +68,35 @@ class PointAnomaly (Anomaly):
         self._plot_line1 = None
         self._plot_line1_t1 : Text = None
 
-        ylim  = p_settings.axes.get_ylim()
-        label = self.C_NAME[0]
-        self._plot_line1 = p_settings.axes.plot([self.get_instance()[-1].get_id(), self.get_instance()[-1].get_id()],
-                                                ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
-        self._plot_line1_t1 = p_settings.axes.text(self.get_instance()[-1].get_id(), 0, label, color='r' )
 
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, p_axlimits_changed: bool, P_xlim, p_ylim, **p_kwargs):
+        pass
     
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings: PlotSettings, p_axlimits_changed: bool, P_xlim, p_ylim, p_zlim, **p_kwargs):
+        pass
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings: PlotSettings, p_axlimits_changed: bool, p_ylim, **p_kwargs):
+
+        if ( self._plot_line1 is not None ) and not p_axlimits_changed: return
+        
+        inst_id = self.get_instance()[-1].get_id()
+        xpos    = [inst_id, inst_id]
+        
+        if self._plot_line1 is None:
+            label = 'PO(' + str(self.get_id()) + ')'
+            self._plot_line1 = p_settings.axes.plot(xpos, p_ylim, color='r', linestyle='dashed', lw=1, label=label)[0]
+            self._plot_line1_t1 = p_settings.axes.text(inst_id, p_ylim[1], label, color='r' )
+
+        else:
+            self._plot_line1.set_data( xpos, p_ylim )
+            self._plot_line1_t1.set(position=(inst_id, p_ylim[1]))
+
+
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self):
         if self._plot_line1 is not None: self._plot_line1.remove()
