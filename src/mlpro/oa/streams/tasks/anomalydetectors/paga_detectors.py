@@ -24,8 +24,6 @@ from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorPAGA(AnomalyDetector):

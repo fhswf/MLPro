@@ -24,8 +24,6 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorCB(AnomalyDetector):
