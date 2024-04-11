@@ -161,7 +161,7 @@ class AnomalyDetector(OATask):
 
         ax_xlim_new = axes.get_xlim()
         if self._plot_settings.view != PlotSettings.C_VIEW_ND:
-            axlimits_changed = axlimits_changed or ( self._plot_ax_xlim is None ) or ( self._plot_ax_xlim != ax_xlim_new )
+            axlimits_changed = ( self._plot_ax_xlim is None ) or ( self._plot_ax_xlim != ax_xlim_new )
         else:
             axlimits_changed = False
 
