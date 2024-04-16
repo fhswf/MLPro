@@ -10,10 +10,12 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-04-16  1.3.0     DA       Finished visualisation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-10)
+Ver. 1.3.0 (2024-04-16)
+
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
@@ -48,9 +50,12 @@ class PointAnomaly (Anomaly):
                  p_deviation : float=None,
                  **p_kwargs):
         
-        super().__init__(p_instance=p_instance, p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize, p_raising_object=p_raising_object,
-                         p_det_time=p_det_time, **p_kwargs)
+        super().__init__( p_instance=p_instance, 
+                          p_ano_scores=p_ano_scores,
+                          p_visualize=p_visualize, 
+                          p_raising_object=p_raising_object,
+                          p_det_time=p_det_time, 
+                          **p_kwargs )
         
         self.instance = p_instance
         self.ano_scores = p_ano_scores
@@ -210,7 +215,7 @@ class PointAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_3d(self):
-        if self._plot_line_x1 is none: return
+        if self._plot_line_x1 is None: return
         self._remove_plot_2d()
         self._plot_line_z1.remove()
         self._plot_line_z2.remove()
