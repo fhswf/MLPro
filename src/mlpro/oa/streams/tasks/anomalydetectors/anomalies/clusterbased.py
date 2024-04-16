@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies
-## -- Module  : clusterbasedanomaly.py
+## -- Module  : clusterbased.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
