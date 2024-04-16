@@ -10,10 +10,12 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-04-11  1.3.0     DA       Methods AnomalyDetector.init/update_plot: determination and
+## --                                forwarding of changes on ax limits
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-10)
+Ver. 1.3.0 (2024-04-11)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -114,10 +116,10 @@ class AnomalyDetector(OATask):
 
         Parameters
         ----------
-        p_anomaly : Anomlay
-            Anomlay object to be added.
+        p_anomaly : Anomaly
+            Anomaly object to be removed.
         """
-        #if p_anomaly.C_NAME == 'Point Anomaly':
+
         p_anomaly.remove_plot(p_refresh=True)
         del self._anomalies[p_anomaly.get_id()]
 
@@ -138,6 +140,10 @@ class AnomalyDetector(OATask):
 
         if not self.get_visualization(): return
 
+        self._plot_ax_xlim = None
+        self._plot_ax_ylim = None
+        self._plot_ax_zlim = None
+
         super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
 
         for anomaly in self._anomalies.values():
@@ -151,8 +157,32 @@ class AnomalyDetector(OATask):
 
         super().update_plot(p_inst_new, p_inst_del, **p_kwargs)
 
+        axes = self._plot_settings.axes
+
+        ax_xlim_new = axes.get_xlim()
+        if self._plot_settings.view != PlotSettings.C_VIEW_ND:
+            axlimits_changed = ( self._plot_ax_xlim is None ) or ( self._plot_ax_xlim != ax_xlim_new )
+        else:
+            axlimits_changed = False
+
+        ax_ylim_new = axes.get_ylim()
+        axlimits_changed = axlimits_changed or ( self._plot_ax_ylim is None ) or ( self._plot_ax_ylim != ax_ylim_new )
+        try:
+            ax_zlim_new = axes.get_zlim()
+            axlimits_changed = axlimits_changed or ( self._plot_ax_zlim is None ) or ( self._plot_ax_zlim != ax_zlim_new )
+        except:
+            ax_zlim_new = None
+        
+        self._plot_ax_xlim = ax_xlim_new
+        self._plot_ax_ylim = ax_ylim_new
+        self._plot_ax_zlim = ax_zlim_new
+
         for anomaly in self._anomalies.values():
-            anomaly.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
+            anomaly.update_plot( p_axlimits_changed = axlimits_changed,
+                                 p_xlim = ax_xlim_new,
+                                 p_ylim = ax_ylim_new,
+                                 p_zlim = ax_zlim_new,
+                                 **p_kwargs )
     
 
 ## -------------------------------------------------------------------------------------------------
