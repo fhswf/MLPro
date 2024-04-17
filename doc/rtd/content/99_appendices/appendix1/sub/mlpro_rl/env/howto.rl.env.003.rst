@@ -1,31 +1,28 @@
 .. _Howto Env RL 003:
-Howto RL-ENV-003: Run Agent with random action in Double Pendulum Environment
-====================================================================================================
+Howto RL-ENV-003: Run Agent with random Policy in Double Pendulum MuJoCo Environment
+====================================================================================
 
 **Prerequisites**
 
 Please install the following packages to run this examples properly:
 
     - `NumPy <https://pypi.org/project/numpy/>`_
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-
+    - `MuJoCo <https://pypi.org/project/mujoco/>`_
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_env_003_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
 	:language: python
-
 
 
 **Results**
 
-.. image:: images/doublependulum_randomagent.gif
-    :width: 900 px
-    :align: center
+Running this howto opens a new MuJoCo window that shows the double pendulum environment
+controlled by a random policy. This, in turn, causes chaotic behavior.
 
-Running this howto shall generate visualizations for double endulum environment and the reward, resectively.
-
+.. image:: images/howto_rl_env_003.gif
+    :scale: 50 %
 
 
 **Cross Reference**

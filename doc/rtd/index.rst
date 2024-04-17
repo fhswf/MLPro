@@ -91,6 +91,14 @@ MLPro is also present on...
 
 .. toctree::
    :hidden:
+   :maxdepth: 2
+   :caption: Home
+
+   self
+
+
+.. toctree::
+   :hidden:
    :maxdepth: 3
    :caption: Welcome to MLPro
    :glob:
