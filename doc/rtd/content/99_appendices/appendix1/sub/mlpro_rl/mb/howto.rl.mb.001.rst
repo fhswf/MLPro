@@ -1,19 +1,18 @@
 .. _Howto MB RL 001:
-Howto RL-MB-001: Train and Reload Model Based Agent (Gym)
-====================================================================================================
+Howto RL-MB-001: Train a model-based Agent on native Grid World Environment
+==========================================================================
 
 **Prerequisites**
 
 Please install the following packages to run this examples properly:
 
     - `PyTorch <https://pypi.org/project/torch/>`_
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_mb_001_train_and_reload_model_based_agent_gym.py
+.. literalinclude:: ../../../../../../../../test/howtos/rl/howto_rl_mb_001_grid_world_environment.py
 	:language: python
 
 
