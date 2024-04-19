@@ -6,19 +6,18 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-11-20  0.0.0     SK       Creation
-## -- 2024-01-02  1.0.0     SK       First draft implementation
-## -- 2024-03-24  1.0.0     SK       Completion of class documentations
+## -- 2024-04-18  1.0.0     SK       First draft implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-03-24)
+Ver. 1.0.0 (2024-04-18)
 
-This module provides the native stream class StreamMLProCloudsAdvanced.
-These stream provides instances with self.C_NUM_DIMENSIONS dimensional random feature data, placed around
-centers (can be defined by user) which may or maynot move over time.
+This module provides the native stream class StreamMLProClusterbasedAnomalies.
+These stream provides instances with self._num_dim dimensional random feature data, placed around
+self._num_clouds number of centers (random). The resulting clouds or clusters may or may not move,
+change size, change density and/or change weight over time.
 
 """
-
 
 import random
 import math
@@ -29,38 +28,38 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProCloudsAdvanced (StreamMLProBase):
+class StreamMLProClusterbasedAnomalies (StreamMLProBase):
     """
-    This benchmark stream class generates freely configurable random point clouds of any number, size
-    and dimensionality. Optionally, the centers of the clouds can be static or in motion.
+    This benchmark stream class generates freely configurable random point clouds of any number,
+    dimensionality,  size, velocity, acceleration and weight.
 
     Parameters
     ----------
     p_num_dim : int
-        The number of dimensions or features of the data. Default = 3.
+        The number of dimensions or features of the data. Default = 2.
     p_num_instances : int
         Total number of instances. The value '0' means indefinite. Default = 1000.
     p_num_clouds : int
         Number of clouds. Default = 4.
     p_radii : list
         Radii of the clouds. Default = 100.
+    p_velocity : list
+        Velocity of the clouds in unit 1/instance. Default = 0.0.
     p_weights : list[]
-        Optional list of integer weights per cloud. For example, a list [1,2] causes the second cloud 
-        to be flooded with two times more instances than the first one. If empty or None, all clouds 
-        are flooded randomly but equally.
-    p_velocity : foat
-        Velocity for the centers in unit 1/di. Default = 0.0.
+        Optional list of integer weights per cloud. For example, a list [1,2] causes the first cloud 
+        to be flooded with two times more instances than the second one. If empty , all clouds 
+        are flooded equally.
     p_seed 
         Seeding value for the random generator. Default = None (no seeding).
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     """
 
-    C_ID                    = 'AnomalyCloudsNDim'
+    C_ID                    = 'ClusterbasedAnomalies'
     C_NAME                  = 'Clouds N-Dim'
     C_TYPE                  = 'Benchmark'
     C_VERSION               = '1.0.0'
-    C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES C_NUM_DIMENSIONS-dimensional instances per cluster randomly positioned around centers which may or maynot move over time.'
+    C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES self._no_dim-dimensional instances randomly positioned around centers which form clusters whose numbers, size, velocity, acceleration and density may or may not change over time.'
     C_BOUNDARIES            = [-1000,1000]
 
 ## -------------------------------------------------------------------------------------------------
@@ -70,6 +69,7 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
                   p_num_clouds : int = 4,
                   p_radii : list = [100.0],
                   p_velocity : list = [0.0],
+                  p_weight : list = [1],
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
@@ -78,8 +78,11 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
         self._radii           = p_radii
         self._num_clouds      = int(p_num_clouds)
         self._velocity        = p_velocity
+        self._weight          = p_weight
         self._cloud_ids       = []
+        self._cloud_id        = 1
         self._clouds          = {}
+        self._cycle           = 1
 
         self.C_NUM_INSTANCES  = p_num_instances
 
@@ -87,6 +90,8 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
 
         for x in range(self._num_clouds):
             self._cloud_ids.append(x+1)
+
+        self._no_cloud_ids = len(self._cloud_ids)
 
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
@@ -168,7 +173,15 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
             # 5 Assign rate of change of radius as zero
             cloud["roc_of_radius"] = 0.0
 
-            self._clouds[a] = cloud
+            # 6 Assign weight to the cloud
+            if len(self._weight) == 1:
+                cloud["weight"] = self._weight[0]
+
+            else:
+                cloud["weight"] = self._weight[a]
+
+            # 7 Add cloud to dictionary
+            self._clouds[str(a)] = cloud
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -185,13 +198,31 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
 
 
         # 2 Selection of the cloud to be fed
-        if self._num_cloud_ids == 0:
-            c = random.randint(0, self._num_clouds - 1)
+        _flag = False
 
-        else:
-            # 2.1 Next cloud is found by user requirement (see parameter p_weights)
-            c_id = random.randint(0, self._num_cloud_ids - 1)
-            c    = self._cloud_ids[c_id]
+        for i in range(self._cloud_id - 1, self._no_cloud_ids):
+
+            if (self._cycle % self._clouds[str(self._cloud_id)]["weight"]) == 0:
+                c = i + 1
+                self._cloud_id = i + 2
+                _flag = True
+                break
+            else:
+                self._cloud_id += 1        
+        
+        if self._cloud_id > self._no_cloud_ids:
+            self._cycle += 1
+            self._cloud_id = 1
+
+        if _flag == False:
+            for i in range(self._cloud_id-1, self._no_cloud_ids):
+
+                if (self._cycle % self._clouds[str(self._cloud_id)]["weight"]) == 0:
+                    c = i + 1
+                    self._cloud_id = i + 2
+                    break
+                else:
+                    self._cloud_id += 1
 
 
         # 3 Generation of random point around the selected cloud
