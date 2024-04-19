@@ -128,7 +128,7 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
         }
         self.clusters.append(cluster)"""
 
-        for a in self._cloud_ids:
+        for a in range(self._num_clouds):
 
             cloud = {}
             
@@ -181,7 +181,7 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
                 cloud["weight"] = self._weight[a]
 
             # 7 Add cloud to dictionary
-            self._clouds[str(a)] = cloud
+            self._clouds[str(a+1)] = cloud
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -194,13 +194,13 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
 
         # 1 Update of center positions
         for a in self._cloud_ids:
-            self._clouds[a]["center"] = self._clouds[a]["center"] + self._clouds[a]["velocity"]
+            self._clouds[str(a)]["center"] = self._clouds[str(a)]["center"] + self._clouds[str(a)]["velocity"]
 
 
         # 2 Selection of the cloud to be fed
         _flag = False
 
-        for i in range(self._cloud_id - 1, self._no_cloud_ids):
+        for i in range(self._cloud_id - 1, self._num_clouds):
 
             if (self._cycle % self._clouds[str(self._cloud_id)]["weight"]) == 0:
                 c = i + 1
@@ -210,12 +210,12 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
             else:
                 self._cloud_id += 1        
         
-        if self._cloud_id > self._no_cloud_ids:
+        if self._cloud_id > self._num_clouds:
             self._cycle += 1
             self._cloud_id = 1
 
         if _flag == False:
-            for i in range(self._cloud_id-1, self._no_cloud_ids):
+            for i in range(self._cloud_id-1, self._num_clouds):
 
                 if (self._cycle % self._clouds[str(self._cloud_id)]["weight"]) == 0:
                     c = i + 1
@@ -226,11 +226,11 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
 
 
         # 3 Generation of random point around the selected cloud
-        center       = self._clouds[c]["center"]
+        center       = self._clouds[str(c)]["center"]
         feature_data = Element(self._feature_space)
         point_values = np.zeros(self._num_dim)
 
-        radius = self._clouds[c]["radius"] + self._clouds[c]["roc_of_radius"]
+        radius = self._clouds[str(c)]["radius"] + self._clouds[str(c)]["roc_of_radius"]
 
         if self._num_dim == 2:
             # 3.1 Generation of a random 2D point within a circle around the center
