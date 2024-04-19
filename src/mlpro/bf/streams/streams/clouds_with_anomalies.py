@@ -32,7 +32,7 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 class StreamMLProCloudsAdvanced (StreamMLProBase):
     """
     This benchmark stream class generates freely configurable random point clouds of any number, size
-    and dimensionality. Optionally, the centers of the clouds are static or in motion.
+    and dimensionality. Optionally, the centers of the clouds can be static or in motion.
 
     Parameters
     ----------
@@ -69,8 +69,7 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
                   p_num_instances : int = 1000,
                   p_num_clouds : int = 4,
                   p_radii : list = [100.0],
-                  p_weights : list = [],
-                  p_velocity : float = 0.0,
+                  p_velocity : list = [0.0],
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
@@ -79,25 +78,15 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
         self._radii           = p_radii
         self._num_clouds      = int(p_num_clouds)
         self._velocity        = p_velocity
-        self._weights         = p_weights
         self._cloud_ids       = []
-        self._num_cloud_ids   = 0
-        self._centers         = []
-        self._centers_step    = []
+        self._clouds          = {}
 
         self.C_NUM_INSTANCES  = p_num_instances
 
         self.set_random_seed(p_seed=p_seed)
 
-        if ( self._weights is not None ) and ( len(self._weights) != 0 ):
-            if len(self._weights) != p_num_clouds:
-                raise ParamError('The number of weights (parameter p_weights) needs to be equal to the number of clouds (parameter p_num_clouds)')
-            
-            for c, weight in enumerate(self._weights):
-                for w in range(weight):
-                    self._cloud_ids.append(c)
-
-            self._num_cloud_ids = len(self._cloud_ids)
+        for x in range(self._num_clouds):
+            self._cloud_ids.append(x+1)
 
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
@@ -123,36 +112,63 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
 
-        # 1 Compute the initial positions of the centers
-        for c in range(self._num_clouds):
 
+        """cluster = {
+            "change_in_radius" : change_in_radius = 0.1,
+            "change_in_velocity" : change_in_velocity,
+            "change_in_density" : change_in_density,
+            "appears_later" : appears_later,
+            "disappears" : disappears,
+            "merge" : merge,
+        }
+        self.clusters.append(cluster)"""
+
+        for a in self._cloud_ids:
+
+            cloud = {}
+            
+            # 1 Compute the initial position of the center of the cloud
             center = np.zeros(self._num_dim)
 
+            for b in range(self._num_dim):
+                center[b] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
+
+            cloud["center"] = center
+
+            # 2 Assign the radius to the cloud
+            if len(self._radii) == 1:
+                cloud["radius"] = self._radii[0]
+
+            else:
+                cloud["radius"] = self._radii[a]
+
+
+            # 3 Assign velocity to the cloud
+            if len(self._velocity) == 1:
+                velocity = self._velocity[0]
+
+            else:
+                velocity = self._velocity[a]
+
+            velocity_vector = np.zeros(self._num_dim)
+            dist = 0
+
             for d in range(self._num_dim):
-                center[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
+                velocity_vector[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
+                dist = dist + velocity_vector[d]**2
 
-            self._centers.append(center)
+            dist = dist**0.5
+            f    = velocity / dist
 
+            for d in range(self._num_dim):
+                velocity_vector[d] *= f 
+                
+            cloud["velocity"] = velocity_vector
 
-        # 2 Commpute a vectorial step for each center based on the given velocity
-        if self._velocity != 0.0:
+            # 5 Assign rate of change of radius as zero
+            cloud["roc_of_radius"] = 0.0
 
-            for c in range(self._num_clouds):
-
-                center_step = np.zeros(self._num_dim)
-                dist = 0
-
-                for d in range(self._num_dim):
-                    center_step[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-                    dist = dist + center_step[d]**2
-
-                dist = dist**0.5
-                f    = self._velocity / dist
-
-                for d in range(self._num_dim):
-                    center_step[d] *= f 
-                    
-                self._centers_step.append(center_step)
+            self._clouds[a] = cloud
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -164,14 +180,12 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
 
 
         # 1 Update of center positions
-        if self._velocity != 0.0:
-            for c in range(self._num_clouds):
-                self._centers[c] = self._centers[c] + self._centers_step[c]
+        for a in self._cloud_ids:
+            self._clouds[a]["center"] = self._clouds[a]["center"] + self._clouds[a]["velocity"]
 
 
-        # 2 Determination of the cloud to be fed
+        # 2 Selection of the cloud to be fed
         if self._num_cloud_ids == 0:
-            # 2.1 Next cloud is found randomly
             c = random.randint(0, self._num_clouds - 1)
 
         else:
@@ -180,15 +194,12 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
             c    = self._cloud_ids[c_id]
 
 
-        # 3 Generation of random point around a randomly selected center
-        center       = self._centers[c]
+        # 3 Generation of random point around the selected cloud
+        center       = self._clouds[c]["center"]
         feature_data = Element(self._feature_space)
         point_values = np.zeros(self._num_dim)
 
-        if len(self._radii) == 1:
-            radius = self._radii[0]
-        else:
-            radius = self._radii[c]
+        radius = self._clouds[c]["radius"] + self._clouds[c]["roc_of_radius"]
 
         if self._num_dim == 2:
             # 3.1 Generation of a random 2D point within a circle around the center
@@ -214,72 +225,6 @@ class StreamMLProCloudsAdvanced (StreamMLProBase):
         self._index += 1
 
         return Instance( p_feature_data=feature_data )
-
-
-import numpy as np
-
-class ClusterGenerator:
-    def __init__(self, num_dimensions, num_clusters, num_points_per_cluster=1000, num_point_anomalies=10):
-        self.num_dim = num_dimensions
-        self.num_clusters = num_clusters
-        self.num_points_per_cluster = num_points_per_cluster
-        self.clusters = []
-        self.num_point_anom = num_point_anomalies
-        self.index = 0
-        self.cluster = 0
-        self.cycle = 0
-
-    def add_cluster(self, center=None,
-                    radius = 100,
-                    velocity=0,
-                    change_in_radius=False,
-                    change_in_velocity=False,
-                    change_in_density=False,
-                    appears_later=False,
-                    disappears=False,
-                    merge=False):
-        cluster = {
-            "dimension": self.num_dim,
-            "center": center,
-            "num_points": self.num_points_per_cluster,
-            "radius" : radius,
-            "velocity": velocity,
-            "change_in_radius" : change_in_radius,
-            "change_in_velocity" : change_in_velocity,
-            "change_in_density" : change_in_density,
-            "appears_later" : appears_later,
-            "disappears" : disappears,
-            "merge" : merge,
-        }
-        self.clusters.append(cluster)
-
-    def generate_clusters(self, X):
-        data = []
-        for cluster in self.clusters:
-            center = cluster["center"]
-            velocity = cluster["velocity"]
-            num_points = self.num_points_per_cluster
-            cluster_data = self.generate_cluster_data(center, velocity, num_points)
-            data.extend(cluster_data)
-
-
-
-            # Generate anomalies
-        anomalies = np.random.rand(self.num_point_anom, self.num_dim)
-        for i in range(self.num_dim):
-            anomalies[:, i] = anomalies[:, i] * (max(X[:, i]) - min(X[:, i])) + min(X[:, i])
-        return data
-
-    def generate_cluster_data(self, center, velocity, num_points):
-        data = []
-        for _ in range(num_points):
-            point = center + np.random.normal(0, 0.1, 2)  # Add some random noise
-            data.append(point)
-            center += velocity  # Move the center according to the velocity
-        return data
-    
-    def get_instance():
-        pass
 
 
 
