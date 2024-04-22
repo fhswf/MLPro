@@ -50,8 +50,10 @@ class MyScenario (StreamScenario):
                                                   p_num_instances=1000,
                                                   p_num_clouds=4,
                                                   p_radii=[100, 100, 100, 100],
-                                                  p_velocity=[0.0, 0.1, 0.5, 1.0],
+                                                  p_velocity=[0.0, 0.0, 0.0, 1.0],
                                                   p_weight=[1,1,1,1],
+                                                  p_disappearance_of_cluster=False,
+                                                  p_appearance_of_new_cluster=True,
                                                   p_visualize = p_visualize,
                                                   p_logging=p_logging)
 
@@ -106,3 +108,5 @@ myscenario.run()
 
 if __name__ == '__main__':
     input('Press ENTER to exit...')
+
+    

@@ -70,28 +70,42 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
                   p_radii : list = [100.0],
                   p_velocity : list = [0.0],
                   p_weight : list = [1],
+                  p_change_in_radius : bool = False,
+                  p_change_in_velocity : bool = False,
+                  p_change_in_weight : bool = False,
+                  p_appearance_of_new_cluster : bool = False,
+                  p_disappearance_of_cluster : bool = False,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        self._num_dim         = p_num_dim
-        self._radii           = p_radii
-        self._num_clouds      = int(p_num_clouds)
-        self._velocity        = p_velocity
-        self._weight          = p_weight
-        self._cloud_ids       = []
-        self._cloud_id        = 1
-        self._clouds          = {}
-        self._cycle           = 1
-
-        self.C_NUM_INSTANCES  = p_num_instances
+        self._num_dim            = p_num_dim
+        self._num_clouds         = int(p_num_clouds)
+        self._radii              = p_radii
+        self._velocity           = p_velocity
+        self._weight             = p_weight
+        self._cloud_ids          = []
+        self._cloud_id           = 1
+        self._clouds             = {}
+        self._cycle              = 1
+        self.C_NUM_INSTANCES     = p_num_instances
+        self._change_in_radius   = p_change_in_radius
+        self._change_in_velocity = p_change_in_velocity
+        self._change_in_weight   = p_change_in_weight
+        self._new_cluster        = p_appearance_of_new_cluster
+        self._remove_cluster     = p_disappearance_of_cluster
 
         self.set_random_seed(p_seed=p_seed)
 
         for x in range(self._num_clouds):
             self._cloud_ids.append(x+1)
 
-        self._no_cloud_ids = len(self._cloud_ids)
+        self._clouds_affected    = []
+        for _ in range(5):
+            self._clouds_affected.append(random.sample(self._cloud_ids, random.randint(1,int(0.8*self._num_clouds))))
+
+        self._point_of_change    = [[random.randint(0.1*self.C_NUM_INSTANCES, 0.4*self.C_NUM_INSTANCES) for _ in range(5)],
+                                   [random.randint(0.6*self.C_NUM_INSTANCES, self.C_NUM_INSTANCES) for _ in range(5)]]
 
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
@@ -117,71 +131,84 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
 
+        for a in self._cloud_ids:
 
-        """cluster = {
-            "change_in_radius" : change_in_radius = 0.1,
-            "change_in_velocity" : change_in_velocity,
-            "change_in_density" : change_in_density,
-            "appears_later" : appears_later,
-            "disappears" : disappears,
-            "merge" : merge,
-        }
-        self.clusters.append(cluster)"""
-
-        for a in range(self._num_clouds):
-
-            cloud = {}
-            
-            # 1 Compute the initial position of the center of the cloud
-            center = np.zeros(self._num_dim)
-
-            for b in range(self._num_dim):
-                center[b] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-
-            cloud["center"] = center
-
-            # 2 Assign the radius to the cloud
-            if len(self._radii) == 1:
-                cloud["radius"] = self._radii[0]
-
-            else:
-                cloud["radius"] = self._radii[a]
+            # Add cloud to dictionary
+            self._clouds[str(a)] = self._add_cloud(a)
 
 
-            # 3 Assign velocity to the cloud
-            if len(self._velocity) == 1:
-                velocity = self._velocity[0]
+## -------------------------------------------------------------------------------------------------
+    def _add_cloud(self, id):
 
-            else:
-                velocity = self._velocity[a]
+        cloud = {}
+        
+        # 1 Compute the initial position of the center of the cloud
+        center = np.zeros(self._num_dim)
 
-            velocity_vector = np.zeros(self._num_dim)
-            dist = 0
+        for b in range(self._num_dim):
+            center[b] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
 
-            for d in range(self._num_dim):
-                velocity_vector[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-                dist = dist + velocity_vector[d]**2
+        cloud["center"] = center
 
-            dist = dist**0.5
-            f    = velocity / dist
+        # 2 Assign the radius to the cloud
+        if len(self._radii) == 1:
+            cloud["radius"] = self._radii[0]
 
-            for d in range(self._num_dim):
-                velocity_vector[d] *= f 
-                
-            cloud["velocity"] = velocity_vector
+        elif len(self._radii) == self._num_clouds:
+            cloud["radius"] = self._radii[id-1]
 
-            # 5 Assign rate of change of radius as zero
-            cloud["roc_of_radius"] = 0.0
+        elif len(self._radii) == self._num_clouds-1:
+            self._radii.append((min(self._radii) + max(self._radii))/2)
+            cloud["radius"] = self._radii[id-1]
 
-            # 6 Assign weight to the cloud
-            if len(self._weight) == 1:
-                cloud["weight"] = self._weight[0]
+        # 3 Assign velocity to the cloud
+        if len(self._velocity) == 1:
+            velocity = self._velocity[0]
 
-            else:
-                cloud["weight"] = self._weight[a]
+        elif len(self._velocity) == self._num_clouds:
+            velocity = self._velocity[id-1]
 
-            # 7 Add cloud to dictionary
-            self._clouds[str(a+1)] = cloud
+        elif len(self._velocity) == self._num_clouds-1:
+            a = random.randint(0, 1)
+            self._velocity.append(min(self._velocity) if a == 0 else (min(self._velocity) + max(self._velocity)) / 2)
+            velocity = self._velocity[id-1]
+
+        cloud["velocity"] = self._find_velocity(velocity=velocity)
+
+        # 5 Assign rate of change of radius as zero
+        cloud["roc_of_radius"] = 0.0
+
+        # 6 Assign weight to the cloud
+        if len(self._weight) == 1:
+            cloud["weight"] = self._weight[0]
+
+        elif len(self._weight) == self._num_clouds:
+            cloud["weight"] = self._weight[id-1]
+
+        elif len(self._weight) == self._num_clouds-1:
+            self._weight.append(random.randint(min(self._weight), max(self._weight)))
+            cloud["weight"] = self._weight[id-1]
+
+        return cloud
+
+
+## -------------------------------------------------------------------------------------------------
+    def _find_velocity(self, velocity):
+
+        velocity_vector = np.zeros(self._num_dim)
+        dist = 0
+
+        for d in range(self._num_dim):
+            velocity_vector[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
+            dist = dist + velocity_vector[d]**2
+
+        dist = dist**0.5
+        f    = velocity / dist
+
+        for d in range(self._num_dim):
+            velocity_vector[d] *= f
+
+        return velocity_vector
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -190,6 +217,83 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
         # 0 Preparation
         if self.C_NUM_INSTANCES== 0: pass
         elif self._index == self.C_NUM_INSTANCES: raise StopIteration
+
+        
+        if self._index == self._point_of_change[0][0]:
+            if self._change_in_radius:
+                for id in self._clouds_affected[0]:
+                    self._clouds[str(id)]["roc_of_radius"] = self._clouds[str(id)]["radius"]*0.001
+        if self._index == self._point_of_change[1][0]:
+            if self._change_in_radius:
+                for id in self._clouds_affected[0]:
+                    self._clouds[str(id)]["roc_of_radius"] = 0.0
+
+        if self._index == self._point_of_change[0][1]:
+            if self._change_in_velocity:
+                for id in self._clouds_affected[1]:
+                    a = random.randint(0,2)
+                    if a == 0:
+                        velocity = 0
+                    else:
+                        if max(self._velocity)==0 and min(self._velocity)==0:
+                            velocity = random.random()
+                        else:
+                            velocity = max(self._velocity)*random.random()
+                    self._clouds[str(id)]["velocity"] = self._find_velocity(velocity)
+
+        if self._index == self._point_of_change[0][2]:
+            if self._change_in_weight:
+                for id in self._clouds_affected[2]:
+                    if max(self._weight)==1 and min(self._weight)==1:
+                        weight = random.randint(1,10)
+                    else:
+                        weight = random.randint(1,max(self._weight)+2)
+                    self._clouds[str(id)]["weight"] = weight
+
+        if self._index == self._point_of_change[0][3]:
+            if self._new_cluster:
+                self._num_clouds += 1
+                self._cloud_ids.append(self._num_clouds)
+                self._clouds[str(self._cloud_ids[-1])] = self._add_cloud(id=self._cloud_ids[-1])
+
+        if self._index == self._point_of_change[0][4]:
+            if self._remove_cluster:
+                if self._num_clouds == 1:
+                    raise Exception
+                elif self._num_clouds == 2:
+                    self._num_clouds -= 1
+                    self._cloud_ids.pop(-1)
+                    self._cloud_id = 1
+                    del self._clouds[str(2)]
+                else:
+                    a = sorted(random.sample(self._cloud_ids, random.randint(1, int(0.5*self._num_clouds))))
+                    if len(self._radii)==self._num_clouds:
+                        j=1
+                        for i in a:
+                            self._radii.pop(i-j)
+                            j+=1
+                    if len(self._velocity)==self._num_clouds:
+                        j=1
+                        for i in a:
+                            self._velocity.pop(i-j)
+                            j+=1
+                    if len(self._weight)==self._num_clouds:
+                        j=1
+                        for i in a:
+                            self._weight.pop(i-j)
+                            j+=1
+
+                    self._num_clouds -= len(a)
+                    self._cloud_ids = self._cloud_ids[:self._num_clouds-len(a)]
+                    self._cloud_id = 1
+                    for id in a:
+                        del self._clouds[str(id)]
+                    a = 1
+                    clouds = {}
+                    for id in self._clouds.keys():
+                        clouds[str(a)] = self._clouds[id]
+                        a += 1
+                    self._clouds = clouds
 
 
         # 1 Update of center positions
@@ -209,7 +313,7 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
                 break
             else:
                 self._cloud_id += 1        
-        
+
         if self._cloud_id > self._num_clouds:
             self._cycle += 1
             self._cloud_id = 1
@@ -256,6 +360,4 @@ class StreamMLProClusterbasedAnomalies (StreamMLProBase):
         self._index += 1
 
         return Instance( p_feature_data=feature_data )
-
-
 
