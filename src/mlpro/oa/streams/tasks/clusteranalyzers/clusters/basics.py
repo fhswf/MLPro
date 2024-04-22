@@ -26,10 +26,11 @@
 ## --                                the plot of a cluster before removal of the cluster itself
 ## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -- 2024-04-10  0.8.3     DA       Refactoring
+## -- 2024-04-22  0.9.0     DA/SK    Class Cluster: general systematics for properties
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.3 (2024-04-10)
+Ver. 0.9.0 (2024-04-22)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 """
@@ -80,6 +81,38 @@ class Cluster (Id, Plottable):
         self._kwargs = p_kwargs.copy()
         Id.__init__( self, p_id = p_id )
         Plottable.__init__( self, p_visualize = p_visualize )
+
+        self._properties = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_property(self, p_property : str, p_deg_dev):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_property_value(self, p_property : str, p_deg_dev : int = 0):
+        return 0
+    
+
+## -------------------------------------------------------------------------------------------------
+    def set_property_value(self, p_property : str, p_value):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_property_values(self):
+        return self._properties
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_properties(self):
+        return self._properties.keys()
+
+
+## -------------------------------------------------------------------------------------------------
+    def has_property(self, p_property : str) -> bool:
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
