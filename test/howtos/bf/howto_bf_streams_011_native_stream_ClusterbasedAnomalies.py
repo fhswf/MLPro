@@ -46,14 +46,19 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Import a native stream from MLPro
-        stream = StreamMLProClusterbasedAnomalies(p_num_dim=2,
+        stream = StreamMLProClusterGenerator(p_num_dim=2,
                                                   p_num_instances=1000,
-                                                  p_num_clouds=4,
-                                                  p_radii=[100, 100, 100, 100],
-                                                  p_velocity=[0.0, 0.0, 0.0, 1.0],
-                                                  p_weight=[1,1,1,1],
-                                                  p_disappearance_of_cluster=False,
-                                                  p_appearance_of_new_cluster=True,
+                                                  p_num_clusters=4,
+                                                  p_radii=[100],
+                                                  p_velocities=[0.0, 0.0, 0.0, 0.0],
+                                                  p_weights=[1],
+                                                  p_change_in_radii=True,
+                                                  p_rate_of_change_of_radius=0.001,
+                                                  p_change_in_velocities=False,
+                                                  p_change_in_weights=False,
+                                                  p_disappearance_of_clusters=False,
+                                                  p_appearance_of_clusters=False,
+                                                  p_points_of_appearance_of_clusters=None,
                                                   p_visualize = p_visualize,
                                                   p_logging=p_logging)
 

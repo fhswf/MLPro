@@ -4,4 +4,4 @@ from mlpro.bf.streams.streams.doublespiral2d import *
 from mlpro.bf.streams.streams.csv_file import *
 from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.streams.streams.point_outliers import *
-from mlpro.bf.streams.streams.clouds_with_anomalies import *
+from mlpro.bf.streams.streams.clusters import *
