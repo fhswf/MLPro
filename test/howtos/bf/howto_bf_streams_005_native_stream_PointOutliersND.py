@@ -5,10 +5,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-02-06  1.0.0     DA       Creation/First implementation
+## -- 2024-04-26  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-02-06)
+Ver. 1.1.0 (2024-04-26)
 
 This module demonstrates and visualizes the native stream PointOutliersND which generates an infinite
 instances number of n-dimensional instances. Each feature is based on a configurable baseline function.
@@ -48,16 +49,16 @@ class MyScenario (StreamScenario):
 
         # 1 Import a native stream from MLPro
         stream = StreamMLProPOutliers( p_functions = ['sin', 'cos', 'const'],
-                                       p_outlier_frequency = 25,
-                                       p_visualize=p_visualize, 
-                                       p_logging=p_logging )
+                                       p_outlier_rate = 0.01,
+                                       p_visualize = p_visualize, 
+                                       p_logging = p_logging )
 
 
         # 2 Set up a stream workflow
-        workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE, 
-                                   p_visualize=p_visualize,
-                                   p_logging=logging )
+        workflow = StreamWorkflow( p_name = 'wf1', 
+                                   p_range_max = StreamWorkflow.C_RANGE_NONE, 
+                                   p_visualize = p_visualize,
+                                   p_logging = logging )
 
 
         # 3 Return stream and workflow
