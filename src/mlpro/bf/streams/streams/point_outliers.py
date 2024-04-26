@@ -6,11 +6,13 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-02-05  0.0.0     DA       Creation
-## -- 2024-02-06  1.0.0     DA       Creation
+## -- 2024-02-06  1.0.0     DA       First Release
+## -- 2024-04-26  1.1.0     DA       Refactoring: replaced parameter p_outlier_frequency by
+## --                                p_outlier_rate
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-02-05)
+Ver. 1.1.0 (2024-04-26)
 
 This module provides a multivariate benchmark stream with configurable baselines per feature and
 additional random point outliers.
@@ -38,8 +40,8 @@ class StreamMLProPOutliers (StreamMLProBase):
         Total number of instances. The value '0' means indefinite. Default = 1000.
     p_functions : list[str]
         List of mathematical functions per feature. 
-    p_outlier_frequency : int
-        Average frequency of random point outliers.
+    p_outlier_rate : float
+        A value in [0,1] that defines the number of random outliers in % per feature.
     p_seed 
         Seeding value for the random generator. Default = None (no seeding).
     p_logging
@@ -49,7 +51,7 @@ class StreamMLProPOutliers (StreamMLProBase):
     C_ID                    = 'PointOutliersND'
     C_NAME                  = 'Point Outliers N-Dim'
     C_TYPE                  = 'Benchmark'
-    C_VERSION               = '1.0.0'
+    C_VERSION               = '1.1.0'
     C_SCIREF_ABSTRACT       = 'This benchmark stream provides multidimensional instances with configurable baselines per feature. Additionally, random point outliers per feature are induced.'
     C_BOUNDARIES            = [0,0]
 
@@ -58,7 +60,7 @@ class StreamMLProPOutliers (StreamMLProBase):
                   p_num_dim : int = 4,
                   p_num_instances : int = 1000,
                   p_functions : list[str] = ['sin', 'cos', 'const', 'lin'],
-                  p_outlier_frequency : int = 50,
+                  p_outlier_rate : float = 0.05,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
@@ -66,7 +68,7 @@ class StreamMLProPOutliers (StreamMLProBase):
         self._num_dim            = len(p_functions)
         self.C_NUM_INSTANCES     = p_num_instances
         self._functions          = p_functions
-        self.p_outlier_frequency = p_outlier_frequency
+        self.p_outlier_rate      = p_outlier_rate
         self._fct_methods        = []
 
         for fct in p_functions:
@@ -111,7 +113,7 @@ class StreamMLProPOutliers (StreamMLProBase):
         feature_data = Element(self._feature_space)     
 
         for fct_method in self._fct_methods:
-            outlier = random.randint(1,self.p_outlier_frequency) == 1
+            outlier = random.uniform(0,1) <= self.p_outlier_rate
             values.append( fct_method(self._index, outlier) )   
 
         feature_data.set_values(values)
