@@ -10,9 +10,9 @@ MLPro: Integration OpenML
     * - **Topics**
       - machine-learning, mlpro-extension, openml, wrapper
     * - **Version**
-      - v0.1.0  - Lights on
+      - v1.0.0  - Hello World!
     * - **Last update**
-      - Tue, 20 Feb 2024 05:32:11 GMT
+      - Thu, 18 Apr 2024 17:21:30 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-OpenML
     * - **URL**

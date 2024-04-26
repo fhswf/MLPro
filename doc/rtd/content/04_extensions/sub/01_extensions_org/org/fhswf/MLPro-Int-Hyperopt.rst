@@ -10,9 +10,9 @@ MLPro: Integration Hyperopt
     * - **Topics**
       - hyperopt, hyperparameter-tuning, machine-learning, mlpro-extension, wrapper
     * - **Version**
-      - 0.1.4 
+      - v1.0.0  - Hello World!
     * - **Last update**
-      - Mon, 19 Feb 2024 15:50:21 GMT
+      - Thu, 18 Apr 2024 16:09:43 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-Hyperopt
     * - **URL**
