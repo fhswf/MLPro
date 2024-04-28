@@ -18,6 +18,7 @@ This module provides class for geometric objects like points, etc.
 """ 
 
 
+from mlpro.bf.data import Properties
 from mlpro.bf.plot import *
 from mlpro.bf.math import *
 from datetime import datetime
@@ -25,10 +26,24 @@ from typing import Union, Tuple
 
 
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Point (Properties, Plottable):
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, p_visualize : bool = False ):
+
+        Properties.__init__( self )
+        Plottable.__init__( self, p_visualize=p_visualize )
+
+        self.define_property( p_property = 'Position', p_derivative_order_max = 2)
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Point (Element, Plottable):
+class PointOLD (Element, Plottable):
     """
     Implementation of a point in a hyper space. Properties like the current position, velocity and
     acceleration are managed.
