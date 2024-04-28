@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-18  0.0.0     LSB      Creation
 ## -- 2023-07-15  1.0.0     LSB      Release
+## -- 2023-07-30  1.0.1     LSB      Updates regarding selected output variables
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-07-15)
+Ver. 1.0.1 (2023-07-30)
 
 This module provides dataset classes for supervised learning tasks.
 
@@ -84,6 +85,7 @@ class MLPSLScenario(SLScenario):
                                     p_action_fname=name_train_actions,
                                     p_state_space=state_space,
                                     p_action_space=action_space,
+                                    p_op_state_indexes=[0,2],
                                     p_normalize=True,
                                     p_batch_size=16,
                                     p_eval_split=0.5,
@@ -94,13 +96,13 @@ class MLPSLScenario(SLScenario):
         return PyTorchMLP(p_input_space=self._dataset._feature_space,
                                  p_output_space=self._dataset._label_space,
                                  p_output_elem_cls=BatchElement,
-                                 p_num_hidden_layers=3,
+                                 p_num_hidden_layers=5,
                                  p_activation_fct=nn.LeakyReLU(0.5),
                                  p_output_activation_fct=nn.LeakyReLU(1),
                                  p_optimizer=opt.Adam,
                                  p_batch_size=200,
                                  p_metrics=[MSEMetric(p_logging=Log.C_LOG_NOTHING),
-                                            MetricAccuracy(p_threshold=10, p_logging=Log.C_LOG_NOTHING)],
+                                            MetricAccuracy(p_threshold=20, p_logging=Log.C_LOG_NOTHING)],
                                  p_learning_rate=0.0005,
                                  p_hidden_size=256,
                                  p_loss_fct=nn.MSELoss,
@@ -176,6 +178,7 @@ class InferenceScenario(SLScenario):
                                    p_action_fname = name_infer_actions,
                                    p_state_space=state_space,
                                    p_action_space=action_space,
+                                   p_op_state_indexes=[0,2],
                                    p_batch_size=1,
                                    p_shuffle=False,
                                    p_normalize = True,
