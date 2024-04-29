@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-04-28  1.0.0     DA       Creation and first implemenation
+## -- 2024-04-29  1.1.0     DA       - Method Properties.define_property: new return value
+## --                                - Class Property: new property attribute dim
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-04-28)
+Ver. 1.1.0 (2024-04-29)
 
 This module provides a systematics for numerical and textual properties to be added to a class. 
 
@@ -61,6 +63,30 @@ class Property:
         self.derivatives            = {}
 
 
+## -------------------------------------------------------------------------------------------------
+    def _get_dim(self) -> int:
+        """
+        Internal method to determine the dimensionality of the currently stored values. It is used
+        implicitely when accessing attribute 'dim'.
+        """
+
+        if self.value is None: return None
+        try:
+            # Try to treat the stored values as a numpy array
+            return self.value.size
+        except:
+            try:
+                # Try to treat the values as a python list
+                return len(self.value)
+            except:
+                # Obviously a one-dimensional value
+                return 1
+            
+
+## -------------------------------------------------------------------------------------------------
+    dim = property( fget=_get_dim )
+
+
 
 
 
@@ -88,7 +114,7 @@ class Properties:
                   
 
 ## -------------------------------------------------------------------------------------------------
-    def define_property(self, p_property : str, p_derivative_order_max : int = 0 ):
+    def define_property(self, p_property : str, p_derivative_order_max : int = 0 ) -> Property:
         """
         Defines a new property by it's name. Optionally, auto-derivation can be added for numeric
         properties (scalar or vectorial).
@@ -99,9 +125,17 @@ class Properties:
             Name of the property.
         p_derivative_order_max : int
             Maximum order of auto-generated derivatives. Default = 0 (no derivative).
+
+        Returns
+        -------
+        Property
+            New property object.
         """
 
-        self._properties[p_property] = self._property_cls( p_derivative_order_max = p_derivative_order_max )
+        prop_obj = self._property_cls( p_derivative_order_max = p_derivative_order_max )
+        self._properties[p_property] = prop_obj
+
+        return prop_obj
 
 
 ## -------------------------------------------------------------------------------------------------
