@@ -67,7 +67,7 @@ class Point (Properties, Plottable):
         """
 
         try:
-            return self.get_property( p_property=self.C_PROPERTY_POS ).derivatives[1]
+            return self._property_pos.derivatives[1]
         except:
             return None
     
@@ -84,10 +84,27 @@ class Point (Properties, Plottable):
         """
 
         try:
-            return self.get_property( p_property=self.C_PROPERTY_POS ).derivatives[2]
+            return self._property_pos.derivatives[2]
         except:
             return None
-        
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_position(self):
+        """
+        Returns current position of the point.
+
+        Returns
+        -------
+        point_pos
+            Current position of the point.
+        """
+
+        try:
+            return self._property_pos.value
+        except:
+            return None
+    
 
 ## -------------------------------------------------------------------------------------------------
     def set_position(self, p_pos : Union[list, np.ndarray], p_time_stamp : datetime = None):
