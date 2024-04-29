@@ -26,10 +26,11 @@
 ## --                                the plot of a cluster before removal of the cluster itself
 ## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -- 2024-04-10  0.8.3     DA       Refactoring
+## -- 2024-04-29  0.9.0     DA       Refactoring after changes on class Point
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.3 (2024-04-10)
+Ver. 0.9.0 (2024-04-29)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -74,7 +75,9 @@ class ClusterCentroid (Cluster):
                   p_cls_centroid = Point,
                   **p_kwargs ):
         
-        self._centroid : Point = p_cls_centroid( p_visualize=p_visualize )
+        self._centroid : Point  = p_cls_centroid( p_visualize=p_visualize )
+        self._centroid_elem : Element = None
+
         super().__init__( p_id = p_id, p_visualize = p_visualize, **p_kwargs )
 
 
@@ -86,7 +89,13 @@ class ClusterCentroid (Cluster):
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst: Instance) -> float:
         feature_data = p_inst.get_feature_data()
-        return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid )
+
+        if self._centroid_elem is None:
+            self._centroid_elem = Element( p_set=feature_data.get_related_set() )
+
+        self._centroid_elem.set_values( p_value=self._centroid.get_position() )
+
+        return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid_elem )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -131,7 +140,7 @@ class ClusterCentroid (Cluster):
         super()._update_plot_2d(p_settings, **p_kwargs)
 
         # 1 Get coordinates
-        centroid = self._centroid.get_values()
+        centroid = self._centroid.get_position()
         ax_xlim  = p_settings.axes.get_xlim()
         ax_ylim  = p_settings.axes.get_ylim()
         xlim     = [ min( ax_xlim[0], centroid[0] ), max(ax_xlim[1], centroid[0] ) ]
@@ -168,7 +177,7 @@ class ClusterCentroid (Cluster):
         super()._update_plot_3d(p_settings, **p_kwargs) 
 
         # 1 Get coordinates
-        centroid = self._centroid.get_values()
+        centroid = self._centroid.get_position()
         ax_xlim  = p_settings.axes.get_xlim()
         ax_ylim  = p_settings.axes.get_ylim()
         ax_zlim  = p_settings.axes.get_zlim()
@@ -271,5 +280,5 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer: Normalizer):
-        self._centroid.set_values( p_normalizer.renormalize( self._centroid.get_values() ) )
+        self._centroid.set_position( p_normalizer.renormalize( self._centroid.get_position() ) )
 

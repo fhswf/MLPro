@@ -48,7 +48,7 @@ class Point (Properties, Plottable):
     def __init__( self, p_visualize : bool = False ):
 
         Properties.__init__( self )
-        self._property_pos = self.define_property( p_property = 'Position', p_derivative_order_max = 2)
+        self._property_pos = self.define_property( p_property = self.C_PROPERTY_POS, p_derivative_order_max = 2)
 
         self._plot_pos = None
         self._plot_vel = None
