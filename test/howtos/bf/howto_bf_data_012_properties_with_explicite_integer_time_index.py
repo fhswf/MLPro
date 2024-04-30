@@ -85,6 +85,7 @@ myobj.set_property('Color', 'red', tp)
 myobj.print_properties()
 
 
+
 # 4 Now let's auto-derive
 tp += 2
 
@@ -106,3 +107,9 @@ myobj.set_property('Temperature', 27, tp)
 myobj.set_property('Color', 'green', tp)
 
 myobj.print_properties()
+
+
+
+# 6 Last but not least: the dimensionality of our properties
+for prop in myobj.get_properties().keys():
+    print('Dimensionality of "' + prop + '":', myobj.get_property(prop).dim)
