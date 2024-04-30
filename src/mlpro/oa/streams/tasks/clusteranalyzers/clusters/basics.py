@@ -28,10 +28,11 @@
 ## -- 2024-04-10  0.8.3     DA       Refactoring
 ## -- 2024-04-22  0.9.0     DA/SK    Class Cluster: general systematics for properties
 ## -- 2024-04-28  1.0.0     DA       Class Cluster: new parent class Properties
+## -- 2024-04-30  1.1.0     DA       Class Cluster: new parent class Renormalizable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-04-28)
+Ver. 1.1.0 (2024-04-30)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 """
@@ -41,14 +42,14 @@ from mlpro.bf.various import *
 from mlpro.bf.data import Properties
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
-from mlpro.bf.math.normalizers import Normalizer
+from mlpro.bf.math.normalizers import Renormalizable
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Cluster (Id, Plottable, Properties):
+class Cluster (Id, Plottable, Properties, Renormalizable):
     """
     Base class for a cluster. 
 
@@ -104,18 +105,3 @@ class Cluster (Id, Plottable, Properties):
         """
 
         raise NotImplementedError
-    
-
- ## -------------------------------------------------------------------------------------------------
-    def renormalize(self, p_normalizer:Normalizer):
-        """
-        Custom method to renormalize internally buffered data using the given normalizer object. 
-        This method is called especially by method ClusterAnalyzer._renormalize().
-        
-        Parameters
-        ----------
-        p_normalizer : Normalizer
-            Normalizer object to be applied on task-specific 
-        """
-
-        pass 
