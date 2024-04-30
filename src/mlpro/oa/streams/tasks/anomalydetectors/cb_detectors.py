@@ -100,7 +100,8 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, center: float, centroids: list):
-        anomaly = None
+        inst = p_inst_new[-1].get_feature_data()
+        
         self.centroids.append(centroids)
         
         distance = np.linalg.norm(p_inst_new - center)

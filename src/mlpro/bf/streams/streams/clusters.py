@@ -242,7 +242,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         cluster["roc_of_radius"] = 0.0
 
         # 6 Assign weight to the cluster
-        cluster["weight"] = self._weight[id-1]
+        cluster["weight"] = self._weights[id-1]
 
         return cluster
 
@@ -312,10 +312,10 @@ class StreamMLProClusterGenerator (StreamMLProBase):
             if self._index in self._change_in_weight["start"]:
                 ids = [index for index, element in enumerate(self._change_in_weight["start"]) if element == self._index]
                 for x in ids:
-                    if max(self._weight)==1 and min(self._weight)==1:
+                    if max(self._weights)==1 and min(self._weights)==1:
                         weight = random.randint(1,10)
                     else:
-                        weight = random.randint(1,max(self._weight)+2)
+                        weight = random.randint(1,max(self._weights)+2)
                     self._clusters[self._change_in_weight["clusters"][x]]["weight"] = weight
 
         # 1.4 Check and prepare for cluster appearances
@@ -328,7 +328,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                     self._radii.append((min(self._radii) + max(self._radii))/2)
                     a = random.randint(0, 1)
                     self._velocities.append(min(self._velocities) if a == 0 else (min(self._velocities) + max(self._velocities)) / 2)
-                    self._weight.append(random.randint(1, max(self._weight)))
+                    self._weights.append(random.randint(1, max(self._weight)))
                     self._clusters[self._cluster_ids[-1]] = self._define_cluster(id=self._cluster_ids[-1])
 
         # 1.5 Check and prepare fro cluster disappearances
@@ -347,7 +347,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                     for i in ids:
                         self._radii.pop(i-j)
                         self._velocities.pop(i-j)
-                        self._weight.pop(i-j)
+                        self._weights.pop(i-j)
                         j+=1
                     self._num_clusters -= len(ids)
                     self._cluster_ids = self._cluster_ids[:self._num_clusters-len(ids)]
