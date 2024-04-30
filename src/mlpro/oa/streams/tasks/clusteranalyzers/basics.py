@@ -142,6 +142,11 @@ class ClusterAnalyzer (OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
+    def get_cluster_cls(self):
+        return self._cls_cluster
+    
+
+## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> dict[Cluster]:
         """
         This method returns the current list of clusters. 

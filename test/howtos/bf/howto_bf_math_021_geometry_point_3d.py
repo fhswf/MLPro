@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_math_021_geometry_point_3d.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-06  1.0.0     DA       Creation
 ## -- 2023-09-25  1.0.1     DA       Bugfix
+## -- 2024-04-29  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-09-25)
+Ver. 1.1.0 (2024-04-29)
 
 This module demonstrates the functionality of class bf.math.geometry.Point in a 3D plot.
 
@@ -80,7 +81,7 @@ for i in range(200):
 
     pos[0] = cos( angle * pi / 180 )
     pos[1] = sin( angle * pi / 180 )
-    my_point.set_values( p_values = pos, p_time_stamp = time_stamp )
+    my_point.set_position( p_pos = pos, p_time_stamp = time_stamp )
     vel = my_point.get_velocity()
     acc = my_point.get_acceleration()
     my_log.log(Log.C_LOG_TYPE_S, 'pos :', pos, ', vel :', vel, ', acc :', acc)

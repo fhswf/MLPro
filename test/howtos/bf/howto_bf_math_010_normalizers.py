@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_math_010_normalizers.py
 ## -------------------------------------------------------------------------------------------------
@@ -12,10 +12,12 @@
 ## -- 2022-10-16  1.0.3     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
 ## -- 2022-11-03  1.0.4     LSB      refacoring for update with replaced data (Z-
 ## -- 2023-09-23  1.0.5     LSB      Bug Fix, the input to normalizer shall be copied as it returns the same object
+## -- 2024-04-30  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2023-09-23)
+Ver. 1.1.0 (2024-04-30)
+
 Example file for demonstrating the use of MLPro's normalizer for normalizing and de-normalizing data.
 
 
@@ -31,8 +33,11 @@ You will learn:
 
 5. How to renormalize the data element (ndarray/mlpro element) with respect to the changed parameters
 """
+
+
 import numpy as np
 
+from mlpro.bf.math import Dimension
 from mlpro.bf.math.normalizers import *
 
 
