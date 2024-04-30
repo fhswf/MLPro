@@ -24,8 +24,6 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 import numpy as np
 
-from sklearn.cluster import KMeans
-
 
 
 ## -------------------------------------------------------------------------------------------------
