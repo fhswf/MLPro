@@ -88,7 +88,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst           = self.get_instance()
+        inst           = self.get_instance()[-1]
         feature_values = inst.get_feature_data().get_values()  
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -130,7 +130,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst           = self.get_instance()
+        inst           = self.get_instance()[-1]
         feature_values = inst.get_feature_data().get_values()  
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -190,7 +190,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line is not None ) and not p_axlimits_changed: return
         
-        inst_id = self.get_instance().get_id()
+        inst_id = self.get_instance()[-1].get_id()
         xpos    = [inst_id, inst_id]
         
         if self._plot_line is None:
