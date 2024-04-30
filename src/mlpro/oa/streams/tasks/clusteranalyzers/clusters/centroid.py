@@ -26,10 +26,11 @@
 ## --                                the plot of a cluster before removal of the cluster itself
 ## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -- 2024-04-10  0.8.3     DA       Refactoring
+## -- 2024-04-29  0.9.0     DA       Refactoring after changes on class Point
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.3 (2024-04-10)
+Ver. 0.9.0 (2024-04-29)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -74,7 +75,9 @@ class ClusterCentroid (Cluster):
                   p_cls_centroid = Point,
                   **p_kwargs ):
         
-        self._centroid : Point = p_cls_centroid( p_visualize=p_visualize )
+        self._centroid : Point  = p_cls_centroid( p_visualize=p_visualize )
+        self._centroid_elem : Element = None
+
         super().__init__( p_id = p_id, p_visualize = p_visualize, **p_kwargs )
 
 
@@ -86,7 +89,13 @@ class ClusterCentroid (Cluster):
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst: Instance) -> float:
         feature_data = p_inst.get_feature_data()
-        return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid )
+
+        if self._centroid_elem is None:
+            self._centroid_elem = Element( p_set=feature_data.get_related_set() )
+
+        self._centroid_elem.set_values( p_value=self._centroid.get_position() )
+
+        return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid_elem )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -102,22 +111,21 @@ class ClusterCentroid (Cluster):
         self._plot_line1_t1 : Text = None
         self._plot_line1_t2 : Text = None
         self._plot_line1_t3 : Text = None
-        self._plot_line1_t4 : Text = None
-        self._plot_line1_t5 : Text = None
+        self._plot_line2_t1 : Text = None
+        self._plot_line2_t2 : Text = None
     
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
         self._plot_line1 : Line3D = None
-        self._plot_line2 : Line3D = None
-        self._plot_line3 : Line3D = None
         self._plot_line1_t1 : Text3D = None
         self._plot_line1_t2 : Text3D = None
-        self._plot_line1_t3 : Text3D = None
-        self._plot_line1_t4 : Text3D = None
-        self._plot_line1_t5 : Text3D = None
-        self._plot_line1_t6 : Text3D = None
-        self._plot_line1_t7 : Text3D = None
+
+        self._plot_line2 : Line3D = None
+        self._plot_line2_t1 : Text3D = None
+
+        self._plot_line3 : Line3D = None
+        self._plot_line3_t1 : Text3D = None
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -131,7 +139,7 @@ class ClusterCentroid (Cluster):
         super()._update_plot_2d(p_settings, **p_kwargs)
 
         # 1 Get coordinates
-        centroid = self._centroid.get_values()
+        centroid = self._centroid.get_position()
         ax_xlim  = p_settings.axes.get_xlim()
         ax_ylim  = p_settings.axes.get_ylim()
         xlim     = [ min( ax_xlim[0], centroid[0] ), max(ax_xlim[1], centroid[0] ) ]
@@ -149,8 +157,8 @@ class ClusterCentroid (Cluster):
             self._plot_line1_t1 = p_settings.axes.text(centroid[0], centroid[1], label, color=color )
             self._plot_line1_t2 = p_settings.axes.text(xlim[0], centroid[1], label, ha='right', va='center', color=color )
             self._plot_line1_t3 = p_settings.axes.text(xlim[1], centroid[1], label, ha='left',va='center', color=color )
-            self._plot_line1_t4 = p_settings.axes.text(centroid[0], ylim[0], label, ha='center', va='top', color=color )
-            self._plot_line1_t5 = p_settings.axes.text(centroid[0], ylim[1], label, ha='center', va='bottom',color=color )
+            self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], label, ha='center', va='top', color=color )
+            self._plot_line2_t2 = p_settings.axes.text(centroid[0], ylim[1], label, ha='center', va='bottom',color=color )
             p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', shadow=True, draggable=True)
         else:
             # 2.2 Update data of crosshair lines
@@ -159,8 +167,8 @@ class ClusterCentroid (Cluster):
             self._plot_line1_t1.set(position=(centroid[0], centroid[1]) )
             self._plot_line1_t2.set(position=(xlim[0], centroid[1]))
             self._plot_line1_t3.set(position=(xlim[1], centroid[1]))
-            self._plot_line1_t4.set(position=(centroid[0], ylim[0]))
-            self._plot_line1_t5.set(position=(centroid[0], ylim[1]))
+            self._plot_line2_t1.set(position=(centroid[0], ylim[0]))
+            self._plot_line2_t2.set(position=(centroid[0], ylim[1]))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -168,7 +176,7 @@ class ClusterCentroid (Cluster):
         super()._update_plot_3d(p_settings, **p_kwargs) 
 
         # 1 Get coordinates
-        centroid = self._centroid.get_values()
+        centroid = self._centroid.get_position()
         ax_xlim  = p_settings.axes.get_xlim()
         ax_ylim  = p_settings.axes.get_ylim()
         ax_zlim  = p_settings.axes.get_zlim()
@@ -211,11 +219,8 @@ class ClusterCentroid (Cluster):
 
             self._plot_line1_t1 = p_settings.axes.text(centroid[0], centroid[1], centroid[2], label, color=color )
             self._plot_line1_t2 = p_settings.axes.text(xlim[0], centroid[1], centroid[2], label, ha=t2_ha, va='center', color=color )
-            # self._plot_line1_t3 = p_settings.axes.text(xlim[1], centroid[1], centroid[2], label, ha=t3_ha, va='center', color=color )
-            self._plot_line1_t4 = p_settings.axes.text(centroid[0], ylim[0], centroid[2], label, ha=t4_ha, va='center', color=color )
-            # self._plot_line1_t5 = p_settings.axes.text(centroid[0], ylim[1], centroid[2], label, ha=t5_ha, va='center', color=color )
-            self._plot_line1_t6 = p_settings.axes.text(centroid[0], centroid[1], zlim[0], label, ha='center', va=t6_va, color=color )
-            # self._plot_line1_t7 = p_settings.axes.text(centroid[0], centroid[1], zlim[1], label, ha='center', va=t7_va, color=color )
+            self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], centroid[2], label, ha=t4_ha, va='center', color=color )
+            self._plot_line3_t1 = p_settings.axes.text(centroid[0], centroid[1], zlim[0], label, ha='center', va=t6_va, color=color )
 
             p_settings.axes.legend(title='Clusters', alignment='left', loc='right', shadow=True, draggable=True)
         else:
@@ -226,11 +231,8 @@ class ClusterCentroid (Cluster):
 
             self._plot_line1_t1.set(position_3d=(centroid[0], centroid[1], centroid[2]))
             self._plot_line1_t2.set(position_3d=(xlim[0], centroid[1], centroid[2]), ha=t2_ha)
-            # self._plot_line1_t3.set(position_3d=(xlim[1], centroid[1], centroid[2]), ha=t3_ha)
-            self._plot_line1_t4.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=t4_ha)
-            # self._plot_line1_t5.set(position_3d=(centroid[0], ylim[1], centroid[2]), ha=t5_ha)
-            self._plot_line1_t6.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=t6_va)
-            # self._plot_line1_t7.set(position_3d=(centroid[0], centroid[1], zlim[1]), va=t7_va)
+            self._plot_line2_t1.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=t4_ha)
+            self._plot_line3_t1.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=t6_va)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -241,28 +243,55 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
-        if self._plot_line1 is not None: self._plot_line1.remove()
-        if self._plot_line2 is not None: self._plot_line2.remove()
-        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
-        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
-        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
-        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
-        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
+        if self._plot_line1 is None: return
+
+        self._plot_line1.remove()
+        self._plot_line1 = None
+
+        self._plot_line1_t1.remove()
+        self._plot_line_t1 = None
+        
+        self._plot_line1_t2.remove()
+        self._plot_line1_t2 = None
+
+        self._plot_line1_t3.remove()
+        self._plot_line1_t3 = None
+
+        self._plot_line2.remove()
+        self._plot_line2 = None
+
+        self._plot_line2_t1.remove()
+        self._plot_line2_t1 = None
+
+        self._plot_line2_t2.remove()
+        self._plot_line2_t2 = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_3d(self):
-        if self._plot_line1 is not None: self._plot_line1.remove()
-        if self._plot_line2 is not None: self._plot_line2.remove()
-        if self._plot_line3 is not None: self._plot_line3.remove()
-        if self._plot_line1_t1 is not None: self._plot_line1_t1.remove()
-        if self._plot_line1_t2 is not None: self._plot_line1_t2.remove()
-        if self._plot_line1_t3 is not None: self._plot_line1_t3.remove()
-        if self._plot_line1_t4 is not None: self._plot_line1_t4.remove()
-        if self._plot_line1_t5 is not None: self._plot_line1_t5.remove()
-        if self._plot_line1_t6 is not None: self._plot_line1_t6.remove()
-        if self._plot_line1_t7 is not None: self._plot_line1_t7.remove()
-    
+        if self._plot_line1 is None: return
+        
+        self._plot_line1.remove()
+        self._plot_line1 = None
+
+        self._plot_line1_t1.remove()
+        self._plot_line1_t1 = None
+
+        self._plot_line1_t2.remove()
+        self._plot_line1_t2 = None
+
+        self._plot_line2.remove()
+        self._plot_line2 = None
+
+        self._plot_line2_t1.remove()
+        self._plot_line2_t1 = None
+
+        self._plot_line3.remove()
+        self._plot_line3 = None
+
+        self._plot_line3_t1.remove()
+        self._plot_line3_t1 = None
+  
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self):
@@ -271,5 +300,5 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer: Normalizer):
-        self._centroid.set_values( p_normalizer.renormalize( self._centroid.get_values() ) )
+        self._centroid.renormalize( p_normalizer=p_normalizer)
 
