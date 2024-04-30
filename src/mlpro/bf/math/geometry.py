@@ -9,10 +9,11 @@
 ## -- 2023-12-28  1.0.0     DA       Finalized class Point
 ## -- 2024-02-23  1.1.0     DA       Class Point: implementation of methods _renmove_plot*
 ## -- 2024-04-29  1.2.0     DA       Class Point: replaced parent Element by Properties
+## -- 2024-04-30  1.3.0     DA       Class Point: re-normalization added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-29)
+Ver. 1.3.0 (2024-04-30)
 
 This module provides class for geometric objects like points, etc.
 
@@ -22,6 +23,7 @@ This module provides class for geometric objects like points, etc.
 from mlpro.bf.data import Properties
 from mlpro.bf.plot import *
 from mlpro.bf.math import *
+from mlpro.bf.math.normalizers import Normalizer, Renormalizable
 from datetime import datetime
 from typing import Union
 
@@ -30,7 +32,7 @@ from typing import Union
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Point (Properties, Plottable):
+class Point (Properties, Plottable, Renormalizable):
     """
     Implementation of a point in a hyper space. Properties like the current position, velocity and
     acceleration are managed.
@@ -48,7 +50,7 @@ class Point (Properties, Plottable):
     def __init__( self, p_visualize : bool = False ):
 
         Properties.__init__( self )
-        self._property_pos = self.define_property( p_property = 'Position', p_derivative_order_max = 2)
+        self._property_pos = self.define_property( p_property = self.C_PROPERTY_POS, p_derivative_order_max = 2  )
 
         self._plot_pos = None
         self._plot_vel = None
@@ -238,3 +240,11 @@ class Point (Properties, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self):
         pass        
+
+
+## -------------------------------------------------------------------------------------------------
+    def renormalize(self, p_normalizer: Normalizer):
+        self._property_pos.value = p_normalizer.renormalize( p_data=self._property_pos.value )
+
+        # 2024-04-30/DA Renormalization of derivates currently not implemented...
+
