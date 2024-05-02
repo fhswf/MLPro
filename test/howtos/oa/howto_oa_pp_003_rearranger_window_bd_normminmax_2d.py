@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.examples
 ## -- Module  : howto_oa_pp_003_rearranger_window_bd_normminmax_2d.py
 ## -------------------------------------------------------------------------------------------------
