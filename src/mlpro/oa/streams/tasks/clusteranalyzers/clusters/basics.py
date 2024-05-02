@@ -29,10 +29,11 @@
 ## -- 2024-04-22  0.9.0     DA/SK    Class Cluster: general systematics for properties
 ## -- 2024-04-28  1.0.0     DA       Class Cluster: new parent class Properties
 ## -- 2024-04-30  1.1.0     DA       Class Cluster: new parent class Renormalizable
+## -- 2024-05-02  1.2.0     DA/SK    Class Cluster: first definition of concrete properties
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-30)
+Ver. 1.2.0 (2024-05-02)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 """
@@ -74,6 +75,11 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
 
     C_CLUSTER_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
 
+    C_PROPERTIES            = [ [ 'Size', 2 ],
+                                [ 'Weight', 2],
+                                [ 'Age', 2 ],
+                                [ 'Density', 2 ] ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id = None,
@@ -85,6 +91,9 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
         Id.__init__( self, p_id = p_id )
         Plottable.__init__( self, p_visualize = p_visualize )
         Properties.__init__( self )
+
+        for p in self.C_PROPERTIES:
+            self.define_property( p_property=p[0], p_derivative_order_max=p[1] )
 
 
 ## -------------------------------------------------------------------------------------------------
