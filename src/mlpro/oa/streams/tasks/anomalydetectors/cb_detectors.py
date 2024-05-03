@@ -57,9 +57,19 @@ class AnomalyDetectorCB(AnomalyDetector):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        self._centroids = []
         self._clusterer = p_clusterer
+        self._cluster_ids = []
         self._num_clusters = 0
+        self._ref_centroids = {}
+        self._centroids = {}
+        self._ref_spacial_sizes = {}
+        self._spacial_sizes = {}
+        self._ref_velocities = {}
+        self._velocities = {}
+        self._ref_weights = {}
+        self._weights = {}
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -73,13 +83,14 @@ class AnomalyDetectorCB(AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
 class ClusterSizeChangeDetector(AnomalyDetectorCB):
     """
-    This is the class for detecting change of size of clusters.
+    This is the class for detecting change of spatial size of clusters.
 
     """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
+                 p_threshold : float = None,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -96,83 +107,45 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                          p_visualize = p_visualize,
                          p_logging = p_logging,
                          **p_kwargs)
+        
+        self._threshold = p_threshold
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, center: float, centroids: list):
+
         inst = p_inst_new[-1].get_feature_data()
-        
-        self.centroids.append(centroids)
-        
-        distance = np.linalg.norm(p_inst_new - center)
-        if distance > self.threshold:
-            anomaly = p_inst_new
+        feature_values = inst.get_values()
 
-        if len(centroids) > 10:
-            self.centroids.pop(0)
-        
-        if len(self.centroids[-2]) != len(self.centroids[-1]):
-            anomaly = p_inst_new
-        differences = [abs(a - b) for a, b in zip(self.centroids[0], self.centroids[-1])]
-        if any(difference >= self.centroid_thre for difference in differences):
-            anomaly = p_inst_new
+        cluster_id = 1
 
-        if anomaly != None:
-            self.anomaly_counter += 1
-            event_obj = Anomaly(p_raising_object=self, p_kwargs=self.data_points[-1])
+        if cluster_id not in self._cluster_ids:
+            self._cluster_ids.append(cluster_id)
 
+        if cluster_id not in self._ref_centroids.keys():
+            self._ref_centroids[cluster_id] = self._clusterer.get_clusters()[cluster_id]
+            self._centroids[cluster_id] = self._ref_centroids[cluster_id]
+            center = self._centroids[cluster_id]
+            self._ref_spacial_sizes[cluster_id] =  np.linalg.norm(feature_values - center)
+            self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
 
-    def __init__(self, n_clusters=1):
-        self.n_clusters = n_clusters
-        self.cluster_centers = None
-        self.cluster_radii = None
-        self.prev_radius = None
-
-    def fit(self, data):
-        # Use k-means clustering to identify clusters
-        kmeans = KMeans(n_clusters=self.n_clusters, random_state=42)
-        kmeans.fit(data)
-        
-        # Store cluster centers and compute radii
-        self.cluster_centers = kmeans.cluster_centers_
-        self.cluster_radii = self._compute_cluster_radii(data, kmeans.labels_)
-        
-        # Compute initial cluster radius
-        self.prev_radius = np.max(self.cluster_radii)
-
-    def _compute_cluster_radii(self, data, labels):
-        radii = []
-        for i in range(self.n_clusters):
-            # Select data points belonging to the current cluster
-            cluster_points = data[labels == i]
-            # Compute distances from cluster center to all points in the cluster
-            distances = np.linalg.norm(cluster_points - self.cluster_centers[i], axis=1)
-            # Compute the radius of the cluster as the maximum distance
-            cluster_radius = np.max(distances)
-            radii.append(cluster_radius)
-        return radii
-
-    def detect_radius_change(self, new_data):
-        # Update cluster centers and radii with new data
-        self.cluster_centers = self._update_cluster_centers(new_data)
-        self.cluster_radii = self._compute_cluster_radii(new_data, self._predict_clusters(new_data))
-        
-        # Compute current maximum cluster radius
-        current_radius = np.max(self.cluster_radii)
-        
-        # Check for significant change in radius
-        radius_change = current_radius - self.prev_radius
-        self.prev_radius = current_radius  # Update previous radius
-        
-        return current_radius, radius_change
-
-    def _predict_clusters(self, data):
-        return KMeans(n_clusters=self.n_clusters, init=self.cluster_centers).fit_predict(data)
-
-    def _update_cluster_centers(self, new_data):
-        kmeans = KMeans(n_clusters=self.n_clusters, init=self.cluster_centers)
-        kmeans.fit(new_data)
-        return kmeans.cluster_centers_
+        else:
+            center = self._centroids[cluster_id]
+            distance = np.linalg.norm(feature_values - center)
+            if self._threshold != None:
+                if (distance-self._ref_spacial_sizes[cluster_id]) > self._threshold:
+                    self._ref_spacial_sizes[cluster_id] = distance
+                    self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
+                    event = ClusterEnlargement(p_instances=p_inst_new)
+                else:
+                    self._spacial_sizes[cluster_id] = distance
+            else:
+                if (distance-self._ref_spacial_sizes[cluster_id]) > self._ref_spacial_sizes[cluster_id]*0.05:
+                    self._ref_spacial_sizes[cluster_id] = distance
+                    self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
+                    event = ClusterEnlargement(p_instances=p_inst_new)
+                else:
+                    self._spacial_sizes[cluster_id] = distance
 
 
 
@@ -208,7 +181,25 @@ class ClusterVelocityChangeDetector(AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, center: float, centroids: list):
-        pass
+        # Fit the model with new data to update cluster centroids
+        self.model.partial_fit()
+        current_centroids = self.model.cluster_centers_
+
+        # Calculate the velocity of each cluster
+        velocities = np.linalg.norm(current_centroids - self.prev_centroids, axis=1)
+
+        # Update previous centroids for the next iteration
+        self.prev_centroids = current_centroids
+
+        # Check for significant changes in cluster velocities
+        mean_velocity = np.mean(velocities)
+        max_velocity = np.max(velocities)
+        velocity_threshold = 0.1  # Adjust this threshold as needed
+
+        if max_velocity > velocity_threshold:
+            return True, mean_velocity, max_velocity
+        else:
+            return False, mean_velocity, max_velocity
 
 
 
@@ -224,6 +215,7 @@ class ClusterWeightChangeDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
+                 p_scale : int = 1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -240,6 +232,8 @@ class ClusterWeightChangeDetector(AnomalyDetectorCB):
                          p_visualize = p_visualize,
                          p_logging = p_logging,
                          **p_kwargs)
+        
+        self._scale = p_scale
 
 
 ## -------------------------------------------------------------------------------------------------
