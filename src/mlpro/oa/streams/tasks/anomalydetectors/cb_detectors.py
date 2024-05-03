@@ -90,7 +90,10 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_threshold : float = None,
+                 p_threshold_upper_limit : float = None,
+                 p_threshold_lower_limit : float = None,
+                 p_threshold_detection : float = None,
+                 p_threshold_rate_of_change : float = None,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -108,7 +111,10 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        self._threshold = p_threshold
+        self._thresh_ul = p_threshold_upper_limit
+        self._thresh_ll = p_threshold_lower_limit
+        self._thresh_det = p_threshold_detection
+        self._thresh_roc = p_threshold_rate_of_change
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -201,6 +207,51 @@ class ClusterVelocityChangeDetector(AnomalyDetectorCB):
         else:
             return False, mean_velocity, max_velocity
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ClusterDensityChangeDetector(AnomalyDetectorCB):
+    """
+    This is the class for detecting change of density of clusters.
+
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_clusterer : ClusterAnalyzer = None,
+                 p_threshold_upper_limit : float = None,
+                 p_threshold_lower_limit : float = None,
+                 p_threshold_detection : float = None,
+                 p_threshold_rate_of_change : float = None,
+                 p_name:str = None,
+                 p_range_max = StreamTask.C_RANGE_THREAD,
+                 p_ada : bool = True,
+                 p_duplicate_data : bool = False,
+                 p_visualize : bool = False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+
+        super().__init__(p_clusterer = p_clusterer,
+                         p_name = p_name,
+                         p_range_max = p_range_max,
+                         p_ada = p_ada,
+                         p_duplicate_data = p_duplicate_data,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging,
+                         **p_kwargs)
+        
+        self._thresh_ul = p_threshold_upper_limit
+        self._thresh_ll = p_threshold_lower_limit
+        self._thresh_det = p_threshold_detection
+        self._thresh_roc = p_threshold_rate_of_change
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new: list, center: float, centroids: list):
+
+        pass
 
 
 
