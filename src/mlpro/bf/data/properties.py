@@ -8,10 +8,12 @@
 ## -- 2024-04-28  1.0.0     DA       Creation and first implemenation
 ## -- 2024-04-29  1.1.0     DA       - Method Properties.define_property: new return value
 ## --                                - Class Property: new property attribute dim
+## -- 2024-04-30  1.1.1     DA       Method Properties.set_property() converts non-scalar types to
+## --                                numpy arrays
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-29)
+Ver. 1.1.1 (2024-04-30)
 
 This module provides a systematics for numerical and textual properties to be added to a class. 
 
@@ -201,6 +203,8 @@ class Properties:
             Name of the property.
         p_value 
             Value of the property of any type (numeric, vectorial, textual, list, dict, ...).
+            In case of auto-derivation only lists, numpy arrays and scalar numbers are supported. Lists
+            are converted to numpy arrays.
         p_time_stamp : : Union[datetime, int, float]
             Optional time stamp of type datetime, int or float. If not provided, an internal continuous
             integer time stamp is generated.
@@ -221,9 +225,8 @@ class Properties:
                 prop.time_stamp = 0
 
 
+        # 2 Numeric derivation
         if prop.derivative_order_max > 0:
-
-            # 2 Generic derivation
 
             # 2.1 Computation of time delta
             if prop.time_stamp_old is not None:
@@ -242,7 +245,8 @@ class Properties:
             if np.isscalar(p_value):
                 prop.derivatives[0]  = p_value
             else:
-                prop.derivatives[0]  = np.array( p_value )
+                prop.value           = np.array( p_value )
+                prop.derivatives[0]  = prop.value
 
             for order in range(prop.derivative_order_max):
                 try:
