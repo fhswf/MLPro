@@ -26,15 +26,17 @@
 ## --                                the plot of a cluster before removal of the cluster itself
 ## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -- 2024-04-10  0.8.3     DA       Refactoring
+## -- 2024-05-04  0.9.0     DA       Introduction of cluster properties
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.3 (2024-04-10)
+Ver. 0.9.0 (2024-05-04)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
 from matplotlib.figure import Figure
+from mlpro.bf.data.properties import *
 from mlpro.bf.mt import PlotSettings
 from mlpro.bf.streams import Instance
 from mlpro.bf.various import *
@@ -47,12 +49,27 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
 
 
 
+# Typical cluster properties to be reused in your own cluster analyzers
+cprop_size : PropertyDefinition = ( 'size', 0, Property )
+cprop_age  : PropertyDefinition = ( 'age', 0, Property )
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class ClusterAnalyzer (OATask):
     """
     Base class for online cluster analysis. It raises an event when a cluster was added or removed.
 
+    Steps to implement a new algorithm are:
+    - Create a new class and inherit from this base class
+    - Specify all cluster properties provided/maintained by your algorithm in C_CLUSTER_PROPERTIES.
+    - Implement method self._adapt() to update your cluster list on new instances
+    - Implement method self._adapt_reverse() to update your cluster list on obsolete instances
+    - New cluster: hand over self._cluster_properties on instantiation
+
+    
     Parameters
     ----------
     p_cls_cluster 
@@ -82,6 +99,9 @@ class ClusterAnalyzer (OATask):
         Membership scope, that includes just clusters with membership values > 0
     C_MS_SCOPE_MAX : int = 2
         Membership scope, that includes just the cluster with the highest membership value.
+    C_CLUSTER_PROPERTIES : PropertyDefinitions
+        List of cluster properties supported/maintained by the algorithm. These properties 
+        are handed over to each new cluster.
     """
 
     C_TYPE                  = 'Cluster Analyzer'
@@ -97,9 +117,12 @@ class ClusterAnalyzer (OATask):
     C_MS_SCOPE_NONZERO :int = 1
     C_MS_SCOPE_MAX :int     = 2
 
+    # List of cluster properties supported/maintained by the algorithm
+    C_CLUSTER_PROPERTIES    = PropertyDefinitions
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_cls_cluster,
+                  p_cls_cluster : type = Cluster,
                   p_cluster_limit : int = 0,
                   p_name: str = None, 
                   p_range_max = OATask.C_RANGE_THREAD, 
@@ -120,6 +143,41 @@ class ClusterAnalyzer (OATask):
         self._cls_cluster   = p_cls_cluster
         self._clusters      = {}
         self._cluster_limit = p_cluster_limit
+
+        self._cluster_properties : PropertyDefinitions = self.C_CLUSTER_PROPERTIES.copy()
+        self._cluster_properties_dict = {}
+        for prop in self._cluster_properties:
+            self._cluster_properties_dict[prop[0]] = prop
+
+
+## -------------------------------------------------------------------------------------------------
+    def align_cluster_properties( self, p_properties : PropertyDefinitions ) -> list:
+        """
+        Aligns list of cluster properties with the given list. In particular, the maximum derivative
+        order of numeric properties is aligned. 
+
+        Parameters
+        ----------
+        p_properties : PropertyDefinitions
+            List of properties to be aligned with.
+
+        Returns
+        list
+            List of unknown properties.
+        """
+
+        unknown_properties = []
+
+        for p_ext in p_properties:
+            try:
+                p_int = self._cluster_properties_dict[p_ext[0]]
+                p_int[1] = p_ext[1]   # alignment of maximum order of derivatives
+                p_int[2] = p_ext[2]   # alignment of property class
+            except:
+                # Property not supported by cluster algorithm
+                unknown_properties.append(p_ext[0])
+
+        return unknown_properties
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -30,20 +30,22 @@
 ## -- 2024-04-28  1.0.0     DA       Class Cluster: new parent class Properties
 ## -- 2024-04-30  1.1.0     DA       Class Cluster: new parent class Renormalizable
 ## -- 2024-05-02  1.2.0     DA/SK    Class Cluster: first definition of concrete properties
+## -- 2024-05-04  1.3.0     DA       Class Cluster: generic property systematics
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-02)
+Ver. 1.3.0 (2024-05-04)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 """
 
 
 from mlpro.bf.various import *
-from mlpro.bf.data import Properties
+from mlpro.bf.data.properties import *
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
 from mlpro.bf.math.normalizers import Renormalizable
+
 
 
 
@@ -58,12 +60,10 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
     ----------
     p_id
         Optional external id.
+    p_properties : PropertyDefinitions
+        List of property definitions. 
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
-    p_color : string
-        Color of the cluster during visualization.
-    **p_kwargs
-        Further optional keyword arguments.
     """
 
     C_PLOT_ACTIVE           = True
@@ -75,25 +75,18 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
 
     C_CLUSTER_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
 
-    C_PROPERTIES            = [ [ 'Size', 2 ],
-                                [ 'Weight', 2],
-                                [ 'Age', 2 ],
-                                [ 'Density', 2 ] ]
-
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id = None,
-                  p_visualize : bool = False,
-                  p_color = 'red',
-                  **p_kwargs ):
+                  p_properties : PropertyDefinitions = [],
+                  p_visualize : bool = False ):
 
-        self._kwargs = p_kwargs.copy()
         Id.__init__( self, p_id = p_id )
         Plottable.__init__( self, p_visualize = p_visualize )
         Properties.__init__( self )
 
-        for p in self.C_PROPERTIES:
-            self.define_property( p_property=p[0], p_derivative_order_max=p[1] )
+        for p in p_properties:
+            self.define_property( p_name=p[0], p_derivative_order_max=p[1], p_cls=p[2] )
 
 
 ## -------------------------------------------------------------------------------------------------

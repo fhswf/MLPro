@@ -10,10 +10,11 @@
 ## --                                - Class Property: new property attribute dim
 ## -- 2024-04-30  1.1.1     DA       Method Properties.set_property() converts non-scalar types to
 ## --                                numpy arrays
+## -- 2024-05-04  1.2.0     DA       Introduction of type aliases
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-04-30)
+Ver. 1.2.0 (2024-05-04)
 
 This module provides a systematics for numerical and textual properties to be added to a class. 
 
@@ -21,9 +22,19 @@ This module provides a systematics for numerical and textual properties to be ad
 
 
 # from mlpro.bf.various import *
-from typing import Union
+from typing import List, Union, Tuple, Dict
 from datetime import datetime
 import numpy as np
+
+
+
+# Type aliases for property definitions
+PropertyName        = str
+DerivativeOrderMax  = int
+PropertyClass       = type
+
+PropertyDefinition  = Tuple[ PropertyName, DerivativeOrderMax, PropertyClass ]
+PropertyDefinitions = List[ PropertyDefinition ]
 
 
 
@@ -36,7 +47,7 @@ class Property:
 
     Parameters
     ----------
-    p_derivative_order_max : int
+    p_derivative_order_max : DerivativeOrderMax
         Maximum order of auto-generated derivatives (numeric properties only).
 
     Atttributes
@@ -45,24 +56,24 @@ class Property:
         Current value of the property.
     time_stamp : Union[datetime, float, int]
         Time stamp of the last value update.
-    time_stamp_old : Union[datetime, float, int]
-        Time stamp of the previous value update.
-    derivative_order_max : int
-        Maximum order of auto-generated derivatives (numeric properties only).
+    derivative_order_max : DerivativeOrderMax
+        Maximum order of auto-generated derivatives (numeric properties only). 
     derivatives : dict
         Current derivatives, stored by order (numeric properties only).
-    derivatives_old : dict
-        Previous derivatives, stored by order (numeric properties only).
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_derivative_order_max : int = 0):
+    def __init__(self, p_derivative_order_max : DerivativeOrderMax = 0):
+
+        # Public attributes
         self.value                  = None
-        self.time_stamp_old         = None
         self.time_stamp             = None
         self.derivative_order_max   = p_derivative_order_max
-        self.derivatives_old        = {}
         self.derivatives            = {}
+
+        # Protected attributes
+        self._time_stamp_old        = None
+        self._derivatives_old       = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -100,33 +111,30 @@ class Properties:
     defining properties of any type. Values can be set at a well-defined implicite or explicite 
     time point. Numeric (scalar or vectorial) properties can be derived automatically up to a pre-
     defined order.
-
-    Parameters
-    ----------
-    p_property_cls = Property
-        Property class to be used internally to manage properties. Default = Property.
-
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, p_property_cls = Property ):
-
-        self._property_cls  = p_property_cls
+    def __init__( self ):
         self._properties    = {}
                   
 
 ## -------------------------------------------------------------------------------------------------
-    def define_property(self, p_property : str, p_derivative_order_max : int = 0 ) -> Property:
+    def define_property( self, 
+                         p_name : str, 
+                         p_derivative_order_max : DerivativeOrderMax = 0, 
+                         p_cls : PropertyClass = Property ) -> Property:
         """
         Defines a new property by it's name. Optionally, auto-derivation can be added for numeric
         properties (scalar or vectorial).
 
         Parameters
         ----------
-        p_property : str
+        p_name : str
             Name of the property.
-        p_derivative_order_max : int
+        p_derivative_order_max : DerivativeOrderMax
             Maximum order of auto-generated derivatives. Default = 0 (no derivative).
+        p_cls : PropertyClass
+            Optional property class to be used. Default = Property.
 
         Returns
         -------
@@ -134,14 +142,14 @@ class Properties:
             New property object.
         """
 
-        prop_obj = self._property_cls( p_derivative_order_max = p_derivative_order_max )
-        self._properties[p_property] = prop_obj
+        prop_obj = p_cls( p_derivative_order_max = p_derivative_order_max )
+        self._properties[p_name] = prop_obj
 
         return prop_obj
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_property(self, p_property : str) -> Property:
+    def get_property(self, p_name : PropertyName) -> Property:
         """
         Returns the property object stored under it's textual name.
 
@@ -156,17 +164,17 @@ class Properties:
             Property object.
         """
 
-        return self._properties[p_property]
+        return self._properties[p_name]
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_property_value(self, p_property : str):
+    def get_property_value(self, p_name : PropertyName):
         """
         Returns the current value of a property.
 
         Parameters
         ----------
-        p_property : str
+        p_name : str
             Name of the property.
 
         Returns
@@ -175,7 +183,7 @@ class Properties:
             Current value of the property.
         """
         
-        return self._properties[p_property].value
+        return self._properties[p_name].value
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -193,13 +201,13 @@ class Properties:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_property(self, p_property : str, p_value, p_time_stamp : Union[datetime, int, float] = None):
+    def set_property(self, p_name : PropertyName, p_value, p_time_stamp : Union[datetime, int, float] = None):
         """
         Sets the value of a property at a given time point.
 
         Parameters:
         -----------
-        p_property : str
+        p_name : PropertyName
             Name of the property.
         p_value 
             Value of the property of any type (numeric, vectorial, textual, list, dict, ...).
@@ -212,7 +220,7 @@ class Properties:
         """
     
         # 0 Get stored property object
-        prop                = self._properties[p_property]
+        prop : Property     = self._properties[p_name]
         prop.time_stamp     = p_time_stamp
         prop.value          = p_value
 
@@ -220,7 +228,7 @@ class Properties:
         # 1 Preparation of time stamp
         if p_time_stamp is None:
             try:
-                prop.time_stamp = prop.time_stamp_old + 1
+                prop.time_stamp = prop._time_stamp_old + 1
             except:
                 prop.time_stamp = 0
 
@@ -229,9 +237,9 @@ class Properties:
         if prop.derivative_order_max > 0:
 
             # 2.1 Computation of time delta
-            if prop.time_stamp_old is not None:
+            if prop._time_stamp_old is not None:
 
-                delta_t = prop.time_stamp - prop.time_stamp_old
+                delta_t = prop.time_stamp - prop._time_stamp_old
             
                 try: 
                     delta_t = delta_t.total_seconds()
@@ -240,7 +248,7 @@ class Properties:
 
             
             # 2.2 Derivation
-            prop.derivatives_old = prop.derivatives
+            prop._derivatives_old = prop.derivatives
             prop.derivatives     = {}
             if np.isscalar(p_value):
                 prop.derivatives[0]  = p_value
@@ -250,10 +258,10 @@ class Properties:
 
             for order in range(prop.derivative_order_max):
                 try:
-                    prop.derivatives[order+1] = ( prop.derivatives[order] - prop.derivatives_old[order] ) / delta_t
+                    prop.derivatives[order+1] = ( prop.derivatives[order] - prop._derivatives_old[order] ) / delta_t
                 except:
                     break
 
 
         # 3 Outro
-        prop.time_stamp_old  = prop.time_stamp
+        prop._time_stamp_old  = prop.time_stamp

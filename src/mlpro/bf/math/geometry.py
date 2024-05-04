@@ -50,7 +50,7 @@ class Point (Properties, Plottable, Renormalizable):
     def __init__( self, p_visualize : bool = False ):
 
         Properties.__init__( self )
-        self._property_pos = self.define_property( p_property = self.C_PROPERTY_POS, p_derivative_order_max = 2  )
+        self._property_pos = self.define_property( p_name = self.C_PROPERTY_POS, p_derivative_order_max = 2  )
 
         self._plot_pos = None
         self._plot_vel = None
@@ -125,7 +125,7 @@ class Point (Properties, Plottable, Renormalizable):
         # 1 Update point data (position, velocity, acceleration)
         if self._property_pos.value is None:
             # 1.1 First call prepares the visualization
-            self.set_property( p_property=self.C_PROPERTY_POS, p_value=p_pos, p_time_stamp=p_time_stamp )
+            self.set_property( p_name=self.C_PROPERTY_POS, p_value=p_pos, p_time_stamp=p_time_stamp )
 
             if ( self.get_visualization() ) and ( self._plot_settings is None ):
                 if self._property_pos.dim == 2:
@@ -139,7 +139,7 @@ class Point (Properties, Plottable, Renormalizable):
 
         else:
             # 1.2 Subsequent calls just update the point data
-            self.set_property( p_property=self.C_PROPERTY_POS, p_value=p_pos, p_time_stamp=p_time_stamp )
+            self.set_property( p_name=self.C_PROPERTY_POS, p_value=p_pos, p_time_stamp=p_time_stamp )
 
         # 2 Update plot
         self.update_plot()
