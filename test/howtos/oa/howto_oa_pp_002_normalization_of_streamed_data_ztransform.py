@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.examples
 ## -- Module  : howto_oa_pp_002_normalization_of_streamed_data_ztransform.py
 ## -------------------------------------------------------------------------------------------------
