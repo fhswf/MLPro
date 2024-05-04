@@ -1,15 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.examples
 ## -- Module  : howto_oa_pp_009_parallel_tasks.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-07-27  1.0.0     LSB      Creation/Release
+## -- 2024-05-02  1.1.0     DA       Review/minor adjustments
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-07-28)
+Ver. 1.1.0 (2024-05-02)
 
 This howto shows an example of howto add parallel tasks to an Online Adaptive stream workflow
 
@@ -46,7 +47,7 @@ class MyScenario (OAScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'Demo Deriver'
+    C_NAME      = 'Demo Parallel Pre-Processing'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
@@ -56,7 +57,7 @@ class MyScenario (OAScenario):
         stream = provider_mlpro.get_stream('DoubleSpiral2D', p_mode=p_mode, p_logging=p_logging)
 
         # 2 Set up a stream workflow 
-        workflow = OAWorkflow( p_name='wf1', 
+        workflow = OAWorkflow( p_name='Complex Preprocessing', 
                                p_range_max=Task.C_RANGE_NONE, 
                                p_ada=p_ada,
                                p_visualize=p_visualize,
@@ -66,7 +67,7 @@ class MyScenario (OAScenario):
         features = stream.get_feature_space().get_dims()
         features_new = [ ( 'F', features[0:1] ) ]
 
-        task_rearranger = Rearranger( p_name='t1',
+        task_rearranger = Rearranger( p_name='#1: Rearranger',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
@@ -78,7 +79,7 @@ class MyScenario (OAScenario):
         features = task_rearranger._feature_space.get_dims()
         derived_feature = features[0]
 
-        task_deriver_1 = Deriver( p_name='t2',
+        task_deriver_1 = Deriver( p_name='#2: Deriver #1',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
@@ -94,7 +95,7 @@ class MyScenario (OAScenario):
         features = task_deriver_1._feature_space.get_dims()
         derived_feature = features[0]
         
-        task_deriver_2 = Deriver( p_name='t3',
+        task_deriver_2 = Deriver( p_name='#3: Deriver #2',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
@@ -107,8 +108,8 @@ class MyScenario (OAScenario):
         workflow.add_task( p_task=task_deriver_2, p_pred_tasks=[task_rearranger, task_deriver_1] )
 
         # 2.4 Set up and add a window task
-        task_window = Window( p_buffer_size=30,
-                              p_name = 't1',
+        task_window = Window( p_buffer_size=100,
+                              p_name = '#4: Sliding Window',
                               p_delay = True,
                               p_visualize = p_visualize,
                               p_enable_statistics = True,
@@ -117,15 +118,23 @@ class MyScenario (OAScenario):
 
 
         # 2.5 Setup Boundary detector
-        task_bd = BoundaryDetector( p_name='t4', 
+        task_bd = BoundaryDetector( p_name='#5: Boundary Detector', 
                                     p_ada=True, 
                                     p_visualize=True,   
                                     p_logging=p_logging )
 
         workflow.add_task( p_task = task_bd, p_pred_tasks=[task_window])
 
-        # 2.6 Setup MinMax-Normalizer
-        task_norm_minmax = NormalizerMinMax( p_name='t5', 
+        # 2.6 Setup Z Trasnform-Normalizer in Parallel
+        task_norm_ztrans = NormalizerZTransform(p_name='#6: Normalizer Z-Trans',
+                                         p_ada=p_ada,
+                                         p_visualize=p_visualize,
+                                         p_logging=p_logging)
+        
+        workflow.add_task(p_task=task_norm_ztrans, p_pred_tasks=[task_window])
+
+        # 2.7 Setup MinMax-Normalizer
+        task_norm_minmax = NormalizerMinMax( p_name='#7: Normalizer MinMax', 
                                              p_ada=True, 
                                              p_visualize=p_visualize, 
                                              p_logging=p_logging )
@@ -134,12 +143,6 @@ class MyScenario (OAScenario):
 
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
-        # 2.6 Setup Z Trasnform-Normalizer in Parallel
-        task_norm_ztrans = NormalizerZTransform(p_name='Demo ZTrans Normalizer',
-                                         p_ada=p_ada,
-                                         p_visualize=p_visualize,
-                                         p_logging=p_logging)
-        workflow.add_task(p_task=task_norm_ztrans, p_pred_tasks=[task_bd])
 
         # 3 Return stream and workflow
         return stream, workflow
@@ -150,7 +153,7 @@ class MyScenario (OAScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 800
+    cycle_limit = 500
     logging     = Log.C_LOG_ALL
     visualize   = True
   
