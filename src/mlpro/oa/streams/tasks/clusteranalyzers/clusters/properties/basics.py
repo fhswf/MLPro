@@ -5,27 +5,23 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-05-04  0.1.0     DA       Creation
+## -- 2024-05-05  0.1.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-05-04)
+Ver. 0.1.0 (2024-05-05)
 
-This module provides ...
+This module provides typical cluster properties to be reused in own cluster analyzers.
 """
 
-from mlpro.bf.data.properties import *
-from mlpro.bf.plot import Plottable
-from mlpro.bf.math.normalizers import Renormalizable
+
+from mlpro.bf.math.properties import PropertyDefinition, Property
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import Centroid
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ClusterProperty (Property, Plottable, Renormalizable):
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_derivative_order_max: DerivativeOrderMax = 0, p_visualize : bool = False ):
-        Property.__init__(self, p_derivative_order_max = p_derivative_order_max)
-        Plottable.__init__(self, p_visualize=p_visualize)
+# Typical cluster properties to be reused in your own cluster analyzers
+cprop_size      : PropertyDefinition = ( 'size', 0, Property )
+cprop_age       : PropertyDefinition = ( 'age', 0, Property )
+cprop_centroid  : PropertyDefinition = ( 'centroid', 2, Centroid )
 

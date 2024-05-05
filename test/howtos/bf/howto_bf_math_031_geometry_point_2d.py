@@ -1,19 +1,20 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_math_021_geometry_point_3d.py
+## -- Module  : howto_bf_math_020_geometry_point_2d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-06  1.0.0     DA       Creation
 ## -- 2023-09-25  1.0.1     DA       Bugfix
 ## -- 2024-04-29  1.1.0     DA       Refactoring
+## -- 2024-05-05  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-29)
+Ver. 1.2.0 (2024-05-05)
 
-This module demonstrates the functionality of class bf.math.geometry.Point in a 3D plot.
+This module demonstrates the functionality of class bf.math.geometry.Point in a 2D plot.
 
 You will learn:
 
@@ -27,6 +28,7 @@ You will learn:
 
 
 from mlpro.bf.various import Log
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.geometry import Point
 from datetime import datetime, timedelta
 import numpy as np
@@ -63,8 +65,11 @@ my_log.switch_logging(p_logging=logging)
 # 3 Instantiate a Point object
 time_stamp = datetime.now()
 time_step  = timedelta(0,1,0)
-my_point   = Point( p_visualize = visualize )
-pos        = np.zeros(3)
+my_point   = Point( p_derivative_order_max=2, p_visualize=visualize )
+pos        = np.zeros(2)
+
+if __name__ == '__main__':
+    my_point.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_2D))
 
 
 
@@ -81,10 +86,15 @@ for i in range(200):
 
     pos[0] = cos( angle * pi / 180 )
     pos[1] = sin( angle * pi / 180 )
-    my_point.set_position( p_pos = pos, p_time_stamp = time_stamp )
-    vel = my_point.get_velocity()
-    acc = my_point.get_acceleration()
-    my_log.log(Log.C_LOG_TYPE_S, 'pos :', pos, ', vel :', vel, ', acc :', acc)
+    my_point.set( p_value = pos, p_time_stamp = time_stamp )
+
+    try:
+        vel = my_point.derivatives[1]
+        acc = my_point.derivatives[2]
+        my_log.log(Log.C_LOG_TYPE_S, 'pos :', pos, ', vel :', vel, ', acc :', acc)
+    except:
+        pass
+
     time_stamp += time_step
 
     if visualize: sleep(0.05)

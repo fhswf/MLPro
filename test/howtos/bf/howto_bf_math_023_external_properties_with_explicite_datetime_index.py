@@ -1,22 +1,24 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.bf.data
-## -- Module  : howto_bf_data_011_properties_with_implicite_time_index.py
+## -- Package : mlpro.bf.math
+## -- Module  : howto_bf_math_023_properties_with_explicite_datetime_index.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-04-28  1.0.0     DA       Creation
+## -- 2024-05-05  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-04-28)
+Ver. 1.1.0 (2024-05-05)
 
 This module demonstrates and validates the reuse of class mlpro.bf.data.Properties in own classes.
 Properties are basically pairs of names and values at a well-defined time point. Additionally,
 derivatives according to time are numerically approximated. The maximum order of derivation can
 be defined individually for each property.
 
-In this example, implicite integer pseudo time stamps are used.
+In this example, properties are added from outside to a custom class. Furthermore, explicite  
+real time stamps are used.
 
 You will learn:
 
@@ -29,7 +31,8 @@ You will learn:
 """
 
 
-from mlpro.bf.data import Properties
+from mlpro.bf.math.properties import Properties
+from datetime import datetime, timedelta
 
 
 
@@ -59,54 +62,57 @@ class MyDemo (Properties):
 # 2 Instantiate an object from your class and define some properties
 myobj = MyDemo()
 
-# 2.1 Numerical property 'Position' with auto-derivation of a maximum order 2
-myobj.define_property('Position', 2)
+# 2.1 Numerical property 'position' with auto-derivation of a maximum order 2
+myobj.add_property('position', 2)
 
-# 2.2 Numerical property 'Temperature' with auto-derivation of a maximum order 1
-myobj.define_property('Temperature', 1)
+# 2.2 Numerical property 'temperature' with auto-derivation of a maximum order 1
+myobj.add_property('temperature', 1)
 
-# 2.3 Textual property 'Color'
-myobj.define_property('Color')
+# 2.3 Textual property 'color'
+myobj.add_property('color')
 
 
 
 # 3 Timepoint 1: Let's set initial values
+tp = datetime.now()
 
-# 3.1 A 3-dimensional tuple for property 'Position'...
-myobj.set_property('Position', [1,2,3])
+# 3.1 A 3-dimensional tuple for property 'position'...
+myobj.position.set([1,2,3], tp)
 
-# 3.2 A scalar value for property 'Temperature'
-myobj.set_property('Temperature', 20)
+# 3.2 A scalar value for property 'temperature'
+myobj.temperature.set(20, tp)
 
-# 3.3 A string value for property 'Color'
-myobj.set_property('Color', 'red')
+# 3.3 A string value for property 'color'
+myobj.color.set('red', tp)
 
 myobj.print_properties()
 
 
 
 # 4 Now let's auto-derive
+tp += timedelta(seconds=2)
 
 # 4.1 New values
-myobj.set_property('Position', [2,4,3])
-myobj.set_property('Temperature', 22.5)
-myobj.set_property('Color', 'yellow')
+myobj.position.set([2,4,3], tp)
+myobj.temperature.set(22.5, tp)
+myobj.color.set('yellow', tp)
 
 myobj.print_properties()
 
 
 
 # 5 Now let's auto-derive once again
+tp += timedelta(seconds=2)
 
 # 5.1 New values
-myobj.set_property('Position', [7,3,-3])
-myobj.set_property('Temperature', 27)
-myobj.set_property('Color', 'green')
+myobj.position.set([7,3,-3], tp)
+myobj.temperature.set(27, tp)
+myobj.color.set('green', tp)
 
 myobj.print_properties()
 
 
 
 # 6 Last but not least: the dimensionality of our properties
-for prop in myobj.get_properties().keys():
-    print('Dimensionality of "' + prop + '":', myobj.get_property(prop).dim)
+for prop_name, prop in myobj.get_properties().items():
+    print('Dimensionality of "' + prop_name + '":', prop.dim)    

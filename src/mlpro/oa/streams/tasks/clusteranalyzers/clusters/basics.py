@@ -41,7 +41,7 @@ This module provides templates for clusters to be used in cluster analyzer algor
 
 
 from mlpro.bf.various import *
-from mlpro.bf.data.properties import *
+from mlpro.bf.math.properties import *
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
 from mlpro.bf.math.normalizers import Renormalizable
@@ -54,7 +54,7 @@ from mlpro.bf.math.normalizers import Renormalizable
 ## -------------------------------------------------------------------------------------------------
 class Cluster (Id, Plottable, Properties, Renormalizable):
     """
-    Base class for a cluster. 
+    Universal template class for a cluster with any number of properties added by a cluster analyzer. 
 
     Parameters
     ----------
@@ -86,7 +86,7 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
         Properties.__init__( self )
 
         for p in p_properties:
-            self.define_property( p_name=p[0], p_derivative_order_max=p[1], p_cls=p[2] )
+            self.add_property( p_name=p[0], p_derivative_order_max=p[1], p_cls=p[2] )
 
 
 ## -------------------------------------------------------------------------------------------------

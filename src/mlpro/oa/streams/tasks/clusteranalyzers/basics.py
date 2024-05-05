@@ -36,22 +36,15 @@ This module provides templates for cluster analysis to be used in the context of
 """
 
 from matplotlib.figure import Figure
-from mlpro.bf.data.properties import *
+from mlpro.bf.math.properties import *
 from mlpro.bf.mt import PlotSettings
 from mlpro.bf.streams import Instance
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.oa.streams import OATask
 from mlpro.bf.math.normalizers import Normalizer
-from typing import List, Tuple
-
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
-
-
-
-# Typical cluster properties to be reused in your own cluster analyzers
-cprop_size : PropertyDefinition = ( 'size', 0, Property )
-cprop_age  : PropertyDefinition = ( 'age', 0, Property )
+from typing import List, Tuple
 
 
 
@@ -68,7 +61,6 @@ class ClusterAnalyzer (OATask):
     - Implement method self._adapt() to update your cluster list on new instances
     - Implement method self._adapt_reverse() to update your cluster list on obsolete instances
     - New cluster: hand over self._cluster_properties on instantiation
-
     
     Parameters
     ----------
@@ -118,7 +110,7 @@ class ClusterAnalyzer (OATask):
     C_MS_SCOPE_MAX :int     = 2
 
     # List of cluster properties supported/maintained by the algorithm
-    C_CLUSTER_PROPERTIES    = PropertyDefinitions
+    C_CLUSTER_PROPERTIES : PropertyDefinitions = []
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
