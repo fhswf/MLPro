@@ -79,7 +79,7 @@ class ClusterCentroid (Cluster):
     def __init__(self, p_id=None, p_properties: List[Tuple[str, int, type]] = ..., p_visualize: bool = False):
         super().__init__( p_id=p_id, p_properties=p_properties, p_visualize=p_visualize )
 
-        self.add_properties( cprop_centroid )
+        self.add_properties( [ cprop_centroid ] )
         self._centroid_elem : Element = None
 
 

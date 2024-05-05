@@ -239,7 +239,7 @@ class Properties:
 
         prop_obj = p_cls( p_derivative_order_max = p_derivative_order_max )
         self._properties[p_name] = prop_obj
-        setattr(self, p_name, prop_obj )
+        setattr(self.__class__, p_name, prop_obj )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ class Properties:
 ## -------------------------------------------------------------------------------------------------
     def get_properties(self):
         """
-        Returns the dictionary of currently stored propery object.
+        Returns the dictionary of currently stored propery objects.
 
         Returns
         -------
