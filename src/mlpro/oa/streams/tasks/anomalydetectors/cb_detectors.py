@@ -81,7 +81,7 @@ class AnomalyDetectorCB(AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ClusterSizeChangeDetector(AnomalyDetectorCB):
+class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
     """
     This is the class for detecting change of spatial size of clusters.
 
@@ -257,7 +257,46 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ClusterWeightChangeDetector(AnomalyDetectorCB):
+class ClusterSizeChangeDetector(AnomalyDetectorCB):
+    """
+    This is the class for detecting change in weight of clusters.
+
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_clusterer : ClusterAnalyzer = None,
+                 p_scale : int = 1,
+                 p_name:str = None,
+                 p_range_max = StreamTask.C_RANGE_THREAD,
+                 p_ada : bool = True,
+                 p_duplicate_data : bool = False,
+                 p_visualize : bool = False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+
+        super().__init__(p_clusterer = p_clusterer,
+                         p_name = p_name,
+                         p_range_max = p_range_max,
+                         p_ada = p_ada,
+                         p_duplicate_data = p_duplicate_data,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging,
+                         **p_kwargs)
+        
+        self._scale = p_scale
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new: list, center: float, centroids: list):
+        pass
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ClusterRelativeSizeChangeDetector(AnomalyDetectorCB):
     """
     This is the class for detecting change in weight of clusters.
 
