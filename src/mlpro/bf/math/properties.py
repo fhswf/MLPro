@@ -160,10 +160,6 @@ class Property (Plottable, Renormalizable):
                     break
 
 
-        # 4 Update the plotting
-        self.update_plot()
-
-
 ## -------------------------------------------------------------------------------------------------
     def _get_dim(self) -> int:
         """
@@ -242,7 +238,8 @@ class Properties:
 
         prop_obj = p_cls( p_derivative_order_max = p_derivative_order_max, p_visualize = p_visualize )
         self._properties[p_name] = prop_obj
-        setattr(self.__class__, p_name, prop_obj )
+        setattr(self, p_name, prop_obj )
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------

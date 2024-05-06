@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.math
 ## -- Module  : geometry.py
 ## -------------------------------------------------------------------------------------------------
@@ -10,7 +10,7 @@
 ## -- 2024-02-23  1.1.0     DA       Class Point: implementation of methods _renmove_plot*
 ## -- 2024-04-29  1.2.0     DA       Class Point: replaced parent Element by Properties
 ## -- 2024-04-30  1.3.0     DA       Class Point: re-normalization added
-## -- 2024-05-05  1.4.0     DA       Class Point: refactoring
+## -- 2024-05-06  1.4.0     DA       Class Point: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -79,12 +79,20 @@ class Point (Property):
                 return
 
             if point_vel is not None:
-                self._plot_vel  = p_settings.axes.quiver( np.array([point_pos[0]]), 
-                                                          np.array([point_pos[1]]),
-                                                          np.array([point_vel[0]]),
-                                                          np.array([point_vel[1]]),
-                                                          scale = 1,
-                                                          color='red' )
+                self._plot_vel  = p_settings.axes.arrow( point_pos[0], 
+                                                         point_pos[1], 
+                                                         point_vel[0], 
+                                                         point_vel[1],
+                                                         color='red' )
+                                                          
+                # self._plot_vel  = p_settings.axes.quiver( np.array([point_pos[0]]), 
+                #                                           np.array([point_pos[1]]),
+                #                                           np.array([point_vel[0]]),
+                #                                           np.array([point_vel[1]]),
+                #                                           #scale = 1,
+                #                                           units = 'dots',
+                #                                           width = 2,
+                #                                           color='red' )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -115,14 +123,14 @@ class Point (Property):
             len = ( point_vel[0]**2 + point_vel[1]**2 + point_vel[2]**2 ) **0.5
 
             self._plot_vel  = p_settings.axes.quiver( np.array([point_pos[0]]), 
-                                                    np.array([point_pos[1]]),
-                                                    np.array([point_pos[2]]),
-                                                    np.array([point_vel[0]]),
-                                                    np.array([point_vel[1]]),
-                                                    np.array([point_vel[2]]),
-                                                    length = len,
-                                                    normalize = True,
-                                                    color='red' )
+                                                      np.array([point_pos[1]]),
+                                                      np.array([point_pos[2]]),
+                                                      np.array([point_vel[0]]),
+                                                      np.array([point_vel[1]]),
+                                                      np.array([point_vel[2]]),
+                                                      length = len,
+                                                      normalize = True,
+                                                      color='red' )
     
 
 ## -------------------------------------------------------------------------------------------------

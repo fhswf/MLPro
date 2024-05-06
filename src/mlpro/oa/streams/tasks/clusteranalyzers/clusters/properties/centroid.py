@@ -92,12 +92,6 @@ class Centroid (Point, Id):
         self._plot_line3_t1 : Text3D = None
     
 
-# ## -------------------------------------------------------------------------------------------------
-#     def update_plot(self, **p_kwargs):
-#         super().update_plot(**p_kwargs)
-#         self._centroid.update_plot( p_kwargs=p_kwargs)   
-    
-
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_2d(p_settings, **p_kwargs)
@@ -153,21 +147,16 @@ class Centroid (Point, Id):
         ap = p_settings.axes.get_axis_position()
 
         if ap[0]: 
-            t2_ha='left' 
-            t3_ha='right'
+            l1_t2_ha='left' 
         else: 
-            t2_ha='right'
-            t3_ha='left'
+            l1_t2_ha='right'
 
         if ap[1]: 
-            t4_ha='right' 
-            t5_ha='left'
+            l2_t1_ha='right' 
         else: 
-            t4_ha='left'
-            t5_ha='right'
+            l2_t1_ha='left'
 
-        t6_va='top' 
-        t7_va='bottom'
+        l3_t1_va='top' 
 
 
         # 3 Plot a crosshair with label texts
@@ -182,9 +171,9 @@ class Centroid (Point, Id):
             self._plot_line3 = p_settings.axes.plot( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim, color=color, linestyle='dashed', lw=1)[0]
 
             self._plot_line1_t1 = p_settings.axes.text(centroid[0], centroid[1], centroid[2], label, color=color )
-            self._plot_line1_t2 = p_settings.axes.text(xlim[0], centroid[1], centroid[2], label, ha=t2_ha, va='center', color=color )
-            self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], centroid[2], label, ha=t4_ha, va='center', color=color )
-            self._plot_line3_t1 = p_settings.axes.text(centroid[0], centroid[1], zlim[0], label, ha='center', va=t6_va, color=color )
+            self._plot_line1_t2 = p_settings.axes.text(xlim[0], centroid[1], centroid[2], label, ha=l1_t2_ha, va='center', color=color )
+            self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], centroid[2], label, ha=l2_t1_ha, va='center', color=color )
+            self._plot_line3_t1 = p_settings.axes.text(centroid[0], centroid[1], zlim[0], label, ha='center', va=l3_t1_va, color=color )
 
             p_settings.axes.legend(title='Clusters', alignment='left', loc='right', shadow=True, draggable=True)
         else:
@@ -194,9 +183,9 @@ class Centroid (Point, Id):
             self._plot_line3.set_data_3d( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim )
 
             self._plot_line1_t1.set(position_3d=(centroid[0], centroid[1], centroid[2]))
-            self._plot_line1_t2.set(position_3d=(xlim[0], centroid[1], centroid[2]), ha=t2_ha)
-            self._plot_line2_t1.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=t4_ha)
-            self._plot_line3_t1.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=t6_va)
+            self._plot_line1_t2.set(position_3d=(xlim[0], centroid[1], centroid[2]), ha=l1_t2_ha)
+            self._plot_line2_t1.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=l2_t1_ha)
+            self._plot_line3_t1.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=l3_t1_va)
 
 
 ## -------------------------------------------------------------------------------------------------

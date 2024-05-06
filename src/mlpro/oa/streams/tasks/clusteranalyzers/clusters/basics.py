@@ -134,3 +134,5 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
 
         for prop in self.get_properties().values():
             prop.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
+
+        Plottable.update_plot( self, p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs )
