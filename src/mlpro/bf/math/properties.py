@@ -12,10 +12,11 @@
 ## --                                numpy arrays
 ## -- 2024-05-04  0.4.0     DA       Introduction of type aliases
 ## -- 2024-05-05  0.5.0     DA       Redesign: alignment with Python's managed attributes
+## -- 2024-05-06  0.6.0     DA       Completion of plot functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2024-05-05)
+Ver. 0.6.0 (2024-05-06)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -220,12 +221,12 @@ class Properties:
     def add_property( self, 
                       p_name : PropertyName, 
                       p_derivative_order_max : DerivativeOrderMax = 0, 
-                      p_cls : PropertyClass = Property ):
+                      p_cls : PropertyClass = Property,
+                      p_visualize : bool = False ):
         """
-        Defines a new property by it's name. Optionally, auto-derivation can be added for numeric
-        properties (scalar or vectorial). The property itself is returned and also stored in the
-        protected dictionary self._properties. Furthermore, a new attribute with the same name is 
-        added to the object and can be accessed via self.[p_name]. 
+        Adds a new managed property as an attribute to the own class. Optionally, auto-derivation can 
+        be added for numeric properties (scalar or vectorial). The property is stored in the protected 
+        dictionary self._properties and can be accessed directly via self.[p_name]. 
 
         Parameters
         ----------
@@ -235,17 +236,35 @@ class Properties:
             Maximum order of auto-generated derivatives. Default = 0 (no auto-derivation).
         p_cls : PropertyClass
             Optional property class to be used. Default = Property.
+        p_visualize : bool
+            Boolean switch for visualisation. Default = False.
         """
 
-        prop_obj = p_cls( p_derivative_order_max = p_derivative_order_max )
+        prop_obj = p_cls( p_derivative_order_max = p_derivative_order_max, p_visualize = p_visualize )
         self._properties[p_name] = prop_obj
         setattr(self.__class__, p_name, prop_obj )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_properties(self, p_property_definitions : PropertyDefinitions ):
+    def add_properties( self, 
+                        p_property_definitions : PropertyDefinitions,
+                        p_visualize : bool = False ):
+        """
+        Adds new managed properties to the own class. See method add_property() for further details.
+            
+        Parameters
+        ----------
+        p_property_definitions : PropertyDefinitions
+            List of property definitions.
+        p_visualize : bool
+            Boolean switch for visualisation. Default = False.
+        """
+
         for p in p_property_definitions:
-            self.add_property( p_name = p[0], p_derivative_order_max = p[1], p_cls = p[2] )
+            self.add_property( p_name = p[0], 
+                               p_derivative_order_max = p[1], 
+                               p_cls = p[2], 
+                               p_visualize = p_visualize )
 
 
 ## -------------------------------------------------------------------------------------------------

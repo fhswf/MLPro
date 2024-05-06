@@ -22,12 +22,9 @@ from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
-#from mlpro.bf.math.normalizers import Normalizer
-#from mlpro.bf.math.geometry import Point
-#from typing import List
-
+from mlpro.bf.various import Id
 from mlpro.bf.math.geometry import Point
-from mlpro.bf.math.properties import PropertyDefinition
+from mlpro.bf.math.properties import *
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
 
 
@@ -35,12 +32,38 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Centroid (Point): 
+class Centroid (Point, Id): 
+    """
+    This managed property provides full centroid functionality including 
+    - managing its position
+    - optionally its velocity and acceleration as auto-derivatives
+    - plot functionality
+    - renormalization
 
-# ## -------------------------------------------------------------------------------------------------
-#     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
-#         super().init_plot(p_figure, p_plot_settings, **p_kwargs)
-#         self._centroid.init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+    Hint: please assign the id of the cluster to the centroid as well to get a proper visualization.
+
+    Parameters
+    ----------
+    p_derivative_order_max : DerivativeOrderMax
+        Maximum order of auto-generated derivatives (numeric properties only).
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    """
+
+    C_PLOT_ACTIVE           = True
+    C_PLOT_STANDALONE       = False
+    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
+                                PlotSettings.C_VIEW_3D, 
+                                PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_derivative_order_max : DerivativeOrderMax = 0, 
+                  p_visualize : bool = False ):
+
+        Point.__init__( self, p_derivative_order_max=p_derivative_order_max, p_visualize=p_visualize )
+        Id.__init__( self, p_id = 0 )
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -79,14 +79,19 @@ class ClusterCentroid (Cluster):
     def __init__(self, p_id=None, p_properties: List[Tuple[str, int, type]] = ..., p_visualize: bool = False):
         super().__init__( p_id=p_id, p_properties=p_properties, p_visualize=p_visualize )
 
-        self.add_properties( [ cprop_centroid ] )
+        self.add_properties( p_property_definitions = [ cprop_centroid ], p_visualize = p_visualize )
+        self.centroid.set_id( p_id = self.get_id() )
         self._centroid_elem : Element = None
 
 
 # ## -------------------------------------------------------------------------------------------------
-#     def get_centroid(self) -> Point:
-#         return self._centroid
-    
+    def set_id(self, p_id=None):
+        super().set_id( p_id = p_id )
+        try:
+            self.centroid.set_id( p_id = p_id )
+        except:
+            pass
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst: Instance) -> float:
