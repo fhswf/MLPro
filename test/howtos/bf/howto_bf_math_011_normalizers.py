@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_math_010_normalizers.py
+## -- Package : mlpro.bf.math
+## -- Module  : howto_bf_math_011_normalizers.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

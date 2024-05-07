@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.examples
 ## -- Module  : howto_oa_pp_008_rearranger_deriver_normalizer.py
 ## -------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class MyScenario (OAScenario):
         stream = provider_mlpro.get_stream('DoubleSpiral2D', p_mode=p_mode, p_logging=p_logging)
 
         # 2 Set up a stream workflow 
-        workflow = OAWorkflow( p_name='wf1', 
+        workflow = OAWorkflow( p_name='Master', 
                                p_range_max=Task.C_RANGE_NONE, 
                                p_ada=p_ada,
                                p_visualize=p_visualize,
@@ -66,7 +66,7 @@ class MyScenario (OAScenario):
         features = stream.get_feature_space().get_dims()
         features_new = [ ( 'F', features[0:1] ) ]
 
-        task_rearranger = Rearranger( p_name='t1',
+        task_rearranger = Rearranger( p_name='#1: Rearranger',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
@@ -78,7 +78,7 @@ class MyScenario (OAScenario):
         features = task_rearranger._feature_space.get_dims()
         derived_feature = features[0]
 
-        task_deriver_1 = Deriver( p_name='t2',
+        task_deriver_1 = Deriver( p_name='#2: Deriver #1',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
@@ -94,7 +94,7 @@ class MyScenario (OAScenario):
         features = task_deriver_1._feature_space.get_dims()
         derived_feature = features[0]
         
-        task_deriver_2 = Deriver( p_name='t3',
+        task_deriver_2 = Deriver( p_name='#3: Deriver #2',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
@@ -107,7 +107,7 @@ class MyScenario (OAScenario):
         workflow.add_task( p_task=task_deriver_2, p_pred_tasks=[task_rearranger, task_deriver_1] )
 
         # 2.4 Boundary detector 
-        task_bd = BoundaryDetector( p_name='t4', 
+        task_bd = BoundaryDetector( p_name='#4: Boundary Detector', 
                                     p_ada=True, 
                                     p_visualize=True,   
                                     p_logging=p_logging )
@@ -115,7 +115,7 @@ class MyScenario (OAScenario):
         workflow.add_task( p_task = task_bd, p_pred_tasks=[task_deriver_2])
 
         # # 2.5 MinMax-Normalizer
-        task_norm_minmax = NormalizerMinMax( p_name='t5', 
+        task_norm_minmax = NormalizerMinMax( p_name='#5: Normalizer MinMax', 
                                              p_ada=True, 
                                              p_visualize=p_visualize, 
                                              p_logging=p_logging )

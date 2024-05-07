@@ -3,7 +3,7 @@ name: Release-Checklist
 about: List of all necessary steps before, during and after a release.
 title: Release vX.Y.Z
 labels: admin
-assignees: ''
+assignees: detlefarend, steveyuwono
 
 ---
 
@@ -12,19 +12,18 @@ Release Checklist
 
 **1 Preparation**
 - [ ] 1.1 Inform the team on slack to stop merging to main
-- [ ] 1.2 Rename label "next release" to "vX.Y.Z"
-- [ ] 1.3 Create new label "next release"
-- [ ] 1.4 Relabel all open issues of release "vX.Y.Z" to "next release"
-- [ ] 1.5 Update version in ./setup.py
-- [ ] 1.6 Update version in ./src/setup.py
-- [ ] 1.7 Update version in ./src/conda/meta.yaml
-- [ ] 1.8 Update version in ./doc/rtd/conf.py
-- [ ] 1.9 Build and check RTD documentation
-  - [ ] 1.9.1 All class diagrams there?
-  - [ ] 1.9.2 All auto-generated code descriptions there?
-  - [ ] 1.9.3 Logo there?
-- [ ] 1.10 Check action log for errors
-
+- [ ] 1.2 Create a new version number in project custom field 'version'
+- [ ] 1.3 Assign new version number to all related issues and remove label 'next release'
+- [ ] 1.4 Updates in branch main 
+    - [ ] 1.4.1 Update version in ./setup.py
+    - [ ] 1.4.2 Update version in ./src/setup.py
+    - [ ] 1.4.3 Update version in ./src/conda/meta.yaml
+    - [ ] 1.4.4 Update version in ./doc/rtd/conf.py
+    - [ ] 1.4.5 Build and check RTD documentation
+        - [ ] 1.4.5.1 All class diagrams there?
+        - [ ] 1.4.5.2 All auto-generated code descriptions there?
+        - [ ] 1.4.5.3 Logo there?
+    - [ ] 1.4.6 Commit all changes and observe the action log
 
 **2 Release**
 - [ ] 2.1 Create a new [release](https://github.com/fhswf/MLPro/releases)
