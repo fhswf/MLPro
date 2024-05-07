@@ -28,10 +28,11 @@
 ## -- 2024-04-10  0.8.3     DA       Refactoring
 ## -- 2024-04-29  0.9.0     DA       Refactoring after changes on class Point
 ## -- 2024-05-06  1.0.0     DA       Refactoring
+## -- 2024-05-07  1.0.1     DA       Bugfix in ClusterCentroid.__init__(): internal properties first
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-05-06)
+Ver. 1.0.1 (2024-05-07)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -78,9 +79,11 @@ class ClusterCentroid (Cluster):
                   p_properties : PropertyDefinitions = [],
                   p_visualize : bool = False ):
 
-        super().__init__( p_id=p_id, p_properties=p_properties, p_visualize=p_visualize )
+        super().__init__( p_id=p_id, p_visualize=p_visualize )
 
         self.add_properties( p_property_definitions = [ cprop_centroid ], p_visualize = p_visualize )
+        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
+
         self.centroid.set_id( p_id = self.get_id() )
         self._centroid_elem : Element = None
 

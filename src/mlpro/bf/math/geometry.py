@@ -11,10 +11,11 @@
 ## -- 2024-04-29  1.2.0     DA       Class Point: replaced parent Element by Properties
 ## -- 2024-04-30  1.3.0     DA       Class Point: re-normalization added
 ## -- 2024-05-06  1.4.0     DA       Class Point: refactoring
+## -- 2024-05-07  1.4.1     DA       Bugfix in method Point.renormalize()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-05-05)
+Ver. 1.4.1 (2024-05-07)
 
 This module provides class for geometric objects like points, etc.
 
@@ -161,7 +162,7 @@ class Point (Property):
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer: Normalizer):
-        self._value = p_normalizer.renormalize( p_data=self.position.value )
+        self._value = p_normalizer.renormalize( p_data=np.array(self.value) )
         self._derivatives[0] = self._value
 
         # 2024-04-30/DA Renormalization of derivates currently not implemented...
