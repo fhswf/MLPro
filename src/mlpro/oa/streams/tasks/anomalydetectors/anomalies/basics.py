@@ -79,7 +79,7 @@ class Anomaly (Id, Event, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_instances(self) -> Instance | list[Instance]:
+    def get_instances(self) -> Union[Instance, List[Instance]]:
         return self.instances
     
 
