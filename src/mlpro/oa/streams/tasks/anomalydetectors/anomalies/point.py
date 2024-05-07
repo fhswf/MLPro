@@ -42,7 +42,7 @@ class PointAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instance : Instance = None,
+                 p_instances : Instance = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -50,14 +50,14 @@ class PointAnomaly (Anomaly):
                  p_deviation : float=None,
                  **p_kwargs):
         
-        super().__init__( p_instance=p_instance, 
+        super().__init__( p_instances=p_instances, 
                           p_ano_scores=p_ano_scores,
                           p_visualize=p_visualize, 
                           p_raising_object=p_raising_object,
                           p_det_time=p_det_time, 
                           **p_kwargs )
         
-        self.instance = p_instance
+        self.instances = p_instances
         self.ano_scores = p_ano_scores
 
 
@@ -88,7 +88,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst           = self.get_instance()
+        inst           = self.get_instances()
         feature_values = inst.get_feature_data().get_values()  
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -130,7 +130,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst           = self.get_instance()
+        inst           = self.get_instances()
         feature_values = inst.get_feature_data().get_values()  
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -190,7 +190,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line is not None ) and not p_axlimits_changed: return
         
-        inst_id = self.get_instance().get_id()
+        inst_id = self.get_instances().get_id()
         xpos    = [inst_id, inst_id]
         
         if self._plot_line is None:

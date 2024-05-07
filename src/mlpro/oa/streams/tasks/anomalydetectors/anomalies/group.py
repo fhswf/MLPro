@@ -39,7 +39,7 @@ class GroupAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : Instance = None,
+                 p_instances : list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -83,11 +83,11 @@ class GroupAnomaly (Anomaly):
         super()._update_plot_nd(p_settings, **p_kwargs)
     
         label = self.C_NAME[0]
-        x1 = self.get_instance()[0].get_id()
-        x2 = self.get_instance()[-1].get_id()
+        x1 = self.get_instances()[0].get_id()
+        x2 = self.get_instances()[-1].get_id()
         a=[]
         b=[]
-        for instance in self.get_instance():
+        for instance in self.get_instances():
             a.append(instance.get_feature_data().get_values())
         for x in a:
             b.extend(x)
