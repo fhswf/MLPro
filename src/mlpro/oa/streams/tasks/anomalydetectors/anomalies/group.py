@@ -10,10 +10,11 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-10)
+Ver. 1.2.1 (2024-05-07)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """

@@ -11,10 +11,11 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-04-16  1.3.0     DA       Finished visualisation
+## -- 2024-05-07  1.3.1     SK       Bug fix related to p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-04-16)
+Ver. 1.3.1 (2024-05-07)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
