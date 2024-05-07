@@ -29,20 +29,24 @@
 ## -- 2024-04-22  0.9.0     DA/SK    Class Cluster: general systematics for properties
 ## -- 2024-04-28  1.0.0     DA       Class Cluster: new parent class Properties
 ## -- 2024-04-30  1.1.0     DA       Class Cluster: new parent class Renormalizable
+## -- 2024-05-02  1.2.0     DA/SK    Class Cluster: first definition of concrete properties
+## -- 2024-05-04  1.3.0     DA       Class Cluster: generic property systematics
+## -- 2024-05-06  1.4.0     DA       Plot functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-30)
+Ver. 1.4.0 (2024-05-06)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 """
 
 
 from mlpro.bf.various import *
-from mlpro.bf.data import Properties
+from mlpro.bf.math.properties import *
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
 from mlpro.bf.math.normalizers import Renormalizable
+
 
 
 
@@ -51,18 +55,16 @@ from mlpro.bf.math.normalizers import Renormalizable
 ## -------------------------------------------------------------------------------------------------
 class Cluster (Id, Plottable, Properties, Renormalizable):
     """
-    Base class for a cluster. 
+    Universal template class for a cluster with any number of properties added by a cluster analyzer. 
 
     Parameters
     ----------
     p_id
         Optional external id.
+    p_properties : PropertyDefinitions
+        List of property definitions. 
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
-    p_color : string
-        Color of the cluster during visualization.
-    **p_kwargs
-        Further optional keyword arguments.
     """
 
     C_PLOT_ACTIVE           = True
@@ -77,14 +79,18 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id = None,
-                  p_visualize : bool = False,
-                  p_color = 'red',
-                  **p_kwargs ):
+                  p_properties : PropertyDefinitions = [],
+                  p_visualize : bool = False ):
 
-        self._kwargs = p_kwargs.copy()
         Id.__init__( self, p_id = p_id )
         Plottable.__init__( self, p_visualize = p_visualize )
         Properties.__init__( self )
+
+        for p in p_properties:
+            self.add_property( p_name = p[0], 
+                               p_derivative_order_max = p[1], 
+                               p_cls = p[2],
+                               p_visualize = p_visualize )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -105,3 +111,28 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+
+        if not self.get_visualization(): return
+
+        Plottable.init_plot( self, p_figure=p_figure, p_plot_settings=p_plot_settings)
+
+        for prop in self.get_properties().values():
+            prop.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot( self, 
+                     p_inst_new: List[Instance] = None, 
+                     p_inst_del: List[Instance] = None, 
+                     **p_kwargs ):
+
+        if not self.get_visualization(): return
+
+        for prop in self.get_properties().values():
+            prop.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
+
+        Plottable.update_plot( self, p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs )
