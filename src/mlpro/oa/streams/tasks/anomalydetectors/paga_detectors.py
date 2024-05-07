@@ -19,7 +19,6 @@ This module provides templates for anomaly detection to be used in the context o
 """
 
 from mlpro.oa.streams.basics import *
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies import GroupAnomaly
 from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
 
