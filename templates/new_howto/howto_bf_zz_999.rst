@@ -2,31 +2,10 @@
 Howto BF-ZZ-999: My high-sophisticated ml sample
 ================================================
 
-**Prerequisites**
-
-.. Please install the following packages to run this examples properly:
-  ..
-    - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
-    - `PyTorch <https://pypi.org/project/torch/>`_
-  ..
-    - `Stable Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-
-
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_zz_999_description.py
+.. literalinclude:: ../../../../../../../../test/howtos/bf//howto_bf_zz_999_description.py
 	:language: python
 
 
