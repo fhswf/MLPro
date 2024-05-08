@@ -24,7 +24,6 @@ from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
 from mlpro.bf.streams import Instance
-from typing import Union, List
 
 
 
@@ -62,7 +61,7 @@ class Anomaly (Id, Event, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances: Union[Instance, List[Instance]] = None,
+                 p_instances: list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -79,7 +78,7 @@ class Anomaly (Id, Event, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_instances(self) -> Union[Instance, List[Instance]]:
+    def get_instances(self) -> list[Instance]:
         return self.instances
     
 
