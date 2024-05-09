@@ -10,10 +10,11 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-10)
+Ver. 1.2.1 (2024-05-07)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -39,7 +40,7 @@ class GroupAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : Instance = None,
+                 p_instances : list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -53,6 +54,7 @@ class GroupAnomaly (Anomaly):
         
         self.instances = p_instances
         p_ano_scores = p_ano_scores
+        self.plot_update = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -80,14 +82,14 @@ class GroupAnomaly (Anomaly):
         color (str): Color of the shaded region.
         alpha (float): Transparency of the shaded region (default is 0.5).
         """
-        super()._update_plot_nd(p_settings, **p_kwargs)
+        if not self.plot_update: return
     
         label = self.C_NAME[0]
-        x1 = self.get_instance()[0].get_id()
-        x2 = self.get_instance()[-1].get_id()
+        x1 = self.get_instances()[0].get_id()
+        x2 = self.get_instances()[-1].get_id()
         a=[]
         b=[]
-        for instance in self.get_instance():
+        for instance in self.get_instances():
             a.append(instance.get_feature_data().get_values())
         for x in a:
             b.extend(x)
@@ -95,7 +97,7 @@ class GroupAnomaly (Anomaly):
         y2 = max(b)
 
         if self._rect is None:
-            self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=0, edgecolor='none', facecolor='yellow', alpha=0.3)
+            self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)
             self._plot_rectangle = p_settings.axes.add_patch(self._rect)
             self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
 
