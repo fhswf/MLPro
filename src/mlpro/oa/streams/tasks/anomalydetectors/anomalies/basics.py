@@ -11,19 +11,22 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-04-11  1.3.0     DA       Class Anomaly: extensions on methods update_plot_*
+## -- 2024-05-07  1.3.1     SK       Bug fix related to p_instances
+## -- 2024-05-09  1.3.2     DA       Bugfix in method Anomaly._update_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-04-11)
+Ver. 1.3.2 (2024-05-09)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
-from matplotlib.figure import Figure
 from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
 from mlpro.bf.streams import Instance
+
+
 
 
 
@@ -36,12 +39,14 @@ class Anomaly (Id, Event, Plottable):
 
     Parameters
     ----------
-    p_id
-        Optional external id.
+    p_instances : Instance
+        List of instances. Default value = None.
+    p_ano_scores : list
+        List of anomaly scores of instances. Default = None.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
-    p_color : string
-        Color of the anomaly during visualization.
+    p_raising_object : object
+        Reference of the object raised. Default = None.
     **p_kwargs
         Further optional keyword arguments.
     """
@@ -57,7 +62,7 @@ class Anomaly (Id, Event, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instance : Instance = None,
+                 p_instances: list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -69,13 +74,13 @@ class Anomaly (Id, Event, Plottable):
                         p_tstamp=p_det_time, **p_kwargs)
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self.instance : Instance = p_instance
+        self.instances : Instance | list[Instance] = p_instances
         self.ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_instance(self) -> Instance:
-        return self.instance
+    def get_instances(self) -> list[Instance]:
+        return self.instances
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -89,7 +94,7 @@ class Anomaly (Id, Event, Plottable):
                      p_xlim = None,
                      p_ylim = None,
                      p_zlim = None,
-                     **p_kwargs):
+                     **p_kwargs ):
         
         return super().update_plot( p_axlimits_changed = p_axlimits_changed,
                                     p_xlim = p_xlim,
@@ -102,7 +107,7 @@ class Anomaly (Id, Event, Plottable):
     def _update_plot_2d( self, 
                          p_settings: PlotSettings, 
                          p_axlimits_changed : bool, 
-                         P_xlim,
+                         p_xlim,
                          p_ylim,
                          **p_kwargs ):
         pass
@@ -112,7 +117,7 @@ class Anomaly (Id, Event, Plottable):
     def _update_plot_3d( self, 
                          p_settings: PlotSettings, 
                          p_axlimits_changed : bool, 
-                         P_xlim,
+                         p_xlim,
                          p_ylim,
                          p_zlim,
                          **p_kwargs ):
