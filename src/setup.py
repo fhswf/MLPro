@@ -19,9 +19,6 @@ extras_require={
         "transformations==2022.9.26",
         "scipy==1.8.1",
         "multiprocess==0.70.14",
-        "scikit-learn==1.2.0",
-        "optuna==3.0.5",
-        "hyperopt==0.2.7",
         "pandas==2.1.3"
     ],
 },
