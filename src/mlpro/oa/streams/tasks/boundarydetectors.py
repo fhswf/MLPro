@@ -29,13 +29,15 @@
 ## --                                - method _adapt(): removed unnecessary code
 ## -- 2023-05-20  1.2.2     DA       Method BoundaryDetector._adapt_on_event: refactoring, corrections
 ## -- 2023-05-21  1.2.3     LSB      Bug Fix : p_scaler shall be generated as a vertical array
-## -- 2023-11-19  1.2.4     DA       Bugfix in Method BoundaryDetection._adapt(): scaler management
+## -- 2023-11-19  1.2.4     DA       Bugfix in method BoundaryDetector._adapt(): scaler management
+## -- 2024-05-12  1.3.0     DA       Removed the scaler functionality from BoundaryDetector
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2023-11-19)
+Ver. 1.3.0 (2024-05-12)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
+
 """
 
 import matplotlib.colors
@@ -53,8 +55,8 @@ from typing import Union, Iterable, List
 ## -------------------------------------------------------------------------------------------------
 class BoundaryDetector (OATask):
     """
-    This is the base class for Boundary Detector object. It raises event when a change in the current boundaries is
-    detected based on the new data instances
+    This class provides the functionality of boundary observation of incoming instances. It raises 
+    event C_EVENT_ADAPTED when a change in the current boundaries is detected.
 
     Parameters
     ----------
@@ -70,8 +72,6 @@ class BoundaryDetector (OATask):
         True to turn on the visualization.
     p_logging
         Logging level for the task, default is Log all.
-    p_scaler: float, np.ndarray
-        A scaler vector to scale the detected boundaries.
 
     """
 
@@ -83,25 +83,23 @@ class BoundaryDetector (OATask):
     C_PLOT_VALID_VIEWS          = [ PlotSettings.C_VIEW_ND ]
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_name:str = None,
-                 p_range_max = MLTask.C_RANGE_THREAD,
-                 p_ada : bool = True,
-                 p_duplicate_data : bool = False,
-                 p_visualize : bool = False,
-                 p_logging=Log.C_LOG_ALL,
-                 p_scaler:Union[float, Iterable] = np.ones(1),
-                 **p_kwargs):
+    def __init__( self,
+                  p_name:str = None,
+                  p_range_max = MLTask.C_RANGE_THREAD,
+                  p_ada : bool = True,
+                  p_duplicate_data : bool = False,
+                  p_visualize : bool = False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
 
-        super().__init__(p_name = p_name,
-                         p_range_max = p_range_max,
-                         p_ada = p_ada,
-                         p_duplicate_data = p_duplicate_data,
-                         p_visualize = p_visualize,
-                         p_logging = p_logging,
-                         **p_kwargs)
+        super().__init__( p_name = p_name,
+                          p_range_max = p_range_max,
+                          p_ada = p_ada,
+                          p_duplicate_data = p_duplicate_data,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_kwargs )
 
-        self._scaler = p_scaler
         self._related_set: Set = None
 
 
@@ -134,9 +132,6 @@ class BoundaryDetector (OATask):
 
             dim = feature_data.get_related_set().get_dims()
 
-            if len(self._scaler) == 1:
-                self._scaler = np.repeat(self._scaler[0], len(dim), axis=0)
-
             for i,value in enumerate(feature_data.get_values()):
                 boundary = dim[i].get_boundaries()
                 if len(boundary) == 0 or boundary is None:
@@ -145,10 +140,10 @@ class BoundaryDetector (OATask):
                     adapted = True
 
                 if value < boundary[0]:
-                    dim[i].set_boundaries([value*self._scaler[i], boundary[1]])
+                    dim[i].set_boundaries([value, boundary[1]])
                     adapted = True
                 elif value > boundary[1]:
-                    dim[i].set_boundaries([boundary[0],value*self._scaler[i]])
+                    dim[i].set_boundaries([boundary[0],value])
                     adapted = True
 
         return adapted
@@ -192,26 +187,26 @@ class BoundaryDetector (OATask):
         adapted = False
         
         try:
-            bd_new = self._scaler*p_event_object.get_raising_object().get_boundaries()
-            self._related_set = p_event_object.get_data()["p_related_set"]
-            dims = self._related_set.get_dims()
-
-            for i,dim in enumerate(dims):
-                bd_dim_current = dim.get_boundaries()
-                bd_dim_new     = bd_new[i]
-
-                if ( bd_dim_new[0] != bd_dim_current[0] ) or ( bd_dim_new[1] != bd_dim_current[1] ):
-                    dim.set_boundaries(bd_dim_new)
-                    adapted = True
+            bd_new = p_event_object.get_raising_object().get_boundaries()
         except: 
             raise ImplementationError("Event not raised by a window")
+        
+        self._related_set = p_event_object.get_data()["p_related_set"]
+        dims = self._related_set.get_dims()
+
+        for i,dim in enumerate(dims):
+            bd_dim_current = dim.get_boundaries()
+            bd_dim_new     = bd_new[i]
+
+            if ( bd_dim_new[0] != bd_dim_current[0] ) or ( bd_dim_new[1] != bd_dim_current[1] ):
+                dim.set_boundaries(bd_dim_new)
+                adapted = True
         
         return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_related_set(self):
-
         return self._related_set
 
 

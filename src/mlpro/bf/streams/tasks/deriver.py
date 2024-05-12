@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-02  0.0.0     SY       Creation
 ## -- 2023-02-05  1.0.0     SY       First version release
+## -- 2024-05-10  1.0.1     DA/SY    Bugfix in Deriver.__init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-02-05)
+Ver. 1.0.1 (2024-05-10)
 
 This module provides a stream task class Deriver to derive the data of instances.
 """
@@ -116,6 +117,7 @@ class Deriver(StreamTask):
         
         self._derivative_func = DerivativeFunction(p_name='derivative_func',
                                                    p_type=TransferFunction.C_TRF_FUNC_CUSTOM,
+                                                   p_logging=p_logging,
                                                    p_dt=0,
                                                    order=self._order_derivative)
 
