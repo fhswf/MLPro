@@ -19,11 +19,12 @@ Release Checklist
     - [ ] 1.4.2 Update version in ./src/setup.py
     - [ ] 1.4.3 Update version in ./src/conda/meta.yaml
     - [ ] 1.4.4 Update version in ./doc/rtd/conf.py
-    - [ ] 1.4.5 Build and check RTD documentation
-        - [ ] 1.4.5.1 All class diagrams there?
-        - [ ] 1.4.5.2 All auto-generated code descriptions there?
-        - [ ] 1.4.5.3 Logo there?
-    - [ ] 1.4.6 Commit all changes and observe the action log
+    - [ ] 1.4.5 Update ./CITATION.cff (see [Zenodo recommendation](https://zenodo.org/account/settings/github/repository/fhswf/MLPro))
+    - [ ] 1.4.6 Build and check RTD documentation
+        - [ ] 1.4.6.1 All class diagrams there?
+        - [ ] 1.4.6.2 All auto-generated code descriptions there?
+        - [ ] 1.4.6.3 Logo there?
+    - [ ] 1.4.7 Commit all changes and observe the action log
 
 **2 Release**
 - [ ] 2.1 Create a new [release](https://github.com/fhswf/MLPro/releases)
@@ -39,5 +40,6 @@ Release Checklist
   - [ ] 3.1.3 Logo there?
 - [ ] 3.2 Check [MLPro in PyPI](https://pypi.org/project/mlpro/)
 - [ ] 3.3 Check [MLPro in Anaconda](https://anaconda.org/mlpro/mlpro/)
-- [ ] 3.4 Update all open branches from main
-- [ ] 3.5 Inform the team on slack
+- [ ] 3.4 Check [MLPro in Zenodo](https://zenodo.org/account/settings/github/repository/fhswf/MLPro)
+- [ ] 3.5 Update all open branches from main
+- [ ] 3.6 Inform the team on slack
