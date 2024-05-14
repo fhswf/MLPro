@@ -100,7 +100,7 @@ available system resources. These are for example
 In addition, powerful templates for state-based systems are provided. They allow the standardized implementation 
 of your systems, which can then be controlled, for example, by adaptive controllers based on reinforcement 
 learning or game theory. Furthermore, a wrapper for the popular physics engine `MuJoCo <https://mujoco.org/>`_ is 
-provided, which can be used for the simulation and visualization of externally designed system models. The MLPro 
+provided through `MLPro-Int-MuJoCo <https://mlpro-int-mujoco.readthedocs.io>`_, which can be used for the simulation and visualization of externally designed system models. The MLPro 
 templates are also prepared for connection to industrial components like controllers, sensors, and actuators.
 
 **Learn more** 
