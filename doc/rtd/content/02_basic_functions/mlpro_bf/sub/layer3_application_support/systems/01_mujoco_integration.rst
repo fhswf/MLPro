@@ -16,6 +16,16 @@ and animation, and other areas. More explanation about MuJoCo can be found in `h
 
 In order to use the MuJoCo integration in MLPro, the following steps need to be done:
 
+    * **Install MLPro-Int-MuJoCo**
+
+        `MLPro-Int-MuJoCo <https://mlpro-int-mujoco.readthedocs.io>`_ is a wrapper to integrate the MuJoCo package to MLPro.
+
+        Before starting, please install the latest versions of MLPro and MuJoCo as follows:
+
+        .. code-block:: bash
+
+          pip install mlpro-int-mujoco[full] --upgrade
+
     * **Create a MuJoCo Model**
 
         Create a MuJoCo model file accordingly to your design. Some example model are published by MuJoCo and can be accessed `here <https://mujoco.readthedocs.io/en/latest/models.html>`_.
@@ -57,16 +67,8 @@ can be downloaded `here <https://github.com/deepmind/mujoco/releases>`_.
 
 **Cross Reference**
 
+- `MLPro-Int-MuJoCo <https://mlpro-int-mujoco.readthedocs.io>`_
 - `MuJoCo Tool <https://github.com/deepmind/mujoco/releases>`_
 - `MuJoCo XML Reference <https://mujoco.readthedocs.io/en/stable/XMLreference.html>`_
 - `MuJoCo Model Samples <https://mujoco.readthedocs.io/en/latest/models.html>`_
 - `Unity Plug-in for MuJoCo <https://mujoco.readthedocs.io/en/stable/unity.html>`_
-- :ref:`MuJoCo Wrapper <Wrapper MuJoCo>`
-- :ref:`Howto BF-SYSTEMS-002: Double Pendulum Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
-- :ref:`Howto BF-SYSTEMS-003: Cartpole Continuous Systems wrapped with MuJoCo <Howto BF SYSTEMS 003>`
-- :ref:`Howto BF-SYSTEMS-004: MuJoCo Simulation with Camera <Howto BF SYSTEMS 004>`
-- :ref:`Howto RL-AGENT-021: Train and Reload Single Agent Cartpole Discrete (MuJoCo) <Howto Agent RL 021>`
-- :ref:`Howto RL-AGENT-022: Train and Reload Single Agent Cartpole Continuous (MuJoCo) <Howto Agent RL 022>`
-- :ref:`Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection Cartpole Discrete (MuJoCo) <Howto RL ATT 002>`
-- :ref:`Howto RL-ATT-003: Train and Reload Single Agent using Stagnation Detection Cartpole Continuous (MuJoCo) <Howto RL ATT 003>`
-- :ref:`Howto RL-ENV-005: Run Agent with random policy on double pendulum mujoco environment <Howto Env RL 005>`

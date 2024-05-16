@@ -42,11 +42,12 @@
 ## -- 2023-05-31  1.13.2    LSB      Refactored the t_step handling, to avoid unncessary execution of try block
 ## -- 2023-05-31  1.13.3    LSB      Removing obsolete env attribute from function
 ## -- 2023-06-06  1.14.0    LSB      New functions to fetch the functions of a system
-## -- 2023-05-dd  2.0.0     LSB      New class MultiSystem
+## -- 2023-05-01  2.0.0     LSB      New class MultiSystem
+## -- 2024-05-14  2.0.1     SY       Migration from MLPro to MLPro-Int-MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2023-05-dd)
+Ver. 2.0.1 (2024-05-14)
 
 This module provides models and templates for state based systems.
 """
@@ -1166,7 +1167,10 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         self._t_step = p_t_step
 
         if p_mujoco_file is not None:
-            from mlpro.wrappers.mujoco import MujocoHandler
+            try:
+                from mlpro_int_mujoco.wrappers import MujocoHandler
+            except:
+                raise ImplementationError('MLPro-Int-MuJoCo package is missing! Please refer to https://mlpro-int-mujoco.readthedocs.io/en/latest/')
 
             if p_name is not None:
                 self.C_NAME = p_name
@@ -1256,7 +1260,11 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
         if self._mujoco_file is None: return
 
-        from mlpro.wrappers.mujoco import MujocoHandler
+        try:
+            from mlpro_int_mujoco.wrappers import MujocoHandler
+        except:
+            raise ImplementationError('MLPro-Int-MuJoCo package is missing! Please refer to https://mlpro-int-mujoco.readthedocs.io/en/latest/')
+
 
         self._mujoco_handler = MujocoHandler( p_mujoco_file=self._mujoco_file,
                                               p_frame_skip=self._frame_skip,
