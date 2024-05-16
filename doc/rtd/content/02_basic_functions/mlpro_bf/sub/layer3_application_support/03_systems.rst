@@ -107,8 +107,6 @@ The demo scenario supports two action styles:
 
 - :ref:`Howto BF-SYSTEMS-001: Demonstrating Native Systems <Howto BF SYSTEMS 001>`
 - :ref:`Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 010>`
-- :ref:`Howto BF-SYSTEMS-011: Systems wrapped with MuJoCo <Howto BF SYSTEMS 011>`
-- :ref:`Howto BF-SYSTEMS-012: Cartpole Continuous Systems wrapped with MuJoCo <Howto BF SYSTEMS 012>`
-- :ref:`Howto BF-SYSTEMS-013: MuJoCo Simulation with Camera <Howto BF SYSTEMS 013>`
+- :ref:`MLPro-Int-MuJoCo <https://mlpro-int-mujoco.readthedocs.io>`_
 - :ref:`API Reference BF-Systems <target_ap_bf_systems>`
 - :ref:`API Reference BF-Systems Sample Pool <target_pool_bf_systems>`
