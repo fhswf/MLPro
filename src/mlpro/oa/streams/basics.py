@@ -18,7 +18,8 @@
 ## -- 2023-04-09  0.7.0     DA       Class OATask: new methods adapt(), _adapt(), adapt_reverse()
 ## -- 2023-05-15  0.7.1     DA       Class OATask: new parameter p_buffer_size
 ## -- 2023-12-20  0.8.0     DA       Class OATask: new methods for renormalization
-## -- 2024-05-18  0.9.0     DA       Class OATask: new methods _adapt_pre(), _adapt_post()
+## -- 2024-05-18  0.9.0     DA       - Class OATask: new methods _adapt_pre(), _adapt_post()
+## --                                - Classes OATrainingResults, OATraining removed
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -397,29 +398,3 @@ class OAScenario (StreamScenario):
         """
 
         raise NotImplementedError
-
-
-
-
-
-# -------------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
-class OATrainingResults (TrainingResults): 
-    """
-    ...
-    """
-    
-    pass
-
-
-
-
-
-# -------------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
-class OATraining (Training): 
-    """
-    ...
-    """
-    
-    C_NAME      = 'OA'
