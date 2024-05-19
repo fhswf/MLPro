@@ -20,7 +20,7 @@ remains unknown.
 
 """
 
-from mlpro.bf.streams.models import Sampler, Instance
+from mlpro.bf.streams.basics import Sampler, Instance
 from mlpro.bf.exceptions import ParamError
 import random
 

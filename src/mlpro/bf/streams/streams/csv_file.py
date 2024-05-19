@@ -24,7 +24,7 @@ This stream provides a functionality to convert csv file to a MLPro compatible s
 
 import numpy as np
 from mlpro.bf.data import *
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams.basics import *
 
 
 

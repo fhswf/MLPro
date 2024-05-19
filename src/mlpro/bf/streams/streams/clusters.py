@@ -22,7 +22,7 @@ change size, change density and/or change weight over time.
 
 import random
 import math
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 

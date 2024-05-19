@@ -30,7 +30,7 @@ centers (can be defined by user) which may or maynot move over time.
 
 import random
 import math
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 
