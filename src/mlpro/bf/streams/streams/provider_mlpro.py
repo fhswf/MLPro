@@ -23,7 +23,7 @@ This module consists of a native stream provider and a template for builtin stre
 
 from mlpro.bf.various import Log, ScientificObject
 from mlpro.bf.ops import Mode
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams.basics import *
 
 
 

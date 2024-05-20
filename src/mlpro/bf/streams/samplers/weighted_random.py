@@ -18,7 +18,7 @@ instance is higher than the threshold, then the instance is not omitted. Otherwi
 
 """
 
-from mlpro.bf.streams.models import Sampler, Instance
+from mlpro.bf.streams.basics import Sampler, Instance
 from mlpro.bf.exceptions import ParamError
 import random
 

@@ -59,7 +59,7 @@ from typing import List
 import numpy as np
 
 from mlpro.bf.mt import Range
-from mlpro.bf.streams.models import Instance
+from mlpro.bf.streams.basics import Instance
 from mlpro.bf.various import TStamp, ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings

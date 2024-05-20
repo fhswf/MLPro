@@ -16,7 +16,7 @@ This module provides a ready-to-use stream sampler class SamplerRND.
 
 """
 
-from mlpro.bf.streams.models import Sampler, Instance
+from mlpro.bf.streams.basics import Sampler, Instance
 from mlpro.bf.exceptions import ParamError
 import random
 

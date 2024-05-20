@@ -57,12 +57,16 @@
 ## -- 2023-11-17  1.3.0     DA       Refactoring class Instance: 
 ## --                                - removed individual implementation of time stamp functionality
 ## --                                - added parent class bf.various.TStamp
+## -- 2024-05-19  1.4.0     DA       Class Instance: 
+## --                                - new parent class Id
+## --                                - method set_id(): if tstamp is None, it is initialized with id
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2023-11-17)
+Ver. 1.4.0 (2024-05-19)
 
 This module provides classes for standardized stream processing. 
+
 """
 
 
@@ -75,7 +79,6 @@ from mlpro.bf.mt import *
 from datetime import datetime
 from matplotlib.figure import Figure
 import random
-import uuid
 
 from typing import List
 
@@ -99,7 +102,7 @@ class Label (Dimension): pass
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Instance (TStamp):
+class Instance (Id, TStamp):
     """
     Instance class to store the current instance and the corresponding labels of the stream
 
@@ -127,17 +130,14 @@ class Instance (TStamp):
         self._feature_data = p_feature_data
         self._label_data   = p_label_data
         TStamp.__init__(self, p_tstamp=p_tstamp)
+        Id.__init__(self, p_id = 0)
         self._kwargs       = p_kwargs.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        return self._id
-
-
-## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id:int):
-        self._id = p_id
+        Id.set_id(self, p_id)
+        if self.tstamp is None: self.tstamp = p_id
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ class Instance (TStamp):
                                     p_label_data=self.get_label_data(),
                                     p_tstamp=self.get_tstamp(),
                                     p_kwargs=self._kwargs )
-        duplicate.set_id(self.get_id())
+        duplicate.id = self.id
         return duplicate
 
 
