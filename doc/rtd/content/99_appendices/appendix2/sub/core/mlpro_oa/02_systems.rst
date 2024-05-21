@@ -1,5 +1,5 @@
 .. _target_api_oa_systems:
-OA-SYSTEMS - Online-adaptive Systems
+OA-SYSTEMS - Online Adaptive Systems
 ====================================
 
 .. toctree::
