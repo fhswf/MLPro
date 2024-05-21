@@ -39,7 +39,7 @@ from matplotlib.collections import PolyCollection
 from matplotlib.patches import Rectangle
 import matplotlib.pyplot as plt
 import numpy as np
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
 from typing import Union, List, Iterable
 import matplotlib.colors as colors

@@ -22,7 +22,7 @@ additional random point outliers.
 
 import random
 import math
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 
