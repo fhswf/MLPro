@@ -68,7 +68,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 200
+    cycle_limit = 250
     logging     = Log.C_LOG_ALL
     visualize   = True
   
