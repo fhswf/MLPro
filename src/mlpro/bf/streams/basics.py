@@ -80,7 +80,7 @@ from datetime import datetime
 from matplotlib.figure import Figure
 import random
 
-from typing import List
+from typing import List, Dict, Tuple
 
 
 
@@ -173,6 +173,16 @@ class Instance (Id, TStamp):
                                     p_kwargs=self._kwargs )
         duplicate.id = self.id
         return duplicate
+
+
+
+
+
+# Type aliases for instance handling
+InstType    = int
+InstTypeNew = 0
+InstTypeDel = 1
+InstDict    = Dict[int, Tuple[InstType, Instance]]
 
 
 
@@ -815,6 +825,7 @@ class StreamProvider (Log, ScientificObject):
         """
 
         raise NotImplementedError 
+
 
 
 

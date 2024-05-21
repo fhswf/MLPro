@@ -49,10 +49,11 @@
 ## -- 2023-06-01  2.1.2     SY       Scientific Referencing to bibtex format
 ## -- 2024-05-19  2.2.0     DA       - class Id: new property id
 ## --                                - class TStamp: new property tstamp
+## -- 2024-05-21  2.3.0     DA       Class TStamp: introduction of alias TStampType
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2024-05-19)
+Ver. 2.3.0 (2024-05-21)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -66,11 +67,11 @@ import os
 import sys
 import uuid
 from mlpro.bf.exceptions import *
+from typing import Union
 
 
 # Global dictionary to store paths of pickle files during runtime
 g_persistence_file_paths = {}
-
 
 
 
@@ -656,25 +657,35 @@ class Timer:
 
 
 
+TStampType = Union[ datetime, timedelta, float, int]
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class TStamp:
     """
-    This class provides elementry time stamp functionality for inherited classes.
+    This class provides elementry time stamp functionality for inherited classes. A time stamp in
+    MLPro can be neary every numeric type representing an absolute or relative time index. See
+    alias TStampType for further details.
+
+    Parameters
+    ----------
+    p_tstamp : TStampType
+        Optional initial time stamp.
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_tstamp: timedelta = None):
+    def __init__(self, p_tstamp: TStampType = None):
         self.set_tstamp(p_tstamp)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_tstamp(self) -> timedelta:
+    def get_tstamp(self) -> TStampType:
         return self._tstamp
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_tstamp(self, p_tstamp: timedelta):
+    def set_tstamp(self, p_tstamp: TStampType):
         self._tstamp = p_tstamp
 
 
