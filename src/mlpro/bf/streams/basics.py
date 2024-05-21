@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams
-## -- Module  : models.py
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -60,15 +60,23 @@
 ## -- 2024-05-19  1.4.0     DA       Class Instance: 
 ## --                                - new parent class Id
 ## --                                - method set_id(): if tstamp is None, it is initialized with id
+## -- 2024-05-21  2.0.0     DA       Classes StreamShared, StreamTask, StreamWorkflow, StreamScenario: 
+## --                                - refactoring of instance handling
+## --                                Class StreamTask:
+## --                                - optimization of code for plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-05-19)
+Ver. 2.0.0 (2024-05-21)
 
 This module provides classes for standardized stream processing. 
 
 """
 
+
+from matplotlib.figure import Figure
+import random
+from typing import Dict, Tuple
 
 from mlpro.bf.math.basics import *
 from mlpro.bf.various import *
@@ -76,11 +84,6 @@ from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import Dimension, Element
 from mlpro.bf.mt import *
-from datetime import datetime
-from matplotlib.figure import Figure
-import random
-
-from typing import List, Dict, Tuple
 
 
 
@@ -98,6 +101,10 @@ class Label (Dimension): pass
 
 
 
+
+
+# Type alias for instance ids
+InstId = int
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -124,18 +131,18 @@ class Instance (Id, TStamp):
     def __init__( self, 
                   p_feature_data : Element, 
                   p_label_data : Element = None, 
-                  p_tstamp : datetime = None,
+                  p_tstamp : TStampType = None,
                   **p_kwargs ):
 
         self._feature_data = p_feature_data
         self._label_data   = p_label_data
         TStamp.__init__(self, p_tstamp=p_tstamp)
-        Id.__init__(self, p_id = 0)
+        # Id.__init__(self, p_id = 0)
         self._kwargs       = p_kwargs.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_id(self, p_id:int):
+    def set_id(self, p_id:InstId):
         Id.set_id(self, p_id)
         if self.tstamp is None: self.tstamp = p_id
 
@@ -182,7 +189,7 @@ class Instance (Id, TStamp):
 InstType    = int
 InstTypeNew = 0
 InstTypeDel = 1
-InstDict    = Dict[int, Tuple[InstType, Instance]]
+InstDict    = Dict[InstId, Tuple[InstType, Instance]]
 
 
 
@@ -208,18 +215,18 @@ class StreamShared (Shared):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_inst_new:List[Instance]):
+    def reset(self, p_inst : InstDict):
         """
         Resets the shared object and prepares the processing of the given set of new instances.
 
         Parameters
         ----------
-        p_inst_new : List[Instance]
+        p_inst : List[Instance]
             List of new instances to be processed.
         """
 
         self._instances.clear()
-        self._instances['wf'] = ( p_inst_new, [] )
+        self._instances['wf'] = p_inst
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -234,61 +241,43 @@ class StreamShared (Shared):
 
         Returns
         -------
-        inst_new : list
-            List of new instances of all given task ids.
-        inst_del : list
-            List of instances to be deleted of all given task ids.
+        inst : InstDict
+            Instances of all given task ids.
         """
 
         len_task_ids = len(p_task_ids)
 
         if len_task_ids == 1:
-            # Most likely case: result instances of one predecessor or requested
+            # Most likely case: result instances of one predecessor are requested
             try:
                 instances = self._instances[p_task_ids[0]]
             except KeyError:
                 # Predecessor is the workflow
                 instances = self._instances['wf']
 
-            inst_new = instances[0].copy()
-            inst_del = instances[1].copy()
+            inst = instances.copy()
 
         elif len_task_ids > 1:
             # Result instances of more than one predecessors are requested
-            dict_inst_new = {}
-            dict_inst_del = {}
+            inst : InstDict = {}
 
             for task_id in p_task_ids:
                 try:
-                    instances = self._instances[task_id]
+                    inst_task = self._instances[task_id]
                 except KeyError:
-                    instances = self._instances['wf']
+                    inst_task = self._instances['wf']
 
-                for inst in instances[0]:
-                    dict_inst_new[inst.get_id()] = inst
-
-                for inst in instances[1]:
-                    dict_inst_del[inst.get_id()] = inst
-
-            sorted_ids = list( dict_inst_new.keys() )
-            sorted_ids.sort()
-            inst_new = [ dict_inst_new[i] for i in sorted_ids ]
-
-            sorted_ids = list( dict_inst_del.keys() )
-            sorted_ids.sort()
-            inst_del = [ dict_inst_del[i] for i in sorted_ids ]
+                inst.update(inst_task)
 
         else:
             # No predecessor task id -> origin incoming instances on workflow level are forwarded
-            instances = self._instances['wf']
-            inst_new = instances[0].copy()
-            inst_del = instances[1].copy()
+            inst = self._instances['wf'].copy()
 
-        return inst_new, inst_del
+        return inst
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_instances(self, p_task_id, p_inst_new:List[Instance], p_inst_del:List[Instance]):
+    def set_instances(self, p_task_id, p_inst:InstDict):
         """
         Stores result instances of a task in the shared object.
 
@@ -296,13 +285,11 @@ class StreamShared (Shared):
         ----------
         p_task_id
             Id of related task.
-        p_inst_new : list
-            List of new instances.
-        p_inst_del : list
-            List of instances to be deleted.
+        p_inst : InstDict
+            Instances of related task.
         """
 
-        self._instances[p_task_id] = ( p_inst_new, p_inst_del ) 
+        self._instances[p_task_id] = p_inst
 
 
 
@@ -893,8 +880,7 @@ class StreamTask (Task):
     def run( self, 
              p_range : int = None, 
              p_wait: bool = False, 
-             p_inst_new : List[Instance] = None, 
-             p_inst_del : List[Instance] = None ):
+             p_inst : InstDict = None ):
         """
         Executes the specific actions of the task implemented in custom method _run(). At the end event
         C_EVENT_FINISHED is raised to start subsequent actions.
@@ -906,70 +892,56 @@ class StreamTask (Task):
             range defined during instantiation is taken. Oterwise the minimum range of both is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_inst_new : list
-            Optional list of new stream instances to be processed. If None, the list of the shared object
-            is used instead. Default = None.
-        p_inst_del : list
-            List of obsolete stream instances to be removed. If None, the list of the shared object
-            is used instead. Default = None.
+        p_inst : InstDict
+            Instances to be processed. If None, the instances are taken from the shared object. Default = None.
         """
 
         so : StreamShared = self.get_so()
 
-        if p_inst_new is not None:
-            inst_new = p_inst_new
-            inst_del = p_inst_del
+        if p_inst is not None:
+            inst = p_inst
         else:
             if so is None:
                 raise ImplementationError('Class StreamTask needs instance data as parameters or from a shared object')
 
             try: 
-                inst_new, inst_del = so.get_instances(p_task_ids=self._predecessor_ids)
+                inst = so.get_instances(p_task_ids=self._predecessor_ids)
             except AttributeError:
                 raise ImplementationError('Shared object not compatible to class StreamShared')
         
-        if ( len(inst_new) + len(inst_del) ) == 0: 
+        if len(inst) == 0: 
             self.log(Log.C_LOG_TYPE_S, 'No inputs -> SKIP')
 
         if self._duplicate_data:
-            inst_new_copy = []
-            inst_del_copy = []
-            for inst in inst_new:
-                inst_new_copy.append(inst.copy())
-            for inst in inst_del:
-                inst_del_copy.append(inst.copy())
+            inst_copy : InstDict = {}
 
-            inst_new = inst_new_copy
-            inst_del = inst_del_copy
+            for inst_entry in inst_copy.values:
+                inst_copy[inst_entry[1].id] = ( inst_entry[0], inst_entry[1].copy())
 
-        Task.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
+            inst = inst_copy
+
+        Task.run(self, p_range=p_range, p_wait=p_wait, p_inst=inst)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wrapper( self, 
-                      p_inst_new : List[Instance], 
-                      p_inst_del : List[Instance] ):
+    def _run_wrapper( self, p_inst : InstDict ):
         """
         Internal use.
         """
 
-        self._run( p_inst_new = p_inst_new, p_inst_del=p_inst_del )
-        self.get_so().set_instances( p_task_id = self.get_tid(), p_inst_new=p_inst_new, p_inst_del=p_inst_del )
+        self._run( p_inst = p_inst )
+        self.get_so().set_instances( p_task_id = self.get_tid(), p_inst=p_inst )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run( self, 
-              p_inst_new : List[Instance], 
-              p_inst_del : List[Instance] ):
+    def _run( self, p_inst : InstDict ):
         """
         Custom method that is called by method run(). 
 
         Parameters
         ----------
-        p_inst_new : set
-            Set of new stream instances to be processed.
-        p_inst_del : set
-            Set of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Instances to be processed.
         """
 
         raise NotImplementedError
@@ -1002,9 +974,8 @@ class StreamTask (Task):
         Task._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
 
         self._plot_2d_plot   = None
-        self._plot_inst_ids  = []
-        self._plot_2d_xdata  = []
-        self._plot_2d_ydata  = []
+        self._plot_2d_xdata  = {}
+        self._plot_2d_ydata  = {}
         self._plot_2d_xmin   = None
         self._plot_2d_xmax   = None
         self._plot_2d_ymin   = None
@@ -1021,10 +992,9 @@ class StreamTask (Task):
         Task._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
 
         self._plot_3d_plot   = None
-        self._plot_inst_ids  = []
-        self._plot_3d_xdata  = []
-        self._plot_3d_ydata  = []
-        self._plot_3d_zdata  = []
+        self._plot_3d_xdata  = {}
+        self._plot_3d_ydata  = {}
+        self._plot_3d_zdata  = {}
         self._plot_3d_xmin   = None
         self._plot_3d_xmax   = None
         self._plot_3d_ymin   = None
@@ -1092,18 +1062,15 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst_new : List[Instance] = None, 
-                     p_inst_del : List[Instance] = None, 
+                     p_inst : InstDict = None, 
                      **p_kwargs ):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
         Parameters
         ----------
-        p_inst_new : List[Instance]
-            List of new stream instances to be plotted.
-        p_inst_del : List[Instance]
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
@@ -1113,38 +1080,30 @@ class StreamTask (Task):
         except:
             return
 
-        if p_inst_new is None:
-            inst_new, inst_del = self.get_so().get_instances(p_task_ids=[self.get_tid()])
+        if p_inst is None:
+            inst = self.get_so().get_instances(p_task_ids=[self.get_tid()])
         else:
-            inst_new = p_inst_new
-            inst_del = p_inst_del
+            inst = p_inst
 
-
-        if len(inst_new) > 0:
-            inst_ref = inst_new[0]
-        elif len(inst_del) > 0:
-            inst_ref = inst_del[0]
-        else:
-            return
+        if len(inst) == 0: return
 
         try:
             self._plot_view_finalized
         except:
             if self._plot_settings.view_autoselect:
-                self._finalize_plot_view(p_inst_ref=inst_ref)
+                self._finalize_plot_view(p_inst_ref=next(iter(inst.values()))[1])
 
             self._plot_view_finalized = True
 
-        Task.update_plot(self, p_inst_new=inst_new, p_inst_del=inst_del, **p_kwargs)
+        Task.update_plot(self, p_inst=inst, **p_kwargs)
 
-        self._plot_num_inst += len(inst_new)
+        self._plot_num_inst += len(inst)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d( self, 
                          p_settings : PlotSettings, 
-                         p_inst_new : list, 
-                         p_inst_del : list, 
+                         p_inst : InstDict, 
                          **p_kwargs ):
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
@@ -1154,112 +1113,98 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
-        # 1 Check for new instances to be plotted and deleted instances to be removed
-        if len(p_inst_new) > 0: inst_ref = p_inst_new[0]
-        elif len(p_inst_del) > 0: inst_ref = p_inst_del[0]
-        else: return
+        # 1 Check: something to do?
+        if len(p_inst) == 0: return
 
 
-        # 2 Update of plot data and ax limits
+        # 2 Update plot data
         ax_limits_changed = False
+        ax_limits_force   = False
+        xmin              = None
+        xmax              = None
+        ymin              = None
+        ymax              = None
 
-        if len(p_inst_new) > 0:
-            xdata_new = []
-            ydata_new = []
+        for inst_id, inst_entry in p_inst.items():
 
-            for inst in p_inst_new:
+            inst_type = inst_entry[0]
+            inst      = inst_entry[1]
+                
+            if inst_type == InstTypeNew:
                 feature_values = inst.get_feature_data().get_values()
-                xdata_new.append(feature_values[0])
-                ydata_new.append(feature_values[1])
-                self._plot_inst_ids.append( inst.get_id() )
+                x = feature_values[0]
+                y = feature_values[1]
+                self._plot_2d_xdata[inst_id] = x
+                self._plot_2d_ydata[inst_id] = y
 
-            self._plot_2d_xdata.extend(xdata_new)
-            self._plot_2d_ydata.extend(ydata_new)
-            xmin = min(xdata_new)
-            xmax = max(xdata_new)
-            ymin = min(ydata_new)
-            ymax = max(ydata_new)
+                if xmin is None:
+                    xmin = x
+                    xmax = x
+                    ymin = y
+                    ymax = y
+                else:
+                    if x < xmin: xmin = x
+                    elif x > xmax: xmax = x
 
-            try:
-                if xmin < self._plot_2d_xmin:
-                    self._plot_2d_xmin = xmin
-                    ax_limits_changed = True
-            except:
+                    if y < ymin: ymin = y
+                    elif y > ymax: ymax = y
+
+            else:
+                del self._plot_2d_xdata[inst_id]
+                del self._plot_2d_ydata[inst_id]
+                ax_limits_force = True
+
+
+        # 3 Determine ax limits
+        if ax_limits_force:
+            self._plot_2d_xmin = min(self._plot_2d_xdata.values())
+            self._plot_2d_xmax = max(self._plot_2d_xdata.values())
+            self._plot_2d_ymin = min(self._plot_2d_ydata.values())
+            self._plot_2d_ymax = max(self._plot_2d_ydata.values())
+            ax_limits_changed = True
+        else:
+            if ( self._plot_2d_xmin is None ) or ( xmin < self._plot_2d_xmin ):
                 self._plot_2d_xmin = xmin
                 ax_limits_changed = True
-
-            try:
-                if xmax > self._plot_2d_xmax:
-                    self._plot_2d_xmax = xmax
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_2d_xmax is None ) or ( xmax > self._plot_2d_xmax ):
                 self._plot_2d_xmax = xmax
                 ax_limits_changed = True
-
-            try:
-                if ymin < self._plot_2d_ymin:
-                    self._plot_2d_ymin = ymin
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_2d_ymin is None ) or ( ymin < self._plot_2d_ymin ):
                 self._plot_2d_ymin = ymin
                 ax_limits_changed = True
-
-            try:
-                if ymax > self._plot_2d_ymax:
-                    self._plot_2d_ymax = ymax
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_2d_ymax is None ) or ( ymax > self._plot_2d_ymax ):
                 self._plot_2d_ymax = ymax
                 ax_limits_changed = True
             
 
-        if len(p_inst_del) > 0:
-            for inst in p_inst_del:
-                try:
-                    idx = self._plot_inst_ids.index(inst.get_id())
-                    del self._plot_2d_xdata[idx]
-                    del self._plot_2d_ydata[idx]
-                    del self._plot_inst_ids[idx]
-                except:
-                    pass
-
-            self._plot_2d_xmin = min(self._plot_2d_xdata)
-            self._plot_2d_xmax = max(self._plot_2d_xdata)
-            self._plot_2d_ymin = min(self._plot_2d_ydata)
-            self._plot_2d_ymax = max(self._plot_2d_ydata)
-
-            ax_limits_changed = True
-            
-
-        # 3 Plot current data
+        # 4 Plot current data
         if self._plot_2d_plot is None:            
-            # 3.1 Late initialization of plot object
+            # 4.1 First plot
+            inst_ref    = next(iter(p_inst.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
             p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
             p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
 
-            self._plot_2d_plot,  = p_settings.axes.plot( self._plot_2d_xdata, 
-                                                         self._plot_2d_ydata, 
+            self._plot_2d_plot,  = p_settings.axes.plot( list(self._plot_2d_xdata.values()), 
+                                                         list(self._plot_2d_ydata.values()), 
                                                          marker='+', 
                                                          color='blue', 
                                                          linestyle='',
                                                          markersize=3 )
 
         else:
-            # 3.2 Update of existing plot object
-            self._plot_2d_plot.set_xdata(self._plot_2d_xdata)
-            self._plot_2d_plot.set_ydata(self._plot_2d_ydata)
+            # 4.2 Update of existing plot object
+            self._plot_2d_plot.set_xdata(list(self._plot_2d_xdata.values()))
+            self._plot_2d_plot.set_ydata(list(self._plot_2d_ydata.values()))
 
 
-        # 4 Update of ax limits
+        # 5 Update of ax limits
         if ax_limits_changed:
             p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
             p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
@@ -1268,8 +1213,7 @@ class StreamTask (Task):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d( self, 
                          p_settings : PlotSettings, 
-                         p_inst_new : list, 
-                         p_inst_del : list, 
+                         p_inst : InstDict,
                          **p_kwargs ):
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
@@ -1279,119 +1223,98 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
-        # 1 Check for new instances to be plotted and deleted instances to be removed
-        if len(p_inst_new) > 0: inst_ref = p_inst_new[0]
-        elif len(p_inst_del) > 0: inst_ref = p_inst_del[0]
-        else: return
+        # 1 Check: something to do?
+        if len(p_inst) == 0: return
 
 
-        # 2 Update of plot data and ax limits
+        # 2 Update plot data
         ax_limits_changed = False
+        ax_limits_force   = False
+        xmin              = None
+        xmax              = None
+        ymin              = None
+        ymax              = None
+        zmin              = None
+        zmax              = None
 
-        if len(p_inst_new) > 0:
-            xdata_new = []
-            ydata_new = []
-            zdata_new = []
+        for inst_id, inst_entry in p_inst.items():
 
-            for inst in p_inst_new:
+            inst_type = inst_entry[0]
+            inst      = inst_entry[1]
+                
+            if inst_type == InstTypeNew:
                 feature_values = inst.get_feature_data().get_values()
-                xdata_new.append(feature_values[0])
-                ydata_new.append(feature_values[1])
-                zdata_new.append(feature_values[2])
-                self._plot_inst_ids.append( inst.get_id() )
+                x = feature_values[0]
+                y = feature_values[1]
+                z = feature_values[2]
+                self._plot_3d_xdata[inst_id] = x
+                self._plot_3d_ydata[inst_id] = y
+                self._plot_3d_zdata[inst_id] = z
 
-            self._plot_3d_xdata.extend(xdata_new)
-            self._plot_3d_ydata.extend(ydata_new)
-            self._plot_3d_zdata.extend(zdata_new)
+                if xmin is None:
+                    xmin = x
+                    xmax = x
+                    ymin = y
+                    ymax = y
+                    zmin = z
+                    zmax = z
+                else:
+                    if x < xmin: xmin = x
+                    elif x > xmax: xmax = x
 
-            xmin = min(xdata_new)
-            xmax = max(xdata_new)
-            ymin = min(ydata_new)
-            ymax = max(ydata_new)
-            zmin = min(zdata_new)
-            zmax = max(zdata_new)
+                    if y < ymin: ymin = y
+                    elif y > ymax: ymax = y
 
-            try:
-                if xmin < self._plot_3d_xmin:
-                    self._plot_3d_xmin = xmin
-                    ax_limits_changed = True
-            except:
+                    if z < zmin: zmin = z
+                    elif z > zmax: zmax = z
+
+            else:
+                del self._plot_3d_xdata[inst_id]
+                del self._plot_3d_ydata[inst_id]
+                del self._plot_3d_zdata[inst_id]
+                ax_limits_force = True
+
+
+        # 3 Determine ax limits
+        if ax_limits_force:
+            self._plot_3d_xmin = min(self._plot_3d_xdata.values())
+            self._plot_3d_xmax = max(self._plot_3d_xdata.values())
+            self._plot_3d_ymin = min(self._plot_3d_ydata.values())
+            self._plot_3d_ymax = max(self._plot_3d_ydata.values())
+            self._plot_3d_zmin = min(self._plot_3d_zdata.values())
+            self._plot_3d_zmax = max(self._plot_3d_zdata.values())
+            ax_limits_changed = True
+        else:
+            if ( self._plot_3d_xmin is None ) or ( xmin < self._plot_3d_xmin ):
                 self._plot_3d_xmin = xmin
                 ax_limits_changed = True
-
-            try:
-                if xmax > self._plot_3d_xmax:
-                    self._plot_3d_xmax = xmax
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_3d_xmax is None ) or ( xmax > self._plot_3d_xmax ):
                 self._plot_3d_xmax = xmax
                 ax_limits_changed = True
-
-            try:
-                if ymin < self._plot_3d_ymin:
-                    self._plot_3d_ymin = ymin
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_3d_ymin is None ) or ( ymin < self._plot_3d_ymin ):
                 self._plot_3d_ymin = ymin
                 ax_limits_changed = True
-
-            try:
-                if ymax > self._plot_3d_ymax:
-                    self._plot_3d_ymax = ymax
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_3d_ymax is None ) or ( ymax > self._plot_3d_ymax ):
                 self._plot_3d_ymax = ymax
                 ax_limits_changed = True
-
-            try:
-                if zmin < self._plot_3d_zmin:
-                    self._plot_3d_zmin = zmin
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_3d_zmin is None ) or ( zmin < self._plot_3d_zmin ):
                 self._plot_3d_zmin = zmin
                 ax_limits_changed = True
-
-            try:
-                if zmax > self._plot_3d_zmax:
-                    self._plot_3d_zmax = zmax
-                    ax_limits_changed = True
-            except:
+            if ( self._plot_3d_zmax is None ) or ( zmax > self._plot_3d_zmax ):
                 self._plot_3d_zmax = zmax
                 ax_limits_changed = True
-
-
-        if len(p_inst_del) > 0:
-            for inst in p_inst_del:
-                try:
-                    idx = self._plot_inst_ids.index(inst.get_id())
-                    del self._plot_3d_xdata[idx]
-                    del self._plot_3d_ydata[idx]
-                    del self._plot_3d_zdata[idx]
-                    del self._plot_inst_ids[idx]
-                except:
-                    pass
-
-            self._plot_3d_xmin = min(self._plot_3d_xdata)
-            self._plot_3d_xmax = max(self._plot_3d_xdata)
-            self._plot_3d_ymin = min(self._plot_3d_ydata)
-            self._plot_3d_ymax = max(self._plot_3d_ydata)
-            self._plot_3d_zmin = min(self._plot_3d_zdata)
-            self._plot_3d_zmax = max(self._plot_3d_zdata)
-
-            ax_limits_changed = True
             
 
-        # 3 Plot current data
+        # 4 Plot current data
         if self._plot_3d_plot is None:            
-            # 3.1 Late initialization of plot object
+            # 4.1 First plot
+            inst_ref    = next(iter(p_inst.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
             p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
             p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
@@ -1400,16 +1323,16 @@ class StreamTask (Task):
         else:
             self._plot_3d_plot.remove()
 
-        self._plot_3d_plot,  = p_settings.axes.plot( self._plot_3d_xdata, 
-                                                     self._plot_3d_ydata, 
-                                                     self._plot_3d_zdata,
+        self._plot_3d_plot,  = p_settings.axes.plot( list(self._plot_3d_xdata.values()), 
+                                                     list(self._plot_3d_ydata.values()), 
+                                                     list(self._plot_3d_zdata.values()),
                                                      marker='+', 
                                                      color='blue',
                                                      linestyle='',
                                                      markersize=4 )                                                        
 
 
-        # 4 Update of ax limits
+        # 5 Update of ax limits
         if ax_limits_changed:
             p_settings.axes.set_xlim( self._plot_3d_xmin, self._plot_3d_xmax )
             p_settings.axes.set_ylim( self._plot_3d_ymin, self._plot_3d_ymax )
@@ -1417,11 +1340,9 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-
     def _update_plot_nd( self, 
                          p_settings : PlotSettings, 
-                         p_inst_new : list, 
-                         p_inst_del : list, 
+                         p_inst : InstDict, 
                          **p_kwargs ):
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
@@ -1431,22 +1352,20 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
-        # 1 Check for new instances to be plotted and deleted instances to be removed
-        if len(p_inst_new) > 0: inst_ref = p_inst_new[0]
-        elif len(p_inst_del) > 0: inst_ref = p_inst_del[0]
-        else: return
+        # 1 Check: something to do?
+        if len(p_inst) == 0: return
 
 
         # 2 Late initialization of plot object
         if self._plot_nd_plots is None:
+
+            inst_ref = next(iter(p_inst.values()))[1]
 
             # 2.1 Check whether x label needs to be changed to time index
             if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_ref.get_tstamp() is not None ):
@@ -1467,35 +1386,47 @@ class StreamTask (Task):
                     self._plot_nd_plots.append( [feature_ydata, feature_plot] )
 
 
-        # 3 Add data of new instances to plot objects
-        for inst in p_inst_new:
-            inst_id = inst.get_id()
-            self._plot_inst_ids.append(inst_id)
-            self._plot_nd_xdata.append(inst_id)
+        # 3 Update plot data
+        for inst_id, inst_entry in sorted(p_inst.items()):
 
-            feature_data = inst.get_feature_data().get_values()
+            inst_type = inst_entry[0]
+            inst      = inst_entry[1]
 
-            for i, fplot in enumerate(self._plot_nd_plots):
-                feature_value = feature_data[i]
+            if inst_type == InstTypeNew:
+                self._plot_inst_ids.append(inst_id)
+                self._plot_nd_xdata.append(inst.tstamp)
 
-                if ( self._plot_nd_ymin is None ) or ( self._plot_nd_ymin > feature_value ):
-                    self._plot_nd_ymin = feature_value
+                feature_data = inst.get_feature_data().get_values()
 
-                if ( self._plot_nd_ymax is None ) or ( self._plot_nd_ymax < feature_value ):
-                    self._plot_nd_ymax = feature_value
+                for i, fplot in enumerate(self._plot_nd_plots):
+                    feature_value = feature_data[i]
 
-                fplot[0].append(feature_value)
+                    if ( self._plot_nd_ymin is None ) or ( self._plot_nd_ymin > feature_value ):
+                        self._plot_nd_ymin = feature_value
+
+                    if ( self._plot_nd_ymax is None ) or ( self._plot_nd_ymax < feature_value ):
+                        self._plot_nd_ymax = feature_value
+
+                    fplot[0].append(feature_value)
+            
+            else:
+                try:
+                    idx = self._plot_inst_ids.index(inst_id)
+                    del self._plot_inst_ids[idx]
+                    del self._plot_nd_xdata[idx]
+                    for fplot in self._plot_nd_plots: del fplot[0][idx]
+                except:
+                    pass
 
 
-        # 4 Removing obsolete data from the plots
-        for inst in p_inst_del:
-            try:
-                idx = self._plot_inst_ids.index(inst.get_id())
-                del self._plot_inst_ids[idx]
-                del self._plot_nd_xdata[idx]
-                for fplot in self._plot_nd_plots: del fplot[0][idx]
-            except:
-                pass
+        # 4 If buffer size is limited, remove obsolete data
+        if p_settings.data_horizon > 0:
+            num_del = max(0, len(self._plot_nd_xdata) - p_settings.data_horizon )
+
+            for i in range(num_del):
+                del self._plot_inst_ids[0]
+                del self._plot_nd_xdata[0]
+                for fplot in self._plot_nd_plots: del fplot[0][0]
 
 
         # 5 Set new plot data of all feature plots
@@ -1505,7 +1436,12 @@ class StreamTask (Task):
 
 
         # 6 Update ax limits
-        p_settings.axes.set_xlim(self._plot_nd_xdata[0], self._plot_nd_xdata[len(self._plot_nd_xdata)-1])
+        if p_settings.plot_horizon > 0:
+            xlim_id = max(0, len(self._plot_nd_xdata) - p_settings.plot_horizon)
+        else:
+            xlim_id = 0
+
+        p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id], self._plot_nd_xdata[-1])
         p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
                     
 
@@ -1560,8 +1496,7 @@ class StreamWorkflow (StreamTask, Workflow):
     def run( self, 
              p_range : int = None, 
              p_wait: bool = False, 
-             p_inst_new : list = None, 
-             p_inst_del : list = None ):
+             p_inst : InstDict = None ):
         """
         Runs all stream tasks according to their predecessor relations.
 
@@ -1573,18 +1508,15 @@ class StreamWorkflow (StreamTask, Workflow):
             is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_inst_new : list
-            Optional list of new stream instances to be processed. If None, the list of the shared object
-            is used instead. Default = None.
-        p_inst_del : list
-            List of obsolete stream instances to be removed. If None, the list of the shared object
+        p_inst : InstDict
+            Optional list of stream instances to be processed. If None, the list of the shared object
             is used instead. Default = None.
         """
 
-        if p_inst_new is not None:
+        if p_inst is not None:
             # This workflow is the leading workflow and opens a new process cycle based on external instances
             try:
-                self.get_so().reset( p_inst_new )
+                self.get_so().reset( p_inst )
             except AttributeError:
                 raise ImplementationError('Stream workflows need a shared object of type StreamShared (or inherited)')
 
@@ -1640,24 +1572,21 @@ class StreamWorkflow (StreamTask, Workflow):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst_new : list = None, 
-                     p_inst_del : list = None, 
+                     p_inst : InstDict = None, 
                      **p_kwargs ):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
         Parameters
         ----------
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
         # Update of workflow master plot by using the StreamTask default implementation
-        StreamTask.update_plot(self, p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+        StreamTask.update_plot(self, p_inst=p_inst, **p_kwargs)
 
 
 
@@ -1775,8 +1704,9 @@ class StreamScenario (ScenarioBase):
         """
 
         try:
-            inst_new = [ next(self._iterator) ]
-            self._workflow.run( p_inst_new = inst_new, p_inst_del=[] )
+            inst_new = next(self._iterator)
+            inst     = { inst_new.id : (InstTypeNew, inst_new) }
+            self._workflow.run( p_inst = inst )
             end_of_data = False
         except StopIteration:
             end_of_data = True
