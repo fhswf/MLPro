@@ -18,12 +18,15 @@
 ## -- 2023-04-09  0.7.0     DA       Class OATask: new methods adapt(), _adapt(), adapt_reverse()
 ## -- 2023-05-15  0.7.1     DA       Class OATask: new parameter p_buffer_size
 ## -- 2023-12-20  0.8.0     DA       Class OATask: new methods for renormalization
+## -- 2024-05-18  0.9.0     DA       - Class OATask: new methods _adapt_pre(), _adapt_post()
+## --                                - Classes OATrainingResults, OATraining removed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2023-12-20)
+Ver. 0.9.0 (2024-05-18)
 
 Core classes for online adaptive stream processing.
+
 """
 
 
@@ -117,27 +120,56 @@ class OATask (StreamTask, Model):
 
 ## -------------------------------------------------------------------------------------------------
     def adapt(self, p_inst_new:List[Instance], p_inst_del:List[Instance]) -> bool:
+
+        # 0 Intro
         if not self._adaptivity: return False
 
+
+        # 1 Preprocessing 
+        adapted = self._adapt_pre()
+
+            
+        # 1 Adaptation on new instances            
         if len(p_inst_new) > 0:
             self.log(self.C_LOG_TYPE_S, 'Adaptation started')
-            adapted = self._adapt( p_inst_new=p_inst_new )
+            adapted = adapted or self._adapt( p_inst_new=p_inst_new )
         else:
             adapted = False
 
+        
+        # 2 Reverse adaptation on obsolete instances
         if len(p_inst_del) > 0:
             self.log(self.C_LOG_TYPE_S, 'Reverse adaptation started')
             adapted = adapted or self._adapt_reverse( p_inst_del=p_inst_del )
 
-        self._set_adapted( p_adapted = adapted )
+        
+        # 3 Postprocessing
+        adapted = adapted or self._adapt_post()
 
+
+        # 4 Outro
+        self._set_adapted( p_adapted = adapted )
         return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_pre(self) -> bool:
+        """
+        Optional custom method for preprocessing steps of adaption.
+
+        Returns
+        -------
+        bool
+            True, if something has been adapted. False otherwise.
+        """
+
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_inst_new:List[Instance]) -> bool:
         """
-        Obligatory custom method for adaptations during regular operation. 
+        Obligatory custom method for adaptations on new instances during regular operation. 
 
         Parameters
         ----------
@@ -146,7 +178,7 @@ class OATask (StreamTask, Model):
 
         Returns
         -------
-        adapted : bool
+        bool
             True, if something has been adapted. False otherwise.
         """
 
@@ -156,7 +188,7 @@ class OATask (StreamTask, Model):
 ## -------------------------------------------------------------------------------------------------
     def _adapt_reverse(self, p_inst_del:List[Instance]) -> bool:
         """
-        Optional custom method for reverse adaptations during regular operation. 
+        Optional custom method for reverse adaptations on obsolete instances during regular operation. 
 
         Parameters
         ----------
@@ -166,6 +198,20 @@ class OATask (StreamTask, Model):
         Returns
         -------
         adapted : bool
+            True, if something has been adapted. False otherwise.
+        """
+
+        return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_post(self) -> bool:
+        """
+        Optional custom method for postprocessing steps of adaption.
+
+        Returns
+        -------
+        bool
             True, if something has been adapted. False otherwise.
         """
 
@@ -352,29 +398,3 @@ class OAScenario (StreamScenario):
         """
 
         raise NotImplementedError
-
-
-
-
-
-# -------------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
-class OATrainingResults (TrainingResults): 
-    """
-    ...
-    """
-    
-    pass
-
-
-
-
-
-# -------------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
-class OATraining (Training): 
-    """
-    ...
-    """
-    
-    C_NAME      = 'OA'
