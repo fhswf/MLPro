@@ -17,7 +17,7 @@ with 10-dimensional random feature data and 2-dimensional random label data.
 """
 
 import numpy as np
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 

@@ -19,7 +19,7 @@ This algorithm is proposed by Suman Nath, et al.
 
 """
 
-from mlpro.bf.streams.models import Sampler, Instance
+from mlpro.bf.streams.basics import Sampler, Instance
 from mlpro.bf.exceptions import ParamError
 import random
 

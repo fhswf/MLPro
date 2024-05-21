@@ -47,10 +47,12 @@
 ## --                                - logging
 ## -- 2023-04-12  2.1.1     MRD      Safe guarding open file with "with" 
 ## -- 2023-06-01  2.1.2     SY       Scientific Referencing to bibtex format
+## -- 2024-05-19  2.2.0     DA       - class Id: new property id
+## --                                - class TStamp: new property tstamp
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.2 (2023-06-01)
+Ver. 2.2.0 (2024-05-19)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -84,9 +86,9 @@ class Id:
         Optional external id
 
     Attributes
-    _id
+    ----------
+    id
         Unique id of the object.
-
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -114,6 +116,8 @@ class Id:
             self._id = p_id
         else:
             self._id = uuid.uuid4()
+
+    id = property( fget=get_id, fset=set_id )
 
 
 
@@ -666,12 +670,15 @@ class TStamp:
 
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> timedelta:
-        return self.tstamp
+        return self._tstamp
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_tstamp(self, p_tstamp: timedelta):
-        self.tstamp = p_tstamp
+        self._tstamp = p_tstamp
+
+
+    tstamp = property( fget=get_tstamp, fset=set_tstamp )
 
 
 
