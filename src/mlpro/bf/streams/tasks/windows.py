@@ -23,26 +23,27 @@
 ## -- 2022-12-29  1.1.3     DA       Removed method Window.init_plot()
 ## -- 2022-12-31  1.1.4     LSB      Refactoring
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
+## -- 2024-05-21  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2023-02-02)
+Ver. 1.2.0 (2024-05-21)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
 
 from matplotlib.axes import Axes
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from matplotlib.collections import PolyCollection
+# from matplotlib.collections import PolyCollection
 from matplotlib.patches import Rectangle
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
-from typing import Union, List, Iterable
-import matplotlib.colors as colors
+# from typing import Union, List, Iterable
+# import matplotlib.colors as colors
 
 
 
@@ -115,83 +116,89 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:list, p_inst_del:list ):
+    def _run(self, p_inst : InstDict ):
         """
         Method to run the window including adding and deleting of elements
 
         Parameters
         ----------
-        p_inst_new : list
-            Instance/s to be added to the window
-        p_inst_del : list
-            Instance/s to be deleted from the window
+        p_inst : InstDict
+            Instances to be processed.
         """
 
+        # 0 Intro
+        new_inst_found  = False
+        inst            = p_inst.copy()
+        p_inst.clear()
+
+
         # 1 Checking if there are new instances
-        if p_inst_new:
-            new_instances = p_inst_new.copy()
-            num_inst = len(new_instances)
+        for inst_id, (inst_type, inst)  in sorted(inst.items()):
+
+            if inst_type != InstTypeNew: continue
+
+            new_inst_found = True
+
+            # new_instances = p_inst_new.copy()
+            # num_inst = len(new_instances)
 
 
-            for i in range(num_inst):
-                inst = new_instances[i]
+            # for i in range(num_inst):
+            #     inst = new_instances[i]
 
 
-                # Compatibility with Instance/State
-                if isinstance(inst, Instance):
-                    feature_value = inst.get_feature_data()
-                else:
-                    feature_value = inst
+            feature_value = inst.get_feature_data()
 
 
-                # Checking the numeric dimensions/features in Stream
-                if self._numeric_buffer is None and self._statistics_enabled:
-                    for j in feature_value.get_dim_ids():
-                        if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
-                                                                                         Dimension.C_BASE_SET_R,
-                                                                                         Dimension.C_BASE_SET_Z]:
-                            self._numeric_features.append(j)
+            # Checking the numeric dimensions/features in Stream
+            if self._numeric_buffer is None and self._statistics_enabled:
+                for j in feature_value.get_dim_ids():
+                    if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
+                                                                                     Dimension.C_BASE_SET_R,
+                                                                                     Dimension.C_BASE_SET_Z]:
+                        self._numeric_features.append(j)
 
-                    self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
-
-
-                # Increment in buffer position
-                self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
+                self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
 
 
-                if len(self._buffer) == self.buffer_size:
-                    # if the buffer is already full,obsolete data is going to be deleted
-                    # raises an event, stores the new instances and skips the iteration
-                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=feature_value.get_related_set()))
-                    p_inst_del.append(self._buffer[self._buffer_pos])
-                    self._buffer[self._buffer_pos] = inst
-                    if self._statistics_enabled:
-                        self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
-                                                                  self._numeric_features]
-                    continue
+            # Increment in buffer position
+            self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
 
 
-                # adds element to the buffer in this code block only if the buffer is not already full
+            if len(self._buffer) == self.buffer_size:
+                # if the buffer is already full,obsolete data is going to be deleted
+                # raises an event, stores the new instances and skips the iteration
+                self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
+                                                                   p_related_set=feature_value.get_related_set()))
+                
+                p_inst_del.append(self._buffer[self._buffer_pos])
                 self._buffer[self._buffer_pos] = inst
                 if self._statistics_enabled:
                     self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
                                                               self._numeric_features]
+                continue
 
 
-                # if the buffer is full after adding an element, raises event
-                if len(self._buffer) == self.buffer_size:
-                    if self._delay:
-                        p_inst_new.clear()
-                        for instance in self._buffer.values():
-                            p_inst_new.append(instance)
-                    self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+            # adds element to the buffer in this code block only if the buffer is not already full
+            self._buffer[self._buffer_pos] = inst
+            if self._statistics_enabled:
+                self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
+                                                          self._numeric_features]
 
 
-            # If delay is true, clear the set p_inst_new for any following tasks
-            if self._delay:
-                if len(self._buffer) < self.buffer_size:
+            # if the buffer is full after adding an element, raises event
+            if len(self._buffer) == self.buffer_size:
+                if self._delay:
                     p_inst_new.clear()
+                    for instance in self._buffer.values():
+                        p_inst_new.append(instance)
+                self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+
+
+        # 2 If delay is true, clear the set p_inst_new for any following tasks
+        if self._delay and new_inst_found:
+           if len(self._buffer) < self.buffer_size:
+                p_inst.clear()
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ class MyTask (StreamTask):
     C_NAME      = 'Custom'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst : InstDict):
         pass
 
 
@@ -88,7 +88,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 721
+    cycle_limit = 500
     logging     = Log.C_LOG_ALL
     visualize   = True
   

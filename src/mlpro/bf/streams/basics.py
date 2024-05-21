@@ -1131,11 +1131,8 @@ class StreamTask (Task):
         ymin              = None
         ymax              = None
 
-        for inst_id, inst_entry in p_inst.items():
-
-            inst_type = inst_entry[0]
-            inst      = inst_entry[1]
-                
+        for inst_id, (inst_type, inst) in p_inst.items():
+               
             if inst_type == InstTypeNew:
                 feature_values = inst.get_feature_data().get_values()
                 x = feature_values[0]
@@ -1243,10 +1240,7 @@ class StreamTask (Task):
         zmin              = None
         zmax              = None
 
-        for inst_id, inst_entry in p_inst.items():
-
-            inst_type = inst_entry[0]
-            inst      = inst_entry[1]
+        for inst_id, (inst_type, inst) in p_inst.items():
                 
             if inst_type == InstTypeNew:
                 feature_values = inst.get_feature_data().get_values()
