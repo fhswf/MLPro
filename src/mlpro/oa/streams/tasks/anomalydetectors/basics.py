@@ -208,6 +208,13 @@ class AnomalyDetector(OATask):
         p_normalizer : Normalizer
             Normalizer object to be applied on task-specific 
         """
+        anomaly : Anomaly = None
 
         for anomaly in self._anomalies.values():
-            anomaly.get_instance().renormalize( p_normalizer=p_normalizer)
+            instances : list[InstDict] = None
+            instances = anomaly.get_instances()
+
+            for item in instances:
+                (inst_id, inst) = item.values()[-1]
+                inst.remormalize( p_normalizer=p_normalizer)
+
