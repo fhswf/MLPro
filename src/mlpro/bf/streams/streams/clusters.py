@@ -8,10 +8,11 @@
 ## -- 2023-11-20  0.0.0     SK       Creation
 ## -- 2024-04-18  1.0.0     SK       First draft implementation
 ## -- 2024-04-23  1.1.0     SK       Bug fixes
+## -- 2024-05-22  1.1.1     SK       Bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-04-18)
+Ver. 1.1.1 (2024-05-22)
 
 This module provides the native stream class StreamMLProClusterGenerator.
 These stream provides instances with self._num_dim dimensional random feature data, placed around
