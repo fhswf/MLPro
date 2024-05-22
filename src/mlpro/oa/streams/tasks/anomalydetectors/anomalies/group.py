@@ -11,6 +11,7 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
+## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -20,7 +21,7 @@ This module provides templates for anomaly detection to be used in the context o
 """
 
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance
+from mlpro.bf.streams import Instance, InstDict
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from matplotlib.figure import Figure
 from matplotlib.text import Text
@@ -40,7 +41,7 @@ class GroupAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : list[Instance] = None,
+                 p_instances : InstDict = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,

@@ -10,6 +10,7 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -18,7 +19,7 @@ Ver. 1.2.0 (2024-04-10)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
-from mlpro.bf.streams import Instance
+from mlpro.bf.streams import Instance, InstDict
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 
 
@@ -35,7 +36,7 @@ class DriftAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : Instance = None,
+                 p_instances : InstDict = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,

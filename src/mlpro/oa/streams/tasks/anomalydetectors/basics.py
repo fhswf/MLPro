@@ -12,6 +12,7 @@
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-04-11  1.3.0     DA       Methods AnomalyDetector.init/update_plot: determination and
 ## --                                forwarding of changes on ax limits
+## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -25,7 +26,7 @@ from matplotlib.figure import Figure
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import Log
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.bf.streams import Instance
+from mlpro.bf.streams import Instance, InstDict
 from mlpro.oa.streams.tasks import OATask
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 
@@ -69,7 +70,7 @@ class AnomalyDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst : InstDict):
         pass
 
 
@@ -132,7 +133,7 @@ class AnomalyDetector(OATask):
         if self.get_visualization(): 
             p_anomaly.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
-        self._raise_event(p_anomaly.C_NAME, p_anomaly)
+        self._raise_event(p_anomaly.C_TYPE, p_anomaly)
 
                  
 ## -------------------------------------------------------------------------------------------------
@@ -151,11 +152,11 @@ class AnomalyDetector(OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst_new: List[Instance] = None, p_inst_del: List[Instance] = None, **p_kwargs):
+    def update_plot(self, p_inst : InstDict = None, **p_kwargs):
     
         if not self.get_visualization(): return
 
-        super().update_plot(p_inst_new, p_inst_del, **p_kwargs)
+        super().update_plot(p_inst, **p_kwargs)
 
         axes = self._plot_settings.axes
 
