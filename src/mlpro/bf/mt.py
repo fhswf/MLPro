@@ -960,16 +960,22 @@ class Workflow (Task):
                 task_pos_x  = 1
                 task_pos_y  = 1
                 task_ax_id  = 1
-                task_plot_settings = PlotSettings( p_view = ps.view,
-                                                   p_axes = task_axes,
-                                                   p_pos_x = task_pos_x,
-                                                   p_pos_y = task_pos_y,
-                                                   p_step_rate = ps.step_rate,
-                                                   p_plot_depth = ps.plot_depth,
-                                                   p_detail_level = ps.detail_level,
-                                                   p_force_fg = ps.force_fg,
-                                                   p_id=task_ax_id,
-                                                   p_view_autoselect = ps.view_autoselect )
+                # task_plot_settings = PlotSettings( p_view = ps.view,
+                #                                    p_axes = task_axes,
+                #                                    p_pos_x = task_pos_x,
+                #                                    p_pos_y = task_pos_y,
+                #                                    p_step_rate = ps.step_rate,
+                #                                    p_plot_depth = ps.plot_depth,
+                #                                    p_detail_level = ps.detail_level,
+                #                                    p_force_fg = ps.force_fg,
+                #                                    p_id=task_ax_id,
+                #                                    p_view_autoselect = ps.view_autoselect )
+                task_plot_settings = ps.copy()
+                task_plot_settings.axes = task_axes
+                task_plot_settings.pos_x = task_pos_x
+                task_plot_settings.pos_y = task_pos_y
+                task_plot_settings.id    = task_ax_id
+
 
             else:
                 # Task plots embedded in the predecessor/workflow figure/subplot

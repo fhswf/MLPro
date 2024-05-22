@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.streams
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
@@ -20,10 +20,11 @@
 ## -- 2023-12-20  0.8.0     DA       Class OATask: new methods for renormalization
 ## -- 2024-05-18  0.9.0     DA       - Class OATask: new methods _adapt_pre(), _adapt_post()
 ## --                                - Classes OATrainingResults, OATraining removed
+## -- 2024-05-22  1.0.0     DA       Initial design finished
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2024-05-18)
+Ver. 1.0.0 (2024-05-22)
 
 Core classes for online adaptive stream processing.
 
@@ -119,36 +120,55 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_inst_new:List[Instance], p_inst_del:List[Instance]) -> bool:
+    def adapt(self, p_inst : InstDict) -> bool:
 
         # 0 Intro
         if not self._adaptivity: return False
-
+        self.log(self.C_LOG_TYPE_S, 'Adaptation started')
 
         # 1 Preprocessing 
-        adapted = self._adapt_pre()
-
-            
-        # 1 Adaptation on new instances            
-        if len(p_inst_new) > 0:
-            self.log(self.C_LOG_TYPE_S, 'Adaptation started')
-            adapted = adapted or self._adapt( p_inst_new=p_inst_new )
-        else:
+        try:
+            adapted = self._adapt_pre()
+            self.log(self.C_LOG_TYPE_S, 'Preprocessing done')
+        except NotImplementedError:
             adapted = False
 
-        
-        # 2 Reverse adaptation on obsolete instances
-        if len(p_inst_del) > 0:
-            self.log(self.C_LOG_TYPE_S, 'Reverse adaptation started')
-            adapted = adapted or self._adapt_reverse( p_inst_del=p_inst_del )
+        # 2 Main adaptation loop
+        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
 
-        
+            if inst_type == InstTypeNew:
+                # 2.1 Adaptation on a new stream instance
+                self.log(self.C_LOG_TYPE_S, 'Adaptation on new instance', inst_id)
+                if self._adapt( p_inst_new=inst):
+                    adapted = True
+                    self.log(self.C_LOG_TYPE_S, 'Policy adapted')
+                else:
+                    self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
+            else:
+                # 2.2 Reverse adaptation on an obsolete stream instance
+                self.log(self.C_LOG_TYPE_S, 'Reverse adaptation on obsolete instance', inst_id)
+                try:
+                    if self._adapt_reverse( p_inst_del=inst ):
+                        adapted = True
+                        self.log(self.C_LOG_TYPE_S, 'Policy adapted')
+                    else:
+                        self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
+                except NotImplementedError:
+                    self.log(self.C_LOG_TYPE_S, 'Reverse adaptation not implemented', inst_id)
+
         # 3 Postprocessing
-        adapted = adapted or self._adapt_post()
-
+        try:
+            adapted = adapted or self._adapt_post()
+            self.log(self.C_LOG_TYPE_S, 'Postprocessing done')
+        except NotImplementedError:
+            pass
 
         # 4 Outro
         self._set_adapted( p_adapted = adapted )
+        if adapted:
+            self.log(self.C_LOG_TYPE_S, 'Adaptation done with changes')
+        else:
+            self.log(self.C_LOG_TYPE_S, 'Adaptation done without changes')
         return adapted
 
 
@@ -163,18 +183,18 @@ class OATask (StreamTask, Model):
             True, if something has been adapted. False otherwise.
         """
 
-        return False
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:List[Instance]) -> bool:
+    def _adapt(self, p_inst_new:Instance) -> bool:
         """
-        Obligatory custom method for adaptations on new instances during regular operation. 
+        Obligatory custom method for adaptations on a new instance during regular operation. 
 
         Parameters
         ----------
-        p_inst_new : list
-            List of new stream instances to be processed.
+        p_inst_new : Instance
+            New stream instances to be processed.
 
         Returns
         -------
@@ -186,14 +206,14 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_reverse(self, p_inst_del:List[Instance]) -> bool:
+    def _adapt_reverse(self, p_inst_del:Instance) -> bool:
         """
-        Optional custom method for reverse adaptations on obsolete instances during regular operation. 
+        Optional custom method for reverse adaptation on an obsolete instance during regular operation. 
 
         Parameters
         ----------
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst_del : Instance
+            Obsolete stream instances to be removed.
 
         Returns
         -------
@@ -201,7 +221,7 @@ class OATask (StreamTask, Model):
             True, if something has been adapted. False otherwise.
         """
 
-        return False
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -215,7 +235,7 @@ class OATask (StreamTask, Model):
             True, if something has been adapted. False otherwise.
         """
 
-        return False
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------

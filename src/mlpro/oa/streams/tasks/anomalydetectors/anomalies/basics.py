@@ -13,6 +13,7 @@
 ## -- 2024-04-11  1.3.0     DA       Class Anomaly: extensions on methods update_plot_*
 ## -- 2024-05-07  1.3.1     SK       Bug fix related to p_instances
 ## -- 2024-05-09  1.3.2     DA       Bugfix in method Anomaly._update_plot()
+## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -24,7 +25,7 @@ This module provides templates for anomaly detection to be used in the context o
 from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
-from mlpro.bf.streams import Instance
+from mlpro.bf.streams import Instance, InstDict
 
 
 
@@ -62,7 +63,7 @@ class Anomaly (Id, Event, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances: list[Instance] = None,
+                 p_instances: list[InstDict] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -74,12 +75,12 @@ class Anomaly (Id, Event, Plottable):
                         p_tstamp=p_det_time, **p_kwargs)
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self.instances : Instance | list[Instance] = p_instances
+        self.instances : list[InstDict] = p_instances
         self.ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_instances(self) -> list[Instance]:
+    def get_instances(self) -> list[InstDict]:
         return self.instances
     
 

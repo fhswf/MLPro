@@ -11,6 +11,7 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
+## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -20,7 +21,7 @@ This module provides templates for anomaly detection to be used in the context o
 """
 
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance
+from mlpro.bf.streams import Instance, InstDict
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from matplotlib.figure import Figure
 from matplotlib.text import Text
@@ -40,7 +41,7 @@ class GroupAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : list[Instance] = None,
+                 p_instances : list[InstDict] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -52,7 +53,7 @@ class GroupAnomaly (Anomaly):
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
         
-        self.instances = p_instances
+        self.instances : list[InstDict] = p_instances
         p_ano_scores = p_ano_scores
         self.plot_update = True
 
@@ -85,12 +86,21 @@ class GroupAnomaly (Anomaly):
         if not self.plot_update: return
     
         label = self.C_NAME[0]
-        x1 = self.get_instances()[0].get_id()
-        x2 = self.get_instances()[-1].get_id()
+
+
+        x1 : Instance = None
+        x2 : Instance = None
+        (inst_type, x1) = self.get_instances()[0].values()[-1]
+        (inst_type, x2) = self.get_instances()[-1].values()[-1]
+
+        x1 = x1.get_id()
+        x2 = x2.get_id()
         a=[]
         b=[]
         for instance in self.get_instances():
-            a.append(instance.get_feature_data().get_values())
+            inst : Instance = None
+            (inst_type, inst) = instance.values()[-1]
+            a.append(inst.get_feature_data().get_values())
         for x in a:
             b.extend(x)
         y1 = min(b)

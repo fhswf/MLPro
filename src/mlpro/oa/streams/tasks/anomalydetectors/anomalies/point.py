@@ -12,6 +12,7 @@
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-04-16  1.3.0     DA       Finished visualisation
 ## -- 2024-05-07  1.3.1     SK       Bug fix related to p_instances
+## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -21,7 +22,7 @@ This module provides templates for anomaly detection to be used in the context o
 """
 
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance
+from mlpro.bf.streams import Instance, InstDict
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from matplotlib.figure import Figure
 from matplotlib.text import Text
@@ -43,7 +44,7 @@ class PointAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : list[Instance] = None,
+                 p_instances : list[InstDict] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -58,7 +59,7 @@ class PointAnomaly (Anomaly):
                           p_det_time=p_det_time, 
                           **p_kwargs )
         
-        self.instances = p_instances
+        self.instances : list[InstDict] = p_instances
         self.ano_scores = p_ano_scores
 
 
@@ -89,8 +90,9 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst           = self.get_instances()[-1]
-        feature_values = inst.get_feature_data().get_values()  
+        inst : Instance = None
+        (inst_type, inst) = self.get_instances()[-1].values()[-1]
+        feature_values = inst.get_feature_data().get_values()
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
         len_y          = ( p_ylim[1] - p_ylim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -131,8 +133,9 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst           = self.get_instances()[-1]
-        feature_values = inst.get_feature_data().get_values()  
+        inst : Instance = None
+        (inst_type, inst) = self.get_instances()[-1].values()[-1]
+        feature_values = inst.get_feature_data().get_values()
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
         len_y          = ( p_ylim[1] - p_ylim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -191,7 +194,11 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line is not None ) and not p_axlimits_changed: return
         
-        inst_id = self.get_instances()[-1].get_id()
+
+        inst : Instance = None
+        (inst_type, inst) = self.get_instances()[-1].values()[-1]
+
+        inst_id = inst.get_id()
         xpos    = [inst_id, inst_id]
         
         if self._plot_line is None:

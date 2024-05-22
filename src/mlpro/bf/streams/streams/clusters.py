@@ -8,10 +8,11 @@
 ## -- 2023-11-20  0.0.0     SK       Creation
 ## -- 2024-04-18  1.0.0     SK       First draft implementation
 ## -- 2024-04-23  1.1.0     SK       Bug fixes
+## -- 2024-05-22  1.1.1     SK       Bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-04-18)
+Ver. 1.1.1 (2024-05-22)
 
 This module provides the native stream class StreamMLProClusterGenerator.
 These stream provides instances with self._num_dim dimensional random feature data, placed around
@@ -177,12 +178,12 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         if point_of_change is None:
             num_clusters = random.randint(1,int(max_clusters_affected*self._num_clusters))
             clusters = list(random.sample(self._cluster_ids, num_clusters))
-            start = [random.randint(0.1*self.C_NUM_INSTANCES, 0.5*self.C_NUM_INSTANCES) for _ in clusters]
+            start = [random.randint(int(0.1*self.C_NUM_INSTANCES), int(0.5*self.C_NUM_INSTANCES)) for _ in clusters]
         else:
             clusters = list(random.sample(self._cluster_ids, len(point_of_change)))
             start = point_of_change
 
-        y = 200 if self.C_NUM_INSTANCES > 1000 else 0.2 * self.C_NUM_INSTANCES
+        y = 200 if self.C_NUM_INSTANCES > 1000 else int(0.2 * self.C_NUM_INSTANCES)
         z = [x+y for x in start]
         end = [random.randint(x, self.C_NUM_INSTANCES) for x in z]
 

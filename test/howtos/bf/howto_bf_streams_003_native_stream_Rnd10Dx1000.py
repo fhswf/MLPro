@@ -5,10 +5,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-02-06  1.0.0     DA       Creation/First implementation
+## -- 2024-05-21  1.1.0     DA       Introduction of PlotSettings.plot_horizon/data_horizon
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-02-06)
+Ver. 1.1.0 (2024-05-21)
 
 This module demonstrates and visualizes the native stream Rnd10Dx1000 which generates 1000
 10-dimensional random instances.
@@ -67,7 +68,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 200
+    cycle_limit = 250
     logging     = Log.C_LOG_ALL
     visualize   = True
   
@@ -89,7 +90,9 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_ND, 
+                                                        p_plot_horizon=50, 
+                                                        p_data_horizon=100) )
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

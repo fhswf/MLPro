@@ -88,7 +88,14 @@ class AnomalyDetectorPAGA(AnomalyDetector):
 
             if len(self.group_anomalies_instances) > 1:
 
-                if int(p_anomaly.get_instances()[-1].get_id()) - 1 == int(self.group_anomalies_instances[-2].get_id()):
+                inst_1 : Instance = None
+                inst_2 : Instance = None
+                (inst_type, inst_2) = self.group_anomalies_instances[-1].values()[-1]
+                second = inst_2.get_id()
+                (inst_type, inst_1) = self.group_anomalies_instances[-2].values()[-1]
+                first = inst_1.get_id()
+                
+                if int(second) - 1 == int(first):
 
                     if len(self.group_anomalies_instances) == 3:
 
@@ -98,7 +105,7 @@ class AnomalyDetectorPAGA(AnomalyDetector):
                         anomaly = GroupAnomaly(p_instances=self.group_anomalies_instances,
                                                p_ano_scores=self.group_ano_scores, p_visualize=self._visualize,
                                                p_raising_object=self,
-                                               p_det_time=str(p_anomaly.get_instances()[-1].get_tstamp()))
+                                               p_det_time=str(inst_2.get_tstamp()))
                         anomaly.set_id( p_id = self._get_next_anomaly_id() )
                         self._anomalies[anomaly.get_id()] = anomaly
                         self.group_anomalies = []

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_streams_110_stream_task_window.py
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2022-11-27  1.0.0     LSB      Creation
 ## -- 2022-12-14  1.1.0     DA       - Changed the stream provider from OpenML to MLPro 
 ## --                                - Added a custom task behind the window task
+## -- 2024-05-22  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-12-14)
+Ver. 1.1.0 (2024-05-22)
 
 This module demonstrates the functionality of stream window task in MLPro.
 
@@ -28,7 +29,7 @@ You will learn:
 
 
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.tasks import Window
+from mlpro.bf.streams.tasks.windows import RingBuffer
 
 
 
@@ -43,7 +44,7 @@ class MyTask (StreamTask):
     C_NAME      = 'Custom'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst: InstDict ):
         pass
 
 
@@ -63,23 +64,23 @@ class MyStreamScenario(StreamScenario):
 
 
         # 2 Set up a stream workflow 
-        workflow = StreamWorkflow( p_name='wf-window',
+        workflow = StreamWorkflow( p_name=self.C_NAME,
                                    p_range_max=StreamWorkflow.C_RANGE_NONE,    
                                    p_visualize=p_visualize,
                                    p_logging=logging)
 
         # 2.1 Set up and add a window task
-        task_window = Window( p_buffer_size=30, 
-                              p_name = 't1', 
-                              p_delay = True,
-                              p_visualize = p_visualize, 
-                              p_enable_statistics = True,
-                              p_logging = p_logging)
+        task_window = RingBuffer( p_buffer_size=30, 
+                                  p_name = 'T1 - Ring Buffer', 
+                                  p_delay = True,
+                                  p_visualize = p_visualize, 
+                                  p_enable_statistics = True,
+                                  p_logging = p_logging )
 
         workflow.add_task(task_window)
 
         # 2.2 Set up and add an own custom task
-        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
+        task_custom = MyTask( p_name='T2 - My Task', p_visualize=p_visualize, p_logging=logging )
         workflow.add_task( p_task=task_custom, p_pred_tasks=[task_window] )
 
 
@@ -91,7 +92,7 @@ class MyStreamScenario(StreamScenario):
 
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 100
+    cycle_limit = 200
     logging = Log.C_LOG_ALL
     visualize = True
 
@@ -113,7 +114,9 @@ myscenario = MyStreamScenario(p_mode=Mode.C_MODE_REAL,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_ND,
+                                                        p_plot_horizon=100,
+                                                        p_data_horizon=150) ) 
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

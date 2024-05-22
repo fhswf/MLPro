@@ -122,12 +122,12 @@ class MyScenario (OAScenario):
 
 
         # 2.4 Set up and add a Sliding Window 
-        task4_window = Window( p_buffer_size = 100,
-                               p_name = '#4: Sliding Window',
-                               p_delay = True,
-                               p_visualize = p_visualize,
-                               p_enable_statistics = True,
-                               p_logging = p_logging )
+        task4_window = RingBuffer( p_buffer_size = 100,
+                                   p_name = '#4: Ring Buffer',
+                                   p_delay = True,
+                                   p_visualize = p_visualize,
+                                   p_enable_statistics = True,
+                                   p_logging = p_logging )
         
         workflow.add_task( p_task = task4_window, 
                            p_pred_tasks = [task3_deriver2] )
@@ -143,7 +143,7 @@ class MyScenario (OAScenario):
                            p_pred_tasks = [task4_window] )
 
         # 2.5.1 Here the event-based adaptation mechanism of the Boundary Betector is connected to the predecessor Windoow task
-        task4_window.register_event_handler( p_event_id = Window.C_EVENT_DATA_REMOVED, 
+        task4_window.register_event_handler( p_event_id = RingBuffer.C_EVENT_DATA_REMOVED, 
                                              p_event_handler = task5_bd.adapt_on_event )
 
 

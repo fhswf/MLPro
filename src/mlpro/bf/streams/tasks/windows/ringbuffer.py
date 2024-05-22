@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.tasks.windows
-## -- Module  : windows.py
+## -- Module  : ringbuffer.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -23,36 +23,32 @@
 ## -- 2022-12-29  1.1.3     DA       Removed method Window.init_plot()
 ## -- 2022-12-31  1.1.4     LSB      Refactoring
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
+## -- 2024-05-22  1.2.0     DA       Refactoring, splitting, and renaming to RingBuffer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2023-02-02)
+Ver. 1.2.0 (2024-05-22)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
 
 from matplotlib.axes import Axes
-from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from matplotlib.collections import PolyCollection
 from matplotlib.patches import Rectangle
-import matplotlib.pyplot as plt
 import numpy as np
 from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
-from typing import Union, List, Iterable
-import matplotlib.colors as colors
-
+from mlpro.bf.streams.tasks.windows.basics import Window
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Window (StreamTask):
+class RingBuffer (Window):
     """
-    This is the base class for window implementations
+    This class implements a ring buffer.
 
     Parameters
     ----------
@@ -72,15 +68,15 @@ class Window (StreamTask):
             Log level for the object. Default is log everything.
     """
 
-    C_NAME                  = 'Window'
+    C_NAME                  = 'Ring Buffer'
 
     C_PLOT_STANDALONE       = False
 
     C_PLOT_IN_WINDOW        = 'In Window'
     C_PLOT_OUTSIDE_WINDOW   = 'Out Window'
 
-    C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'
-    C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'
+    C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'     # raised the first time the buffer runs full
+    C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'    # raised whenever data were removed from the buffer
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -94,121 +90,102 @@ class Window (StreamTask):
                  p_logging    = Log.C_LOG_ALL,
                  **p_kwargs):
 
-        self._kwargs     = p_kwargs.copy()
-        self.buffer_size = p_buffer_size
-        self._delay      = p_delay
-        self._name       = p_name
-        self._range_max  = p_range_max
-        self.switch_logging(p_logging = p_logging)
+        super().__init__( p_buffer_size = p_buffer_size,
+                          p_delay = p_delay,
+                          p_name = p_name,
+                          p_range_max = p_range_max,
+                          p_duplicate_data = p_duplicate_data,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          p_kwargs = p_kwargs )
 
-        super().__init__(p_name      = p_name,
-                         p_range_max = p_range_max,
-                         p_duplicate_data = p_duplicate_data,
-                         p_visualize = p_visualize,
-                         p_logging   = p_logging)
-
-        self._buffer = {}
-        self._buffer_pos = 0
-        self._statistics_enabled = p_enable_statistics or p_visualize
+        self._statistics_enabled        = p_enable_statistics or p_visualize
         self._numeric_buffer:np.ndarray = None
-        self._numeric_features = []
+        self._numeric_features          = []
+        self._raise_event_data_removed  = False
+        self._buffer_full               = False
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:list, p_inst_del:list ):
+    def _run(self, p_inst : InstDict ):
         """
         Method to run the window including adding and deleting of elements
 
         Parameters
         ----------
-        p_inst_new : list
-            Instance/s to be added to the window
-        p_inst_del : list
-            Instance/s to be deleted from the window
+        p_inst : InstDict
+            Instances to be processed.
         """
 
-        # 1 Checking if there are new instances
-        if p_inst_new:
-            new_instances = p_inst_new.copy()
-            num_inst = len(new_instances)
+        # 0 Intro
+        inst = p_inst.copy()
+        p_inst.clear()
 
 
-            for i in range(num_inst):
-                inst = new_instances[i]
+        # 1 Main processing loop
+        for inst_id, (inst_type, inst)  in sorted(inst.items()):
+
+            if inst_type != InstTypeNew: 
+                # Obsolete instances need to be removed from the buffer (not yet implemented)
+                self.log(self.C_LOG_TYPE_W, 'Handling of obsolete data not yet implemented')
+                continue
 
 
-                # Compatibility with Instance/State
-                if isinstance(inst, Instance):
-                    feature_value = inst.get_feature_data()
-                else:
-                    feature_value = inst
+            # 1.1 A new instance is to be buffered
+            feature_value  = inst.get_feature_data()
 
 
-                # Checking the numeric dimensions/features in Stream
-                if self._numeric_buffer is None and self._statistics_enabled:
-                    for j in feature_value.get_dim_ids():
-                        if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
-                                                                                         Dimension.C_BASE_SET_R,
-                                                                                         Dimension.C_BASE_SET_Z]:
-                            self._numeric_features.append(j)
+            # 1.2 Checking the numeric dimensions/features in Stream
+            if self._numeric_buffer is None and self._statistics_enabled:
+                for j in feature_value.get_dim_ids():
+                    if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
+                                                                                     Dimension.C_BASE_SET_R,
+                                                                                     Dimension.C_BASE_SET_Z]:
+                        self._numeric_features.append(j)
 
-                    self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
-
-
-                # Increment in buffer position
-                self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
+                self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
 
 
-                if len(self._buffer) == self.buffer_size:
-                    # if the buffer is already full,obsolete data is going to be deleted
-                    # raises an event, stores the new instances and skips the iteration
-                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=feature_value.get_related_set()))
-                    p_inst_del.append(self._buffer[self._buffer_pos])
-                    self._buffer[self._buffer_pos] = inst
-                    if self._statistics_enabled:
-                        self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
-                                                                  self._numeric_features]
-                    continue
+            # 1.3 Internal ring buffer already filled?
+            if len(self._buffer) == self.buffer_size:
+
+                # The oldest instance is extracted from the buffer and forwarded
+                inst_del = self._buffer[self._buffer_pos]
+                p_inst[inst_del.id] = ( InstTypeDel, inst_del )
+                self._raise_event_data_removed = True
 
 
-                # adds element to the buffer in this code block only if the buffer is not already full
-                self._buffer[self._buffer_pos] = inst
-                if self._statistics_enabled:
-                    self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
-                                                              self._numeric_features]
+            # 1.4 New instance is buffered
+            self._buffer[self._buffer_pos] = inst
+               
+
+            # 1.5 Update of internal statistics
+            if self._statistics_enabled:
+                self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in self._numeric_features]
 
 
-                # if the buffer is full after adding an element, raises event
-                if len(self._buffer) == self.buffer_size:
-                    if self._delay:
-                        p_inst_new.clear()
-                        for instance in self._buffer.values():
-                            p_inst_new.append(instance)
-                    self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+            # 1.6 Increment of buffer position
+            self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
 
 
-            # If delay is true, clear the set p_inst_new for any following tasks
-            if self._delay:
-                if len(self._buffer) < self.buffer_size:
-                    p_inst_new.clear()
+            # 1.7 Raise events at the end of instance processing
+            if ( not self._buffer_full ) and ( len(self._buffer) == self.buffer_size ):
+                self._buffer_full = True
+
+                if self._delay:
+                    for i in range(self.buffer_size):
+                        inst_fwd = self._buffer[i]
+                        p_inst[inst_fwd.id] = ( InstTypeNew, inst_fwd )
+
+                self._raise_event( p_event_id = self.C_EVENT_BUFFER_FULL, 
+                                   p_event_object = Event( p_raising_object=self, 
+                                                           p_related_set=feature_value.get_related_set() ) )
 
 
-## -------------------------------------------------------------------------------------------------
-    def get_buffered_data(self):
-        """
-        Method to fetch the date from the window buffer
-
-        Returns
-        -------
-            buffer:dict
-                the buffered data in the form of dictionary
-            buffer_pos:int
-                the latest buffer position
-        """
-        if self._delay:
-            if len(self._buffer) < self.buffer_size: return
-        return self._buffer, self._buffer_pos
+            if self._raise_event_data_removed:
+                self._raise_event( p_event_id = self.C_EVENT_DATA_REMOVED, 
+                                   p_event_object = Event( p_raising_object=self, 
+                                                           p_related_set=feature_value.get_related_set() ) )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -218,54 +195,13 @@ class Window (StreamTask):
 
         Returns
         -------
-            boundaries:np.ndarray
-                Returns the current window boundaries in the form of a Numpy array.
+        boundaries:np.ndarray
+            Current window boundaries in the form of a Numpy array.
         """
+
         boundaries = np.stack(([np.min(self._numeric_buffer, axis=0),
                       np.max(self._numeric_buffer, axis=0)]), axis=1)
         return boundaries
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_mean(self):
-        """
-        Method to get the mean of the data in the Window.
-
-        Returns
-        -------
-            mean:np.ndarray
-                Returns the mean of the current data in the window in the form of a Numpy array.
-        """
-
-        return np.mean(self._buffer.values(), axis=0, dtype=np.float64)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_variance(self):
-        """
-        Method to get the variance of the data in the Window.
-
-        Returns
-        -------
-            variance:np.ndarray
-                Returns the variance of the current data in the window as a numpy array.
-        """
-
-        return np.variance(self._buffer.values(), axis=0, dtype=np.float64)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_std_deviation(self):
-        """
-        Method to get the standard deviation of the data in the window.
-
-        Returns
-        -------
-            std:np.ndarray
-                Returns the standard deviation of the data in the window as a numpy array.
-        """
-
-        return np.std(self._buffer.values(), axis=0, dtype=np.float64)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -277,7 +213,6 @@ class Window (StreamTask):
         ----------
         p_figure: Figure
             The figure object that hosts the plot
-
         p_settings: list of PlotSettings objects.
             Additional settings for the plot
 
@@ -304,7 +239,6 @@ class Window (StreamTask):
         ----------
         p_figure: matplotlib.figure.Figure
             The figure object to host the plot.
-
         p_settings: PlotSettings
             Additional Settings for the plot
         """
@@ -353,24 +287,23 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, p_inst:InstDict, **p_kwargs):
         """
-
-        Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
+        Default 2-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
 
         Parameters
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
 
         """
+        if len(p_inst) == 0 : return
+
         self.axes.grid(True)
         if self._patch_windows is None:
             self._patch_windows = {}
@@ -389,9 +322,8 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, p_inst:InstDict, **p_kwargs):
         """
-
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
 
@@ -399,16 +331,14 @@ class Window (StreamTask):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
 
         """
         # 1. Returns if no new instances passed
-        if p_inst_new is None: return
+        if len(p_inst) == 0 : return
         b = self.get_boundaries()
 
         if self._patch_windows is None:
@@ -452,7 +382,7 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, p_inst:InstDict, **p_kwargs):
         """
         Default N-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -461,16 +391,14 @@ class Window (StreamTask):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
-        # 1. CHeck if there is a new instance to be plotted
-        if len(p_inst_new) == 0 : return
+        # 1. Check if there is a new instance to be plotted
+        if len(p_inst) == 0 : return
 
         # 2. Check if the rectangle patches are already created
         if self._patch_windows is None:

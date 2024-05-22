@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_streams_001_tasks_workflows_and_stream_scenarios.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
 ## -- 2022-11-22  1.0.0     DA       First implementation
+## -- 2024-05-21  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-22)
+Ver. 1.1.0 (2024-05-21)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, stream tasks
 are added to a stream workflow. This in turn is combined with a stream of a stream provider to a
@@ -30,7 +31,6 @@ You will learn:
 
 
 from mlpro.bf.streams import *
-from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 
 
@@ -46,7 +46,7 @@ class MyTask (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst : InstDict):
         pass
 
 
@@ -65,8 +65,8 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize: bool, p_logging):
 
         # 1 Import a stream from OpenML
-        openml  = WrStreamProviderOpenML(p_logging=p_logging)
-        stream  = openml.get_stream(p_id=75, p_mode=p_mode, p_logging=p_logging)
+        provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
+        stream = provider_mlpro.get_stream('Clouds2D4C1000Static', p_logging=p_logging)
 
 
         # 2 Set up a stream workflow based on a custom stream task
@@ -115,7 +115,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 10
+    cycle_limit = 100
     logging     = Log.C_LOG_ALL
     visualize   = True
   

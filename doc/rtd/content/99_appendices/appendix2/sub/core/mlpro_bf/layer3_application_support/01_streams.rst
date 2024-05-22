@@ -5,7 +5,7 @@ BF-STREAMS - Stream Processing
 .. image:: images/MLPro-BF-Streams_class_diagram.drawio.png
    :scale: 50%
    
-.. automodule:: mlpro.bf.streams.models
+.. automodule:: mlpro.bf.streams.basics
    :members:
    :undoc-members:
    :private-members:

@@ -36,12 +36,18 @@
 ## -- 2024-02-24  2.11.1    DA       Class Plottable:
 ## --                                - new methods remove_plot(), _remove_plot()
 ## --                                - new methods refresh_plot(), _refresh_plot()
+## -- 2024-05-21  2.12.0    DA       Class PlotSettings:
+## --                                - parameter horizon replaced by plot_horizon with new default 
+## --                                  value 500
+## --                                - new parameter data_horizon with default value 1000
+## -- 2024-05-22  2.13.0    DA       New method PlotSettings.copy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.11.1 (2024-02-24)
+Ver. 2.13.0 (2024-05-22)
 
 This module provides various classes related to data plotting.
+
 """
 
 
@@ -94,12 +100,15 @@ class PlotSettings:
     p_step_rate : int 
         Optional step rate. Decides after how many calls of the update_plot() method the custom 
         methods _update_plot() carries out an output. Default = 1.
-    p_horizon : int
-        Optional plot horizon. A value > 0 limits the number of data entities that are shown in the
-        plot. Default = 0.
+    p_plot_horizon : int
+        Optional plot horizon for ND plot. A value > 0 limits the number of data entities shown
+        in the plot. Default = 500.
     p_plot_depth : int 
         Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
         depth is unlimited. Default = 0.
+    p_data_horizon : int
+        Optional data horizon for ND plot. A value > 0 limits the number of data entities buffered 
+        internally for plotting. Default = 1000.
     p_detail_level : int 
         Optional detail level. Default = 0.
     p_force_fg : bool
@@ -127,8 +136,9 @@ class PlotSettings:
                   p_size_x : int = 1,
                   p_size_y : int = 1,
                   p_step_rate : int = 1,
-                  p_horizon : int = 0,
+                  p_plot_horizon : int = 500,
                   p_plot_depth : int = 0,
+                  p_data_horizon : int = 1000,
                   p_detail_level : int = 0,
                   p_force_fg : bool = True,
                   p_id : int = 1,
@@ -145,7 +155,6 @@ class PlotSettings:
         self.size_x          = p_size_x
         self.size_y          = p_size_y
         self.step_rate       = p_step_rate
-        self.horizon         = p_horizon
         self.plot_depth      = p_plot_depth
         self.detail_level    = p_detail_level
         self.force_fg        = p_force_fg
@@ -153,6 +162,31 @@ class PlotSettings:
         self.view_autoselect = p_view_autoselect
         self.kwargs          = p_kwargs.copy()
 
+        if ( p_plot_horizon > 0 ) and ( p_data_horizon > 0 ):
+            self.plot_horizon = min(p_plot_horizon, p_data_horizon)
+            self.data_horizon = max(p_plot_horizon, p_data_horizon)
+        else:
+            self.plot_horizon    = p_plot_horizon
+            self.data_horizon    = p_data_horizon
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy(self):
+        return self.__class__( p_view = self.view,
+                               p_axes = self.axes,
+                               p_pos_x = self.pos_x,
+                               p_pos_y = self.pos_y,
+                               p_size_x = self.size_x,
+                               p_size_y = self.size_y,
+                               p_step_rate = self.step_rate,
+                               p_plot_horizon = self.plot_horizon,
+                               p_plot_depth = self.plot_depth,
+                               p_data_horizon = self.data_horizon,
+                               p_force_fg = self.force_fg,
+                               p_id = self.id,
+                               p_view_autoselect = self.view_autoselect,
+                               p_kwargs = self.kwargs )
+    
 
 
 

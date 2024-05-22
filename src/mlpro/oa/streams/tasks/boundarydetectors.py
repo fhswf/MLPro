@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.tasks.boundarydetectors
 ## -- Module  : boundarydetectors.py
 ## -------------------------------------------------------------------------------------------------
@@ -31,10 +31,11 @@
 ## -- 2023-05-21  1.2.3     LSB      Bug Fix : p_scaler shall be generated as a vertical array
 ## -- 2023-11-19  1.2.4     DA       Bugfix in method BoundaryDetector._adapt(): scaler management
 ## -- 2024-05-12  1.3.0     DA       Removed the scaler functionality from BoundaryDetector
+## -- 2024-05-22  1.4.0     DA       Refactoring and correction in BoundaryDetector._adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-12)
+Ver. 1.3.0 (2024-05-22)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 
@@ -42,12 +43,15 @@ This module provides pool of boundary detector object further used in the contex
 
 import matplotlib.colors
 
+from mlpro.bf.plot import PlotSettings
+from mlpro.bf.streams import Instance
+from mlpro.bf.streams.basics import InstDict
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.bf.math import *
-from mlpro.bf.mt import Task as MLTask
+from mlpro.bf.mt import PlotSettings, Task as MLTask
 from mlpro.oa.streams.basics import *
-from typing import Union, Iterable, List
+from typing import List
 
 
 
@@ -80,7 +84,9 @@ class BoundaryDetector (OATask):
     C_PLOT_ND_XLABEL_FEATURE    = 'Features'
     C_PLOT_ND_YLABEL            = 'Boundaries'
 
+    C_PLOT_STANDALONE           = True
     C_PLOT_VALID_VIEWS          = [ PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW         = PlotSettings.C_VIEW_ND
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -104,14 +110,14 @@ class BoundaryDetector (OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:List[Instance]):
+    def _adapt(self, p_inst_new: Instance) -> bool:
         """
         Method to check if the new instances exceed the current boundaries of the Set.
 
         Parameters
         ----------
-        p_inst_new:list
-            List of new instance/s added to the workflow
+        p_inst_new : Instance
+            New instance/s added to the workflow
 
         Returns
         -------
@@ -121,49 +127,42 @@ class BoundaryDetector (OATask):
 
         adapted = False
 
-        for inst in p_inst_new:
-            if isinstance(inst, Instance):
-                feature_data = inst.get_feature_data()
-            else:
-                feature_data = inst
+        feature_data = p_inst_new.get_feature_data()
 
-            # Storing the related set for events
-            self._related_set = feature_data.get_related_set()
+        # Storing the related set for events
+        self._related_set = feature_data.get_related_set()
 
-            dim = feature_data.get_related_set().get_dims()
+        dim = feature_data.get_related_set().get_dims()
 
-            for i,value in enumerate(feature_data.get_values()):
-                boundary = dim[i].get_boundaries()
-                if len(boundary) == 0 or boundary is None:
-                    boundary = [ 0,0 ]
-                    dim[i].set_boundaries(boundary)
-                    adapted = True
+        for i,value in enumerate(feature_data.get_values()):
+            boundary = dim[i].get_boundaries()
+            if len(boundary) == 0 or boundary is None:
+                dim[i].set_boundaries([value,value])
+                adapted = True
+                continue
 
-                if value < boundary[0]:
-                    dim[i].set_boundaries([value, boundary[1]])
-                    adapted = True
-                elif value > boundary[1]:
-                    dim[i].set_boundaries([boundary[0],value])
-                    adapted = True
+            if value < boundary[0]:
+                dim[i].set_boundaries([value, boundary[1]])
+                adapted = True
+            elif value > boundary[1]:
+                dim[i].set_boundaries([boundary[0],value])
+                adapted = True
 
         return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:List[Element], p_inst_del:List[Element]):
+    def _run(self, p_inst: InstDict):
         """
         Method to run the boundary detector task
 
         Parameters
         ----------
-            p_inst_new:list
-                List of new instance/s added to the workflow
-            p_inst_del:list
-                List of old obsolete instance/s removed from the workflow
+        p_inst : InstDict
+            Instances to be processed.
         """
 
-        if p_inst_new:
-            self.adapt(p_inst_new=p_inst_new, p_inst_del=p_inst_del)
+        self.adapt(p_inst=p_inst)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -224,6 +223,8 @@ class BoundaryDetector (OATask):
 
         """
 
+        super()._init_plot_nd( p_figure = p_figure, p_settings=p_settings)
+
         if not p_settings.axes:
             self.axes = p_figure.add_axes([0.1,0.1,0.7,0.8])
             self.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
@@ -240,8 +241,7 @@ class BoundaryDetector (OATask):
 ## --------------------------------------------------------------------------------------------------
     def _update_plot_nd( self,
                          p_settings : PlotSettings,
-                         p_inst_new : list,
-                         p_inst_del : list,
+                         p_inst : InstDict,
                          **p_kwargs ):
         """
         Default N-dimensional plotting implementation for Boundary Detector tasks. See class mlpro.bf.plot.Plottable
@@ -251,16 +251,13 @@ class BoundaryDetector (OATask):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst : InstDict
+            Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
-        if ((p_inst_new is None) or (len(p_inst_new) == 0)
-                and ((p_inst_del is None) or len(p_inst_del) ==0)) : return
+        if len(p_inst) == 0: return
 
         dims = self.get_related_set().get_dims()
 

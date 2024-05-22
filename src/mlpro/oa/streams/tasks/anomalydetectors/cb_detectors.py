@@ -10,6 +10,7 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -22,6 +23,7 @@ from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
+from mlpro.bf.streams import Instance, InstDict
 import numpy as np
 from scipy.spatial.distance import cdist
 
@@ -76,13 +78,6 @@ class AnomalyDetectorCB(AnomalyDetector):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, center: float, centroids: list):
-        pass
-
-
-
-
-## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
     """
@@ -121,9 +116,9 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, center: float, centroids: list):
+    def _run(self, p_inst : InstDict, centroids: list):
 
-        inst = p_inst_new[-1].get_feature_data()
+        inst = p_inst[-1].get_feature_data()
         feature_values = inst.get_values()
 
         cluster_id = 1
@@ -145,14 +140,14 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                 if (distance-self._ref_spacial_sizes[cluster_id]) > self._threshold:
                     self._ref_spacial_sizes[cluster_id] = distance
                     self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
-                    event = ClusterEnlargement(p_instances=p_inst_new)
+                    event = ClusterEnlargement(p_instances=p_inst)
                 else:
                     self._spacial_sizes[cluster_id] = distance
             else:
                 if (distance-self._ref_spacial_sizes[cluster_id]) > self._ref_spacial_sizes[cluster_id]*0.05:
                     self._ref_spacial_sizes[cluster_id] = distance
                     self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
-                    event = ClusterEnlargement(p_instances=p_inst_new)
+                    event = ClusterEnlargement(p_instances=p_inst)
                 else:
                     self._spacial_sizes[cluster_id] = distance
 
@@ -189,7 +184,7 @@ class ClusterVelocityChangeDetector(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, center: float, centroids: list):
+    def _run(self, p_inst : InstDict, centroids: list):
         # Fit the model with new data to update cluster centroids
         self.model.partial_fit()
         current_centroids = self.model.cluster_centers_
@@ -252,7 +247,7 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, center: float, centroids: list):
+    def _run(self, p_inst : InstDict, centroids: list):
 
         pass
 
@@ -291,7 +286,7 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list):
+    def _run(self, p_inst : InstDict):
         
         clusters = self._clusterer.get_clusters()
 
@@ -347,7 +342,7 @@ class ClusterRelativeSizeChangeDetector(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, center: float, centroids: list):
+    def _run(self, p_inst : InstDict, center: float, centroids: list):
 
         clusters = self._clusterer.get_clusters()
         total_weight = 0
@@ -419,7 +414,7 @@ class NewClusterDetector(AnomalyDetectorCB):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, centroids: list):
+    def _run(self, p_inst : InstDict, centroids: list):
         
         clusters = self._clusterer.get_clusters()
         if len(clusters) > self._num_clusters:
@@ -488,7 +483,7 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
         self.distance_threshold = p_threshold
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, center: float, centroids: list):
+    def _run(self, p_inst : InstDict, center: float, centroids: list):
         
         clusters = self._clusterer.get_clusters()
         if len(clusters) < self._num_clusters:
