@@ -32,7 +32,7 @@ You will learn:
 
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.tasks import Window, Rearranger
+from mlpro.bf.streams.tasks import RingBuffer, Rearranger
 from mlpro.oa.streams import *
 
 
@@ -81,13 +81,13 @@ class MyAdaptiveScenario (OAScenario):
         workflow.add_task( p_task=task_rearranger )
       
         # 2.2.2 Window to buffer some data
-        task_window = Window( p_buffer_size=50, 
-                              p_delay=True,
-                              p_enable_statistics=True,
-                              p_name='Chain 2D, Task T2',
-                              p_duplicate_data=True,
-                              p_visualize=p_visualize,
-                              p_logging=p_logging )
+        task_window = RingBuffer( p_buffer_size=50, 
+                                  p_delay=True,
+                                  p_enable_statistics=True,
+                                  p_name='Chain 2D, Task T2',
+                                  p_duplicate_data=True,
+                                  p_visualize=p_visualize,
+                                  p_logging=p_logging )
 
         workflow.add_task(p_task=task_window, p_pred_tasks=[task_rearranger])
 
@@ -97,7 +97,7 @@ class MyAdaptiveScenario (OAScenario):
                                     p_visualize=True,   
                                     p_logging=p_logging )
 
-        task_window.register_event_handler( p_event_id=Window.C_EVENT_DATA_REMOVED, p_event_handler=task_bd.adapt_on_event )
+        task_window.register_event_handler( p_event_id=RingBuffer.C_EVENT_DATA_REMOVED, p_event_handler=task_bd.adapt_on_event )
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
         # # 2.2.4 MinMax-Normalizer
@@ -127,13 +127,13 @@ class MyAdaptiveScenario (OAScenario):
         workflow.add_task( p_task=task_rearranger )
       
         # 2.3.2 Window to buffer some data
-        task_window = Window( p_buffer_size=50, 
-                              p_delay=True,
-                              p_enable_statistics=True,
-                              p_name='Chain 3D, Task T2',
-                              p_duplicate_data=True,
-                              p_visualize=p_visualize,
-                              p_logging=p_logging )
+        task_window = RingBuffer( p_buffer_size=50, 
+                                  p_delay=True,
+                                  p_enable_statistics=True,
+                                  p_name='Chain 3D, Task T2',
+                                  p_duplicate_data=True,
+                                  p_visualize=p_visualize,
+                                  p_logging=p_logging )
 
         workflow.add_task(p_task=task_window, p_pred_tasks=[task_rearranger])
 
@@ -174,13 +174,13 @@ class MyAdaptiveScenario (OAScenario):
         workflow.add_task( p_task=task_rearranger )
       
         # 2.5.2 Window to buffer some data
-        task_window = Window( p_buffer_size=50, 
-                              p_delay=True,
-                              p_enable_statistics=True,
-                              p_name='Chain nD, Task T2',
-                              p_duplicate_data=True,
-                              p_visualize=p_visualize,
-                              p_logging=p_logging )
+        task_window = RingBuffer( p_buffer_size=50, 
+                                  p_delay=True,
+                                  p_enable_statistics=True,
+                                  p_name='Chain nD, Task T2',
+                                  p_duplicate_data=True,
+                                  p_visualize=p_visualize,
+                                  p_logging=p_logging )
 
         workflow.add_task(p_task=task_window, p_pred_tasks=[task_rearranger])
 

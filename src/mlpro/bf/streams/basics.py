@@ -846,7 +846,6 @@ class StreamTask (Task):
     C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
-    C_PLOT_ND_XLABEL_INST   = 'Instance index'
     C_PLOT_ND_XLABEL_TIME   = 'Time index'
     C_PLOT_ND_YLABEL        = 'Feature Data'
 
@@ -1012,8 +1011,7 @@ class StreamTask (Task):
 
         Task._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings )
 
-        self._plot_nd_xlabel = self.C_PLOT_ND_XLABEL_INST
-        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
+        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
         p_settings.axes.grid(visible=True)
         p_settings.axes.set_xlim(0,1)
@@ -1361,11 +1359,7 @@ class StreamTask (Task):
 
             inst_ref = next(iter(p_inst.values()))[1]
 
-            # 2.1 Check whether x label needs to be changed to time index
-            if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_ref.get_tstamp() is not None ):
-                p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
-
-            # 2.2 Add plot for each feature
+            # 2.1 Add plot for each feature
             self._plot_nd_plots = []
             feature_space       = inst_ref.get_feature_data().get_related_set()
 
@@ -1381,10 +1375,7 @@ class StreamTask (Task):
 
 
         # 3 Update plot data
-        for inst_id, inst_entry in sorted(p_inst.items()):
-
-            inst_type = inst_entry[0]
-            inst      = inst_entry[1]
+        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
 
             if inst_type == InstTypeNew:
                 self._plot_inst_ids.append(inst_id)
@@ -1412,7 +1403,10 @@ class StreamTask (Task):
                 except:
                     pass
 
-
+        if len(self._plot_nd_xdata)==0:
+            return
+        
+        
         # 4 If buffer size is limited, remove obsolete data
         if p_settings.data_horizon > 0:
             num_del = max(0, len(self._plot_nd_xdata) - p_settings.data_horizon )

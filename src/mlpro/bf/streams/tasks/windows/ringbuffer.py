@@ -102,7 +102,6 @@ class RingBuffer (Window):
         self._statistics_enabled        = p_enable_statistics or p_visualize
         self._numeric_buffer:np.ndarray = None
         self._numeric_features          = []
-        self._raise_event_buffer_full   = False
         self._raise_event_data_removed  = False
         self._buffer_full               = False
 
@@ -126,71 +125,67 @@ class RingBuffer (Window):
         # 1 Main processing loop
         for inst_id, (inst_type, inst)  in sorted(inst.items()):
 
-            if inst_type == InstTypeNew: 
-
-                # 1.1 A new instance is to be buffered
-                feature_value  = inst.get_feature_data()
-
-
-                # 1.1.1 Checking the numeric dimensions/features in Stream
-                if self._numeric_buffer is None and self._statistics_enabled:
-                    for j in feature_value.get_dim_ids():
-                        if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
-                                                                                         Dimension.C_BASE_SET_R,
-                                                                                         Dimension.C_BASE_SET_Z]:
-                            self._numeric_features.append(j)
-
-                    self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
+            if inst_type != InstTypeNew: 
+                # Obsolete instances need to be removed from the buffer (not yet implemented)
+                self.log(self.C_LOG_TYPE_W, 'Handling of obsolete data not yet implemented')
+                continue
 
 
-                # 1.1.2 Internal ring buffer full?
-                if len(self._buffer) == self.buffer_size:
-
-                    # The oldest instance is extracted from the buffer and forwarded
-                    inst_del = self._buffer[self._buffer_pos]
-                    p_inst[inst_del.id] = ( InstTypeDel, inst_del )
-
-                    if not self._buffer_full:
-                        self._raise_event_buffer_full = True
-                        self._buffer_full             = True
-
-                    self._raise_event_data_removed = True
+            # 1.1 A new instance is to be buffered
+            feature_value  = inst.get_feature_data()
 
 
-                # 1.1.3 New instance is buffered
-                self._buffer[self._buffer_pos] = inst
+            # 1.2 Checking the numeric dimensions/features in Stream
+            if self._numeric_buffer is None and self._statistics_enabled:
+                for j in feature_value.get_dim_ids():
+                    if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
+                                                                                     Dimension.C_BASE_SET_R,
+                                                                                     Dimension.C_BASE_SET_Z]:
+                        self._numeric_features.append(j)
+
+                self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
+
+
+            # 1.3 Internal ring buffer already filled?
+            if len(self._buffer) == self.buffer_size:
+
+                # The oldest instance is extracted from the buffer and forwarded
+                inst_del = self._buffer[self._buffer_pos]
+                p_inst[inst_del.id] = ( InstTypeDel, inst_del )
+                self._raise_event_data_removed = True
+
+
+            # 1.4 New instance is buffered
+            self._buffer[self._buffer_pos] = inst
                
 
-                # 1.1.4 Update of internal statistics
-                if self._statistics_enabled:
-                    self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in self._numeric_features]
+            # 1.5 Update of internal statistics
+            if self._statistics_enabled:
+                self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in self._numeric_features]
 
 
-                # 1.1.5 Increment of buffer position
-                self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
+            # 1.6 Increment of buffer position
+            self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
 
 
-                # 1.1.6 Raise events at the end of instance processing
-                if self._raise_event_buffer_full:
-                    if self._delay:
-                        for i in range(self.buffer_size):
-                            inst_fwd = self._buffer[i]
-                            p_inst[inst_fwd.id] = ( InstTypeNew, inst_fwd )
+            # 1.7 Raise events at the end of instance processing
+            if ( not self._buffer_full ) and ( len(self._buffer) == self.buffer_size ):
+                self._buffer_full = True
 
-                    self._raise_event( p_event_id = self.C_EVENT_BUFFER_FULL, 
-                                       p_event_object = Event( p_raising_object=self, 
-                                                               p_related_set=feature_value.get_related_set() ) )
-                    self._raise_event_buffer_full = False
+                if self._delay:
+                    for i in range(self.buffer_size):
+                        inst_fwd = self._buffer[i]
+                        p_inst[inst_fwd.id] = ( InstTypeNew, inst_fwd )
 
-                if self._raise_event_data_removed:
-                    self._raise_event( p_event_id = self.C_EVENT_DATA_REMOVED, 
-                                       p_event_object = Event( p_raising_object=self, 
-                                                               p_related_set=feature_value.get_related_set() ) )
+                self._raise_event( p_event_id = self.C_EVENT_BUFFER_FULL, 
+                                   p_event_object = Event( p_raising_object=self, 
+                                                           p_related_set=feature_value.get_related_set() ) )
 
-            else:
-                # 1.2 Obsolete instances need to be removed from the buffer (not yet implemented)
-                self.log(self.C_LOG_TYPE_W, 'Handling of obsolete data not yet implemented')
-                pass
+
+            if self._raise_event_data_removed:
+                self._raise_event( p_event_id = self.C_EVENT_DATA_REMOVED, 
+                                   p_event_object = Event( p_raising_object=self, 
+                                                           p_related_set=feature_value.get_related_set() ) )
 
 
 ## -------------------------------------------------------------------------------------------------
