@@ -10,21 +10,23 @@
 ## -- 2022-12-14  1.0.1     DA       Corrections
 ## -- 2022-12-16  1.0.2     DA       Little refactoring
 ## -- 2022-12-19  1.0.3     DA       New parameter p_duplicate_data
+## -- 2024-05-22  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-12-19)
+Ver. 1.1.0 (2024-05-22)
 
 This module provides a stream task class Rearranger to rearrange the feature and label space of
 instances.
+
 """
 
 
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.mt import Task
-from mlpro.bf.math import Set, Element
-from mlpro.bf.streams import Instance, StreamTask
+from mlpro.bf.math import Element, Set
+from mlpro.bf.streams import Instance, InstDict, StreamTask
 
 
 
@@ -192,24 +194,17 @@ class Rearranger (StreamTask):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: set, p_inst_del: set):
+    def _run(self, p_inst : InstDict):
 
         # 1 Late preparation based on first incoming instance
         if not self._prepared:
             try:
-                inst = p_inst_new[0]
+                (inst_type, inst) = next(iter(p_inst.values()))
+                self._prepare_rearrangement(p_inst=inst)
+                self._prepared = True
             except:
-                inst = p_inst_del[0]
+                return
 
-            self._prepare_rearrangement(p_inst=inst)
-            self._prepared = True
-
-
-        # 2 Rearrange new instances
-        for inst in p_inst_new:
-            self._rearrange(p_inst=inst)
-
-
-        # 3 Rearrange instances to be deleted
-        for inst in p_inst_del:
+        # 2 Rearrange new instances (order doesn't matter)
+        for (inst_type,inst) in p_inst.values(): 
             self._rearrange(p_inst=inst)

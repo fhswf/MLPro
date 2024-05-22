@@ -8,10 +8,11 @@
 ## -- 2022-10-27  0.0.0     DA       Creation
 ## -- 2022-12-14  1.0.0     DA       First implementation
 ## -- 2023-02-07  1.0.1     SY       Refactoring module name
+## -- 2024-05-22  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-02-07)
+Ver. 1.1.0 (2024-05-22)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -47,7 +48,7 @@ class MyTask (StreamTask):
     C_NAME      = 'Custom'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst: InstDict):
         pass
 
 
@@ -85,7 +86,7 @@ class MyScenario (StreamScenario):
         labels_new   = [ ( 'L', [ labels[0] ] ), 
                          ( 'F', features[4:6] ) ]
 
-        task_rearranger = Rearranger( p_name='t1',
+        task_rearranger = Rearranger( p_name='T1 - Rearranger',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
@@ -95,7 +96,10 @@ class MyScenario (StreamScenario):
         workflow.add_task( p_task=task_rearranger )
 
         # 2.2 Set up and add an own custom task
-        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
+        task_custom = MyTask( p_name='T2 - My task', 
+                              p_visualize=p_visualize, 
+                              p_logging=logging )
+        
         workflow.add_task( p_task=task_custom, p_pred_tasks=[task_rearranger] )
 
 
@@ -131,6 +135,8 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+                                                        p_plot_horizon = 50,
+                                                        p_data_horizon = 100,
                                                         p_step_rate = 2 ) )
     input('Press ENTER to start stream processing...')
 
