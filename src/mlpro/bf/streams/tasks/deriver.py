@@ -8,10 +8,11 @@
 ## -- 2023-02-02  0.0.0     SY       Creation
 ## -- 2023-02-05  1.0.0     SY       First version release
 ## -- 2024-05-10  1.0.1     DA/SY    Bugfix in Deriver.__init__()
+## -- 2024-05-22  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-05-10)
+Ver. 1.1.0 (2024-05-22)
 
 This module provides a stream task class Deriver to derive the data of instances.
 """
@@ -21,7 +22,7 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.mt import Task
 from mlpro.bf.math import Set, Element
-from mlpro.bf.streams import Instance, StreamTask, Feature, Label
+from mlpro.bf.streams import Instance, InstDict, StreamTask, Feature, Label
 from mlpro.bf.physics import TransferFunction
 import numpy as np
 
@@ -61,8 +62,8 @@ class Deriver(StreamTask):
         Further optional named parameters.
     """
 
-    C_NAME = 'Deriver'
-    C_PLOT_STANDALONE = True
+    C_NAME              = 'Deriver'
+    C_PLOT_STANDALONE   = True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -174,13 +175,11 @@ class Deriver(StreamTask):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: set, p_inst_del: set):
+    def _run(self, p_inst : InstDict ):
 
-        for inst in p_inst_new:
+        for (inst_type,inst) in sorted(p_inst.values()):
             self._derive_data(p_inst=inst)
 
-        for inst in p_inst_del:
-            self._derive_data(p_inst=inst)
 
 
                  

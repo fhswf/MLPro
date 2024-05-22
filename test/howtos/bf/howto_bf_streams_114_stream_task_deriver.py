@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_streams_114_stream_task_deriver.py
 ## -------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ class MyTask (StreamTask):
     C_NAME      = 'Custom'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
+    def _run(self, p_inst: InstDict):
         pass
 
 
@@ -82,7 +82,7 @@ class MyScenario (StreamScenario):
         features = stream.get_feature_space().get_dims()
         features_new = [ ( 'F', features[0:1] ) ]
 
-        task_rearranger = Rearranger( p_name='t1',
+        task_rearranger = Rearranger( p_name='T1 - Rearranger',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
@@ -94,7 +94,7 @@ class MyScenario (StreamScenario):
         features = task_rearranger._feature_space.get_dims()
         derived_feature = features[0]
 
-        task_deriver_1 = Deriver( p_name='t2',
+        task_deriver_1 = Deriver( p_name='T2 - Deriver 1',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
@@ -110,7 +110,7 @@ class MyScenario (StreamScenario):
         features = task_deriver_1._feature_space.get_dims()
         derived_feature = features[0]
         
-        task_deriver_2 = Deriver( p_name='t3',
+        task_deriver_2 = Deriver( p_name='T3 - Deriver 2',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
@@ -155,6 +155,8 @@ myscenario.reset()
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
                                                         p_view_autoselect = False,
+                                                        p_plot_horizon = 50,
+                                                        p_data_horizon = 100,
                                                         p_step_rate = 2 ) )
     input('Press ENTER to start stream processing...')
 
