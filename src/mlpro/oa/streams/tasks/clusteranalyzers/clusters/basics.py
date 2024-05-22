@@ -32,12 +32,14 @@
 ## -- 2024-05-02  1.2.0     DA/SK    Class Cluster: first definition of concrete properties
 ## -- 2024-05-04  1.3.0     DA       Class Cluster: generic property systematics
 ## -- 2024-05-06  1.4.0     DA       Plot functionality
+## -- 2024-05-22  1.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-05-06)
+Ver. 1.5.0 (2024-05-22)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
+
 """
 
 
@@ -118,21 +120,20 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
 
         if not self.get_visualization(): return
 
-        Plottable.init_plot( self, p_figure=p_figure, p_plot_settings=p_plot_settings)
+        Plottable.init_plot( self, p_figure = p_figure, p_plot_settings = p_plot_settings)
 
         for prop in self.get_properties().values():
-            prop.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
+            prop.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst_new: List[Instance] = None, 
-                     p_inst_del: List[Instance] = None, 
+                     p_inst : InstDict = None, 
                      **p_kwargs ):
 
         if not self.get_visualization(): return
 
         for prop in self.get_properties().values():
-            prop.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
+            prop.update_plot(p_inst = p_inst, **p_kwargs)
 
-        Plottable.update_plot( self, p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs )
+        Plottable.update_plot( self, p_inst = p_inst, **p_kwargs )

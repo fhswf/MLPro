@@ -324,14 +324,13 @@ class ClusterAnalyzer (OATask):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst_new: List[Instance] = None, 
-                     p_inst_del: List[Instance] = None, 
+                     p_inst : InstDict = None, 
                      **p_kwargs ):
 
         if not self.get_visualization(): return
 
         for cluster in self._clusters.values():
-            cluster.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
+            cluster.update_plot(p_inst = p_inst, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
