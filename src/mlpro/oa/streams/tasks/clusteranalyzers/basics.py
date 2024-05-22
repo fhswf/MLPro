@@ -27,10 +27,11 @@
 ## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -- 2024-04-10  0.8.3     DA       Refactoring
 ## -- 2024-05-04  0.9.0     DA       Introduction of cluster properties
+## -- 2024-05-22  1.0.0     DA       Initial design finished
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2024-05-04)
+Ver. 1.0.0 (2024-05-22)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -38,7 +39,7 @@ This module provides templates for cluster analysis to be used in the context of
 from matplotlib.figure import Figure
 from mlpro.bf.math.properties import *
 from mlpro.bf.mt import PlotSettings
-from mlpro.bf.streams import Instance
+from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.oa.streams import OATask
@@ -173,8 +174,8 @@ class ClusterAnalyzer (OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
-        self.adapt( p_inst_new=p_inst_new, p_inst_del=p_inst_del )
+    def _run(self, p_inst : InstDict):
+        self.adapt( p_inst=p_inst )
 
 
 ## -------------------------------------------------------------------------------------------------
