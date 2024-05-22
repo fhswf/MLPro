@@ -57,18 +57,18 @@ class MyAdaptiveScenario (OAScenario):
         # 2 Set up the stream workflow 
 
         # 2.1 Creation of a tasks
-        task_window = Window( p_name = 'Window', 
+        task_window = Window( p_name = 'T1 - Window', 
                               p_buffer_size=10, 
                               p_visualize=p_visualize, 
                               p_logging=p_logging )
         
-        task_norm = NormalizerZTransform( p_name='Demo ZTrans Normalizer', 
+        task_norm = NormalizerZTransform( p_name='T2 - Z-transformation', 
                                           p_ada=p_ada, 
                                           p_visualize=p_visualize,
                                           p_logging=p_logging )
 
         # 2.2 Creation of a workflow
-        workflow = OAWorkflow( p_name='wf1',
+        workflow = OAWorkflow( p_name='Demo',
                                p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
                                p_ada=p_ada,
                                p_visualize=p_visualize,

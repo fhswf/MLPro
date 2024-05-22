@@ -56,18 +56,18 @@ class MyAdaptiveScenario(OAScenario):
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a tasks
-        task_bd = BoundaryDetector( p_name='Demo Boundary Detector', 
-                                                 p_ada=p_ada, 
-                                                 p_visualize=p_visualize,
-                                                 p_logging=p_logging )
+        task_bd = BoundaryDetector( p_name='T1 - Boundary Detector', 
+                                    p_ada=p_ada, 
+                                    p_visualize=p_visualize,
+                                    p_logging=p_logging )
         
-        task_norm = NormalizerMinMax( p_name='Demo MinMax Normalizer', 
-                                                 p_ada=p_ada, 
-                                                 p_visualize=p_visualize,
-                                                 p_logging=p_logging)
+        task_norm = NormalizerMinMax( p_name='T2 - MinMax Normalizer', 
+                                      p_ada=p_ada, 
+                                      p_visualize=p_visualize,
+                                      p_logging=p_logging)
 
         # 2.2 Creation of a workflow
-        workflow = OAWorkflow( p_name='wf1',
+        workflow = OAWorkflow( p_name='Demo',
                                p_range_max = OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
                                p_ada=p_ada,
                                p_visualize=p_visualize, 
