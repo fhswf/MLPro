@@ -1403,9 +1403,6 @@ class StreamTask (Task):
                 except:
                     pass
 
-        if len(self._plot_nd_xdata)==0:
-            return
-        
         
         # 4 If buffer size is limited, remove obsolete data
         if p_settings.data_horizon > 0:

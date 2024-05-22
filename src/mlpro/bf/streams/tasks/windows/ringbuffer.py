@@ -154,6 +154,11 @@ class RingBuffer (Window):
                 p_inst[inst_del.id] = ( InstTypeDel, inst_del )
                 self._raise_event_data_removed = True
 
+                p_inst[inst.id] = ( InstTypeNew, inst )
+
+            elif not self._delay:
+                p_inst[inst.id] = ( InstTypeNew, inst )
+
 
             # 1.4 New instance is buffered
             self._buffer[self._buffer_pos] = inst
