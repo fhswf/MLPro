@@ -21,6 +21,13 @@ This module provides templates for anomaly detection to be used in the context o
 
 from mlpro.oa.streams.basics import Instance, InstDict
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
+from matplotlib.figure import Figure
+from matplotlib.text import Text
+from mpl_toolkits.mplot3d.art3d import Line3D, Text3D
+from mlpro.bf.mt import Figure, PlotSettings
+from mlpro.bf.various import *
+from mlpro.bf.plot import *
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
 
 
@@ -35,6 +42,14 @@ class CBAnomaly (Anomaly):
     """
     
     C_NAME      = 'Cluster based Anomaly'
+    C_PLOT_ACTIVE           = True
+    C_PLOT_STANDALONE       = False
+    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
+                                PlotSettings.C_VIEW_3D, 
+                                PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
+
+    C_ANOMALY_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -48,6 +63,8 @@ class CBAnomaly (Anomaly):
         super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
+        
+        self._colour_id = 0
 
 
 
@@ -65,7 +82,7 @@ class ClusterDrift (CBAnomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : InstDict = None,
+                 p_instances : list[InstDict] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -92,7 +109,8 @@ class NewClusterAppearance (CBAnomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : InstDict = None,
+                 p_instances : list[InstDict] = None,
+                 p_clusters : dict[Cluster] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -102,8 +120,66 @@ class NewClusterAppearance (CBAnomaly):
         super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
+        
+        self._clusters = p_clusters
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
+
+        cluster : Cluster = None
+
+        for cluster in self._clusters.values(): 
+
+            center = cluster.get_properties()['centroid']._get()
+
+            for r in np.linspace(0, 10, 25):
+                alpha = 1 - r / 10
+                self.circle = plt.Circle(center[:1], r, color=self.C_ANOMALY_COLORS[self._colour_id], alpha=alpha)
+                #ax.add_patch(circle)
+            self._colour_id +=1
+            if self._colour_id > 9:
+                self._colour_id = 0
+  
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        super()._init_plot_nd(p_figure=p_figure, p_settings=p_settings)
 
 
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_2d(p_settings, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_3d(p_settings, **p_kwargs) 
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_nd(p_settings, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        super()._remove_plot_2d()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_3d(self):
+        super()._remove_plot_3d()
+  
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        super()._remove_plot_nd()
 
 
 

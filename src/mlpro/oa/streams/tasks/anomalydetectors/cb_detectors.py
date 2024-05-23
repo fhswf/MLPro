@@ -65,7 +65,7 @@ class AnomalyDetectorCB(AnomalyDetector, Properties):
                          **p_kwargs)
         
         self._clusterer = p_clusterer
-        self._cluster_ids = []
+        """self._cluster_ids = []
         self._num_clusters = 0
         self._ref_centroids = {}
         self._centroids = {}
@@ -76,8 +76,29 @@ class AnomalyDetectorCB(AnomalyDetector, Properties):
         self._ref_weights = {}
         self._weights = {}
         self._rel_weights = {}
-        self._ref_rel_weights = {}
+        self._ref_rel_weights = {}"""
 
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+
+        if not self.get_visualization(): return
+
+        super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+
+        for anomaly in self._anomalies.values():
+            anomaly.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot( self, 
+                     p_inst : InstDict = None, 
+                     **p_kwargs ):
+
+        if not self.get_visualization(): return
+
+        for anomaly in self._anomalies.values():
+            anomaly.update_plot(p_inst = p_inst, **p_kwargs)
 
 
 
@@ -450,7 +471,6 @@ class NewClusterDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_threshold : float = 0.1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -477,42 +497,45 @@ class NewClusterDetector(AnomalyDetectorCB):
         if len(unknown_prop) >0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
-        self.previous_centroids = []
-        self.distance_threshold = p_threshold
+        self._previous_clusters = {}
         
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict, centroids: list):
         
         clusters = self._clusterer.get_clusters()
-        if len(clusters) > self._num_clusters:
-            print((len(clusters)-self._num_clusters), "new clusters appeared.")
-            event = NewClusterAppearance()
+        if len(clusters) > len(self._previous_clusters):
+            print((len(clusters)-self._num_clusters), "New clusters appeared.")
+            new_clusters = {}
+            for x in clusters:
+                if x not in self._previous_clusters:
+                    new_clusters[x] = clusters[x]
+            event = NewClusterAppearance(new_clusters)
         self._num_clusters = len(clusters)
 
-        centroids = [tuple(centroid) for centroid in centroids]
-        if not self.previous_centroids:
-            self.previous_centroids = centroids
+        """centroids = [tuple(centroid) for centroid in centroids]
+        if not self._previous_centroids:
+            self._previous_centroids = centroids
             return {"new_clusters": centroids, "split_clusters": [], "merged_clusters": []}
 
         # Calculate distances between old and new centroids
-        distance_matrix = cdist(self.previous_centroids, centroids)
+        distance_matrix = cdist(self._previous_centroids, centroids)
 
         # Find which centroids are considered the same (below distance threshold)
         matched_old = set()
         matched_new = set()
         for i, row in enumerate(distance_matrix):
             for j, distance in enumerate(row):
-                if distance <= self.distance_threshold:
+                if distance <= self._distance_threshold:
                     matched_old.add(i)
                     matched_new.add(j)
 
         new_clusters = [centroids[j] for j in range(len(centroids)) if j not in matched_new]
-        split_clusters = [self.previous_centroids[i] for i in range(len(self.previous_centroids)) if i not in matched_old]
+        split_clusters = [self._previous_centroids[i] for i in range(len(self._previous_centroids)) if i not in matched_old]
         merged_clusters = [centroids[j] for j in matched_new if list(distance_matrix[:, j]).count(distance_matrix[:, j].min()) > 1]
 
-        self.previous_centroids = centroids
-        return {"new_clusters": new_clusters, "split_clusters": split_clusters, "merged_clusters": merged_clusters}
+        self._previous_centroids = centroids
+        return {"new_clusters": new_clusters, "split_clusters": split_clusters, "merged_clusters": merged_clusters}"""
 
 
 
