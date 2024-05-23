@@ -285,8 +285,8 @@ class RingBuffer (Window):
             Further optional plot parameters.
         """
 
-        # 1 No visualization until the buffer has been filledd
-        if not self._buffer_full: return
+        # 1 No visualization until first data is buffered
+        if ( len(self._buffer) == 0 ) or ( len(p_inst) == 0 ): return
 
 
         # 2 Initialization of the rectangle
@@ -324,9 +324,8 @@ class RingBuffer (Window):
             Further optional plot parameters.
         """
 
-        # 1 No visualization until the buffer has been filledd
-        if not self._buffer_full: return
-
+        # 1 No visualization until first data is buffered
+        if ( len(self._buffer) == 0 ) or ( len(p_inst) == 0 ): return
 
 
         # 2 Initialization of the cuboid
@@ -375,8 +374,9 @@ class RingBuffer (Window):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings:PlotSettings, p_inst:InstDict, **p_kwargs):
         """
-        Default N-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
-        for more details.
+        The n-dimensional representation of the ring buffer visualizes the removal of obsolete data 
+        from the buffer by hiding it behind a semi-transparent rectangle. The visualization starts 
+        when the buffer is completely filled and data is removed.
 
         Parameters
         ----------
@@ -389,7 +389,7 @@ class RingBuffer (Window):
         """
 
         # 1 No visualization until the buffer has been filledd
-        if not self._buffer_full: return
+        if ( not self._buffer_full ) or ( len(p_inst) == 0 ): return
 
 
         # 2 Check if the rectangle patches are already created

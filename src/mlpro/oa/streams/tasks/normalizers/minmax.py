@@ -163,8 +163,12 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
 
             plot_data_renormalized = self.renormalize(self._plot_data_2d)
 
-            self._plot_2d_xdata = list(j[0] for j in plot_data_renormalized)
-            self._plot_2d_ydata = list(j[1] for j in plot_data_renormalized)
+            self._plot_2d_xdata = {}
+            self._plot_2d_ydata = {}
+
+            for i, data_2d in enumerate(plot_data_renormalized):
+                self._plot_2d_xdata[i] = data_2d[0]
+                self._plot_2d_ydata[i] = data_2d[1]
 
             self._parameters_updated = False
 
