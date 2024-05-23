@@ -87,4 +87,3 @@ class NormalizerMinMax(Normalizer):
         else:
             self._param_old = self._param_new.copy()
         self._param = self._param_new.copy()
-        pass

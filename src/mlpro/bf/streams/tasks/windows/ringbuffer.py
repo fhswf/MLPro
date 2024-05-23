@@ -24,10 +24,11 @@
 ## -- 2022-12-31  1.1.4     LSB      Refactoring
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
 ## -- 2024-05-22  1.2.0     DA       Refactoring, splitting, and renaming to RingBuffer
+## -- 2024-05-23  1.2.1     DA       Bugfixes on plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-22)
+Ver. 1.2.1 (2024-05-23)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -223,16 +224,11 @@ class RingBuffer (Window):
 
         """
 
-        if p_settings:
-            self._plot_settings = p_settings
+        Plottable._init_plot_2d(self, p_figure=p_figure, p_settings=p_settings)
 
-        if not p_settings.axes:
-            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
-
-        else:
-            self.axes = p_settings.axes
         self._patch_windows: dict = None
         self._window_patch2D = Rectangle((0, 0),0,0)
+        p_settings.axes.grid(True)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -248,14 +244,7 @@ class RingBuffer (Window):
             Additional Settings for the plot
         """
 
-
-        if p_settings:
-            self._plot_settings = p_settings
-
-        if not p_settings.axes:
-            self.axes = p_figure.add_subplot(projection = '3d')
-        else:
-            self.axes = p_settings.axes
+        Plottable._init_plot_3d(self, p_figure=p_figure, p_settings=p_settings)
 
         self._patch_windows: dict = None
         self._window_patch3D = Poly3DCollection([])
@@ -275,18 +264,7 @@ class RingBuffer (Window):
 
         """
 
-        if p_settings:
-            self._plot_settings = p_settings
-
-        if not p_settings.axes:
-            self.axes = p_figure.add_subplot()
-            p_settings.axes = self.axes
-            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
-            p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
-            p_settings.axes.grid(visible=True)
-
-        else:
-            self.axes = p_settings.axes
+        Plottable._init_plot_nd(self, p_figure=p_figure, p_settings=p_settings)
 
         self._patch_windows = None
 
@@ -305,17 +283,21 @@ class RingBuffer (Window):
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
-
         """
-        if len(p_inst) == 0 : return
 
-        self.axes.grid(True)
+        # 1 No visualization until the buffer has been filledd
+        if not self._buffer_full: return
+
+
+        # 2 Initialization of the rectangle
         if self._patch_windows is None:
             self._patch_windows = {}
             self._patch_windows['2D'] = Rectangle((0, 0),0,0, ec= 'red', facecolor='none', zorder = -999)
             self._plot_settings.axes.add_patch(self._patch_windows['2D'])
             self._patch_windows['2D'].set_visible(True)
 
+
+        # 3 Update of the rectangle
         boundaries = self.get_boundaries()
         x = boundaries[0][0]
         y = boundaries[1][0]
@@ -340,18 +322,23 @@ class RingBuffer (Window):
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
-
         """
-        # 1. Returns if no new instances passed
-        if len(p_inst) == 0 : return
-        b = self.get_boundaries()
 
+        # 1 No visualization until the buffer has been filledd
+        if not self._buffer_full: return
+
+
+
+        # 2 Initialization of the cuboid
         if self._patch_windows is None:
             self._patch_windows = {}
             self._patch_windows['3D'] = Poly3DCollection(verts= [], edgecolors='red', facecolors='red', alpha = 0)
             self._plot_settings.axes.add_collection(self._patch_windows['3D'])
 
-        # 2. Logic for vertices of the cuboid
+
+        # 3 Update of the cuboid
+        b = self.get_boundaries()
+
         verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
                              [b[0][1], b[1][0], b[2][1]],
                              [b[0][1], b[1][0], b[2][0]],
@@ -382,7 +369,6 @@ class RingBuffer (Window):
                              [b[0][1], b[1][1], b[2][0]],
                              [b[0][0], b[1][1], b[2][0]]]])
 
-        # 3. Setting the vertices for the cuboid
         self._patch_windows['3D'].set_verts(verts)
 
 
@@ -402,24 +388,26 @@ class RingBuffer (Window):
             Further optional plot parameters.
         """
 
-        # 1. Check if there is a new instance to be plotted
-        if len(p_inst) == 0 : return
+        # 1 No visualization until the buffer has been filledd
+        if not self._buffer_full: return
 
-        # 2. Check if the rectangle patches are already created
+
+        # 2 Check if the rectangle patches are already created
         if self._patch_windows is None:
             self._patch_windows = {}
 
-            bg = self.axes.get_facecolor()
-            ec = self.axes.patch.get_edgecolor()
+            bg = p_settings.axes.get_facecolor()
+            ec = p_settings.axes.patch.get_edgecolor()
             obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 )
-            self._plot_settings.axes.add_patch(obs_window)
+            p_settings.axes.add_patch(obs_window)
             self._patch_windows['nD'] = obs_window
 
 
-        # 3. Add the hiding plot around obsolete data
-        x1 = self._plot_num_inst-self.buffer_size+1
-        y1 = self.axes.get_ylim()[0]
-        w1 = -(x1 - self.axes.get_xlim()[0])
-        h1 = self.axes.get_ylim()[1] - y1
-        self._patch_windows['nD'].set_bounds(x1, y1, w1, h1)
+        # 3 Add the hiding plot around obsolete data
+        inst_oldest = self._buffer[self._buffer_pos]
+        x = p_settings.axes.get_xlim()[0]
+        y = p_settings.axes.get_ylim()[0]
+        w = inst_oldest.tstamp - x
+        h = p_settings.axes.get_ylim()[1] - y
+        self._patch_windows['nD'].set_bounds(x, y, w, h)
         self._patch_windows['nD'].set_visible(True)

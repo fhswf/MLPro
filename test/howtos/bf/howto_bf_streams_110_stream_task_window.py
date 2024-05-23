@@ -70,7 +70,7 @@ class MyStreamScenario(StreamScenario):
                                    p_logging=logging)
 
         # 2.1 Set up and add a window task
-        task_window = RingBuffer( p_buffer_size=30, 
+        task_window = RingBuffer( p_buffer_size=50, 
                                   p_name = 'T1 - Ring Buffer', 
                                   p_delay = True,
                                   p_visualize = p_visualize, 

@@ -134,10 +134,10 @@ if __name__ == "__main__":
 
 else:
     # 1.2 Parameters for internal unit test
-    cycle_limit = 2
+    cycle_limit = 60
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    step_rate   = 1
+    step_rate   = 5
 
 
 

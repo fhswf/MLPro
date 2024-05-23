@@ -65,7 +65,7 @@ class MyScenario (OAScenario):
 
 
         # 2 Set up a stream workflow 
-        workflow = OAWorkflow( p_name = 'Complex Preprocessing', 
+        workflow = OAWorkflow( p_name = 'Input Signal - "DoubleSpiral2D"', 
                                p_range_max = Task.C_RANGE_NONE, 
                                p_ada = p_ada,
                                p_visualize = p_visualize,
@@ -76,7 +76,7 @@ class MyScenario (OAScenario):
         features = stream.get_feature_space().get_dims()
         features_new = [ ( 'F', features[0:1] ) ]
 
-        task1_rearranger = Rearranger( p_name = '#1: Rearranger',
+        task1_rearranger = Rearranger( p_name = '1 - Rearranger',
                                        p_range_max = Task.C_RANGE_THREAD,
                                        p_visualize = p_visualize,
                                        p_logging = p_logging,
@@ -89,7 +89,7 @@ class MyScenario (OAScenario):
         features = task1_rearranger._feature_space.get_dims()
         derived_feature = features[0]
 
-        task2_deriver1 = Deriver( p_name = '#2: Deriver #1',
+        task2_deriver1 = Deriver( p_name = '2 - Deriver #1',
                                   p_range_max = Task.C_RANGE_THREAD,
                                   p_visualize = p_visualize,
                                   p_logging = p_logging,
@@ -107,7 +107,7 @@ class MyScenario (OAScenario):
         features = task2_deriver1._feature_space.get_dims()
         derived_feature = features[0]
         
-        task3_deriver2 = Deriver( p_name = '#3: Deriver #2',
+        task3_deriver2 = Deriver( p_name = '3 - Deriver #2',
                                   p_range_max = Task.C_RANGE_THREAD,
                                   p_visualize = p_visualize,
                                   p_logging = p_logging,
@@ -123,7 +123,7 @@ class MyScenario (OAScenario):
 
         # 2.4 Set up and add a Sliding Window 
         task4_window = RingBuffer( p_buffer_size = 100,
-                                   p_name = '#4: Ring Buffer',
+                                   p_name = '4 - Ring Buffer',
                                    p_delay = True,
                                    p_visualize = p_visualize,
                                    p_enable_statistics = True,
@@ -134,7 +134,7 @@ class MyScenario (OAScenario):
 
 
         # 2.5 Setup and add a Boundary Detector
-        task5_bd = BoundaryDetector( p_name = '#5: Boundary Detector', 
+        task5_bd = BoundaryDetector( p_name = '5 - Boundary Detector', 
                                      p_ada = p_ada, 
                                      p_visualize = p_visualize,   
                                      p_logging = p_logging )
@@ -148,7 +148,7 @@ class MyScenario (OAScenario):
 
 
         # 2.6 Setup Z Transform-Normalizer in Parallel
-        task6_norm_ztrans = NormalizerZTransform( p_name = '#6: Normalizer Z-Trans',
+        task6_norm_ztrans = NormalizerZTransform( p_name = '6 - Normalizer Z-Trans',
                                                   p_ada = p_ada,
                                                   p_visualize = p_visualize,
                                                   p_logging = p_logging )
@@ -158,7 +158,7 @@ class MyScenario (OAScenario):
 
 
         # 2.7 Setup MinMax-Normalizer
-        task7_norm_minmax = NormalizerMinMax( p_name = '#7: Normalizer MinMax', 
+        task7_norm_minmax = NormalizerMinMax( p_name = '7 - Normalizer MinMax', 
                                               p_ada = p_ada, 
                                               p_visualize = p_visualize, 
                                               p_logging = p_logging )
@@ -187,10 +187,10 @@ if __name__ == '__main__':
  
 else:
     # 1.2 Parameters for internal unit test
-    cycle_limit = 2
+    cycle_limit = 102
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    step_rate   = 1
+    step_rate   = 5
 
 
 

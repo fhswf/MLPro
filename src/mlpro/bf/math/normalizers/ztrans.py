@@ -22,10 +22,11 @@
 ## -- 2023-01-12  1.0.13    LSB      Bug Fix
 ## -- 2023-02-13  1.0.14    LSB      BugFix: Changed the direct reference to p_param to a copy object
 ## -- 2024-04-30  1.1.0     DA       Refactoring/separation
+## -- 2024-05-23  1.2.0     DA       Refactoring (not yet finished)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-30)
+Ver. 1.2.0 (2024-05-23)
 
 This module provides a class for Z transformation.
 """
@@ -39,12 +40,18 @@ from typing import Union
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTrans(Normalizer):
+class NormalizerZTrans (Normalizer):
     """
     Class for Normalization based on Z transformation.
     """
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+    def __init__(self):
+        super().__init__()
+        self._n = 0
+
+
+## -------------------------------------------------------------------------------------------------
     def update_parameters(self,
                           p_dataset: np.ndarray = None,
                           p_data_new: Union[Element, np.ndarray] = None,
@@ -64,62 +71,78 @@ class NormalizerZTrans(Normalizer):
             Old element that is replaced with the new element.
 
         """
-        try:
-            data_new = p_data_new.get_values()
-        except:
-            data_new = p_data_new
 
-        try:
-            data_del = p_data_del.get_values()
-        except:
-            data_del = p_data_del
+        # 2024-0523/DA - Needs to be reviewed...!!!
+        raise Error('To be reviewed!!')
 
-        if self._param_new is not None: self._param_old = self._param_new.copy()
 
-        if data_new is None and data_del is None and isinstance(p_dataset, np.ndarray):
-            self._std = np.std(p_dataset, axis=0, dtype=np.float64)
-            self._mean = np.mean(p_dataset, axis=0, dtype=np.float64)
-            self._n = len(p_dataset)
-            if self._param_new is None: self._param_new = np.zeros([2, self._std.shape[-1]])
+        # 0 Backup current parameters
+        if self._param_new is not None: 
+            self._param_old = self._param_new.copy()
 
-        elif isinstance(data_new, np.ndarray) and data_del is None and p_dataset is None:
-            # this try/except block checks if the parameters are previously set with a dataset, otherwise sets the
-            # parameters based on a single element
-            try:
-                old_mean = self._mean.copy()
-                self._n += 1
-                self._mean = (old_mean * (self._n - 1) + data_new) / (self._n)
-                self._std = np.sqrt((np.square(self._std) * (self._n - 1)
-                                     + (data_new - self._mean) * (data_new - old_mean)) / (self._n))
 
-            except:
-                self._n = 1
-                self._mean = data_new.copy()
-                self._std = np.zeros(shape=data_new.shape)
+        # 1 Update on dataset
+        if p_dataset is not None:
+            self._std   = np.std(p_dataset, axis=0, dtype=np.float64)
+            self._mean  = np.mean(p_dataset, axis=0, dtype=np.float64)
+            self._n     = len(p_dataset)
 
-            if self._param_new is None: self._param_new = np.zeros([2, data_new.shape[-1]])
-
-        elif isinstance(data_new, np.ndarray) and isinstance(data_del, np.ndarray) and not p_dataset:
-            try:
-                old_mean = self._mean.copy()
-                self._mean = old_mean + ((data_new - data_del) / (self._n))
-                self._std = np.sqrt(np.square(self._std) + (
-                    ((np.square(data_new) - np.square(data_del)) - self._n * (np.square(
-                        self._mean) - np.square(old_mean)))) / self._n)
-
-            except:
-                raise ParamError("Normalization parameters are not initialised prior to updating with replacing a "
-                                 "data element")
-
+            if self._param_new is None: 
+                self._param_new = np.zeros([2, self._std.shape[-1]])
+                
         else:
-            raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
-                             "or a new data element as p_data ")
 
+            # 2 Update on new data
+            if p_data_new is not None:
+                try:
+                    data_new = np.ndarray(p_data_new.get_values())
+                except:
+                    data_new = p_data_new
+                
+                if self._n == 0:
+                    self._n = 1
+                    self._mean = data_new.copy()
+                    self._std = np.zeros(shape=data_new.shape)
+                else:
+                    old_mean   = self._mean.copy()
+                    self._mean = (old_mean * self._n + data_new) / (self._n + 1)
+
+                    # TO BE REVIEWED
+                    raise Error('To be reviewed!!')
+                    self._std = np.sqrt((np.square(self._std) * self._n
+                                        + (data_new - self._mean) * (data_new - old_mean)) / (self._n))
+                    self._n += 1
+                    
+                if self._param_new is None: 
+                    self._param_new = np.zeros([2, data_new.shape[-1]])
+
+
+            # 3 Update on obsolete data
+            if ( p_data_del is not None ) and ( self._n > 0 ):
+                try:
+                    data_del = np.ndarray(p_data_del.get_values())
+                except:
+                    data_del = p_data_del
+            
+                # TO BE REVIEWED
+                raise Error('To be reviewed!!')
+                self._mean = self._mean - ( data_del / self._n)
+
+                # TO BE REVIEWED
+                raise Error('To be reviewed!!')
+                self._std = np.sqrt(np.square(self._std) + (
+                        ((np.square(data_new) - np.square(data_del)) - self._n * (np.square(
+                            self._mean) - np.square(old_mean)))) / self._n)
+                
+                self._n -= 1
+
+
+        # 4 Update of parameters
         self._param_new[0] = np.divide(1, self._std, out = np.zeros_like(self._std), where = self._std!=0)
         self._param_new[1] = np.divide(self._mean, self._std, out = np.zeros_like(self._std), where = self._std!=0)
-        # self._param_new[1 == np.inf] = 0
-        if self._param is not None:
-            self._param_old = self._param.copy()
-        else:
-            self._param_old = self._param_new.copy()
-        self._param = self._param_new.copy()
+
+        if self._param_old is None:
+            self._param_old = self._param_new
+
+        self._set_parameters( p_param = self._param_new )
+

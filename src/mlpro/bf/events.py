@@ -11,10 +11,11 @@
 ## -- 2023-03-25  1.1.1     DA       Class EventManager: correction in constructor
 ## -- 2023-11-17  1.2.0     DA       Class Event: new time stamp functionality
 ## -- 2023-11-18  1.2.1     DA       Class Event: time stamp is set to now() if not provided
+## -- 2024-05-23  1.3.0     DA       Method EventManger._raise_event(): reduction to TypeError   
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-11-18)
+Ver. 1.3.0 (2024-05-23)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
@@ -160,6 +161,6 @@ class EventManager (Log):
             try:
                 self.log(Log.C_LOG_TYPE_I, 'Calling handler', i)
                 handler( p_event_id=p_event_id, p_event_object=p_event_object )
-            except:
+            except TypeError:
                 self.log(Log.C_LOG_TYPE_E, 'Handler not compatible! Check your code!')
-                raise Error
+                raise TypeError
