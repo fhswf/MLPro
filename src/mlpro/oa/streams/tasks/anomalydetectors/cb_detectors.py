@@ -26,12 +26,13 @@ from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 import numpy as np
 from scipy.spatial.distance import cdist
+from mlpro.bf.math.properties import *
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCB(AnomalyDetector):
+class AnomalyDetectorCB(AnomalyDetector, Properties):
     """
     This is the base class for cluster-based online anomaly detectors. It raises an event when an
     anomaly is detected in a cluster dataset.
@@ -39,6 +40,9 @@ class AnomalyDetectorCB(AnomalyDetector):
     """
 
     C_TYPE = 'Cluster based Anomaly Detector'
+
+    # List of cluster properties necessary for the algorithm
+    C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -84,6 +88,8 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change of spatial size of clusters.
 
     """
+    
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['size', 2, Property]]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -108,6 +114,15 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                          p_visualize = p_visualize,
                          p_logging = p_logging,
                          **p_kwargs)
+        
+        for x in self.C_PROPERTIY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
+
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._thresh_ul = p_threshold_upper_limit
         self._thresh_ll = p_threshold_lower_limit
@@ -161,6 +176,7 @@ class ClusterVelocityChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change in velocity of clusters.
 
     """
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['centroid', 2, Property]]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -181,7 +197,16 @@ class ClusterVelocityChangeDetector(AnomalyDetectorCB):
                          p_visualize = p_visualize,
                          p_logging = p_logging,
                          **p_kwargs)
+        
+        for x in self.C_PROPERTIY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
 
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict, centroids: list):
@@ -215,6 +240,7 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change of density of clusters.
 
     """
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['density', 2, Property]]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -239,7 +265,16 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
                          p_visualize = p_visualize,
                          p_logging = p_logging,
                          **p_kwargs)
-        
+
+        for x in self.C_PROPERTIY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
+
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+
         self._thresh_ul = p_threshold_upper_limit
         self._thresh_ll = p_threshold_lower_limit
         self._thresh_det = p_threshold_detection
@@ -260,6 +295,8 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change in weight of clusters.
 
     """
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['size', 2, Property]]
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -281,6 +318,16 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                          p_visualize = p_visualize,
                          p_logging = p_logging,
                          **p_kwargs)
+        
+        for x in self.C_PROPERTIY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
+
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+
         
         self._threshold = p_threshold
 
@@ -309,6 +356,7 @@ class ClusterRelativeSizeChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change in weight of clusters.
 
     """
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['size', 2, Property]]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -333,6 +381,16 @@ class ClusterRelativeSizeChangeDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
+        for x in self.C_PROPERTIY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
+
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+
+
         self._scale = p_scale
         self.window_size = p_window
         self.threshold = p_threshold
@@ -387,6 +445,7 @@ class NewClusterDetector(AnomalyDetectorCB):
     This is the class for detecting new clusters.
 
     """
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['centroid', 2, Property]]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -409,6 +468,15 @@ class NewClusterDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
+        for x in self.C_PROPERTIY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
+
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+
         self.previous_centroids = []
         self.distance_threshold = p_threshold
         
@@ -457,6 +525,7 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
     This is the class for detecting the disappearences of clusters.
 
     """
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['centroid', 2, Property]]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -478,6 +547,16 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
                          p_visualize = p_visualize,
                          p_logging = p_logging,
                          **p_kwargs)
+
+        for x in self.C_PROPERTIY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
+
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+
 
         self.previous_centroids = []
         self.distance_threshold = p_threshold

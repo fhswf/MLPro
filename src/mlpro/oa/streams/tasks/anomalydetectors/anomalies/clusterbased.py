@@ -24,6 +24,8 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 
 
 
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class CBAnomaly (Anomaly):
@@ -31,12 +33,12 @@ class CBAnomaly (Anomaly):
     Event class to be raised when cluster-based anomalies are detected.
     
     """
-
+    
     C_NAME      = 'Cluster based Anomaly'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : InstDict = None,
+                 p_instances : list[InstDict] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
