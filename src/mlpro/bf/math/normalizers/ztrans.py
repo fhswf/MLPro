@@ -73,10 +73,6 @@ class NormalizerZTrans (Normalizer):
 
         """
 
-        # 2024-0523/DA - Needs to be reviewed...!!!
-        # raise Error('To be reviewed!!')
-
-
         # 0 Backup current parameters
         if self._param_new is not None: 
             self._param_old = self._param_new.copy()
@@ -96,7 +92,7 @@ class NormalizerZTrans (Normalizer):
             # 2 Update on new data
             if p_data_new is not None:
                 try:
-                    data_new = np.ndarray(p_data_new.get_values())
+                    data_new = np.array(p_data_new.get_values())
                 except:
                     data_new = p_data_new
                 
@@ -108,8 +104,6 @@ class NormalizerZTrans (Normalizer):
                     old_mean   = self._mean.copy()
                     self._mean = (old_mean * self._n + data_new) / (self._n + 1)
 
-                    # TO BE REVIEWED
-                    # raise Error('To be reviewed!!')
                     self._std = np.sqrt((np.square(self._std) * self._n
                                         + (data_new - self._mean) * (data_new - old_mean)) / (self._n+1))
                     self._n += 1
@@ -121,17 +115,13 @@ class NormalizerZTrans (Normalizer):
             # 3 Update on obsolete data
             if ( p_data_del is not None ) and ( self._n > 0 ):
                 try:
-                    data_del = np.ndarray(p_data_del.get_values())
+                    data_del = np.array(p_data_del.get_values())
                 except:
                     data_del = p_data_del
             
-                # TO BE REVIEWED
-                # raise Error('To be reviewed!!')
                 old_mean = self._mean.copy()
                 self._mean = (old_mean * self._n - data_del) / (self._n-1)
 
-                # TO BE REVIEWED
-                # raise Error('To be reviewed!!')
                 self._std = np.sqrt((np.square(self._std)*self._n - (data_del - old_mean)*(data_del - self._mean)) / (self._n-1))
                 
                 self._n -= 1
