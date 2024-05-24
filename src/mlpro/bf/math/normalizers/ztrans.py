@@ -23,10 +23,11 @@
 ## -- 2023-02-13  1.0.14    LSB      BugFix: Changed the direct reference to p_param to a copy object
 ## -- 2024-04-30  1.1.0     DA       Refactoring/separation
 ## -- 2024-05-23  1.2.0     DA       Refactoring (not yet finished)
+## -- 2024-05-24  1.2.1     LSB      Bug fix for Parameter update using only p_data_del in Z-transform
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-23)
+Ver. 1.2.1 (2024-05-24)
 
 This module provides a class for Z transformation.
 """
@@ -73,7 +74,7 @@ class NormalizerZTrans (Normalizer):
         """
 
         # 2024-0523/DA - Needs to be reviewed...!!!
-        raise Error('To be reviewed!!')
+        # raise Error('To be reviewed!!')
 
 
         # 0 Backup current parameters
@@ -108,9 +109,9 @@ class NormalizerZTrans (Normalizer):
                     self._mean = (old_mean * self._n + data_new) / (self._n + 1)
 
                     # TO BE REVIEWED
-                    raise Error('To be reviewed!!')
+                    # raise Error('To be reviewed!!')
                     self._std = np.sqrt((np.square(self._std) * self._n
-                                        + (data_new - self._mean) * (data_new - old_mean)) / (self._n))
+                                        + (data_new - self._mean) * (data_new - old_mean)) / (self._n+1))
                     self._n += 1
                     
                 if self._param_new is None: 
@@ -125,14 +126,13 @@ class NormalizerZTrans (Normalizer):
                     data_del = p_data_del
             
                 # TO BE REVIEWED
-                raise Error('To be reviewed!!')
-                self._mean = self._mean - ( data_del / self._n)
+                # raise Error('To be reviewed!!')
+                old_mean = self._mean.copy()
+                self._mean = (old_mean * self._n - data_del) / (self._n-1)
 
                 # TO BE REVIEWED
-                raise Error('To be reviewed!!')
-                self._std = np.sqrt(np.square(self._std) + (
-                        ((np.square(data_new) - np.square(data_del)) - self._n * (np.square(
-                            self._mean) - np.square(old_mean)))) / self._n)
+                # raise Error('To be reviewed!!')
+                self._std = np.sqrt((np.square(self._std)*self._n - (data_del - old_mean)*(data_del - self._mean)) / (self._n-1))
                 
                 self._n -= 1
 
