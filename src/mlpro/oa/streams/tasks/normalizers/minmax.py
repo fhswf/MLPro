@@ -207,12 +207,16 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
                 self._plot_data_3d[i][1] = self._plot_3d_ydata[i]
                 self._plot_data_3d[i][2] = self._plot_3d_zdata[i]
 
-
             plot_data_renormalized = self.renormalize(self._plot_data_3d)
 
-            self._plot_3d_xdata = list(j[0] for j in plot_data_renormalized)
-            self._plot_3d_ydata = list(j[1] for j in plot_data_renormalized)
-            self._plot_3d_zdata = list(j[2] for j in plot_data_renormalized)
+            self._plot_3d_xdata = {}
+            self._plot_3d_ydata = {}
+            self._plot_3d_zdata = {}
+
+            for i, data_3d in enumerate(plot_data_renormalized):
+                self._plot_3d_xdata[i] = data_3d[0]
+                self._plot_3d_ydata[i] = data_3d[1]
+                self._plot_3d_zdata[i] = data_3d[2]
 
             self._parameters_updated = False
 

@@ -12,10 +12,11 @@
 ## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
 ## -- 2023-05-02  1.1.1     DA       Minor corrections 
 ## -- 2023-08-23  1.1.2     DA       Minor corrections 
+## -- 2024-05-24  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-08-23)
+Ver. 1.2.0 (2024-05-24)
 
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
@@ -29,11 +30,9 @@ You will learn:
 
 """
 
-from mlpro.oa.streams.tasks.normalizers import *
-from mlpro.oa.streams.tasks.boundarydetectors import *
 from mlpro.oa.streams import *
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.tasks.windows import RingBuffer
+from mlpro.oa.streams.tasks.normalizers import NormalizerZTransform
 
 
 
@@ -57,28 +56,20 @@ class MyAdaptiveScenario (OAScenario):
         # 2 Set up the stream workflow 
 
         # 2.1 Creation of a tasks
-        task_window = RingBuffer( p_name = 'T1 - Window', 
-                                  p_buffer_size=10, 
-                                  p_visualize=p_visualize, 
-                                  p_logging=p_logging )
-        
         task_norm = NormalizerZTransform( p_name='T2 - Z-transformation', 
                                           p_ada=p_ada, 
                                           p_visualize=p_visualize,
                                           p_logging=p_logging )
 
         # 2.2 Creation of a workflow
-        workflow = OAWorkflow( p_name='Demo',
+        workflow = OAWorkflow( p_name='Input Signal "' + StreamMLProRnd10D.C_NAME + '"',
                                p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
                                p_ada=p_ada,
                                p_visualize=p_visualize,
                                p_logging=p_logging )
      
-        # 2.3 Add a window task of size 2
-        workflow.add_task(p_task=task_window)
-
-        # 2.4 Addition of the Z-transform task to the workflow
-        workflow.add_task(p_task = task_norm, p_pred_tasks=[task_window])
+        # 2.3 Addition of the Z-transform task to the workflow
+        workflow.add_task(p_task = task_norm)
 
 
         # 3 Return stream and workflow
@@ -89,15 +80,17 @@ class MyAdaptiveScenario (OAScenario):
 
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 100
-    logging = Log.C_LOG_ALL
-    visualize = True
+    cycle_limit = 200
+    step_rate   = 2
+    logging     = Log.C_LOG_ALL
+    visualize   = True
 
 else:
     # 1.2 Parameters for internal unit test
     cycle_limit = 2
-    logging = Log.C_LOG_NOTHING
-    visualize = False
+    step_rate   = 1
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
 
 
 # 2 Instantiate the stream scenario
@@ -113,7 +106,11 @@ myscenario = MyAdaptiveScenario(p_mode=Mode.C_MODE_REAL,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+                                                        p_view_autoselect = True,
+                                                        p_step_rate = step_rate,
+                                                        p_plot_horizon = 100,
+                                                        p_data_horizon = 200 ) )
     input('Press ENTER to start stream processing...')
 
 myscenario.run()
