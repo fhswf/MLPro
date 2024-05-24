@@ -211,10 +211,8 @@ class AnomalyDetector(OATask):
         anomaly : Anomaly = None
 
         for anomaly in self._anomalies.values():
-            instances : list[InstDict] = None
             instances = anomaly.get_instances()
 
-            for item in instances:
-                (inst_id, inst) = item.values()[-1]
+            for inst in instances:
                 inst.remormalize( p_normalizer=p_normalizer)
 
