@@ -12,10 +12,11 @@
 ## -- 2024-04-30  1.3.0     DA       Class Point: re-normalization added
 ## -- 2024-05-06  1.4.0     DA       Class Point: refactoring
 ## -- 2024-05-07  1.4.1     DA       Bugfix in method Point.renormalize()
+## -- 2024-05-24  1.4.2     DA       Bugfix in method _update_plot_2d()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2024-05-07)
+Ver. 1.4.2 (2024-05-24)
 
 This module provides class for geometric objects like points, etc.
 
@@ -59,43 +60,32 @@ class Point (Property):
 
         point_pos = self.value
 
-        if self._plot_pos is None:
-            self._plot_pos,  = p_settings.axes.plot( point_pos[0], 
-                                                     point_pos[1], 
-                                                     marker='+', 
-                                                     color='red', 
-                                                     linestyle='',
-                                                     markersize=3 )
+        if self._plot_pos is not None:
+            self._plot_pos.remove()
+
+        self._plot_pos,  = p_settings.axes.plot( point_pos[0], 
+                                                 point_pos[1], 
+                                                 marker='+', 
+                                                 color='red', 
+                                                 linestyle='',
+                                                 markersize=3 )
             
-        else:
-            self._plot_pos.set_xdata( point_pos[0] )    
-            self._plot_pos.set_ydata( point_pos[1] )    
+        if self._plot_vel is not None:
+            self._plot_vel.remove()
 
-            if self._plot_vel is not None:
-                self._plot_vel.remove()
+        try:
+            point_vel = self.derivatives[1]
+        except:
+            return
 
-            try:
-                point_vel = self.derivatives[1]
-            except:
-                return
-
-            if point_vel is not None:
-                self._plot_vel  = p_settings.axes.arrow( point_pos[0], 
-                                                         point_pos[1], 
-                                                         point_vel[0], 
-                                                         point_vel[1],
-                                                         color='red' )
+        if point_vel is not None:
+            self._plot_vel  = p_settings.axes.arrow( point_pos[0], 
+                                                     point_pos[1], 
+                                                     point_vel[0], 
+                                                     point_vel[1],
+                                                     color='red' )
                                                           
-                # self._plot_vel  = p_settings.axes.quiver( np.array([point_pos[0]]), 
-                #                                           np.array([point_pos[1]]),
-                #                                           np.array([point_vel[0]]),
-                #                                           np.array([point_vel[1]]),
-                #                                           #scale = 1,
-                #                                           units = 'dots',
-                #                                           width = 2,
-                #                                           color='red' )
-
-
+                                                         
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
 
