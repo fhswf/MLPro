@@ -10,15 +10,19 @@
 ## -- 2023-05-31  0.1.1     LSB      cleaning
 ## -- 2023-05-31  0.1.2     LSB      Visualization bug fixed
 ## -- 2023-06-06  0.1.3     LSB      Renaming _wf and run methods with *_strans
+## -- 2024-05-24  0.2.0     DA       Refactoring class PseudoTask
+## --                                - constructor: changes on parameter p_wrap_method
+## --                                - method _run(): changes on parameters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.2 (2023-05-31)
+Ver. 0.2.0 (2024-05-24)
 
 This module provides modules and template classes for adaptive systems and adaptive functions.
 """
-import copy
 
+
+import copy
 from mlpro.bf.ml.systems import *
 from mlpro.bf.systems import *
 from mlpro.bf.ml import Model
@@ -28,13 +32,9 @@ from typing import Callable
 
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PseudoTask(OATask):
-
     """
     A template class PseudoTask, only to be used by the OASystem. This functions runs a wrapped method as it's run
     method.
@@ -50,12 +50,9 @@ class PseudoTask(OATask):
     p_kwargs
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_wrap_method:Callable[[List[State],
-                                         List[State]],
-                                         None],
+                 p_wrap_method:Callable[[InstDict],None],
                  p_name='PseudoTask',
                  p_range_max=Range.C_RANGE_NONE,
                  p_duplicate_data=True,
@@ -77,13 +74,9 @@ class PseudoTask(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run( self,
-              p_inst_new : list,
-              p_inst_del : list ):
+    def _run( self, p_inst : InstDict ):
 
-        self._host_task(p_inst_new = p_inst_new,
-                        p_inst_del = p_inst_del)
-
+        self._host_task( p_inst = p_inst )
 
 
 
@@ -118,7 +111,6 @@ class OAFctSTrans(FctSTrans, Model):
     p_logging
     p_kwargs
     """
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -209,7 +201,6 @@ class OAFctSTrans(FctSTrans, Model):
 
         """
 
-
         self._state_obj = p_state.copy()
         self._action_obj = copy.deepcopy(p_action)
         self.log(Log.C_LOG_TYPE_I, 'Reaction Simulation Started...')
@@ -230,6 +221,7 @@ class OAFctSTrans(FctSTrans, Model):
         self._state_id += 1
 
         return state
+
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
@@ -260,6 +252,7 @@ class OAFctSTrans(FctSTrans, Model):
                 adapted = adapted or False
 
         return adapted
+
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
@@ -345,8 +338,6 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OAFctSuccess(FctSuccess, Model):
@@ -376,7 +367,6 @@ class OAFctSuccess(FctSuccess, Model):
     p_logging
     p_kwargs
     """
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -439,6 +429,7 @@ class OAFctSuccess(FctSuccess, Model):
             self._wf_success = p_wf_success
 
         self._setup_wf_success = False
+
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
@@ -582,8 +573,6 @@ class OAFctSuccess(FctSuccess, Model):
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OAFctBroken(FctBroken, Model):
@@ -677,6 +666,7 @@ class OAFctBroken(FctBroken, Model):
             self._wf_broken = p_wf_broken
 
         self._setup_wf_broken = False
+
 
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
@@ -814,8 +804,6 @@ class OAFctBroken(FctBroken, Model):
         self._wf_broken.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_broken, p_logging=self.get_log_level()),
                                  p_pred_tasks=p_pred_tasks)
         return True
-
-
 
 
 
