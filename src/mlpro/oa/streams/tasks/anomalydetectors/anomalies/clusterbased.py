@@ -140,6 +140,18 @@ class NewClusterAppearance (CBAnomaly):
             self._colour_id +=1
             if self._colour_id > 9:
                 self._colour_id = 0
+
+        """if self._rect is None:
+            self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)
+            self._plot_rectangle = p_settings.axes.add_patch(self._rect)
+            self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
+
+        else:
+            self._rect.set_x(x1)
+            self._rect.set_y(y1)
+            self._rect.set_width(x2 - x1)
+            self._rect.set_height(y2 - y1)
+            self._plot_rectangle_t.set_position(((x1+x2)/2, 0))"""
   
 
 ## -------------------------------------------------------------------------------------------------
