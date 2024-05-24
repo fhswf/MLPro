@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-05-05  0.1.0     DA       Creation
 ## -- 2024-05-07  0.2.0     DA       Extensions
+## -- 2024-05-24  0.3.0     SK       Addition of further properties
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-05-07)
+Ver. 0.3.0 (2024-05-24)
 
 This module provides typical cluster properties to be reused in own cluster analyzers.
 """
@@ -25,17 +26,37 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import
 #
 
 # Size (=number of associated instances) with 0,1,2 order derivatives 
-cprop_size      : PropertyDefinition = ( 'size', 0, Property )
-cprop_size1     : PropertyDefinition = ( 'size', 1, Property )
-cprop_size2     : PropertyDefinition = ( 'size', 2, Property )
+cprop_size            : PropertyDefinition = ( 'size', 0, Property )
+cprop_size1           : PropertyDefinition = ( 'size', 1, Property )
+cprop_size2           : PropertyDefinition = ( 'size', 2, Property )
 
 # Age with 0,1,2 order derivatives
-cprop_age       : PropertyDefinition = ( 'age', 0, Property )
-cprop_age1      : PropertyDefinition = ( 'age', 1, Property )
-cprop_age2      : PropertyDefinition = ( 'age', 2, Property )
+cprop_age             : PropertyDefinition = ( 'age', 0, Property )
+cprop_age1            : PropertyDefinition = ( 'age', 1, Property )
+cprop_age2            : PropertyDefinition = ( 'age', 2, Property )
 
 # Centroid with 0,1,2 order derivatives and plot functionality
-cprop_centroid  : PropertyDefinition = ( 'centroid', 0, Centroid )
-cprop_centroid1 : PropertyDefinition = ( 'centroid', 1, Centroid )
-cprop_centroid2 : PropertyDefinition = ( 'centroid', 2, Centroid )
+cprop_centroid        : PropertyDefinition = ( 'centroid', 0, Centroid )
+cprop_centroid1       : PropertyDefinition = ( 'centroid', 1, Centroid )
+cprop_centroid2       : PropertyDefinition = ( 'centroid', 2, Centroid )
+
+# Center with 0,1,2 order derivatives and plot functionality
+cprop_center          : PropertyDefinition = ( 'center', 0, Centroid )
+cprop_center1         : PropertyDefinition = ( 'center', 1, Centroid )
+cprop_center2         : PropertyDefinition = ( 'center', 2, Centroid )
+
+# Density with 0,1,2 order derivatives
+cprop_density         : PropertyDefinition = ( 'density', 0, Property )
+cprop_density1        : PropertyDefinition = ( 'density', 1, Property )
+cprop_density2        : PropertyDefinition = ( 'density', 2, Property )
+
+# Geometric size with 0,1,2 order derivatives
+cprop_geometric_size  : PropertyDefinition = ( 'geometric size', 0, Property )
+cprop_geometric_size1 : PropertyDefinition = ( 'geometric size', 1, Property )
+cprop_geometric_size2 : PropertyDefinition = ( 'geometric size', 2, Property )
+
+# Compactness with 0,1,2 order derivatives
+cprop_compactness     : PropertyDefinition = ( 'compactness', 0, Property )
+cprop_compactness1    : PropertyDefinition = ( 'compactness', 1, Property )
+cprop_compactness2    : PropertyDefinition = ( 'compactness', 2, Property )
 
