@@ -24,7 +24,7 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import
 # Typical cluster properties to be reused in your own cluster analyzers
 #
 
-# Size with 0,1,2 order derivatives 
+# Size (=number of associated instances) with 0,1,2 order derivatives 
 cprop_size      : PropertyDefinition = ( 'size', 0, Property )
 cprop_size1     : PropertyDefinition = ( 'size', 1, Property )
 cprop_size2     : PropertyDefinition = ( 'size', 2, Property )
