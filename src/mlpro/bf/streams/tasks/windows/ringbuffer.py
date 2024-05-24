@@ -286,7 +286,7 @@ class RingBuffer (Window):
         """
 
         # 1 No visualization until first data is buffered
-        if ( len(self._buffer) == 0 ) or ( len(p_inst) == 0 ): return
+        if len(self._buffer) == 0: return
 
 
         # 2 Initialization of the rectangle
@@ -325,7 +325,7 @@ class RingBuffer (Window):
         """
 
         # 1 No visualization until first data is buffered
-        if ( len(self._buffer) == 0 ) or ( len(p_inst) == 0 ): return
+        if len(self._buffer) == 0: return
 
 
         # 2 Initialization of the cuboid
