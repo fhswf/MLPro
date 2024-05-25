@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_001_normalization_of_streamed_data_minmax.py
+## -- Module  : howto_oa_streams_pp_001_bd_normminmax_2d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,10 +13,11 @@
 ## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
 ## -- 2023-05-02  1.1.1     DA       Correction in class MyAdaptiveScenario
 ## -- 2023-08-23  1.1.2     DA       Minor corrections 
+## -- 2024-05-24  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-08-23)
+Ver. 1.2.0 (2024-05-24)
 
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
@@ -30,10 +31,10 @@ You will learn:
 
 """
 
-from mlpro.oa.streams.tasks.normalizers import *
-from mlpro.oa.streams.tasks.boundarydetectors import *
 from mlpro.oa.streams import *
 from mlpro.bf.streams.streams import *
+from mlpro.oa.streams.tasks.normalizers import NormalizerMinMax
+from mlpro.oa.streams.tasks.boundarydetectors import BoundaryDetector
 
 
 
@@ -48,7 +49,7 @@ class MyAdaptiveScenario(OAScenario):
 
         # 1 Import a stream from OpenML
         mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = mlpro.get_stream( p_name=StreamMLProRnd10D.C_NAME,
+        stream = mlpro.get_stream( p_name=StreamMLProClouds2D4C1000Static.C_NAME,
                                    p_mode=p_mode,
                                    p_visualize=p_visualize,
                                    p_logging=p_logging)
@@ -67,7 +68,7 @@ class MyAdaptiveScenario(OAScenario):
                                       p_logging=p_logging)
 
         # 2.2 Creation of a workflow
-        workflow = OAWorkflow( p_name='Demo',
+        workflow = OAWorkflow( p_name='Input Signal "' + StreamMLProClouds2D4C1000Static.C_NAME + '"',
                                p_range_max = OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
                                p_ada=p_ada,
                                p_visualize=p_visualize, 
@@ -89,15 +90,17 @@ class MyAdaptiveScenario(OAScenario):
 
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 100
-    logging = Log.C_LOG_ALL
-    visualize = True
+    cycle_limit = 200
+    step_rate   = 2
+    logging     = Log.C_LOG_ALL
+    visualize   = True
 
 else:
     # 1.2 Parameters for internal unit test
     cycle_limit = 2
-    logging = Log.C_LOG_NOTHING
-    visualize = False
+    step_rate   = 1
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
 
 
 
@@ -113,7 +116,11 @@ myscenario = MyAdaptiveScenario(p_mode=Mode.C_MODE_REAL,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+                                                        p_view_autoselect = True,
+                                                        p_step_rate = step_rate,
+                                                        p_plot_horizon = 100,
+                                                        p_data_horizon = 200 ) )
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

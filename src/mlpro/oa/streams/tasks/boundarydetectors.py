@@ -223,8 +223,6 @@ class BoundaryDetector (OATask):
 
         """
 
-        super()._init_plot_nd( p_figure = p_figure, p_settings=p_settings)
-
         if not p_settings.axes:
             self.axes = p_figure.add_axes([0.1,0.1,0.7,0.8])
             self.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)

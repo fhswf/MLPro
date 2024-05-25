@@ -33,10 +33,11 @@
 ## -- 2024-05-04  1.3.0     DA       Class Cluster: generic property systematics
 ## -- 2024-05-06  1.4.0     DA       Plot functionality
 ## -- 2024-05-22  1.5.0     DA       Refactoring
+## -- 2024-05-25  1.6.0     DA       Aliases ClusterId, MembershipValue
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2024-05-22)
+Ver. 1.6.0 (2024-05-25)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 
@@ -50,6 +51,8 @@ from mlpro.bf.streams import *
 from mlpro.bf.math.normalizers import Renormalizable
 
 
+ClusterId       = int
+MembershipValue = float
 
 
 
@@ -61,8 +64,8 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
 
     Parameters
     ----------
-    p_id
-        Optional external id.
+    p_id : ClusterId
+        Unique cluster id.
     p_properties : PropertyDefinitions
         List of property definitions. 
     p_visualize : bool
@@ -80,7 +83,7 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_id = None,
+                  p_id : ClusterId,
                   p_properties : PropertyDefinitions = [],
                   p_visualize : bool = False ):
 

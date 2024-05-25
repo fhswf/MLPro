@@ -44,10 +44,11 @@
 ## -- 2023-06-06  1.14.0    LSB      New functions to fetch the functions of a system
 ## -- 2023-05-01  2.0.0     LSB      New class MultiSystem
 ## -- 2024-05-14  2.0.1     SY       Migration from MLPro to MLPro-Int-MuJoCo
+## -- 2024-05-24  2.1.0     DA       Class State: removed parent class TStamp
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2024-05-14)
+Ver. 2.1.0 (2024-05-24)
 
 This module provides models and templates for state based systems.
 """
@@ -70,12 +71,9 @@ from mlpro.bf.mt import *
 
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class State(Instance, Element, TStamp):
+class State(Instance, Element):
     """
     State of a system as an element of a given state space. Additionally, the state can be
     labeled with various properties.
@@ -106,7 +104,6 @@ class State(Instance, Element, TStamp):
                  p_timeout: bool = False,
                  **p_kwargs):
 
-        TStamp.__init__(self)
         Element.__init__(self, p_state_space)
         Instance.__init__(self, p_feature_data=self, **p_kwargs)
         self.set_initial(p_initial)
@@ -210,6 +207,7 @@ class State(Instance, Element, TStamp):
         except:
             pass
         return copied_state
+
 
 
 
@@ -758,7 +756,6 @@ class Controller (EventManager):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SystemShared(Shared):
@@ -793,7 +790,6 @@ class SystemShared(Shared):
     """
 
     C_NAME = 'System Shared'
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -833,7 +829,6 @@ class SystemShared(Shared):
         for system in self._spaces.keys():
             self._states[system] = State(p_state_space=self._spaces[system][0])
             self._actions[system] = np.zeros(len(self._spaces[system][1].get_dims()))
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -916,7 +911,6 @@ class SystemShared(Shared):
                     if output_dim_type == 'A':
                         action_space = self._spaces[output_sys][1]
                         self._actions[output_sys][action_space.get_dim_ids().index(output_dim)] = value
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1063,8 +1057,6 @@ class SystemShared(Shared):
         except:
 
             raise Error("Registration of the system failed. Possible reason maybe false provision of mappings")
-
-
 
         
         
@@ -1988,10 +1980,8 @@ class MultiSystem(Workflow, System):
     p_kwargs
     """
 
-
     C_TYPE = 'Multi-System'
 
-    
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_name: str = None, 
@@ -2013,7 +2003,6 @@ class MultiSystem(Workflow, System):
                  p_visualize: bool = False, 
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
-        
 
         System.__init__( self,
                          p_name=p_name,
@@ -2034,7 +2023,6 @@ class MultiSystem(Workflow, System):
                          p_camera_conf=p_camera_conf, 
                          p_visualize=p_visualize, 
                          p_logging=p_logging )
-
 
         Workflow.__init__(self, 
                           p_name = p_name, 
@@ -2231,7 +2219,6 @@ class MultiSystem(Workflow, System):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class DemoScenario(ScenarioBase):
@@ -2265,8 +2252,6 @@ class DemoScenario(ScenarioBase):
     C_ACTION_RANDOM = 'random'
     C_ACTION_CONSTANT = 'constant'
 
-    
-
 ## -------------------------------------------------------------------------------------------------
     def  __init__(self,
                  p_system : System,
@@ -2283,7 +2268,6 @@ class DemoScenario(ScenarioBase):
         self._system = p_system
         self._action_pattern = p_action_pattern
         self._action = p_action
-        
 
         ScenarioBase.__init__(self,
                               p_mode = p_mode, 
@@ -2292,8 +2276,6 @@ class DemoScenario(ScenarioBase):
                               p_auto_setup = p_auto_setup, 
                               p_visualize = p_visualize, 
                               p_logging = p_logging)
-
-
 
         self._action_length = len(self._system.get_action_space().get_dims())
 
@@ -2383,6 +2365,7 @@ class DemoScenario(ScenarioBase):
                 action.append(random.randint(*dim.get_boundaries()))
 
         return Action(p_action_space=action_space, p_values=action)
+ 
  
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):

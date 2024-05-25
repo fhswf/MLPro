@@ -59,7 +59,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a workflow
-        workflow = OAWorkflow( p_name='wf1',
+        workflow = OAWorkflow( p_name='Input Signal',
                                p_range_max=OAWorkflow.C_RANGE_NONE,
                                p_ada=p_ada,
                                p_visualize=p_visualize, 
@@ -72,7 +72,7 @@ class MyAdaptiveScenario (OAScenario):
         features     = stream.get_feature_space().get_dims()
         features_new = [ ( 'F', features[1:3] ) ]
 
-        task_rearranger = Rearranger( p_name='t1',
+        task_rearranger = Rearranger( p_name='T1 - Rearranger',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
@@ -84,7 +84,7 @@ class MyAdaptiveScenario (OAScenario):
         task_window = RingBuffer( p_buffer_size=50, 
                                   p_delay=True,
                                   p_enable_statistics=True,
-                                  p_name='t2',
+                                  p_name='T2 - Ring Buffer',
                                   p_duplicate_data=True,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging )
@@ -92,7 +92,7 @@ class MyAdaptiveScenario (OAScenario):
         workflow.add_task(p_task=task_window, p_pred_tasks=[task_rearranger])
 
         # 2.2.3 Boundary detector 
-        task_bd = BoundaryDetector( p_name='t3', 
+        task_bd = BoundaryDetector( p_name='T3 - Boundary Detector', 
                                     p_ada=True, 
                                     p_visualize=p_visualize,
                                     p_logging=p_logging )
@@ -101,7 +101,7 @@ class MyAdaptiveScenario (OAScenario):
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
         # # 2.2.4 MinMax-Normalizer
-        task_norm_minmax = NormalizerMinMax( p_name='t4', 
+        task_norm_minmax = NormalizerMinMax( p_name='T4 - MinMax Normalizer', 
                                              p_ada=True, 
                                              p_visualize=p_visualize, 
                                              p_logging=p_logging )
@@ -134,10 +134,10 @@ if __name__ == "__main__":
 
 else:
     # 1.2 Parameters for internal unit test
-    cycle_limit = 2
+    cycle_limit = 60
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    step_rate   = 1
+    step_rate   = 5
 
 
 
@@ -154,6 +154,8 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+                                                        p_plot_horizon = 100,
+                                                        p_data_horizon = 150,
                                                         p_step_rate = step_rate ) )
     input('\nPlease arrange all windows and press ENTER to start stream processing...')
 

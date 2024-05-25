@@ -21,7 +21,7 @@ This module provides templates for anomaly detection to be used in the context o
 """
 
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance, InstDict
+from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from matplotlib.figure import Figure
 from matplotlib.text import Text
@@ -41,7 +41,7 @@ class GroupAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : list[InstDict] = None,
+                 p_instances : list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -53,7 +53,7 @@ class GroupAnomaly (Anomaly):
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
         
-        self.instances : list[InstDict] = p_instances
+        self.instances : list[Instance] = p_instances
         p_ano_scores = p_ano_scores
         self.plot_update = True
 
@@ -87,20 +87,15 @@ class GroupAnomaly (Anomaly):
     
         label = self.C_NAME[0]
 
-
-        x1 : Instance = None
-        x2 : Instance = None
-        (inst_type, x1) = self.get_instances()[0].values()[-1]
-        (inst_type, x2) = self.get_instances()[-1].values()[-1]
+        x1 = self.get_instances()[0]
+        x2 = self.get_instances()[-1]
 
         x1 = x1.get_id()
         x2 = x2.get_id()
         a=[]
         b=[]
         for instance in self.get_instances():
-            inst : Instance = None
-            (inst_type, inst) = instance.values()[-1]
-            a.append(inst.get_feature_data().get_values())
+            a.append(instance.get_feature_data().get_values())
         for x in a:
             b.extend(x)
         y1 = min(b)
