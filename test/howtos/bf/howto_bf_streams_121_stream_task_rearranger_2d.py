@@ -1,13 +1,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_113_stream_task_rearranger_nd.py
+## -- Module  : howto_bf_streams_121_stream_task_rearranger_2d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
 ## -- 2022-12-14  1.0.0     DA       First implementation
-## -- 2023-02-07  1.0.1     SY       Refactoring module name
 ## -- 2024-05-22  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
@@ -48,7 +47,7 @@ class MyTask (StreamTask):
     C_NAME      = 'Custom'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_inst : InstDict):
         pass
 
 
@@ -78,28 +77,18 @@ class MyScenario (StreamScenario):
 
         # 2.1 Set up and add a rearranger task to reduce the feature and label space
         features     = stream.get_feature_space().get_dims()
-        labels       = stream.get_label_space().get_dims()
+        features_new = [ ( 'F', features[1:3] ) ]
 
-        features_new = [ ( 'F', [ features[1] ] ), 
-                         ( 'L', [ labels[1] ] ),  
-                         ( 'F', features[5:8] ) ]
-        labels_new   = [ ( 'L', [ labels[0] ] ), 
-                         ( 'F', features[4:6] ) ]
-
-        task_rearranger = Rearranger( p_name='T1 - Rearranger',
+        task_rearranger = Rearranger( p_name='t1',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
-                                      p_features_new=features_new,
-                                      p_labels_new=labels_new )
+                                      p_features_new=features_new )
 
         workflow.add_task( p_task=task_rearranger )
 
         # 2.2 Set up and add an own custom task
-        task_custom = MyTask( p_name='T2 - My task', 
-                              p_visualize=p_visualize, 
-                              p_logging=logging )
-        
+        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
         workflow.add_task( p_task=task_custom, p_pred_tasks=[task_rearranger] )
 
 
@@ -135,8 +124,6 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
-                                                        p_plot_horizon = 50,
-                                                        p_data_horizon = 100,
                                                         p_step_rate = 2 ) )
     input('Press ENTER to start stream processing...')
 

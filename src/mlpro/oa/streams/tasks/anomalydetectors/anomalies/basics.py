@@ -25,7 +25,7 @@ This module provides templates for anomaly detection to be used in the context o
 from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
-from mlpro.bf.streams import Instance, InstDict
+from mlpro.bf.streams import Instance
 
 
 
@@ -63,7 +63,7 @@ class Anomaly (Id, Event, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances: list[InstDict] = None,
+                 p_instances: list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -75,12 +75,12 @@ class Anomaly (Id, Event, Plottable):
                         p_tstamp=p_det_time, **p_kwargs)
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self.instances : list[InstDict] = p_instances
+        self.instances : list[Instance] = p_instances
         self.ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_instances(self) -> list[InstDict]:
+    def get_instances(self) -> list[Instance]:
         return self.instances
     
 

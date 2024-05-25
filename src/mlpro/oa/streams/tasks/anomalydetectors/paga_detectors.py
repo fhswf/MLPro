@@ -88,12 +88,10 @@ class AnomalyDetectorPAGA(AnomalyDetector):
 
             if len(self.group_anomalies_instances) > 1:
 
-                inst_1 : Instance = None
-                inst_2 : Instance = None
-                (inst_type, inst_2) = self.group_anomalies_instances[-1].values()[-1]
+                inst_2 = self.group_anomalies_instances[-1]
                 second = inst_2.get_id()
-                (inst_type, inst_1) = self.group_anomalies_instances[-2].values()[-1]
-                first = inst_1.get_id()
+                inst_1 = self.group_anomalies_instances[-2]
+                first  = inst_1.get_id()
                 
                 if int(second) - 1 == int(first):
 

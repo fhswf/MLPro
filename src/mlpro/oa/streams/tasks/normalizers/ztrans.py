@@ -17,10 +17,11 @@
 ## -- 2023-05-03  1.2.1     DA       Bugfix in NormalizerMinMax._update_plot_2d/3d/nd
 ## -- 2023-05-22  1.2.2     SY       Refactoring
 ## -- 2024-05-22  1.3.0     DA       Refactoring and splitting
+## -- 2024-05-23  1.3.1     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-22)
+Ver. 1.3.1 (2024-05-23)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
@@ -94,16 +95,17 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
         self.adapt( p_inst = p_inst )
 
         # 2 Z-transformation of stream instances
-        for inst_type, inst in sorted(p_inst.values()):
+        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
+
+            feature_data = inst.get_feature_data()
 
             if self._param is None:
                 if inst_type == InstTypeNew:
-                    self.update_parameters(p_data_new=inst.get_feature_data())
+                    self.update_parameters( p_data_new = feature_data )
                 else:
-                    self.update_parameters(p_data_del=inst.get_feature_data())
+                    self.update_parameters( p_data_del = feature_data )
 
-            normalized_element = self.normalize(inst.get_feature_data())
-            inst.get_feature_data().set_values(normalized_element.get_values())
+            feature_data.set_values( p_values = self.normalize(feature_data).get_values() )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -123,7 +125,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         """
 
-        self.update_parameters(p_data_new=p_inst_new.get_feature_data())
+        self.update_parameters( p_data_new = p_inst_new.get_feature_data() )
         return True
 
 
@@ -144,5 +146,5 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         """
 
-        self.update_parameters(p_data_del=p_inst_del.get_feature_data())
+        self.update_parameters( p_data_del = p_inst_del.get_feature_data() )
         return True

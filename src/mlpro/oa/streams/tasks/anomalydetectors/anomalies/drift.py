@@ -19,7 +19,7 @@ Ver. 1.2.0 (2024-04-10)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
-from mlpro.bf.streams import Instance, InstDict
+from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 
 
@@ -36,7 +36,7 @@ class DriftAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_instances : InstDict = None,
+                 p_instances : Instance = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,

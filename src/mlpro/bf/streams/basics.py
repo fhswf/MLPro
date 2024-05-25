@@ -64,10 +64,11 @@
 ## --                                - refactoring of instance handling
 ## --                                Class StreamTask:
 ## --                                - optimization of code for plotting
+## -- 2024-05-23  2.0.1     DA       Bugfix in method StreamTask.run()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2024-05-21)
+Ver. 2.0.1 (2024-05-23)
 
 This module provides classes for standardized stream processing. 
 
@@ -898,28 +899,28 @@ class StreamTask (Task):
         so : StreamShared = self.get_so()
 
         if p_inst is not None:
-            inst = p_inst
+            instances = p_inst
         else:
             if so is None:
                 raise ImplementationError('Class StreamTask needs instance data as parameters or from a shared object')
 
             try: 
-                inst = so.get_instances(p_task_ids=self._predecessor_ids)
+                instances = so.get_instances(p_task_ids=self._predecessor_ids)
             except AttributeError:
                 raise ImplementationError('Shared object not compatible to class StreamShared')
         
-        if len(inst) == 0: 
+        if len(instances) == 0: 
             self.log(Log.C_LOG_TYPE_S, 'No inputs -> SKIP')
 
         if self._duplicate_data:
             inst_copy : InstDict = {}
 
-            for inst_entry in inst_copy.values:
-                inst_copy[inst_entry[1].id] = ( inst_entry[0], inst_entry[1].copy())
+            for inst_id, (inst_type, inst) in instances.items():
+                inst_copy[inst_id] = ( inst_type, inst.copy() )
 
-            inst = inst_copy
+            instances = inst_copy
 
-        Task.run(self, p_range=p_range, p_wait=p_wait, p_inst=inst)
+        Task.run(self, p_range=p_range, p_wait=p_wait, p_inst=instances)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1403,9 +1404,6 @@ class StreamTask (Task):
                 except:
                     pass
 
-        if len(self._plot_nd_xdata)==0:
-            return
-        
         
         # 4 If buffer size is limited, remove obsolete data
         if p_settings.data_horizon > 0:

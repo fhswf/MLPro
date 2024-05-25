@@ -1,19 +1,19 @@
-.. _Howto BF STREAMS 110:
-Howto BF-STREAMS-110: Window
+.. _Howto BF STREAMS 122:
+Howto BF-STREAMS-122: Rearranger (3D)
 ===============================================
 
 **Prerequisites**
 
 Please install the following packages to run this example properly:
 
-    - `Numpy <https://www.numpy.org>`_
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
+    - `Tkinter <https://pypi.org/project/tk/>`_
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_110_stream_task_window.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_122_stream_task_rearranger_3d.py
 	:language: python
 
 
@@ -21,7 +21,7 @@ Please install the following packages to run this example properly:
 **Results**
 
 .. image::
-    images/streams_window.gif
+    images/streams_rearranger_3d.gif
 
 
 

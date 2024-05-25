@@ -27,11 +27,11 @@
 ## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -- 2024-04-10  0.8.3     DA       Refactoring
 ## -- 2024-05-04  0.9.0     DA       Introduction of cluster properties
-## -- 2024-05-22  1.0.0     DA       Initial design finished
+## -- 2024-05-25  1.0.0     DA       Initial design finished
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-05-22)
+Ver. 1.0.0 (2024-05-25)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -44,9 +44,12 @@ from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.oa.streams import OATask
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster, ClusterId, MembershipValue
 from typing import List, Tuple
 
+
+
+MembershipItem = Tuple[ClusterId, MembershipValue, object]
 
 
 
@@ -255,7 +258,7 @@ class ClusterAnalyzer (OATask):
 ## -------------------------------------------------------------------------------------------------
     def get_cluster_memberships( self, 
                                  p_inst : Instance,
-                                 p_scope : int = C_MS_SCOPE_MAX ) -> List[Tuple[str, float, Cluster]]:
+                                 p_scope : int = C_MS_SCOPE_MAX ) -> List[MembershipItem]:
         """
         Method to determine the membership of the given instance to each cluster as a value in 
         percent. 
@@ -270,8 +273,8 @@ class ClusterAnalyzer (OATask):
 
         Returns
         -------
-        membership : List[Tuple[str, float, Cluster]]
-            List of membership tuples. A tuple consists of a cluster id, a relative membership 
+        membership : List[MembershipItem]
+            List of membership items which are tuples of a cluster id, a relative membership 
             value in [0,1] and a reference to the cluster object.
         """
 

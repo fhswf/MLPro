@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_110_stream_task_window.py
+## -- Module  : howto_bf_streams_111_stream_task_window_2d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -60,17 +60,17 @@ class MyStreamScenario(StreamScenario):
 
         # 1 Import a native stream from MLPro
         provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = provider_mlpro.get_stream('Rnd10Dx1000', p_mode=p_mode, p_logging=p_logging)
+        stream = provider_mlpro.get_stream('Clouds2D4C1000Static', p_mode=p_mode, p_logging=p_logging)
 
 
         # 2 Set up a stream workflow 
-        workflow = StreamWorkflow( p_name=self.C_NAME,
+        workflow = StreamWorkflow( p_name='Input Signal "Clouds2D4C1000Static"',
                                    p_range_max=StreamWorkflow.C_RANGE_NONE,    
                                    p_visualize=p_visualize,
                                    p_logging=logging)
 
         # 2.1 Set up and add a window task
-        task_window = RingBuffer( p_buffer_size=30, 
+        task_window = RingBuffer( p_buffer_size=50, 
                                   p_name = 'T1 - Ring Buffer', 
                                   p_delay = True,
                                   p_visualize = p_visualize, 

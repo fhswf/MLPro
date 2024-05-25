@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_112_stream_task_rearranger_3d.py
+## -- Module  : howto_bf_streams_122_stream_task_rearranger_3d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

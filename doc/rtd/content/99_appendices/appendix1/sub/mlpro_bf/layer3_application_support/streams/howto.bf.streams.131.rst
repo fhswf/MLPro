@@ -1,5 +1,5 @@
-.. _Howto BF STREAMS 114:
-Howto BF-STREAMS-114: Deriver
+.. _Howto BF STREAMS 131:
+Howto BF-STREAMS-131: Deriver
 =============================
 
 **Prerequisites**
@@ -13,7 +13,7 @@ Please install the following packages to run this example properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_114_stream_task_deriver.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_131_stream_task_deriver.py
 	:language: python
 
 
