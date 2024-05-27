@@ -24,10 +24,11 @@
 ## -- 2024-04-30  1.1.0     DA       Refactoring/separation
 ## -- 2024-05-23  1.2.0     DA       Refactoring (not yet finished)
 ## -- 2024-05-24  1.2.1     LSB      Bug fix for Parameter update using only p_data_del in Z-transform
+## -- 2024-05-27  1.2.2     LSB      Scientific Reference added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-24)
+Ver. 1.2.2 (2024-05-27)
 
 This module provides a class for Z transformation.
 """
@@ -36,15 +37,19 @@ This module provides a class for Z transformation.
 from mlpro.bf.math.normalizers.basics import *
 import numpy as np
 from typing import Union
+from mlpro.bf.various import ScientificObject
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTrans (Normalizer):
+class NormalizerZTrans (Normalizer, ScientificObject):
     """
     Class for Normalization based on Z transformation.
     """
+    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_URL = 'http://datagenetics.com/blog/november22017/index.html'
+    C_SCIREF_ACCESSED = '2024-05-27'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
