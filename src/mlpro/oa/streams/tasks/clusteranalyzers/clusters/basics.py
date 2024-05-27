@@ -34,7 +34,7 @@
 ## -- 2024-05-06  1.4.0     DA       Plot functionality
 ## -- 2024-05-22  1.5.0     DA       Refactoring
 ## -- 2024-05-25  1.6.0     DA       Aliases ClusterId, MembershipValue
-## -- 2024-05-27  1.7.0     DA       Class Cluster: new attribute C_CLUSTER_PROPERTIES
+## -- 2024-05-27  1.7.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -46,10 +46,9 @@ This module provides templates for clusters to be used in cluster analyzer algor
 
 
 from mlpro.bf.various import *
-from mlpro.bf.math.properties import *
+from mlpro.bf.math.properties import PropertyDefinitions, Properties
 from mlpro.bf.plot import *
 from mlpro.bf.streams import *
-from mlpro.bf.math.normalizers import Renormalizable
 
 
 ClusterId       = int
@@ -59,7 +58,7 @@ MembershipValue = float
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Cluster (Id, Plottable, Properties, Renormalizable):
+class Cluster (Id, Properties):
     """
     Universal template class for a cluster with any number of properties added by a cluster analyzer. 
 
@@ -72,8 +71,6 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     """
-
-    C_PROPERTIES : PropertyDefinitions = []
 
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
@@ -90,12 +87,7 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
                   p_properties : PropertyDefinitions = [],
                   p_visualize : bool = False ):
 
-        Plottable.__init__( self, p_visualize = p_visualize )
-        Properties.__init__( self )
-
-        self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
-        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
-
+        Properties.__init__( self, p_properties = p_properties, p_visualize = p_visualize )
         Id.__init__( self, p_id = p_id )
         
 
@@ -117,27 +109,3 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
         """
 
         raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
-
-        if not self.get_visualization(): return
-
-        Plottable.init_plot( self, p_figure = p_figure, p_plot_settings = p_plot_settings)
-
-        for prop in self.get_properties().values():
-            prop.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings)
-
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot( self, 
-                     p_inst : InstDict = None, 
-                     **p_kwargs ):
-
-        if not self.get_visualization(): return
-
-        for prop in self.get_properties().values():
-            prop.update_plot(p_inst = p_inst, **p_kwargs)
-
-        Plottable.update_plot( self, p_inst = p_inst, **p_kwargs )
