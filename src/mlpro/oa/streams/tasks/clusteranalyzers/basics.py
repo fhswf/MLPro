@@ -27,11 +27,11 @@
 ## -- 2024-02-24  0.8.2     DA       Class ClusterCentroid: redefined method remove_plot()
 ## -- 2024-04-10  0.8.3     DA       Refactoring
 ## -- 2024-05-04  0.9.0     DA       Introduction of cluster properties
-## -- 2024-05-25  1.0.0     DA       Initial design finished
+## -- 2024-05-27  1.0.0     DA       Initial design finished
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-05-25)
+Ver. 1.0.0 (2024-05-27)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -336,6 +336,23 @@ class ClusterAnalyzer (OATask):
             cluster.update_plot(p_inst = p_inst, **p_kwargs)
 
 
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh:bool = True):
+        """"
+        Removes the plot and optionally refreshes the display.
+
+        Parameters
+        ----------
+        p_refresh : bool = True
+            On True the display is refreshed after removal
+        """
+
+        if not self.get_visualization(): return
+
+        for cluster in self._clusters.values():
+            cluster.remove_plot( p_refresh = False)
+
+        
 ## -------------------------------------------------------------------------------------------------
     def _renormalize(self, p_normalizer: Normalizer):
         """
