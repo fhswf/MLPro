@@ -29,10 +29,11 @@
 ## -- 2024-04-29  0.9.0     DA       Refactoring after changes on class Point
 ## -- 2024-05-06  1.0.0     DA       Refactoring
 ## -- 2024-05-07  1.0.1     DA       Bugfix in ClusterCentroid.__init__(): internal properties first
+## -- 2024-05-27  1.1.0     DA       Changes on property management
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-05-07)
+Ver. 1.1.0 (2024-05-27)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -73,23 +74,23 @@ class ClusterCentroid (Cluster):
         Centroid object.
     """
 
+    C_PROPERTIES    = [ cprop_centroid ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_id = None,
+                  p_id,
                   p_properties : PropertyDefinitions = [],
                   p_visualize : bool = False ):
 
-        super().__init__( p_id=p_id, p_visualize=p_visualize )
+        super().__init__( p_id = p_id,
+                          p_properties = p_properties,
+                          p_visualize = p_visualize )
 
-        self.add_properties( p_property_definitions = [ cprop_centroid ], p_visualize = p_visualize )
-        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
-
-        self.centroid.set_id( p_id = self.get_id() )
         self._centroid_elem : Element = None
 
 
 # ## -------------------------------------------------------------------------------------------------
-    def set_id(self, p_id=None):
+    def set_id(self, p_id):
         super().set_id( p_id = p_id )
         try:
             self.centroid.set_id( p_id = p_id )
@@ -111,5 +112,5 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer: Normalizer):
-        self.centroid.renormalize( p_normalizer=p_normalizer)
+        self.centroid.renormalize( p_normalizer=p_normalizer )
 

@@ -34,10 +34,11 @@
 ## -- 2024-05-06  1.4.0     DA       Plot functionality
 ## -- 2024-05-22  1.5.0     DA       Refactoring
 ## -- 2024-05-25  1.6.0     DA       Aliases ClusterId, MembershipValue
+## -- 2024-05-27  1.7.0     DA       Class Cluster: new attribute C_CLUSTER_PROPERTIES
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2024-05-25)
+Ver. 1.7.0 (2024-05-27)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 
@@ -72,6 +73,8 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
         Boolean switch for visualisation. Default = False.
     """
 
+    C_PROPERTIES : PropertyDefinitions = []
+
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
     C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
@@ -87,16 +90,14 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
                   p_properties : PropertyDefinitions = [],
                   p_visualize : bool = False ):
 
-        Id.__init__( self, p_id = p_id )
         Plottable.__init__( self, p_visualize = p_visualize )
         Properties.__init__( self )
 
-        for p in p_properties:
-            self.add_property( p_name = p[0], 
-                               p_derivative_order_max = p[1], 
-                               p_cls = p[2],
-                               p_visualize = p_visualize )
+        self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
+        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
 
+        Id.__init__( self, p_id = p_id )
+        
 
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst : Instance ) -> float:
