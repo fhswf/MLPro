@@ -13,10 +13,14 @@
 ## -- 2024-05-04  0.4.0     DA       Introduction of type aliases
 ## -- 2024-05-05  0.5.0     DA       Redesign: alignment with Python's managed attributes
 ## -- 2024-05-06  0.6.0     DA       Completion of plot functionality
+## -- 2024-05-27  0.7.0     DA       Class Properties: 
+## --                                - new parent classes Plottable, Renormalizable
+## --                                - implementation of *_plot() and renormalize
+## --                                - constructor: new parameters p_properties, p_visualization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2024-05-06)
+Ver. 0.7.0 (2024-05-27)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -33,8 +37,10 @@ Hint: plot and renormalization functionality is to be implemented in child class
 from typing import List, Union, Tuple
 from datetime import datetime
 import numpy as np
-from mlpro.bf.plot import Plottable
-from mlpro.bf.math.normalizers import Renormalizable
+from matplotlib.figure import Figure
+
+from mlpro.bf.plot import Plottable, PlotSettings
+from mlpro.bf.math.normalizers import Normalizer, Renormalizable
 
 
 
@@ -202,15 +208,36 @@ class Property (Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Properties:
+class Properties (Plottable, Renormalizable):
     """
     Inherit from this class to add MLPro's property systematics to your own class. It enables
     defining properties of any type. See class Property for further details.
+
+    Parameters
+    ----------
+    p_properties : PropertyDefinitions
+        List of property definitions. 
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    
+    Attributes
+    ----------
+    C_PROPERTIES : PropertyDefinitions
+        List of property definitions to be created on instantiation
     """
 
+    C_PROPERTIES : PropertyDefinitions = []
+    
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self ):
+    def __init__( self,
+                  p_properties : PropertyDefinitions = [],
+                  p_visualize : bool = False ):
+                     
         self._properties = {}
+        self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
+        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
+
+        Plottable.__init__( self, p_visualize = p_visualize )
                   
 
 ## -------------------------------------------------------------------------------------------------
@@ -276,3 +303,36 @@ class Properties:
         """
 
         return self._properties
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+
+        if not self.get_visualization(): return
+
+        for prop in self.get_properties().values():
+            prop.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot( self, **p_kwargs ):
+
+        if not self.get_visualization(): return
+
+        for prop in self.get_properties().values():
+            prop.update_plot(**p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh:bool = True):
+        if not self.get_visualization(): return
+
+        for prop in self.get_properties().values():
+            prop.remove_plot( p_refresh = False)
+
+
+## -------------------------------------------------------------------------------------------------
+    def renormalize(self, p_normalizer : Normalizer ):
+
+        for prop in self.get_properties().values():
+            prop.renormalize( p_normalizer = p_normalizer )
