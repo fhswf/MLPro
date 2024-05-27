@@ -90,13 +90,14 @@ class Cluster (Id, Plottable, Properties, Renormalizable):
                   p_properties : PropertyDefinitions = [],
                   p_visualize : bool = False ):
 
-        Id.__init__( self, p_id = p_id )
         Plottable.__init__( self, p_visualize = p_visualize )
         Properties.__init__( self )
 
-        self.add_properties( p_properties = self.C_PROPERTIES, p_visualize = p_visualize )
-        self.add_properties( p_properties = p_properties, p_visualize = p_visualize )
+        self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
+        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
 
+        Id.__init__( self, p_id = p_id )
+        
 
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst : Instance ) -> float:

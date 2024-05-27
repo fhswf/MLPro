@@ -86,7 +86,6 @@ class ClusterCentroid (Cluster):
                           p_properties = p_properties,
                           p_visualize = p_visualize )
 
-        self.centroid.set_id( p_id = self.get_id() )
         self._centroid_elem : Element = None
 
 
@@ -113,5 +112,5 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer: Normalizer):
-        self.centroid.renormalize( p_normalizer=p_normalizer)
+        self.centroid.renormalize( p_normalizer=p_normalizer )
 
