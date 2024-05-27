@@ -18,10 +18,11 @@
 ## -- 2023-05-22  1.2.2     SY       Refactoring
 ## -- 2024-05-22  1.3.0     DA       Refactoring and splitting
 ## -- 2024-05-23  1.3.1     DA       Bugfix
+## -- 2024-05-27  1.3.2     LSB      Fixed Plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2024-05-23)
+Ver. 1.3.2 (2024-05-27)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
@@ -77,7 +78,12 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
             **p_kwargs)
 
         Norm.NormalizerZTrans.__init__(self)
+        self._parameters_updated:bool = None
 
+        if p_visualize:
+            self._plot_data_2d = None
+            self._plot_data_3d = None
+            self._plot_data_nd = None
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
@@ -126,6 +132,9 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
         """
 
         self.update_parameters( p_data_new = p_inst_new.get_feature_data() )
+
+        self._parameters_updated = True
+
         return True
 
 
@@ -147,4 +156,142 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
         """
 
         self.update_parameters( p_data_del = p_inst_del.get_feature_data() )
+
+        self._parameters_updated = True
+
         return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d( self,
+                         p_settings : PlotSettings,
+                         p_inst : InstDict,
+                         **p_kwargs ):
+        """
+        Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst : InstDict
+            Stream instances to be plotted.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        if self._parameters_updated and ( len(self._plot_2d_xdata) != 0 ):
+
+            if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
+                self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
+
+            for i in range(len(self._plot_2d_xdata)):
+                self._plot_data_2d[i][0] = self._plot_2d_xdata[i]
+                self._plot_data_2d[i][1] = self._plot_2d_ydata[i]
+
+            plot_data_renormalized = self.renormalize(self._plot_data_2d)
+
+            self._plot_2d_xdata = {}
+            self._plot_2d_ydata = {}
+
+            for i, data_2d in enumerate(plot_data_renormalized):
+                self._plot_2d_xdata[i] = data_2d[0]
+                self._plot_2d_ydata[i] = data_2d[1]
+
+            self._parameters_updated = False
+
+        OATask._update_plot_2d( self,
+                                p_settings = p_settings,
+                                p_inst = p_inst,
+                                **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d( self,
+                         p_settings : PlotSettings,
+                         p_inst : InstDict,
+                         **p_kwargs ):
+        """
+        Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst : InstDict
+            Stream instances to be plotted.
+        p_kwargs : dict
+            Further optional plot parameters.
+
+        """
+
+        if self._parameters_updated and ( len(self._plot_3d_xdata) != 0 ):
+
+            if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
+                self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
+
+            for i in range(len(self._plot_3d_xdata)):
+                self._plot_data_3d[i][0] = self._plot_3d_xdata[i]
+                self._plot_data_3d[i][1] = self._plot_3d_ydata[i]
+                self._plot_data_3d[i][2] = self._plot_3d_zdata[i]
+
+            plot_data_renormalized = self.renormalize(self._plot_data_3d)
+
+            self._plot_3d_xdata = {}
+            self._plot_3d_ydata = {}
+            self._plot_3d_zdata = {}
+
+            for i, data_3d in enumerate(plot_data_renormalized):
+                self._plot_3d_xdata[i] = data_3d[0]
+                self._plot_3d_ydata[i] = data_3d[1]
+                self._plot_3d_zdata[i] = data_3d[2]
+
+            self._parameters_updated = False
+
+        OATask._update_plot_3d( self,
+                                p_settings = p_settings,
+                                p_inst = p_inst,
+                                **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd( self,
+                         p_settings : PlotSettings,
+                         p_inst : InstDict,
+                         **p_kwargs ):
+        """
+
+        Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst : InstDict
+            Stream instances to be plotted.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        if self._parameters_updated and self._plot_nd_plots:
+            if (len(self._plot_nd_plots[0][0])) != 0:
+
+                if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
+                    self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
+
+                for j in range(len(self._plot_nd_plots)):
+                    for i in range(len(self._plot_nd_plots[0][0])):
+                        self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
+
+                plot_data_renormalized = self.renormalize(self._plot_data_nd)
+
+                for j in range(len(self._plot_nd_plots)):
+                    self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
+
+
+                self._parameters_updated = False
+
+        OATask._update_plot_nd( self,
+                                p_settings = p_settings,
+                                p_inst = p_inst,
+                                **p_kwargs )
