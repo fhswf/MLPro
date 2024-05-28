@@ -22,7 +22,7 @@ This module provides templates for anomaly detection to be used in the context o
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
-from MLPro.src.mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 import numpy as np
