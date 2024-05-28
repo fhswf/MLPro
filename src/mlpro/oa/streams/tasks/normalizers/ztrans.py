@@ -101,12 +101,6 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         # 1 Online update of transformation parameters
         self.adapt( p_inst = p_inst )
-        # if self._test_data is not None:
-        #     for (_, (_, inst)) in p_inst.items():
-        #         self._test_data = np.append(self._test_data, inst.get_feature_data().get_values().reshape(1,2), axis = 0)
-        # else:
-        #     self._test_data = np.array([inst.get_feature_data().get_values() for (_, (_, inst)) in p_inst.items()]).reshape(1,2)
-        # 2 Z-transformation of stream instances
         for inst_id, (inst_type, inst) in sorted(p_inst.items()):
 
             feature_data = inst.get_feature_data()
