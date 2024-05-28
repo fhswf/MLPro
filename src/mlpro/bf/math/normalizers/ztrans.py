@@ -141,3 +141,39 @@ class NormalizerZTrans (Normalizer, ScientificObject):
 
         self._set_parameters( p_param = self._param_new )
 
+
+## -------------------------------------------------------------------------------------------------
+    def denormalize(self, p_data: Union[Element, np.ndarray]):
+        """
+        Method to denormalize a data (Element/ndarray) element based on MinMax or Z-transformation
+
+        Parameters
+        ----------
+        p_data:Element or a numpy array
+            Data element to be denormalized
+
+        Returns
+        -------
+        element:Element or numpy array
+            Denormalized Data
+        """
+
+        if self._param is None:
+            raise ImplementationError('Normalization parameters not set')
+
+        if not all(self._std):
+            return p_data.set_values(self._mean) if isinstance(p_data, Element) else self._mean
+
+        if isinstance(p_data, Element):
+
+            p_data.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
+                    self._param[1] / self._param[0]))
+
+        elif isinstance(p_data, np.ndarray):
+            p_data = np.multiply(p_data, 1 / self._param[0]) + \
+                     (self._param[1] / self._param[0])
+            p_data = np.nan_to_num(p_data)
+        else:
+            raise ParamError('Wrong datatype provided for denormalization')
+
+        return p_data
