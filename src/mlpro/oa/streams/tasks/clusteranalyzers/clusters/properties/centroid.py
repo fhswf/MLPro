@@ -251,3 +251,16 @@ class Centroid (Point, Id):
         self._plot_line3_t1.remove()
         self._plot_line3_t1 = None
   
+
+
+
+
+# Centroid with 0,1,2 order derivatives and plot functionality
+cprop_centroid     : PropertyDefinition = ( 'centroid', 0, Centroid )
+cprop_centroid1    : PropertyDefinition = ( 'centroid', 1, Centroid )
+cprop_centroid2    : PropertyDefinition = ( 'centroid', 2, Centroid )
+
+# Geometric center with 0,1,2 order derivatives and plot functionality
+cprop_center_geo   : PropertyDefinition = ( 'center_geo', 0, Centroid )
+cprop_center_geo1  : PropertyDefinition = ( 'center_geo', 1, Centroid )
+cprop_center_geo2  : PropertyDefinition = ( 'center_geo', 2, Centroid )
