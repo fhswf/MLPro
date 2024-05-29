@@ -17,10 +17,11 @@
 ## --                                - new parent classes Plottable, Renormalizable
 ## --                                - implementation of *_plot() and renormalize
 ## --                                - constructor: new parameters p_properties, p_visualization
+## -- 2024-05-29  0.8.0     DA       Class Property: turned off standalone plot
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2024-05-27)
+Ver. 0.8.0 (2024-05-29)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -84,6 +85,8 @@ class Property (Plottable, Renormalizable):
     derivatives : dict
         Current derivatives, stored by order (numeric properties only).
     """
+
+    C_PLOT_STANDALONE               = False
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_derivative_order_max : DerivativeOrderMax = 0, p_visualize : bool = False ):
