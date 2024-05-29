@@ -17,7 +17,9 @@
 ## --                                - new parent classes Plottable, Renormalizable
 ## --                                - implementation of *_plot() and renormalize
 ## --                                - constructor: new parameters p_properties, p_visualization
-## -- 2024-05-29  0.8.0     DA       Class Property: turned off standalone plot
+## -- 2024-05-29  0.8.0     DA       Class Property: 
+## --                                - standalone plot turned off
+## --                                - new parameter p_name
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -67,6 +69,8 @@ class Property (Plottable, Renormalizable):
 
     Parameters
     ----------
+    p_name : str
+        Name of the property
     p_derivative_order_max : DerivativeOrderMax
         Maximum order of auto-generated derivatives (numeric properties only).
     p_visualize : bool
@@ -89,10 +93,11 @@ class Property (Plottable, Renormalizable):
     C_PLOT_STANDALONE               = False
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_derivative_order_max : DerivativeOrderMax = 0, p_visualize : bool = False ):
+    def __init__(self, p_name : str, p_derivative_order_max : DerivativeOrderMax = 0, p_visualize : bool = False ):
 
         Plottable.__init__(self, p_visualize=p_visualize)
 
+        self.name                   = p_name
         self._value                 = None
         self._time_stamp            = None
         self._time_stamp_prev       = None
@@ -266,10 +271,9 @@ class Properties (Plottable, Renormalizable):
             Boolean switch for visualisation. Default = False.
         """
 
-        prop_obj = p_cls( p_derivative_order_max = p_derivative_order_max, p_visualize = p_visualize )
+        prop_obj = p_cls( p_name = p_name, p_derivative_order_max = p_derivative_order_max, p_visualize = p_visualize )
         self._properties[p_name] = prop_obj
         setattr(self, p_name, prop_obj )
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -309,9 +313,20 @@ class Properties (Plottable, Renormalizable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_plot_settings(self, p_plot_settings : PlotSettings ):
+        
+        Plottable.set_plot_settings( self, p_plot_settings = p_plot_settings )
+        
+        for prop in self.get_properties().values():
+            prop.set_plot_settings( p_plot_settings = p_plot_settings )
+
+            
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
 
         if not self.get_visualization(): return
+
+        Plottable.init_plot(self, p_figure = p_figure, p_plot_settings = p_plot_settings )
 
         for prop in self.get_properties().values():
             prop.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings)
@@ -322,17 +337,22 @@ class Properties (Plottable, Renormalizable):
 
         if not self.get_visualization(): return
 
+        Plottable.update_plot(self, **p_kwargs )
+
         for prop in self.get_properties().values():
             prop.update_plot(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
     def remove_plot(self, p_refresh:bool = True):
+
         if not self.get_visualization(): return
 
         for prop in self.get_properties().values():
             prop.remove_plot( p_refresh = False)
 
+        Plottable.remove_plot(self, p_refresh = p_refresh )
+            
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer : Normalizer ):
