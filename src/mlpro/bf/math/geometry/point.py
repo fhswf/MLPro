@@ -14,10 +14,11 @@
 ## -- 2024-05-07  1.4.1     DA       Bugfix in method Point.renormalize()
 ## -- 2024-05-24  1.4.2     DA       Bugfix in method _update_plot_2d()
 ## -- 2024-05-29  1.5.0     DA       Cleaned the code and completed the documentation
+## -- 2024-05-30  1.6.0     DA       Global aliases: new boolean param ValuePrev
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2024-05-29)
+Ver. 1.6.0 (2024-05-30)
 
 This module provides class for geometric objects like points, etc.
 
@@ -163,6 +164,6 @@ class Point (Property):
 
 
 
-cprop_point  : PropertyDefinition = ( 'point', 0, Point )
-cprop_point1 : PropertyDefinition = ( 'point', 1, Point )
-cprop_point2 : PropertyDefinition = ( 'point', 2, Point )
+cprop_point  : PropertyDefinition = ( 'point', 0, False, Point )
+cprop_point1 : PropertyDefinition = ( 'point', 1, False, Point )
+cprop_point2 : PropertyDefinition = ( 'point', 2, False, Point )

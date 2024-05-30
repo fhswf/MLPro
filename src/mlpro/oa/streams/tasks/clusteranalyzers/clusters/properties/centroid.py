@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-05-04  0.1.0     DA       Creation
 ## -- 2024-05-29  0.2.0     DA       Refactoring
+## -- 2024-05-30  0.3.0     DA       Global aliases: new boolean param ValuePrev
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-05-29)
+Ver. 0.3.0 (2024-05-29)
 
 This module provides ...
 
@@ -256,11 +257,11 @@ class Centroid (Point, Id):
 
 
 # Centroid with 0,1,2 order derivatives and plot functionality
-cprop_centroid     : PropertyDefinition = ( 'centroid', 0, Centroid )
-cprop_centroid1    : PropertyDefinition = ( 'centroid', 1, Centroid )
-cprop_centroid2    : PropertyDefinition = ( 'centroid', 2, Centroid )
+cprop_centroid     : PropertyDefinition = ( 'centroid', 0, False, Centroid )
+cprop_centroid1    : PropertyDefinition = ( 'centroid', 1, False, Centroid )
+cprop_centroid2    : PropertyDefinition = ( 'centroid', 2, False, Centroid )
 
 # Geometric center with 0,1,2 order derivatives and plot functionality
-cprop_center_geo   : PropertyDefinition = ( 'center_geo', 0, Centroid )
-cprop_center_geo1  : PropertyDefinition = ( 'center_geo', 1, Centroid )
-cprop_center_geo2  : PropertyDefinition = ( 'center_geo', 2, Centroid )
+cprop_center_geo   : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
+cprop_center_geo1  : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
+cprop_center_geo2  : PropertyDefinition = ( 'center_geo', 2, False, Centroid )

@@ -85,4 +85,4 @@ class Hypercuboid (Property):
 
 
 
-cprop_hypercuboid : PropertyDefinition = ( 'hypercuboid', 0, Hypercuboid )
+cprop_hypercuboid : PropertyDefinition = ( 'hypercuboid', 0, False, Hypercuboid )
