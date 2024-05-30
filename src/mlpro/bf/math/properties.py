@@ -278,7 +278,7 @@ class Properties (Plottable, Renormalizable):
     def add_property( self, 
                       p_name : PropertyName, 
                       p_derivative_order_max : DerivativeOrderMax = 0, 
-                      p_value_prev : ValuePrev,
+                      p_value_prev : ValuePrev = False,
                       p_cls : PropertyClass = Property,
                       p_visualize : bool = False ):
         """
@@ -292,6 +292,8 @@ class Properties (Plottable, Renormalizable):
             Name of the property. Add a leading '_' to the name to make the related attribute protected.
         p_derivative_order_max : DerivativeOrderMax
             Maximum order of auto-generated derivatives. Default = 0 (no auto-derivation).
+        p_value_prev : bool
+            If True, the previous value is stored in value_prev whenever value is updated.
         p_cls : PropertyClass
             Optional property class to be used. Default = Property.
         p_visualize : bool
