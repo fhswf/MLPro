@@ -329,7 +329,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                     self._radii.append((min(self._radii) + max(self._radii))/2)
                     a = random.randint(0, 1)
                     self._velocities.append(min(self._velocities) if a == 0 else (min(self._velocities) + max(self._velocities)) / 2)
-                    self._weights.append(random.randint(1, max(self._weight)))
+                    self._weights.append(random.randint(1, max(self._weights)))
                     self._clusters[self._cluster_ids[-1]] = self._define_cluster(id=self._cluster_ids[-1])
 
         # 1.5 Check and prepare fro cluster disappearances
