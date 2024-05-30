@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.bf.math
-## -- Module  : geometry.py
+## -- Package : mlpro.bf.math.geometry
+## -- Module  : point.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,10 +13,12 @@
 ## -- 2024-05-06  1.4.0     DA       Class Point: refactoring
 ## -- 2024-05-07  1.4.1     DA       Bugfix in method Point.renormalize()
 ## -- 2024-05-24  1.4.2     DA       Bugfix in method _update_plot_2d()
+## -- 2024-05-29  1.5.0     DA       Cleaned the code and completed the documentation
+## -- 2024-05-30  1.6.0     DA       Global aliases: new boolean param ValuePrev
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2024-05-24)
+Ver. 1.6.0 (2024-05-30)
 
 This module provides class for geometric objects like points, etc.
 
@@ -38,15 +40,16 @@ class Point (Property):
     """
     Implementation of a point in a hyper space. Current position, velocity and acceleration are managed.
 
-    Parameters
+    Attributes
     ----------
-    derivative_order_max : DerivativeOrderMax
-        Maximum order of auto-generated derivatives (numeric properties only). 
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
+    values
+        Current point coordinates
     """
 
     C_PLOT_ACTIVE       = True
+    C_PLOT_STANDALONE   = False
+    C_PLOT_VALID_VIEWS  = [PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND]
+    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
@@ -156,3 +159,11 @@ class Point (Property):
         self._derivatives[0] = self._value
 
         # 2024-04-30/DA Renormalization of derivates currently not implemented...
+
+
+
+
+
+cprop_point  : PropertyDefinition = ( 'point', 0, False, Point )
+cprop_point1 : PropertyDefinition = ( 'point', 1, False, Point )
+cprop_point2 : PropertyDefinition = ( 'point', 2, False, Point )

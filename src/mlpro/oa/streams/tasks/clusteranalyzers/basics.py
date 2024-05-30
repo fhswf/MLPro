@@ -28,10 +28,11 @@
 ## -- 2024-04-10  0.8.3     DA       Refactoring
 ## -- 2024-05-04  0.9.0     DA       Introduction of cluster properties
 ## -- 2024-05-27  1.0.0     DA       Initial design finished
+## -- 2024-05-28  1.0.1     DA       Bugfix in ClusterAnalyzer.new_cluster_allowed()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-05-27)
+Ver. 1.0.1 (2024-05-28)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -192,7 +193,7 @@ class ClusterAnalyzer (OATask):
            True, if adding a new cluster allowed. False otherwise.
         """
 
-        return ( self._cluster_limit == 0 ) or ( len(self._clusters.key()) < self._cluster_limit )
+        return ( self._cluster_limit == 0 ) or ( len(self._clusters.keys()) < self._cluster_limit )
     
 
 ## -------------------------------------------------------------------------------------------------
