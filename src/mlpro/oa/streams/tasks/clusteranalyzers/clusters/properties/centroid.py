@@ -65,11 +65,13 @@ class Centroid (Point, Id):
     def __init__( self, 
                   p_name : str,
                   p_derivative_order_max : DerivativeOrderMax = 0, 
+                  p_value_prev : ValuePrev = False,
                   p_visualize : bool = False ):
 
         Point.__init__( self, 
                         p_name = p_name, 
-                        p_derivative_order_max = p_derivative_order_max, 
+                        p_derivative_order_max = p_derivative_order_max,
+                        p_value_prev = p_value_prev, 
                         p_visualize = p_visualize )
         
         Id.__init__( self, p_id = 0 )

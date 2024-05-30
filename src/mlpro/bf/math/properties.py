@@ -120,7 +120,7 @@ class Property (Plottable, Renormalizable):
         self._time_stamp            = None
         self._time_stamp_prev       = None
         self._derivative_order_max  = p_derivative_order_max
-        self._sw_value_prev         = p_
+        self._sw_value_prev         = p_value_prev
         self._derivatives           = {}
         self._derivatives_prev      = {}
 
