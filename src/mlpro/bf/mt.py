@@ -33,10 +33,11 @@
 ## -- 2023-02-15  1.8.1     DA       Class Task: changed default range to C_RANGE_THREAD
 ## -- 2023-03-27  1.9.0     DA       Class Task: added parent class Persistent
 ## -- 2024-01-05  1.9.1     DA       Class Task: bugfix in __init__() regarding name generation
+## -- 2024-05-31  1.9.2     DA       Class Task: new exception rule for MacOs in meth. init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.1 (2024-01-05)
+Ver. 1.9.2 (2024-05-31)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -755,6 +756,8 @@ class Task (Async, EventManager, Plottable, Persistent):
 
             if backend == 'TkAgg':
                 self._figure.canvas.manager.window.title(title)
+            elif backend == 'darwin':
+                self.log(Log.C_LOG_TYPE_W, 'Window titles can not be set under MacOs ("darwin")')
             else:
                 try:
                     self._figure.canvas.setWindowTitle(title)
