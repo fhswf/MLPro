@@ -11,18 +11,6 @@
 """
 Ver. 0.0.0 (2024-05-30)
 
-This module demonstrates online cluster analysis of static 2D random point clouds using the wrapped
-River implementation of stream algorithm KMeans. To this regard, the systematics of sub-framework 
-MLPro-OA-Streams for online adaptive stream processing is used to implement a scenario consisting of  
-a custom workflow and a native benchmark stream.
-
-In particular you will learn:
-
-1. How to set up, run and visualize an online adaptive custom stream processing scenario 
-
-2. How to reuse wrapped River algorithms in own custom stream processing workflows
-
-3. How to reuse native MLPro benchmark streams
 
 """
 
@@ -32,6 +20,8 @@ from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from mlpro_int_river.wrappers.clusteranalyzers import WrRiverKMeans2MLPro
+from mlpro_int_river.wrappers.clusteranalyzers import WrRiverStreamKMeans2MLPro
+from mlpro_int_river.wrappers.clusteranalyzers import WrRiverCluStream2MLPro
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.new_cluster_detector import NewClusterDetector
 
 
@@ -63,7 +53,7 @@ class Static2DScenario(OAScenario):
         # 1.2 Set up a stream workflow
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow( p_name='Cluster Analysis using KMeans@River',
+        workflow = OAWorkflow( p_name='Anomaly Detection',
                                p_range_max=OAWorkflow.C_RANGE_NONE,
                                p_ada=p_ada,
                                p_visualize=p_visualize,
@@ -73,14 +63,37 @@ class Static2DScenario(OAScenario):
         # 1.2.2 Creation of tasks and add them to the workflow
 
         # Cluster Analyzer
-        task_clusterer = WrRiverKMeans2MLPro( p_name='#1: KMeans@River',
+        """task_clusterer = WrRiverKMeans2MLPro( p_name='#1: KMeans@River',
                                               p_n_clusters=5,
                                               p_halflife=0.1, 
                                               p_sigma=3, 
                                               p_seed=42,
                                               p_visualize=p_visualize,
                                               p_logging=p_logging )
+        task_clusterer = WrRiverStreamKMeans2MLPro( p_name='StreamKMeans@River',
+                                                   p_chunk_size=50,
+                                                   p_n_clusters=5,
+                                                   p_halflife=1, 
+                                                   p_sigma=5,
+                                                   p_seed=44,
+                                                   p_visualize=p_visualize,
+                                                   p_logging=p_logging )"""
         
+        task_clusterer = WrRiverCluStream2MLPro(p_name='#1: CluStream@River',
+                                                p_n_macro_clusters = 5,
+                                                p_max_micro_clusters = 20,
+                                                p_micro_cluster_r_factor = 2,
+                                                p_time_window = 100,
+                                                p_time_gap = 10,
+                                                p_seed = 41,
+                                                p_halflife = 1.0,
+                                                p_mu = 1,
+                                                p_sigma = 1,
+                                                p_p = 2,
+                                                p_visualize=p_visualize,
+                                                p_logging=p_logging )
+
+
         workflow.add_task(p_task = task_clusterer)
 
         """task_anomaly_detector = NewClusterDetector(p_clusterer=task_clusterer,
