@@ -15,21 +15,21 @@
 ## -- 2024-05-24  1.4.2     DA       Bugfix in method _update_plot_2d()
 ## -- 2024-05-29  1.5.0     DA       Cleaned the code and completed the documentation
 ## -- 2024-05-30  1.6.0     DA       Global aliases: new boolean param ValuePrev
+## -- 2024-05-31  1.7.0     DA       New global aliases cprop_center_geo*
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2024-05-30)
+Ver. 1.7.0 (2024-05-31)
 
-This module provides class for geometric objects like points, etc.
+This module provides a property class for the geometric shape 'point'.
 
 """ 
 
 
 from matplotlib.figure import Figure
-from mlpro.bf.plot import *
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.bf.plot import PlotSettings
 
 
 
@@ -167,3 +167,8 @@ class Point (Property):
 cprop_point  : PropertyDefinition = ( 'point', 0, False, Point )
 cprop_point1 : PropertyDefinition = ( 'point', 1, False, Point )
 cprop_point2 : PropertyDefinition = ( 'point', 2, False, Point )
+
+
+cprop_center_geo  : PropertyDefinition = ( 'center_geo', 0, False, Point )
+cprop_center_geo1 : PropertyDefinition = ( 'center_geo', 1, False, Point )
+cprop_center_geo2 : PropertyDefinition = ( 'center_geo', 2, False, Point )
