@@ -756,7 +756,7 @@ class Task (Async, EventManager, Plottable, Persistent):
 
             if backend == 'TkAgg':
                 self._figure.canvas.manager.window.title(title)
-            elif backend == 'darwin':
+            elif backend == 'macosx':
                 self.log(Log.C_LOG_TYPE_W, 'Window titles can not be set under MacOs ("darwin")')
             else:
                 try:
