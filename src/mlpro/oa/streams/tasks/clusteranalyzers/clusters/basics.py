@@ -35,10 +35,11 @@
 ## -- 2024-05-22  1.5.0     DA       Refactoring
 ## -- 2024-05-25  1.6.0     DA       Aliases ClusterId, MembershipValue
 ## -- 2024-05-27  1.7.0     DA       Refactoring
+## -- 2024-05-29  1.8.0     DA       Class Cluster: order of colors changed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2024-05-27)
+Ver. 1.8.0 (2024-05-29)
 
 This module provides templates for clusters to be used in cluster analyzer algorithms.
 
@@ -70,6 +71,7 @@ class Cluster (Id, Properties):
         List of property definitions. 
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    
     """
 
     C_PLOT_ACTIVE           = True
@@ -79,7 +81,16 @@ class Cluster (Id, Properties):
                                 PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
-    C_CLUSTER_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
+    C_CLUSTER_COLORS        = [ 'brown', 
+                                'olive', 
+                                'orange', 
+                                'green', 
+                                'red', 
+                                'gray', 
+                                'purple', 
+                                'pink', 
+                                'cyan', 
+                                'blue' ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 

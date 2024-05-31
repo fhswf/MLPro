@@ -30,10 +30,11 @@
 ## -- 2024-05-06  1.0.0     DA       Refactoring
 ## -- 2024-05-07  1.0.1     DA       Bugfix in ClusterCentroid.__init__(): internal properties first
 ## -- 2024-05-27  1.1.0     DA       Changes on property management
+## -- 2024-05-29  1.1.1     DA       Method ClusterCentroid.renormalize() removed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-05-27)
+Ver. 1.1.1 (2024-05-29)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -108,9 +109,3 @@ class ClusterCentroid (Cluster):
         self._centroid_elem.set_values( p_value=self.centroid.value )
 
         return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid_elem )
-
-
-## -------------------------------------------------------------------------------------------------
-    def renormalize(self, p_normalizer: Normalizer):
-        self.centroid.renormalize( p_normalizer=p_normalizer )
-
