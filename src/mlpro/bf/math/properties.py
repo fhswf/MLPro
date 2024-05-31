@@ -409,8 +409,6 @@ class MultiProperty (Property, Properties):
                   p_properties : PropertyDefinitions = [],
                   p_visualize: bool = False ):
         
-        raise SyntaxError('Check me!')
-        
         Property.__init__( self, 
                            p_name,
                            p_derivative_order_max = p_derivative_order_max, 

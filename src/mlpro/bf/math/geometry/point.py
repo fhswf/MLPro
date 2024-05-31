@@ -16,10 +16,11 @@
 ## -- 2024-05-29  1.5.0     DA       Cleaned the code and completed the documentation
 ## -- 2024-05-30  1.6.0     DA       Global aliases: new boolean param ValuePrev
 ## -- 2024-05-31  1.7.0     DA       New global aliases cprop_center_geo*
+## -- 2024-05-31  1.7.1     DA       Improved the stability of the plot methods
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2024-05-31)
+Ver. 1.7.1 (2024-05-31)
 
 This module provides a property class for the geometric shape 'point'.
 
@@ -61,6 +62,8 @@ class Point (Property):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
 
+        if self.value is None: return
+
         point_pos = self.value
 
         if self._plot_pos is not None:
@@ -91,6 +94,8 @@ class Point (Property):
                                                          
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+
+        if self.value is None: return
 
         point_pos = self.value
 
@@ -129,6 +134,7 @@ class Point (Property):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+#        if self.value is none: return
         pass
 
 

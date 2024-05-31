@@ -16,6 +16,7 @@ This module provides classes for hypercuboids.
 """ 
 
 from matplotlib.patches import Rectangle
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from mlpro.bf.plot import *
 from mlpro.bf.math.properties import *
@@ -53,7 +54,7 @@ class Hypercuboid (MultiProperty):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_3d(self, p_figure:Figure, p_settings:PlotSettings):
-        pass
+        self._plot_3d_polycollection : Poly3DCollection = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -64,28 +65,79 @@ class Hypercuboid (MultiProperty):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
         
+        if self.value is None: return
+
         if self._plot_2d_rectangle is None:
-            self._plot_2d_rectangle = Rectangle( xy = (self.values[0][0], self.values[1][0] ),
-                                                 width = self.values[0][1] - self.values[0][0],
-                                                 height = self.values[0][1] - self.values[0][0],
+            self._plot_2d_rectangle = Rectangle( xy = (self.value[0][0], self.value[1][0] ),
+                                                 width = self.value[0][1] - self.value[0][0],
+                                                 height = self.value[1][1] - self.value[1][0],
                                                  fill = True,
                                                  edgecolor = 'red',
                                                  color = 'red',
-                                                 alpha = 0.5 )
+                                                 facecolor = 'red',
+                                                 visible = True,
+                                                 alpha = 0.1 
+                                                )
+            p_settings.axes.add_patch(self._plot_2d_rectangle)
     
         else:
-            self._plot_2d_rectangle.set( xy = (self.values[0][0], self.values[1][0] ),
-                                         width = self.values[0][1] - self.values[0][0],
-                                         height = self.values[0][1] - self.values[0][0] )
+            self._plot_2d_rectangle.set( xy = (self.value[0][0], self.value[1][0] ),
+                                         width = self.value[0][1] - self.value[0][0],
+                                         height = self.value[1][1] - self.value[1][0] )
     
                                                          
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
-        pass
-    
+
+        # 1 Intro
+        if self.value is None: return
+
+        
+        # 2 Initialization of the cuboid
+        if self._plot_3d_polycollection is None:
+            self._plot_3d_polycollection = Poly3DCollection(verts= [], edgecolors='red', facecolors='red', alpha = 0.1)
+            self._plot_settings.axes.add_collection(self._plot_3d_polycollection)
+
+
+        # 3 Update of the cuboid
+        b = self.value
+
+        verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][0]],
+                             [b[0][0], b[1][0], b[2][0]]],
+
+                            [[b[0][0], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][0], b[1][1], b[2][1]]],
+
+                            [[b[0][0], b[1][0], b[2][1]],
+                             [b[0][0], b[1][1], b[2][1]],
+                             [b[0][0], b[1][1], b[2][0]],
+                             [b[0][0], b[1][0], b[2][0]]],
+
+                            [[b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][1], b[1][0], b[2][0]]],
+
+                            [[b[0][0], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][0], b[1][1], b[2][0]]],
+
+                            [[b[0][0], b[1][0], b[2][0]],
+                             [b[0][1], b[1][0], b[2][0]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][0], b[1][1], b[2][0]]]])
+
+        self._plot_3d_polycollection.set_verts(verts)
+   
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+        if self.value is None: return
         pass
 
 
