@@ -210,7 +210,7 @@ class OAFctSTrans(FctSTrans, Model):
             self._setup_wf_strans = self._setup_oafct_strans()
 
         # 3. Running the workflow
-        self._wf_strans.run(p_inst_new=[self._state_obj])
+        self._wf_strans.run(p_inst=InstDict({self._state_obj.get_id(): (InstTypeNew, self._state_obj)}))
 
 
         # 4. get the results
@@ -288,20 +288,17 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_strans(self, p_inst_new, p_inst_del):
+    def _run_wf_strans(self, p_inst:InstDict):
         """
         Runs the processing workflow, for state transition.
 
         Parameters
         ----------
-        p_inst_new: list[State]
-            List of new instances to be processed.
-
-        p_inst_del: list[State]
-            List of old instances to be processed.
+        p_inst: InstDict
+            Dictionary of instances to be processed by the workflow.
 
         """
-
+        p_inst_new = [inst[1] for inst in p_inst.values() if inst[0] == InstTypeNew]
         if self._afct_strans is not None:
             self._wf_strans.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self._afct_strans,
                                                                                 p_state=p_inst_new[0],
@@ -455,7 +452,7 @@ class OAFctSuccess(FctSuccess, Model):
             self._setup_wf_success = self._setup_oafct_success()
 
         # 3. Run the workflow
-        self._wf_success.run(p_inst_new=[self._state_obj])
+        self._wf_success.run(p_inst=[self._state_obj])
 
 
         # 4. Return the results
@@ -496,20 +493,17 @@ class OAFctSuccess(FctSuccess, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_success(self, p_inst_new, p_inst_del):
+    def _run_wf_success(self, p_inst: InstDict):
         """
         Runs the success computation workflow of the system.
 
         Parameters
         ----------
-        p_inst_new: list[State]
-            List of new instances to be processed by the workflow.
-
-        p_inst_del: list[State]
-            List of old instances to be processed by the workflow.
+        p_inst: InstDict
+            Dictionary of instances to be processed by the workflow.
 
         """
-
+        p_inst_new = [inst[1] for inst in p_inst.values() if inst[0] == InstTypeNew]
         if self._afct_success is not None:
             self._wf_success.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self._afct_success,
                                                                                  p_state=p_inst_new[0]))
@@ -692,7 +686,7 @@ class OAFctBroken(FctBroken, Model):
             self._setup_wf_broken = self._setup_oafct_broken()
 
         # 3. Run the workflow
-        self._wf_broken.run(p_inst_new=[self._state_obj])
+        self._wf_broken.run(p_inst=InstDict({self._state_obj.get_id(): (InstTypeNew, self._state_obj)}))
 
 
         # 4. Return the results
@@ -717,19 +711,17 @@ class OAFctBroken(FctBroken, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_broken(self, p_inst_new, p_inst_del):
+    def _run_wf_broken(self, p_inst: InstDict):
         """
         Runs the success computation workflow of the system.
 
         Parameters
         ----------
-        p_inst_new: list[State]
-            List of new instances to be processed by the workflow.
-
-        p_inst_del: list[State]
-            List of old instances to be processed by the workflow.
-
+        p_inst: InstDict
+            Dictionary of instances to be processed by the workflow.
         """
+        p_inst_new = [inst[1] for inst in p_inst.values() if inst[0] == InstTypeNew]
+
         if self._afct_broken is not None:
             self._wf_broken.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self._afct_broken,
                                                                          p_state=p_inst_new[0]))

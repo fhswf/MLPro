@@ -24,10 +24,11 @@
 ## -- 2024-04-30  1.1.0     DA       Refactoring/separation
 ## -- 2024-05-23  1.2.0     DA       Refactoring (not yet finished)
 ## -- 2024-05-24  1.2.1     LSB      Bug fix for Parameter update using only p_data_del in Z-transform
+## -- 2024-05-27  1.2.2     LSB      Scientific Reference added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-24)
+Ver. 1.2.2 (2024-05-27)
 
 This module provides a class for Z transformation.
 """
@@ -36,15 +37,19 @@ This module provides a class for Z transformation.
 from mlpro.bf.math.normalizers.basics import *
 import numpy as np
 from typing import Union
+from mlpro.bf.various import ScientificObject
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTrans (Normalizer):
+class NormalizerZTrans (Normalizer, ScientificObject):
     """
     Class for Normalization based on Z transformation.
     """
+    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_URL = 'http://datagenetics.com/blog/november22017/index.html'
+    C_SCIREF_ACCESSED = '2024-05-27'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
@@ -136,3 +141,39 @@ class NormalizerZTrans (Normalizer):
 
         self._set_parameters( p_param = self._param_new )
 
+
+## -------------------------------------------------------------------------------------------------
+    def denormalize(self, p_data: Union[Element, np.ndarray]):
+        """
+        Method to denormalize a data (Element/ndarray) element based on MinMax or Z-transformation
+
+        Parameters
+        ----------
+        p_data:Element or a numpy array
+            Data element to be denormalized
+
+        Returns
+        -------
+        element:Element or numpy array
+            Denormalized Data
+        """
+
+        if self._param is None:
+            raise ImplementationError('Normalization parameters not set')
+
+        if not all(self._std):
+            return p_data.set_values(self._mean) if isinstance(p_data, Element) else self._mean
+
+        if isinstance(p_data, Element):
+
+            p_data.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
+                    self._param[1] / self._param[0]))
+
+        elif isinstance(p_data, np.ndarray):
+            p_data = np.multiply(p_data, 1 / self._param[0]) + \
+                     (self._param[1] / self._param[0])
+            p_data = np.nan_to_num(p_data)
+        else:
+            raise ParamError('Wrong datatype provided for denormalization')
+
+        return p_data
