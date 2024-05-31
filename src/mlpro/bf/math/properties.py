@@ -17,10 +17,21 @@
 ## --                                - new parent classes Plottable, Renormalizable
 ## --                                - implementation of *_plot() and renormalize
 ## --                                - constructor: new parameters p_properties, p_visualization
+## -- 2024-05-29  0.8.0     DA       Class Property: 
+## --                                - standalone plot turned off
+## --                                - new parameter p_name
+## -- 2024-05-30  0.9.0     DA       Class Property:
+## --                                - new attribute value_prev
+## --                                - new parameter p_value_prev
+## --                                Class Properties:
+## --                                - method add_property(): new parameter p_value_prev
+## --                                Global aliases:
+## --                                - new alias ValuePrev
+## --                                - extension of PropertyDefinition by ValuePrev
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2024-05-27)
+Ver. 0.9.0 (2024-05-30)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -47,9 +58,10 @@ from mlpro.bf.math.normalizers import Normalizer, Renormalizable
 # Type aliases for property definitions
 PropertyName        = str
 DerivativeOrderMax  = int
+ValuePrev           = bool
 PropertyClass       = type
 
-PropertyDefinition  = Tuple[ PropertyName, DerivativeOrderMax, PropertyClass ]
+PropertyDefinition  = Tuple[ PropertyName, DerivativeOrderMax, ValuePrev, PropertyClass ]
 PropertyDefinitions = List[ PropertyDefinition ]
 
 
@@ -66,8 +78,12 @@ class Property (Plottable, Renormalizable):
 
     Parameters
     ----------
+    p_name : str
+        Name of the property
     p_derivative_order_max : DerivativeOrderMax
         Maximum order of auto-generated derivatives (numeric properties only).
+    p_value_prev : bool
+        If True, the previous value is stored in value_prev whenever value is updated.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
 
@@ -75,6 +91,8 @@ class Property (Plottable, Renormalizable):
     -----------
     value : Any
         Current value of the property.
+    value_prev : Any
+        Previous value of the property (readonly).
     dim : int
         Dimensionality of the stored value. In case of strings the length is returned.
     time_stamp : Union[datetime, float, int]
@@ -85,15 +103,24 @@ class Property (Plottable, Renormalizable):
         Current derivatives, stored by order (numeric properties only).
     """
 
+    C_PLOT_STANDALONE               = False
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_derivative_order_max : DerivativeOrderMax = 0, p_visualize : bool = False ):
+    def __init__( self, 
+                  p_name : str, 
+                  p_derivative_order_max : DerivativeOrderMax = 0, 
+                  p_value_prev : ValuePrev = False,
+                  p_visualize : bool = False ):
 
         Plottable.__init__(self, p_visualize=p_visualize)
 
+        self.name                   = p_name
         self._value                 = None
+        self._value_prev            = None
         self._time_stamp            = None
         self._time_stamp_prev       = None
         self._derivative_order_max  = p_derivative_order_max
+        self._sw_value_prev         = p_value_prev
         self._derivatives           = {}
         self._derivatives_prev      = {}
 
@@ -101,6 +128,11 @@ class Property (Plottable, Renormalizable):
 ## -------------------------------------------------------------------------------------------------
     def _get(self):
         return self._value
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _get_prev(self):
+        return self._value_prev
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -120,7 +152,8 @@ class Property (Plottable, Renormalizable):
         """
 
         # 1 Set value
-        self._value = p_value
+        if self._sw_value_prev: self._value_prev = self._value
+        self._value      = p_value
 
     
         # 2 Preparation of time stamp
@@ -198,6 +231,7 @@ class Property (Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     value       = property( fget = _get, fset = set)
+    value_prev  = property( fget = _get_prev )
     dim         = property( fget = _get_dim )
     time_stamp  = property( fget = _get_time_stamp )
     derivatives = property( fget = _get_derivatives )
@@ -244,6 +278,7 @@ class Properties (Plottable, Renormalizable):
     def add_property( self, 
                       p_name : PropertyName, 
                       p_derivative_order_max : DerivativeOrderMax = 0, 
+                      p_value_prev : ValuePrev = False,
                       p_cls : PropertyClass = Property,
                       p_visualize : bool = False ):
         """
@@ -257,16 +292,20 @@ class Properties (Plottable, Renormalizable):
             Name of the property. Add a leading '_' to the name to make the related attribute protected.
         p_derivative_order_max : DerivativeOrderMax
             Maximum order of auto-generated derivatives. Default = 0 (no auto-derivation).
+        p_value_prev : bool
+            If True, the previous value is stored in value_prev whenever value is updated.
         p_cls : PropertyClass
             Optional property class to be used. Default = Property.
         p_visualize : bool
             Boolean switch for visualisation. Default = False.
         """
 
-        prop_obj = p_cls( p_derivative_order_max = p_derivative_order_max, p_visualize = p_visualize )
+        prop_obj = p_cls( p_name = p_name, 
+                          p_derivative_order_max = p_derivative_order_max, 
+                          p_value_prev = p_value_prev,
+                          p_visualize = p_visualize )
         self._properties[p_name] = prop_obj
         setattr(self, p_name, prop_obj )
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -287,7 +326,8 @@ class Properties (Plottable, Renormalizable):
         for p in p_property_definitions:
             self.add_property( p_name = p[0], 
                                p_derivative_order_max = p[1], 
-                               p_cls = p[2], 
+                               p_value_prev = p[2],
+                               p_cls = p[3], 
                                p_visualize = p_visualize )
 
 
@@ -306,9 +346,20 @@ class Properties (Plottable, Renormalizable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_plot_settings(self, p_plot_settings : PlotSettings ):
+        
+        Plottable.set_plot_settings( self, p_plot_settings = p_plot_settings )
+        
+        for prop in self.get_properties().values():
+            prop.set_plot_settings( p_plot_settings = p_plot_settings )
+
+            
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
 
         if not self.get_visualization(): return
+
+        Plottable.init_plot(self, p_figure = p_figure, p_plot_settings = p_plot_settings )
 
         for prop in self.get_properties().values():
             prop.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings)
@@ -319,17 +370,22 @@ class Properties (Plottable, Renormalizable):
 
         if not self.get_visualization(): return
 
+        Plottable.update_plot(self, **p_kwargs )
+
         for prop in self.get_properties().values():
             prop.update_plot(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
     def remove_plot(self, p_refresh:bool = True):
+
         if not self.get_visualization(): return
 
         for prop in self.get_properties().values():
             prop.remove_plot( p_refresh = False)
 
+        Plottable.remove_plot(self, p_refresh = p_refresh )
+            
 
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer : Normalizer ):

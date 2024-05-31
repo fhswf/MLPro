@@ -21,10 +21,11 @@
 ## -- 2024-05-18  0.9.0     DA       - Class OATask: new methods _adapt_pre(), _adapt_post()
 ## --                                - Classes OATrainingResults, OATraining removed
 ## -- 2024-05-22  1.0.0     DA       Initial design finished
+## -- 2024-05-29  1.0.1     DA       Correction in method OATask.adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-05-22)
+Ver. 1.0.1 (2024-05-29)
 
 Core classes for online adaptive stream processing.
 
@@ -36,7 +37,6 @@ from mlpro.bf.mt import Event
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.ml import *
-import mlpro.sl as sl
 
 from typing import List
 
@@ -158,7 +158,7 @@ class OATask (StreamTask, Model):
 
         # 3 Postprocessing
         try:
-            adapted = adapted or self._adapt_post()
+            if self._adapt_post(): adapted = True
             self.log(self.C_LOG_TYPE_S, 'Postprocessing done')
         except NotImplementedError:
             pass
