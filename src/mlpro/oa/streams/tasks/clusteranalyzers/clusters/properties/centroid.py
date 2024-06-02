@@ -8,10 +8,11 @@
 ## -- 2024-05-04  0.1.0     DA       Creation
 ## -- 2024-05-29  0.2.0     DA       Refactoring
 ## -- 2024-05-30  0.3.0     DA       Global aliases: new boolean param ValuePrev
+## -- 2024-05-31  0.4.0     DA       Improved the stability of the plot methods
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-05-29)
+Ver. 0.4.0 (2024-05-31)
 
 This module provides ...
 
@@ -105,8 +106,12 @@ class Centroid (Point, Id):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+
+        # 0 Intro
+        if self.value is None: return
         super()._update_plot_2d(p_settings, **p_kwargs)
 
+        
         # 1 Get coordinates
         centroid = self.value
         ax_xlim  = p_settings.axes.get_xlim()
@@ -114,6 +119,7 @@ class Centroid (Point, Id):
         xlim     = [ min( ax_xlim[0], centroid[0] ), max(ax_xlim[1], centroid[0] ) ]
         ylim     = [ min( ax_ylim[0], centroid[1] ), max(ax_ylim[1], centroid[1] ) ]
 
+            
         # 2 Plot a crosshair
         if self._plot_line1 is None:
             # 2.1 Add initial crosshair lines
@@ -142,8 +148,12 @@ class Centroid (Point, Id):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+
+        # 0 Intro
+        if self.value is None: return
         super()._update_plot_3d(p_settings, **p_kwargs) 
 
+        
         # 1 Get coordinates
         centroid = self.value
         ax_xlim  = p_settings.axes.get_xlim()
