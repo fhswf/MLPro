@@ -48,6 +48,25 @@ class Hypercuboid (MultiProperty):
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
 ## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name : str,
+                  p_derivative_order_max: int = 0, 
+                  p_value_prev : ValuePrev = False,
+                  p_properties : PropertyDefinitions = [],
+                  p_visualize: bool = False ):
+        
+        super().__init__( p_name = p_name,
+                          p_derivative_order_max = p_derivative_order_max,
+                          p_value_prev = p_value_prev,
+                          p_properties = p_properties,
+                          p_visualize = p_visualize )
+
+        self.color = 'blue'
+        self.alpha = 0.1
+        self.fill  = True
+
+
+## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure:Figure, p_settings:PlotSettings):
         self._plot_2d_rectangle : Rectangle = None
 
@@ -71,13 +90,13 @@ class Hypercuboid (MultiProperty):
             self._plot_2d_rectangle = Rectangle( xy = (self.value[0][0], self.value[1][0] ),
                                                  width = self.value[0][1] - self.value[0][0],
                                                  height = self.value[1][1] - self.value[1][0],
-                                                 fill = True,
-                                                 edgecolor = 'red',
-                                                 color = 'red',
-                                                 facecolor = 'red',
+                                                 fill = self.fill,
+                                                 edgecolor = self.color,
+                                                 color = self.color,
+                                                 facecolor = self.color,
                                                  visible = True,
-                                                 alpha = 0.1 
-                                                )
+                                                 alpha = self.alpha )
+            
             p_settings.axes.add_patch(self._plot_2d_rectangle)
     
         else:
@@ -95,7 +114,11 @@ class Hypercuboid (MultiProperty):
         
         # 2 Initialization of the cuboid
         if self._plot_3d_polycollection is None:
-            self._plot_3d_polycollection = Poly3DCollection(verts= [], edgecolors='red', facecolors='red', alpha = 0.1)
+            self._plot_3d_polycollection = Poly3DCollection( verts= [], 
+                                                             edgecolors=self.color, 
+                                                             facecolors=self.color, 
+                                                             alpha = self.alpha )
+                             
             self._plot_settings.axes.add_collection(self._plot_3d_polycollection)
 
 
