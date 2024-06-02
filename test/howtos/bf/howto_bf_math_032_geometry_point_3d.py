@@ -65,7 +65,7 @@ my_log.switch_logging(p_logging=logging)
 # 3 Instantiate a Point object
 time_stamp = datetime.now()
 time_step  = timedelta(0,1,0)
-my_point   = Point( p_derivative_order_max=2, p_visualize=visualize )
+my_point   = Point( p_name='Point', p_derivative_order_max=2, p_value_prev=False, p_visualize=visualize )
 pos        = np.zeros(3)
 
 if __name__ == '__main__':

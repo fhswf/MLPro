@@ -28,10 +28,11 @@
 ## --                                Global aliases:
 ## --                                - new alias ValuePrev
 ## --                                - extension of PropertyDefinition by ValuePrev
+## -- 2024-05-31  1.0.0     DA       New class MultiProperty
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2024-05-30)
+Ver. 1.0.0 (2024-05-31)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -392,3 +393,28 @@ class Properties (Plottable, Renormalizable):
 
         for prop in self.get_properties().values():
             prop.renormalize( p_normalizer = p_normalizer )
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiProperty (Property, Properties):
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name : str,
+                  p_derivative_order_max: int = 0, 
+                  p_value_prev : ValuePrev = False,
+                  p_properties : PropertyDefinitions = [],
+                  p_visualize: bool = False ):
+        
+        Property.__init__( self, 
+                           p_name,
+                           p_derivative_order_max = p_derivative_order_max, 
+                           p_value_prev = p_value_prev,
+                           p_visualize = p_visualize )
+        
+        Properties.__init__( self,
+                             p_properties = p_properties,
+                             p_visualize = p_visualize )
