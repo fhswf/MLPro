@@ -155,7 +155,7 @@ class OAFctReward(FctReward, Model):
             inst_new = [self._state_obj_new]
 
         # 3. Run the workflow
-        self._wf_reward.run(p_inst_new=inst_new)
+        self._wf_reward.run(p_inst = dict(zip([inst.get_id() for inst in inst_new], [(1,inst) for inst in inst_new])))
 
         # 4. Return the results
         return self._wf_reward.get_so().get_results()[self.get_tid()]
@@ -184,7 +184,7 @@ class OAFctReward(FctReward, Model):
         p_task: OATask, StreamTask
             The task to be added to the workflow
 
-        p_pred_task: list[Task]
+        p_pred_tasks: list[Task]
             Name of the predecessor tasks for the task to be added
 
         """
@@ -192,7 +192,7 @@ class OAFctReward(FctReward, Model):
         self._wf_reward.add_task(p_task=p_task, p_pred_tasks=p_pred_tasks)
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_reward(self, p_inst_new, p_inst_del):
+    def _run_wf_reward(self, p_inst:InstDict):
         """
         Runs the reward computation workflow of the system.
 
@@ -205,18 +205,20 @@ class OAFctReward(FctReward, Model):
             List of old instances to be processed by the workflow.
 
         """
-        if len(p_inst_new) == 2 :
-            state_new = p_inst_new[1]
-            self._inst_old = p_inst_new[0]
+        instances =  list[sorted(p_inst.values())]
 
-        elif len(p_inst_new) == 1:
-            state_new = p_inst_new[0]
+        if len(instances) == 2 :
+            state_new = instances[1]
+            self._inst_old = instances[0]
+
+        elif len(instances) == 1:
+            state_new = instances[0]
 
         if self._inst_old is not None:
             state_old = self._inst_old
 
         else:
-            state_old = p_inst_new[0]
+            state_old = instances[0]
 
 
         if self._afct_reward is not None:
