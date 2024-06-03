@@ -1,31 +1,27 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_math_031_geometry_point_2d.py
+## -- Module  : howto_bf_math_033_geometry_cuboid_2d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-05-06  1.0.0     DA       Creation
-## -- 2023-09-25  1.0.1     DA       Bugfix
-## -- 2024-04-29  1.1.0     DA       Refactoring
-## -- 2024-05-05  1.2.0     DA       Refactoring
+## -- 2024-06-03  1.0.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-05)
+Ver. 1.0.0 (2024-06-03)
 
-This module demonstrates the functionality of class bf.math.geometry.Point in a 2D plot.
+This module demonstrates the functionality of class bf.math.geometry.Hypercuboid in a 2D plot.
 
 You will learn:
 
-1) How to instantiate and update a Point object
+1) How to instantiate and update a Hypercuboid object
 
-2) How to get details from a Point object
+2) How to get details from a Hypercuboid object
 
-3) How to visualize a Point object
+3) How to visualize a Hypercuboid object
 
 """
-
 
 from datetime import datetime, timedelta
 from math import sin, cos, pi
@@ -36,7 +32,8 @@ import numpy as np
 
 from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.math.geometry import Point
+from mlpro.bf.math.geometry import Hypercuboid
+
 
 
 
@@ -64,45 +61,47 @@ my_log.switch_logging(p_logging=logging)
 
 
 
-# 3 Instantiate a Point object
+# 3 Instantiate a cuboid object
 time_stamp = datetime.now()
 time_step  = timedelta(0,1,0)
-my_point   = Point( p_name='Point', p_derivative_order_max=2, p_value_prev=False, p_visualize=visualize )
-pos        = np.zeros(2)
+my_cuboid  = Hypercuboid( p_name='Cuboid', 
+                          p_derivative_order_max=0, 
+                          p_value_prev=False, 
+                          p_visualize=visualize )
+my_cuboid.color = 'green'
+my_cuboid.alpha = 0.2
 
 if __name__ == '__main__':
-    my_point.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_2D ))
+    my_cuboid.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_2D ))
 
 
 
 # 4 Update of point position on a circular path
 angle = 0
+boundaries = np.ndarray( shape=(2,2) )
 random.seed(1)
 
 for i in range(cycles):
-    angle_step = 3 + random.random()
     if i < 100: 
-        angle += angle_step
+        angle += 3
     else:
-        angle -= angle_step
+        angle -= 3
 
-    pos[0] = cos( angle * pi / 180 )
-    pos[1] = sin( angle * pi / 180 )
-    my_point.set( p_value = pos, p_time_stamp = time_stamp )
-    my_point.update_plot()
+    boundaries[0][0] = cos( angle * pi / 180 ) * 50
+    boundaries[1][0] = sin( angle * pi / 180 ) * 50
+    boundaries[0][1] = boundaries[0][0] + 25
+    boundaries[1][1] = boundaries[1][0] + 25
 
-    try:
-        vel = my_point.derivatives[1]
-        acc = my_point.derivatives[2]
-        my_log.log(Log.C_LOG_TYPE_S, 'pos :', pos, ', vel :', vel, ', acc :', acc)
-    except:
-        pass
+    my_cuboid.set( p_value = boundaries, p_time_stamp = time_stamp )
+    my_cuboid.update_plot()
+
+    my_log.log( Log.C_LOG_TYPE_I, 'Geometric center: ', my_cuboid.center_geo.value)
 
     time_stamp += time_step
 
     if visualize: sleep(0.05)
 
-my_point.remove_plot()
+my_cuboid.remove_plot()
 
 
 if __name__ == '__main__':
