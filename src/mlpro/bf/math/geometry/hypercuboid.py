@@ -19,8 +19,7 @@ This module provides a property class for the geometric shape 'hypercuboid'.
 
 import numpy as np
 from matplotlib.patches import Rectangle
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from mpl_toolkits.mplot3d.art3d import Line3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3D
 
 from mlpro.bf.plot import *
 from mlpro.bf.math.properties import *
