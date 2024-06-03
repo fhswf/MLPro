@@ -20,6 +20,7 @@ This module provides a property class for the geometric shape 'hypercuboid'.
 import numpy as np
 from matplotlib.patches import Rectangle
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from mpl_toolkits.mplot3d.art3d import Line3D
 
 from mlpro.bf.plot import *
 from mlpro.bf.math.properties import *
@@ -122,6 +123,7 @@ class Hypercuboid (MultiProperty):
         if self.value is None: return
         boundaries = self.value
         center_geo = self.center_geo.value 
+        self.center_geo.color = self.color
 
 
         if self._plot_2d_rectangle is None:
@@ -142,8 +144,6 @@ class Hypercuboid (MultiProperty):
             p_settings.axes.add_patch(self._plot_2d_rectangle)
 
             # 2.2 Init 2d crosshair through the geometric center
-            self.center_geo.color = self.color
-                                                     
             self._plot_line1 = p_settings.axes.plot( [ center_geo[0], center_geo[0] ], 
                                                      [ boundaries[1][0], boundaries[1][1] ], 
                                                      color = self.color, 
@@ -162,12 +162,19 @@ class Hypercuboid (MultiProperty):
             self._plot_2d_rectangle.set( xy = (boundaries[0][0], boundaries[1][0] ),
                                          width = boundaries[0][1] - boundaries[0][0],
                                          height = boundaries[1][1] - boundaries[1][0] )
+            
+            self._plot_2d_rectangle.set( edgecolor = self.color,
+                                         facecolor = self.color,
+                                         color = self.color )
                                                              
             # 3.2 Update crosshair lines
             self._plot_line1.set_data( [ center_geo[0], center_geo[0] ], 
                                        [ boundaries[1][0], boundaries[1][1] ] )
             self._plot_line2.set_data( [ boundaries[0][0], boundaries[0][1] ], 
-                                       [ center_geo[1], center_geo[1] ] )    
+                                       [ center_geo[1], center_geo[1] ] )  
+
+            self._plot_line1.set( color = self.color )
+            self._plot_line2.set( color = self.color )                                                           
                                                          
                              
 ## -------------------------------------------------------------------------------------------------
@@ -177,6 +184,7 @@ class Hypercuboid (MultiProperty):
         if self.value is None: return
         b = self.value
         center_geo = self.center_geo.value 
+        self.center_geo.color = self.color
 
         
         if self._plot_3d_polycollection is None:
@@ -192,8 +200,6 @@ class Hypercuboid (MultiProperty):
             self._plot_settings.axes.add_collection(self._plot_3d_polycollection)
 
             # 2.2 Init 3d crosshair 
-            self.center_geo.color = self.color
-
             self._plot_line1 = p_settings.axes.plot( [ center_geo[0], center_geo[0] ], 
                                                      [ center_geo[1], center_geo[1] ], 
                                                      [ b[2][0], b[2][1] ], 
@@ -224,6 +230,10 @@ class Hypercuboid (MultiProperty):
             self._plot_line3.set_data_3d( [ b[0][0], b[0][1] ], 
                                           [ center_geo[1], center_geo[1] ], 
                                           [ center_geo[2], center_geo[2] ] )
+            
+            self._plot_line1.set( color = self.color )
+            self._plot_line2.set( color = self.color )
+            self._plot_line3.set( color = self.color )
 
 
         # 4 Update the 3d cuboid
@@ -258,7 +268,10 @@ class Hypercuboid (MultiProperty):
                              [b[0][0], b[1][1], b[2][0]]]])
 
         self._plot_3d_polycollection.set_verts(verts)
-   
+
+        self._plot_3d_polycollection.set( edgecolor = self.color,
+                                          facecolor = self.color )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
