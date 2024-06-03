@@ -10,10 +10,11 @@
 ## -- 2024-05-24  0.3.0     SK       Addition of further properties
 ## -- 2024-05-29  0.4.0     DA       Moved Centroid-based properties to centroid.py
 ## -- 2024-05-30  0.5.0     DA       Global aliases: new boolean param ValuePrev
+## -- 2024-06-03  0.6.0     DA       Moved all geometric properties to mlpro.bf.math.geometry.basics
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2024-05-30)
+Ver. 0.6.0 (2024-06-03)
 
 This module provides typical cluster properties to be reused in own cluster analyzers.
 """
