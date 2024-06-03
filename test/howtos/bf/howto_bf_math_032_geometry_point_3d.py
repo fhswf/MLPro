@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_math_021_geometry_point_3d.py
+## -- Module  : howto_bf_math_032_geometry_point_3d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -27,22 +27,23 @@ You will learn:
 """
 
 
-from mlpro.bf.various import Log
-from mlpro.bf.plot import PlotSettings
-from mlpro.bf.math.geometry import Point
 from datetime import datetime, timedelta
-import numpy as np
 from math import sin, cos, pi
 from time import sleep
 import random
 
+import numpy as np
+
+from mlpro.bf.various import Log
+from mlpro.bf.plot import PlotSettings
+from mlpro.bf.math.geometry import Point
 
 
 
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycles      = 50
+    cycles      = 200
     visualize   = True
     logging     = Log.C_LOG_ALL
   
@@ -69,7 +70,7 @@ my_point   = Point( p_name='Point', p_derivative_order_max=2, p_value_prev=False
 pos        = np.zeros(3)
 
 if __name__ == '__main__':
-    my_point.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_3D))
+    my_point.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_3D ))
 
 
 
@@ -77,7 +78,7 @@ if __name__ == '__main__':
 angle = 0
 random.seed(1)
 
-for i in range(200):
+for i in range(cycles):
     angle_step = 3 + random.random()
     if i < 100: 
         angle += angle_step
@@ -100,6 +101,7 @@ for i in range(200):
 
     if visualize: sleep(0.05)
 
+my_point.remove_plot()
 
 
 if __name__ == '__main__':
