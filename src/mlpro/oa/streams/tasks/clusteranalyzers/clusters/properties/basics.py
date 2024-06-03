@@ -41,11 +41,6 @@ cprop_density      : PropertyDefinition = ( 'density', 0, False, Property )
 cprop_density1     : PropertyDefinition = ( 'density', 1, False, Property )
 cprop_density2     : PropertyDefinition = ( 'density', 2, False, Property )
 
-# Geometric size with 0,1,2 order derivatives
-cprop_size_geo     : PropertyDefinition = ( 'size_geo', 0, False, Property )
-cprop_size_geo1    : PropertyDefinition = ( 'size_geo', 1, False, Property )
-cprop_size_geo2    : PropertyDefinition = ( 'size_geo', 2, False, Property )
-
 # Compactness with 0,1,2 order derivatives
 cprop_compactness  : PropertyDefinition = ( 'compactness', 0, False, Property )
 cprop_compactness1 : PropertyDefinition = ( 'compactness', 1, False, Property )

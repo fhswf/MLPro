@@ -25,7 +25,8 @@ from mpl_toolkits.mplot3d.art3d import Line3D
 from mlpro.bf.plot import *
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.bf.math.geometry import Point, cprop_center_geo
+from mlpro.bf.math.geometry.basics import cprop_size_geo
+from mlpro.bf.math.geometry.point import Point, cprop_center_geo
 
 
 
@@ -52,7 +53,7 @@ class Hypercuboid (MultiProperty):
         Width of the border lines of the cuboid.
     """
 
-    C_PROPERTIES        = [ cprop_center_geo ]
+    C_PROPERTIES        = [ cprop_center_geo, cprop_size_geo ]
 
     C_PLOT_ACTIVE       = True
     C_PLOT_STANDALONE   = False
@@ -88,8 +89,13 @@ class Hypercuboid (MultiProperty):
     def set(self, p_value, p_time_stamp : Union[datetime, int, float] = None): 
         super().set( p_value = p_value, p_time_stamp = p_time_stamp )
 
-        self.center_geo.set( p_value = np.array( self.value ).mean(axis=1),
+        val_np = np.array( self.value )
+
+        self.center_geo.set( p_value = val_np.mean(axis=1),
                              p_time_stamp = p_time_stamp )
+        
+        self.size_geo.set( p_value = np.prod( np.diff( val_np, axis=1 ) ), 
+                           p_time_stamp = p_time_stamp )
 
 
 ## -------------------------------------------------------------------------------------------------
