@@ -29,10 +29,11 @@
 ## --                                - new alias ValuePrev
 ## --                                - extension of PropertyDefinition by ValuePrev
 ## -- 2024-05-31  1.0.0     DA       New class MultiProperty
+## -- 2024-06-03  1.0.1     DA       Method Properties.update_plot(): changed order of plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-05-31)
+Ver. 1.0.1 (2024-06-03)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -363,7 +364,7 @@ class Properties (Plottable, Renormalizable):
         Plottable.init_plot(self, p_figure = p_figure, p_plot_settings = p_plot_settings )
 
         for prop in self.get_properties().values():
-            prop.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings)
+            prop.init_plot( p_figure = self._figure, p_plot_settings = p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -371,10 +372,10 @@ class Properties (Plottable, Renormalizable):
 
         if not self.get_visualization(): return
 
-        Plottable.update_plot(self, **p_kwargs )
-
         for prop in self.get_properties().values():
             prop.update_plot(**p_kwargs)
+
+        Plottable.update_plot(self, **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -393,6 +394,7 @@ class Properties (Plottable, Renormalizable):
 
         for prop in self.get_properties().values():
             prop.renormalize( p_normalizer = p_normalizer )
+
 
 
 
