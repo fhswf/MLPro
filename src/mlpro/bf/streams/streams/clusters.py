@@ -10,10 +10,11 @@
 ## -- 2024-04-23  1.1.0     SK       Bug fixes
 ## -- 2024-05-22  1.1.1     SK       Bug fix
 ## -- 2024-06-04  1.1.2     DA       Bugfix: ESpace instead of MSpace
+## -- 2024-06-04  1.2.0     SK       Addition of splitting functionality to clusters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2024-06-04)
+Ver. 1.2.0 (2024-06-04)
 
 This module provides the native stream class StreamMLProClusterGenerator.
 These stream provides instances with self._num_dim dimensional random feature data, placed around
@@ -74,6 +75,8 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         If clusters disappears. Default = False.
     p_points_of_disappearance_of_clusters : list
         Instances at which clusters disappear. Default = None.
+    p_spliting_of_clusters : bool
+        If clusters split. Default = False.
     p_max_clusters_affected : float
         Fraction of maximum number of clusters affected by changes in properties. Default = 0.75.
     p_seed 
@@ -225,18 +228,19 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                 print("Need more than one cluster to split them.")
 
             elif self._num_clusters == 2:
-                self._clusters[1]["center"] == self._clusters[2]["center"]
+                self._clusters[1]["center"] = self._clusters[2]["center"]
+                print(self._clusters[1])
+                print(self._clusters[2])
 
             else:
                 x = self._num_clusters
                 if x > 5:
                     x = 5
-                x = random.randint()
                 num_split_clusters = random.randint(a=2,b=x)
                 center = self._clusters[1]["center"]
                 for x in range(num_split_clusters-1):
-                    self._clusters[x+2]["clusters"] = center
-                    
+                    self._clusters[x+2]["center"] = center
+
 
 ## -------------------------------------------------------------------------------------------------
     def _define_cluster(self, id):
