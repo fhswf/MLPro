@@ -48,16 +48,19 @@ class MyScenario (StreamScenario):
         # 1 Import a native stream from MLPro
         stream = StreamMLProClusterGenerator(p_num_dim=2,
                                                   p_num_instances=5000,
-                                                  p_num_clusters=4,
+                                                  p_num_clusters=3,
                                                   p_radii=[50],
-                                                  p_velocities=[.02,.03,0.05,0.1],
+                                                  p_velocities=[0.2, 0.3, 0.4],
                                                   p_weights=[1],
-                                                  p_spliting_of_clusters=True,
+                                                  p_split_and_merge_of_clusters=True,
+                                                  p_num_clusters_for_split_and_merge=3,
+                                                  p_seed=21,
                                                   p_visualize = p_visualize,
                                                   p_logging=p_logging)
 
 
         # 2 Set up a stream workflow
+
         workflow = StreamWorkflow( p_name='wf1', 
                                    p_range_max=StreamWorkflow.C_RANGE_NONE, 
                                    p_visualize=p_visualize,

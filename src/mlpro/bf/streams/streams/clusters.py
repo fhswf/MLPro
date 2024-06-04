@@ -149,9 +149,12 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         self._splitting_of_clusters = p_spliting_of_clusters
         self._split_and_merge_of_clusters = p_split_and_merge_of_clusters
         self._num_clusters_for_split_and_merge = p_num_clusters_for_split_and_merge
-        self._initial_centers = []
 
-        self.set_random_seed(p_seed=p_seed)
+        if p_seed is not None:
+            self.set_random_seed(p_seed=p_seed)
+        else:
+            random.seed()
+            np.random.seed()
 
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
@@ -226,26 +229,6 @@ class StreamMLProClusterGenerator (StreamMLProBase):
             # Add cluster to dictionary
             self._clusters[a] = self._define_cluster(a)
 
-        # Recalculate cluster centers to account for cluster splitting
-        if self._splitting_of_clusters:
-
-            if self._num_clusters == 1:
-                print("Need more than one cluster to split them.")
-
-            elif self._num_clusters == 2:
-                self._clusters[1]["center"] = self._clusters[2]["center"]
-                print(self._clusters[1])
-                print(self._clusters[2])
-
-            else:
-                x = self._num_clusters
-                if x > 5:
-                    x = 5
-                num_split_clusters = random.randint(a=2,b=x)
-                center = self._clusters[1]["center"]
-                for x in range(num_split_clusters-1):
-                    self._clusters[x+2]["center"] = center
-
 
 ## -------------------------------------------------------------------------------------------------
     def _define_cluster(self, id):
@@ -259,9 +242,6 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
         for b in range(self._num_dim):
             center[b] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-        
-        # 1.1 Save the initial center to the variable _initial_centers
-        self._initial_centers.append(center)
 
         cluster["center"] = center
 
@@ -282,31 +262,29 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _find_velocity(self, velocity, init_point : list = None, final_point : list = None):
+    def _find_velocity(self, velocity, init_point : list = [], final_point : list = []):
         """
-        Fuction to calculate velocity of a cluster.
+        Function to calculate velocity of a cluster.
         """
-        velocity_vector = np.zeros(self._num_dim)
+        velocity_vector = list(np.zeros(self._num_dim))
         dist = 0
 
-        if final_point == None:
+        if len(final_point) == 0:
             for d in range(self._num_dim):
-                velocity_vector[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-                dist = dist + velocity_vector[d]**2
+                velocity_vector[d] = random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
+                dist = float(dist + velocity_vector[d]**2)
 
             dist = dist**0.5
             f    = velocity / dist
 
             for d in range(self._num_dim):
                 velocity_vector[d] *= f
-
-            return velocity_vector
         
         else:
             for d in range(self._num_dim):
-                velocity_vector[d] = (final_point[d]-init_point[d])**2
-                velocity_vector[d] = velocity_vector[d]/()
+                velocity_vector[d] = (float(final_point[d])-init_point[d])/(int(self.C_NUM_INSTANCES*0.9)-int(self.C_NUM_INSTANCES*0.5)-1.0)
 
+        return velocity_vector
 
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
@@ -417,7 +395,18 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                 for id in range(self._num_clusters_for_split_and_merge):
                     self._clusters[id+1]["velocity"] = self._find_velocity(velocity=self._velocities[id])
 
-
+            if self._index == int(self.C_NUM_INSTANCES*0.5)+1:
+                for id in range(self._num_clusters_for_split_and_merge):
+                    initial_point = list(self._clusters[id+1]["center"])
+                    final_point = list(np.zeros(self._num_dim))
+                    self._clusters[id+1]["velocity"] = self._find_velocity(velocity=self._velocities[id],
+                                                                           init_point=initial_point,
+                                                                           final_point=final_point)
+            
+            if self._index == int(self.C_NUM_INSTANCES*0.9)+1:
+                for id in range(self._num_clusters_for_split_and_merge):
+                    self._clusters[id+1]["velocity"] = np.zeros(self._num_dim)
+                    self._clusters[id+1]["center"] = np.zeros(self._num_dim)
 
         # 2 Update of center positions
         for a in self._cluster_ids:
