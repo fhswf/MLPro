@@ -41,10 +41,11 @@
 ## --                                  value 500
 ## --                                - new parameter data_horizon with default value 1000
 ## -- 2024-05-22  2.13.0    DA       New method PlotSettings.copy()
+## -- 2024-06-04  2.13.1    DA/SK    Turned on TKAgg for Mac
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.13.0 (2024-05-22)
+Ver. 2.13.1 (2024-06-04)
 
 This module provides various classes related to data plotting.
 
@@ -59,8 +60,8 @@ try:
     from tkinter import *
     import matplotlib
     # Due to bug in TKinter for macos, disabled for macos https://bugs.python.org/issue46573
-    if platform != 'darwin':
-        matplotlib.use('TkAgg')
+    #if platform != 'darwin':
+    matplotlib.use('TkAgg')
 except:
     print('Please install tkinter for a better plot experience')
     import matplotlib
