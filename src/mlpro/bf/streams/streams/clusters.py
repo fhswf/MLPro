@@ -108,6 +108,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                   p_points_of_appearance_of_clusters : list = None,
                   p_disappearance_of_clusters : bool = False,
                   p_points_of_disappearance_of_clusters : list = None,
+                  p_spliting_of_clusters : bool = False,
                   p_max_clusters_affected : float = 0.75,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
@@ -140,7 +141,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         self._remove_cluster        = self._change_in_property(p_disappearance_of_clusters,
                                                                p_points_of_disappearance_of_clusters,
                                                                p_max_clusters_affected)
-
+        self._splitting_of_clusters = p_spliting_of_clusters
 
         self.set_random_seed(p_seed=p_seed)
 
@@ -217,6 +218,25 @@ class StreamMLProClusterGenerator (StreamMLProBase):
             # Add cluster to dictionary
             self._clusters[a] = self._define_cluster(a)
 
+        # Recalculate cluster centers to account for cluster splitting
+        if self._splitting_of_clusters:
+
+            if self._num_clusters == 1:
+                print("Need more than one cluster to split them.")
+
+            elif self._num_clusters == 2:
+                self._clusters[1]["center"] == self._clusters[2]["center"]
+
+            else:
+                x = self._num_clusters
+                if x > 5:
+                    x = 5
+                x = random.randint()
+                num_split_clusters = random.randint(a=2,b=x)
+                center = self._clusters[1]["center"]
+                for x in range(num_split_clusters-1):
+                    self._clusters[x+2]["clusters"] = center
+                    
 
 ## -------------------------------------------------------------------------------------------------
     def _define_cluster(self, id):
