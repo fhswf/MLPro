@@ -10,7 +10,7 @@
 ## -- 2024-04-23  1.1.0     SK       Bug fixes
 ## -- 2024-05-22  1.1.1     SK       Bug fix
 ## -- 2024-06-04  1.1.2     DA       Bugfix: ESpace instead of MSpace
-## -- 2024-06-04  1.2.0     SK       Addition of splitting functionality to clusters
+## -- 2024-06-04  1.2.0     SK       Addition of split and merge functionalities to clusters
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -75,8 +75,10 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         If clusters disappears. Default = False.
     p_points_of_disappearance_of_clusters : list
         Instances at which clusters disappear. Default = None.
-    p_spliting_of_clusters : bool
-        If clusters split. Default = False.
+    p_split_and_merge_of_clusters : bool
+        If clusters split and merge. Default = False.
+    p_num_of_clusters_for_split_and_merge : int
+        Number of clusters that split split at first and then later on merge. Default = 2.
     p_max_clusters_affected : float
         Fraction of maximum number of clusters affected by changes in properties. Default = 0.75.
     p_seed 
