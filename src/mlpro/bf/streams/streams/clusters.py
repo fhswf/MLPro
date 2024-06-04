@@ -9,10 +9,11 @@
 ## -- 2024-04-18  1.0.0     SK       First draft implementation
 ## -- 2024-04-23  1.1.0     SK       Bug fixes
 ## -- 2024-05-22  1.1.1     SK       Bug fix
+## -- 2024-06-04  1.1.2     DA       Bugfix: ESpace instead of MSpace
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-05-22)
+Ver. 1.1.2 (2024-06-04)
 
 This module provides the native stream class StreamMLProClusterGenerator.
 These stream provides instances with self._num_dim dimensional random feature data, placed around
@@ -196,7 +197,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
-        feature_space : MSpace = MSpace()
+        feature_space : MSpace = ESpace()
 
         for i in range(self._num_dim):
             feature_space.add_dim( Feature( p_name_short = 'f_' + str(i),

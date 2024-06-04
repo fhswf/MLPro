@@ -85,6 +85,11 @@ class Hypercuboid (MultiProperty):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _get(self):
+        return super()._get()
+
+        
+## -------------------------------------------------------------------------------------------------
     def set(self, p_value, p_time_stamp : Union[datetime, int, float] = None): 
         super().set( p_value = p_value, p_time_stamp = p_time_stamp )
 
@@ -321,6 +326,8 @@ class Hypercuboid (MultiProperty):
 
         self._value = p_normalizer.renormalize( p_data=np.array(self.value) )
 
+
+    value       = property( fget = _get, fset = set)
 
 
 

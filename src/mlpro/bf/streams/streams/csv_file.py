@@ -12,10 +12,11 @@
 ## -- 2023-04-16  1.1.1     SY       Refactoring
 ## -- 2023-04-17  1.1.2     DA       Method StreamMLProCSV.set_options(): changed exception type 
 ## --                                to ParamError
+## -- 2024-06-04  1.1.3     DA       Bugfix: ESpace instead of MSpace
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-04-17)
+Ver. 1.1.3 (2023-06-04)
 
 This module provides the native stream class StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
@@ -124,7 +125,7 @@ class StreamMLProCSV(Stream):
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
         
-        feature_space : MSpace = MSpace()
+        feature_space : MSpace = ESpace()
         
         if self._list_features is not None:
             for ftrs in self._list_features:
