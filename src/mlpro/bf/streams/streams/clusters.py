@@ -112,6 +112,8 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                   p_disappearance_of_clusters : bool = False,
                   p_points_of_disappearance_of_clusters : list = None,
                   p_spliting_of_clusters : bool = False,
+                  p_split_and_merge_of_clusters : bool = False,
+                  p_num_clusters_for_split_and_merge : int = 2,
                   p_max_clusters_affected : float = 0.75,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
@@ -145,6 +147,9 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                                                                p_points_of_disappearance_of_clusters,
                                                                p_max_clusters_affected)
         self._splitting_of_clusters = p_spliting_of_clusters
+        self._split_and_merge_of_clusters = p_split_and_merge_of_clusters
+        self._num_clusters_for_split_and_merge = p_num_clusters_for_split_and_merge
+        self._initial_centers = []
 
         self.set_random_seed(p_seed=p_seed)
 
@@ -254,6 +259,9 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
         for b in range(self._num_dim):
             center[b] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
+        
+        # 1.1 Save the initial center to the variable _initial_centers
+        self._initial_centers.append(center)
 
         cluster["center"] = center
 
@@ -274,24 +282,30 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _find_velocity(self, velocity):
+    def _find_velocity(self, velocity, init_point : list = None, final_point : list = None):
         """
         Fuction to calculate velocity of a cluster.
         """
         velocity_vector = np.zeros(self._num_dim)
         dist = 0
 
-        for d in range(self._num_dim):
-            velocity_vector[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-            dist = dist + velocity_vector[d]**2
+        if final_point == None:
+            for d in range(self._num_dim):
+                velocity_vector[d] = random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
+                dist = dist + velocity_vector[d]**2
 
-        dist = dist**0.5
-        f    = velocity / dist
+            dist = dist**0.5
+            f    = velocity / dist
 
-        for d in range(self._num_dim):
-            velocity_vector[d] *= f
+            for d in range(self._num_dim):
+                velocity_vector[d] *= f
 
-        return velocity_vector
+            return velocity_vector
+        
+        else:
+            for d in range(self._num_dim):
+                velocity_vector[d] = (final_point[d]-init_point[d])**2
+                velocity_vector[d] = velocity_vector[d]/()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -314,81 +328,95 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                 for x in ids:
                     self._clusters[self._change_in_radius["clusters"][x]]["roc_of_radius"] = 0
 
-        # 1.2 Check and prepare clusters for changes in velocity
-        if self._change_in_velocity != None:
-            if self._index in self._change_in_velocity["start"]:
-                ids = [index for index, element in enumerate(self._change_in_velocity["start"]) if element == self._index]
-                for x in ids:
-                    a = random.randint(0,2)
-                    if a == 0:
-                        velocity = 0
-                    else:
-                        if max(self._velocities)==0 and min(self._velocities)==0:
-                            velocity = random.random()
+
+        if self._split_and_merge_of_clusters == False:
+
+            # 1.2 Check and prepare clusters for changes in velocity
+            if self._change_in_velocity != None:
+                if self._index in self._change_in_velocity["start"]:
+                    ids = [index for index, element in enumerate(self._change_in_velocity["start"]) if element == self._index]
+                    for x in ids:
+                        a = random.randint(0,2)
+                        if a == 0:
+                            velocity = 0
                         else:
-                            a = random.randint(0,1)
-                            if a == 0:
-                                velocity = max(self._velocities)*random.random()
+                            if max(self._velocities)==0 and min(self._velocities)==0:
+                                velocity = random.random()
                             else:
-                                velocity = max(self._velocities)*(1+random.random())
-                    self._clusters[self._change_in_velocity["clusters"][x]]["velocity"] = self._find_velocity(velocity)
+                                a = random.randint(0,1)
+                                if a == 0:
+                                    velocity = max(self._velocities)*random.random()
+                                else:
+                                    velocity = max(self._velocities)*(1+random.random())
+                        self._clusters[self._change_in_velocity["clusters"][x]]["velocity"] = self._find_velocity(velocity)
 
-        # 1.3 Check and prepare clusters for changes in weight
-        if self._change_in_weight != None:
-            if self._index in self._change_in_weight["start"]:
-                ids = [index for index, element in enumerate(self._change_in_weight["start"]) if element == self._index]
-                for x in ids:
-                    if max(self._weights)==1 and min(self._weights)==1:
-                        weight = random.randint(1,10)
+            # 1.3 Check and prepare clusters for changes in weight
+            if self._change_in_weight != None:
+                if self._index in self._change_in_weight["start"]:
+                    ids = [index for index, element in enumerate(self._change_in_weight["start"]) if element == self._index]
+                    for x in ids:
+                        if max(self._weights)==1 and min(self._weights)==1:
+                            weight = random.randint(1,10)
+                        else:
+                            weight = random.randint(1,max(self._weights)+2)
+                        self._clusters[self._change_in_weight["clusters"][x]]["weight"] = weight
+
+            # 1.4 Check and prepare for cluster appearances
+            if self._new_cluster != None:
+                if self._index in self._new_cluster["start"]:
+                    n = self._new_cluster["start"].count(self._index)
+                    for _ in range(n):
+                        self._num_clusters += 1
+                        self._cluster_ids.append(self._num_clusters)
+                        self._radii.append((min(self._radii) + max(self._radii))/2)
+                        a = random.randint(0, 1)
+                        self._velocities.append(min(self._velocities) if a == 0 else (min(self._velocities) + max(self._velocities)) / 2)
+                        self._weights.append(random.randint(1, max(self._weight)))
+                        self._clusters[self._cluster_ids[-1]] = self._define_cluster(id=self._cluster_ids[-1])
+
+            # 1.5 Check and prepare fro cluster disappearances
+            if self._remove_cluster != None:
+                if self._index in self._remove_cluster["start"]:
+                    if self._num_clusters == 1:
+                        raise Exception
+                    elif self._num_clusters == 2:
+                        self._num_clusters -= 1
+                        self._cluster_ids.pop(self._remove_cluster["cluster"][0]-1)
+                        self._current_cluster= 1
+                        del self._clusters[self._remove_cluster["cluster"][0]]
                     else:
-                        weight = random.randint(1,max(self._weights)+2)
-                    self._clusters[self._change_in_weight["clusters"][x]]["weight"] = weight
+                        ids = [index for index, element in enumerate(self._remove_cluster["start"]) if element == self._index]
+                        j=1
+                        for i in ids:
+                            self._radii.pop(i-j)
+                            self._velocities.pop(i-j)
+                            self._weights.pop(i-j)
+                            j+=1
+                        self._num_clusters -= len(ids)
+                        self._cluster_ids = self._cluster_ids[:self._num_clusters-len(ids)]
+                        self._current_cluster= 1
+                        for id in ids:
+                            del self._clusters[self._remove_cluster["clusters"][id]]
+                            for i in range(len(self._remove_cluster["clusters"])):
+                                if self._remove_cluster["clusters"][i] > self._remove_cluster["clusters"][id]:
+                                    self._remove_cluster["clusters"][i] -= 1
+                        a = 1
+                        clusters = {}
+                        for id in self._clusters.keys():
+                            clusters[a] = self._clusters[id]
+                            a += 1
+                        self._clusters = clusters
 
-        # 1.4 Check and prepare for cluster appearances
-        if self._new_cluster != None:
-            if self._index in self._new_cluster["start"]:
-                n = self._new_cluster["start"].count(self._index)
-                for _ in range(n):
-                    self._num_clusters += 1
-                    self._cluster_ids.append(self._num_clusters)
-                    self._radii.append((min(self._radii) + max(self._radii))/2)
-                    a = random.randint(0, 1)
-                    self._velocities.append(min(self._velocities) if a == 0 else (min(self._velocities) + max(self._velocities)) / 2)
-                    self._weights.append(random.randint(1, max(self._weight)))
-                    self._clusters[self._cluster_ids[-1]] = self._define_cluster(id=self._cluster_ids[-1])
+        else:
+            if self._index <= 2:
+                for id in range(self._num_clusters_for_split_and_merge):
+                    self._clusters[id+1]["velocity"] = np.zeros(self._num_dim)
+                    self._clusters[id+1]["center"] = np.zeros(self._num_dim)
+            
+            if self._index == int(self.C_NUM_INSTANCES*0.1):
+                for id in range(self._num_clusters_for_split_and_merge):
+                    self._clusters[id+1]["velocity"] = self._find_velocity(velocity=self._velocities[id])
 
-        # 1.5 Check and prepare fro cluster disappearances
-        if self._remove_cluster != None:
-            if self._index in self._remove_cluster["start"]:
-                if self._num_clusters == 1:
-                    raise Exception
-                elif self._num_clusters == 2:
-                    self._num_clusters -= 1
-                    self._cluster_ids.pop(self._remove_cluster["cluster"][0]-1)
-                    self._current_cluster= 1
-                    del self._clusters[self._remove_cluster["cluster"][0]]
-                else:
-                    ids = [index for index, element in enumerate(self._remove_cluster["start"]) if element == self._index]
-                    j=1
-                    for i in ids:
-                        self._radii.pop(i-j)
-                        self._velocities.pop(i-j)
-                        self._weights.pop(i-j)
-                        j+=1
-                    self._num_clusters -= len(ids)
-                    self._cluster_ids = self._cluster_ids[:self._num_clusters-len(ids)]
-                    self._current_cluster= 1
-                    for id in ids:
-                        del self._clusters[self._remove_cluster["clusters"][id]]
-                        for i in range(len(self._remove_cluster["clusters"])):
-                            if self._remove_cluster["clusters"][i] > self._remove_cluster["clusters"][id]:
-                                self._remove_cluster["clusters"][i] -= 1
-                    a = 1
-                    clusters = {}
-                    for id in self._clusters.keys():
-                        clusters[a] = self._clusters[id]
-                        a += 1
-                    self._clusters = clusters
 
 
         # 2 Update of center positions
