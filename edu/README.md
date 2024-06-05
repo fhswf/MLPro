@@ -11,7 +11,7 @@ You can install Jupyter Notebook using Python's package manager, pip. Open your 
 &emsp;<code>pip install notebook</code>
 
 ### 3. Install Dependencies
-Each howto requires different dependencies other than MLPro itself. You can check this in the preparation section of each howto
+Each howto requires different dependencies other than MLPro itself. You can check this in the preparation section of each howto.
 
 ### 4. Launch Jupyter Notebook
 Once Jupyter Notebook is installed, you can launch it by running: <br>
