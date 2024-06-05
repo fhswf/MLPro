@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-13  0.0.0     DA       Creation 
 ## -- 2022-12-13  1.0.0     DA       First implementation
+## -- 2024-06-04  1.0.1     DA       Bugfix: ESpace instead of MSpace
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-13)
+Ver. 1.0.1 (2024-06-03)
 
 This module provides the native stream class StreamMLProRnd10D. This stream provides 1000 instances
 with 10-dimensional random feature data and 2-dimensional random label data.
@@ -65,7 +66,7 @@ class StreamMLProRnd10D (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_label_space(self) -> MSpace:
-        label_space : MSpace = MSpace()
+        label_space : MSpace = ESpace()
 
         for i in range(2):
             label_space.add_dim( Label( p_name_short = 'l' + str(i),

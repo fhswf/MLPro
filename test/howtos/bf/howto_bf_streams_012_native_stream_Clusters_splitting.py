@@ -47,18 +47,14 @@ class MyScenario (StreamScenario):
 
         # 1 Import a native stream from MLPro
         stream = StreamMLProClusterGenerator(p_num_dim=2,
-                                                  p_num_instances=1000,
-                                                  p_num_clusters=4,
-                                                  p_radii=[100],
-                                                  p_velocities=[0.0, 0.0, 0.0, 0.0],
+                                                  p_num_instances=5000,
+                                                  p_num_clusters=3,
+                                                  p_radii=[50],
+                                                  p_velocities=[0.2, 0.3, 0.4],
                                                   p_weights=[1],
-                                                  p_change_in_radii=True,
-                                                  p_rate_of_change_of_radius=0.001,
-                                                  p_change_in_velocities=False,
-                                                  p_change_in_weights=False,
-                                                  p_disappearance_of_clusters=False,
-                                                  p_appearance_of_clusters=False,
-                                                  p_points_of_appearance_of_clusters=None,
+                                                  p_split_and_merge_of_clusters=True,
+                                                  p_num_clusters_for_split_and_merge=3,
+                                                  p_seed=21,
                                                   p_visualize = p_visualize,
                                                   p_logging=p_logging)
 
@@ -80,7 +76,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 1000
+    cycle_limit = 5000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 2

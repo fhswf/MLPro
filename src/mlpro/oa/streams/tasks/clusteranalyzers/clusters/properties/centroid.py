@@ -123,7 +123,7 @@ class Centroid (Point, Id):
         # 2 Plot a crosshair
         if self._plot_line1 is None:
             # 2.1 Add initial crosshair lines
-            cluster_id = self.get_id()
+            cluster_id = self.id
             col_id = cluster_id % len(Cluster.C_CLUSTER_COLORS)
             color = Cluster.C_CLUSTER_COLORS[col_id]
             label = ' C' + str(cluster_id) + ' '
