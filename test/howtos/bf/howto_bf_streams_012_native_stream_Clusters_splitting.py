@@ -4,11 +4,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-04-18  1.0.0     SK       Creation/First implementation
+## -- 2024-06-04  1.0.0     SK       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-04-18)
+Ver. 1.0.0 (2024-06-04)
 
 This module demonstrates and visualizes the native stream ClusterbasedAnomalies which generates a
 specified number of n-dimensional instances placed around specified number of centers, resulting in
