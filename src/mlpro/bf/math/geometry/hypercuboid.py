@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-05-29  0.0.0     DA       Creation
 ## -- 2024-06-03  1.0.0     DA       First implementation
+## -- 2024-06-05  1.0.1     DA       Stabilization of Hypercuboid.set()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-03)
+Ver. 1.0.1 (2024-06-05)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -19,13 +20,13 @@ This module provides a property class for the geometric shape 'hypercuboid'.
 
 import numpy as np
 from matplotlib.patches import Rectangle
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from mpl_toolkits.mplot3d.art3d import Line3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3D
 
 from mlpro.bf.plot import *
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.bf.math.geometry import Point, cprop_center_geo
+from mlpro.bf.math.geometry.basics import cprop_size_geo
+from mlpro.bf.math.geometry.point import Point, cprop_center_geo
 
 
 
@@ -52,7 +53,7 @@ class Hypercuboid (MultiProperty):
         Width of the border lines of the cuboid.
     """
 
-    C_PROPERTIES        = [ cprop_center_geo ]
+    C_PROPERTIES        = [ cprop_center_geo, cprop_size_geo ]
 
     C_PLOT_ACTIVE       = True
     C_PLOT_STANDALONE   = False
@@ -85,11 +86,26 @@ class Hypercuboid (MultiProperty):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _get(self):
+        return super()._get()
+
+        
+## -------------------------------------------------------------------------------------------------
     def set(self, p_value, p_time_stamp : Union[datetime, int, float] = None): 
         super().set( p_value = p_value, p_time_stamp = p_time_stamp )
 
-        self.center_geo.set( p_value = np.array( self.value ).mean(axis=1),
-                             p_time_stamp = p_time_stamp )
+        if p_value is None:
+            self.center_geo.value = None
+            self.size_geo.value   = 0
+    
+        else:
+            val_np = np.array( self.value )
+
+            self.center_geo.set( p_value = val_np.mean(axis=1),
+                                 p_time_stamp = p_time_stamp )
+        
+            self.size_geo.set( p_value = np.prod( np.diff( val_np, axis=1 ) ), 
+                               p_time_stamp = p_time_stamp )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -316,6 +332,8 @@ class Hypercuboid (MultiProperty):
 
         self._value = p_normalizer.renormalize( p_data=np.array(self.value) )
 
+
+    value       = property( fget = _get, fset = set)
 
 
 

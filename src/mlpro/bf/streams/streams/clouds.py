@@ -15,10 +15,11 @@
 ## -- 2023-12-29  1.2.0     DA       Class StreamMLProClouds: new parameter p_weights
 ## -- 2024-02-06  1.2.1     DA       Class StreamMLProClouds3D8C10000Dynamic: corrections on constants
 ## -- 2024-02-09  1.2.2     DA       Completion of class documentations
+## -- 2024-06-04  1.2.3     DA       Bugfix: ESpace instead of MSpace
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-02-09)
+Ver. 1.2.3 (2024-06-04)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -30,6 +31,8 @@ centers (can be defined by user) which may or maynot move over time.
 
 import random
 import math
+
+from mlpro.bf.math import ESpace
 from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
@@ -114,7 +117,7 @@ class StreamMLProClouds (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
-        feature_space : MSpace = MSpace()
+        feature_space : MSpace = ESpace()
 
         for i in range(self._num_dim):
             feature_space.add_dim( Feature( p_name_short = 'f_' + str(i),
