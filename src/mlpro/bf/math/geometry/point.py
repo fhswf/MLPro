@@ -18,10 +18,11 @@
 ## -- 2024-05-31  1.7.0     DA       New global aliases cprop_center_geo*
 ## -- 2024-05-31  1.7.1     DA       Improved the stability of the plot methods
 ## -- 2024-06-03  1.8.0     DA       Class Point: new attributes color, marker
+## -- 2024-06-05  1.8.1     DA       Bugfix in Point._remove_plot_2d()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2024-06-03)
+Ver. 1.8.1 (2024-06-05)
 
 This module provides a property class for the geometric shape 'point'.
 
@@ -150,18 +151,26 @@ class Point (Property):
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
-        if self._plot_pos is not None: 
-            self._plot_pos.remove()
-            self._plot_pos = None
+        if self._plot_pos is None: return
+        
+        self._plot_pos.remove()
+        self._plot_pos = None
 
-            if self._plot_vel is not None:
-                self._plot_vel.remove()
-                self._plot_vel = None
+        if self._plot_vel is not None:
+            self._plot_vel.remove()
+            self._plot_vel = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_3d(self):
-        self._remove_plot_2d()
+        if self._plot_pos is None: return
+        
+        self._plot_pos.remove()
+        self._plot_pos = None
+
+        if self._plot_vel is not None:
+            self._plot_vel.remove()
+            self._plot_vel = None
 
 
 ## -------------------------------------------------------------------------------------------------
