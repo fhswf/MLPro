@@ -60,7 +60,6 @@ class MyScenario (StreamScenario):
 
 
         # 2 Set up a stream workflow
-
         workflow = StreamWorkflow( p_name='wf1', 
                                    p_range_max=StreamWorkflow.C_RANGE_NONE, 
                                    p_visualize=p_visualize,
