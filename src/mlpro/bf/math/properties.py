@@ -30,10 +30,11 @@
 ## --                                - extension of PropertyDefinition by ValuePrev
 ## -- 2024-05-31  1.0.0     DA       New class MultiProperty
 ## -- 2024-06-03  1.0.1     DA       Method Properties.update_plot(): changed order of plotting
+## -- 2024-06-05  1.1.0     DA       New method Properties.replace_property()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-06-03)
+Ver. 1.1.0 (2024-06-05)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -345,6 +346,12 @@ class Properties (Plottable, Renormalizable):
         """
 
         return self._properties
+    
+
+## -------------------------------------------------------------------------------------------------
+    def replace_property(self, p_property : Property ):
+        setattr(self, p_property.name, p_property)
+        self._properties[p_property.name] = p_property
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-05-29  0.0.0     DA       Creation
 ## -- 2024-06-03  1.0.0     DA       First implementation
+## -- 2024-06-05  1.0.1     DA       Stabilization of Hypercuboid.set()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-03)
+Ver. 1.0.1 (2024-06-05)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -93,13 +94,18 @@ class Hypercuboid (MultiProperty):
     def set(self, p_value, p_time_stamp : Union[datetime, int, float] = None): 
         super().set( p_value = p_value, p_time_stamp = p_time_stamp )
 
-        val_np = np.array( self.value )
+        if p_value is None:
+            self.center_geo.value = None
+            self.size_geo.value   = 0
+    
+        else:
+            val_np = np.array( self.value )
 
-        self.center_geo.set( p_value = val_np.mean(axis=1),
-                             p_time_stamp = p_time_stamp )
+            self.center_geo.set( p_value = val_np.mean(axis=1),
+                                 p_time_stamp = p_time_stamp )
         
-        self.size_geo.set( p_value = np.prod( np.diff( val_np, axis=1 ) ), 
-                           p_time_stamp = p_time_stamp )
+            self.size_geo.set( p_value = np.prod( np.diff( val_np, axis=1 ) ), 
+                               p_time_stamp = p_time_stamp )
 
 
 ## -------------------------------------------------------------------------------------------------

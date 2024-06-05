@@ -29,10 +29,11 @@
 ## -- 2024-05-04  0.9.0     DA       Introduction of cluster properties
 ## -- 2024-05-27  1.0.0     DA       Initial design finished
 ## -- 2024-05-28  1.0.1     DA       Bugfix in ClusterAnalyzer.new_cluster_allowed()
+## -- 2024-06-05  1.0.2     DA       Bugfix in ClusterAnalyzer.get_cluster_membership()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-05-28)
+Ver. 1.0.2 (2024-06-05)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -302,7 +303,7 @@ class ClusterAnalyzer (OATask):
         if sum_ms == 0: return []
 
         if cluster_max_ms is not None:
-            ms_abs.append( cluster_max_ms )            
+            list_ms_abs.append( cluster_max_ms )            
 
 
         # 2 Determination of relative membership values according to the required scope
