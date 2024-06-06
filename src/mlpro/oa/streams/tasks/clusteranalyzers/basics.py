@@ -30,13 +30,15 @@
 ## -- 2024-05-27  1.0.0     DA       Initial design finished
 ## -- 2024-05-28  1.0.1     DA       Bugfix in ClusterAnalyzer.new_cluster_allowed()
 ## -- 2024-06-05  1.0.2     DA       Bugfix in ClusterAnalyzer.get_cluster_membership()
+## -- 2024-06-06  1.1.0     DA       New method ClusterAnalyzer._get_next_cluster_id()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2024-06-05)
+Ver. 1.1.0 (2024-06-06)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
+
 
 from matplotlib.figure import Figure
 from mlpro.bf.math.properties import *
@@ -141,6 +143,7 @@ class ClusterAnalyzer (OATask):
         self._cls_cluster   = p_cls_cluster
         self._clusters      = {}
         self._cluster_limit = p_cluster_limit
+        self._next_cluster_id : ClusterId = -1
 
         self._cluster_properties : PropertyDefinitions = self.C_CLUSTER_PROPERTIES.copy()
         self._cluster_properties_dict = {}
@@ -217,29 +220,27 @@ class ClusterAnalyzer (OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
+    def _get_next_cell_id(self) -> ClusterId:
+        self._next_cluster_id += 1
+        return self._next_cluster_id
+    
+
+## -------------------------------------------------------------------------------------------------
     def _add_cluster(self, p_cluster:Cluster) -> bool:
         """
-        Protected method to be used to add a new cluster. Please use as part of your algorithm.
+        Protected method to be used to add a new cluster. Please use as part of your algorithm. 
+        Please use method new_cluster_allowed() before adding a cluster.
 
         Parameters
         ----------
         p_cluster : Cluster
             Cluster object to be added.
-
-        Returns
-        -------
-        successful : Bool
-            True, if the cluster has been added successfully. False otherwise.
         """
 
-        if not self.new_cluster_allowed(): return False
-
-        self._clusters[p_cluster.get_id()] = p_cluster
+        self._clusters[p_cluster.id] = p_cluster
 
         if self.get_visualization(): 
             p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
-
-        return True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -254,7 +255,7 @@ class ClusterAnalyzer (OATask):
         """
 
         p_cluster.remove_plot(p_refresh=True)
-        del self._clusters[p_cluster.get_id()]
+        del self._clusters[p_cluster.id]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -311,7 +312,7 @@ class ClusterAnalyzer (OATask):
 
         for ms_abs in list_ms_abs:
             ms_rel = ms_abs[1] / sum_ms
-            list_ms_rel.append( ( ms_abs[0].get_id(), ms_rel, ms_abs[0] ) )
+            list_ms_rel.append( ( ms_abs[0].id, ms_rel, ms_abs[0] ) )
 
         return list_ms_rel
     
