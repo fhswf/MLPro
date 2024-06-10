@@ -309,7 +309,7 @@ class ClusterAnalyzer (OATask):
 
             if p_scope == self.C_RESULT_SCOPE_MAX:
                 # Cluster with highest membership value is buffered
-                if ( cluster_max_results is None ) or ( result_abs > cluster_max_result[1] ):
+                if ( cluster_max_results is None ) or ( result_abs > cluster_max_results[1] ):
                     cluster_max_results = ( cluster, result_abs )
             else:
                 list_results_abs.append( (cluster, result_abs) )
