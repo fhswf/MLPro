@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.pool.envs
-## -- Module  : trajectoryplanner_2D.py
+## -- Module  : collisionavoidance_2D.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,8 +12,21 @@
 """
 Ver. 1.0.0 (2024-07-10)
 
-This module provides a 2D environment for trajectory planning and collision avoidance with
-dynamic goals.
+This module provides a 2D environment for collision avoidance of a trajectory planning with
+dynamic goals. The DynamicTrajectoryPlanner environment simulates a 2D space where an agent must
+navigate towards dynamically moving goals while avoiding static obstacles.
+
+The agent, equipped with sensors providing information only on initial to goal trajectories,
+operates within a continuous action space to move and adjust its path.
+
+In this module, rewards are not defined but we give some important components for developing the
+reward function including actual distance of the trajectory and number of collisions that can be used
+to penalise for any collisions.
+
+This environment is dynamic, with goals potentially changing over time, which makes it ideal for
+training reinforcement learning agents for tasks like autonomous robot navigation, drone flight in urban
+areas, and autonomous vehicle path planning, which emphasize trajectory optimization and collision avoidance
+in real-world-like settings.
 
 """
 
