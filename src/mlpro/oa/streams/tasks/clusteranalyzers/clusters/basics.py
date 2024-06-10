@@ -36,24 +36,24 @@
 ## -- 2024-05-25  1.6.0     DA       Aliases ClusterId, MembershipValue
 ## -- 2024-05-27  1.7.0     DA       Refactoring
 ## -- 2024-05-29  1.8.0     DA       Class Cluster: order of colors changed
+## -- 2024-06-08  1.9.0     DA       New method Cluster.get_influence()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2024-05-29)
+Ver. 1.9.0 (2024-06-08)
 
-This module provides templates for clusters to be used in cluster analyzer algorithms.
+This module provides a template class for clusters to be used in cluster analyzer algorithms.
 
 """
 
 
-from mlpro.bf.various import *
+from mlpro.bf.various import Id
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import PropertyDefinitions, Properties
-from mlpro.bf.plot import *
-from mlpro.bf.streams import *
+from mlpro.bf.streams import Instance
 
 
-ClusterId       = int
-MembershipValue = float
+ClusterId = int
 
 
 
@@ -115,8 +115,29 @@ class Cluster (Id, Properties):
         Returns
         -------
         float
-            Scalar value >= 0 that determines the membership of the given instance to this cluster. 
-            A value 0 means that the given instance is not a member of the cluster.
+            A scalar value in [0,1] that determines the given instance's membership in this cluster. 
+            A value of 0 means that the given instance is not a member of the cluster at all while
+            a value of 1 confirms full membership.
+        """
+
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_influence(self, p_inst : Instance ) -> float:
+        """
+        Custom method to compute a scalar influence value for the given instance.
+
+        Parameters
+        ----------
+        p_inst : Instance
+            Instance.
+
+        Returns
+        -------
+        float
+            Scalar value >= 0 that determines the influence of the cluster on the specified instance. 
+            A value 0 means that the cluster has no influence on the instance at all.
         """
 
         raise NotImplementedError

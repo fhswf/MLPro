@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-04-28  1.0.0     DA       Creation
 ## -- 2024-05-05  1.1.0     DA       Refactoring
+## -- 2024-06-08  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-05-05)
+Ver. 1.2.0 (2024-06-08)
 
 This module demonstrates and validates the reuse of class mlpro.bf.data.Properties in own classes.
 Properties are basically pairs of names and values at a well-defined time point. Additionally,
@@ -42,21 +43,20 @@ class MyDemo (Properties):
     def print_properties(self):
         properties = self.get_properties()
 
-        for prop in properties.keys():
-            print('Property "' + prop + '" at time stamp ', properties[prop].time_stamp)
-            print('   Value:', properties[prop].value)
+        for prop_name, (prop, link) in properties.items():
+            print('Property "' + prop_name + '" at time stamp ', prop.time_stamp)
+            print('   Value:', prop.value)
             print('   Derivatives:')
             order = 0
             while True:
                 try:
-                    print('       Order', order, ': ', properties[prop].derivatives[order])
+                    print('       Order', order, ': ', prop.derivatives[order])
                 except:
                     break
 
                 order += 1
 
             print()
-
 
 
 # 2 Instantiate an object from your class and define some properties
@@ -114,5 +114,5 @@ myobj.print_properties()
 
 
 # 6 Last but not least: the dimensionality of our properties
-for prop_name, prop in myobj.get_properties().items():
-    print('Dimensionality of "' + prop_name + '":', prop.dim)    
+for prop_name, (prop, link) in myobj.get_properties().items():
+    print('Dimensionality of "' + prop_name + '":', prop.dim)  

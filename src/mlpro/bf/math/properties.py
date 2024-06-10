@@ -31,10 +31,11 @@
 ## -- 2024-05-31  1.0.0     DA       New class MultiProperty
 ## -- 2024-06-03  1.0.1     DA       Method Properties.update_plot(): changed order of plotting
 ## -- 2024-06-05  1.1.0     DA       New method Properties.replace_property()
+## -- 2024-06-06  1.2.0     DA       New custom method Properties._update_property_links()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-06-05)
+Ver. 1.2.0 (2024-06-06)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -273,6 +274,7 @@ class Properties (Plottable, Renormalizable):
         self._properties = {}
         self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
         self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
+        self._update_property_links()
 
         Plottable.__init__( self, p_visualize = p_visualize )
                   
@@ -307,7 +309,7 @@ class Properties (Plottable, Renormalizable):
                           p_derivative_order_max = p_derivative_order_max, 
                           p_value_prev = p_value_prev,
                           p_visualize = p_visualize )
-        self._properties[p_name] = prop_obj
+        self._properties[p_name] = (prop_obj, False)
         setattr(self, p_name, prop_obj )
 
 
@@ -350,17 +352,64 @@ class Properties (Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     def replace_property(self, p_property : Property ):
-        setattr(self, p_property.name, p_property)
-        self._properties[p_property.name] = p_property
+        """
+        This method (re-)assigns the top-level attibute self.[p_property.name] with the property object
+        p_property.
 
+        Parameters
+        ----------
+        p_property : Property
+            New property object to be assigned.
+        """
+
+        setattr(self, p_property.name, p_property)
+        self._properties[p_property.name] = (p_property, False)
+        self._update_property_links()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _link_property(self, p_attr : str, p_prop : Property):
+        """
+        This method enables internal linking of properties. This is helpful if key information of
+        deep properties shall be provided as top-level attributes in self. After calling this method
+        an attributeself.[p_attr] is available that is linked to the sub-attribute p_prop.[p_attr]. 
+        A former attribute self.[attr] is overwritten.
+
+        Parameters
+        ----------
+        p_attr : str
+            Name of the top level attribute linked to a deeper sub-property of property p_prop.
+        p_prop : Property
+            Deep property with a sub-property named p_attr.
+        """
+
+        attr_src  = getattr(p_prop, p_attr)
+        attr_dest = getattr(self, p_attr)
+        attr_src._derivative_order_max = attr_dest._derivative_order_max
+        setattr(self, p_attr, attr_src)
+
+        # Mark top-level attribute as link
+        self._properties[p_attr] = (attr_dest, True)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_property_links(self):
+        """
+        Custom method to define internal property links. Use method _link_property() to describe
+        link relations. This method is automatically called by the contructor and method replace_property().
+        """
+
+        pass
+    
 
 ## -------------------------------------------------------------------------------------------------
     def set_plot_settings(self, p_plot_settings : PlotSettings ):
         
         Plottable.set_plot_settings( self, p_plot_settings = p_plot_settings )
         
-        for prop in self.get_properties().values():
-            prop.set_plot_settings( p_plot_settings = p_plot_settings )
+        for (prop, link) in self.get_properties().values():
+            if not link:
+                prop.set_plot_settings( p_plot_settings = p_plot_settings )
 
             
 ## -------------------------------------------------------------------------------------------------
@@ -370,8 +419,8 @@ class Properties (Plottable, Renormalizable):
 
         Plottable.init_plot(self, p_figure = p_figure, p_plot_settings = p_plot_settings )
 
-        for prop in self.get_properties().values():
-            prop.init_plot( p_figure = self._figure, p_plot_settings = p_plot_settings)
+        for (prop, link) in self.get_properties().values():
+            if not link: prop.init_plot( p_figure = self._figure, p_plot_settings = p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -379,8 +428,8 @@ class Properties (Plottable, Renormalizable):
 
         if not self.get_visualization(): return
 
-        for prop in self.get_properties().values():
-            prop.update_plot(**p_kwargs)
+        for (prop, link) in self.get_properties().values():
+            if not link: prop.update_plot(**p_kwargs)
 
         Plottable.update_plot(self, **p_kwargs )
 
@@ -390,8 +439,8 @@ class Properties (Plottable, Renormalizable):
 
         if not self.get_visualization(): return
 
-        for prop in self.get_properties().values():
-            prop.remove_plot( p_refresh = False)
+        for (prop, link) in self.get_properties().values():
+            if not link: prop.remove_plot( p_refresh = False)
 
         Plottable.remove_plot(self, p_refresh = p_refresh )
             
@@ -399,8 +448,8 @@ class Properties (Plottable, Renormalizable):
 ## -------------------------------------------------------------------------------------------------
     def renormalize(self, p_normalizer : Normalizer ):
 
-        for prop in self.get_properties().values():
-            prop.renormalize( p_normalizer = p_normalizer )
+        for (prop, link) in self.get_properties().values():
+            if not link: prop.renormalize( p_normalizer = p_normalizer )
 
 
 

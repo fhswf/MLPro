@@ -31,21 +31,23 @@
 ## -- 2024-05-07  1.0.1     DA       Bugfix in ClusterCentroid.__init__(): internal properties first
 ## -- 2024-05-27  1.1.0     DA       Changes on property management
 ## -- 2024-05-29  1.1.1     DA       Method ClusterCentroid.renormalize() removed
+## -- 2024-06-08  1.2.0     DA       Refactoring:
+## --                                - removed implementation for get_membership() since this 
+## --                                  depends on the shape of a cluster body
+## --                                - implemented new method get_influence()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-05-29)
+Ver. 1.2.0 (2024-06-08)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
-from typing import List, Tuple
+import sys
 
-from mlpro.bf.various import *
-from mlpro.bf.plot import *
-from mlpro.bf.streams import *
+from mlpro.bf.streams import Instance
+from mlpro.bf.math import Element
 from mlpro.bf.math.properties import *
-from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_centroid
 
@@ -93,19 +95,24 @@ class ClusterCentroid (Cluster):
 # ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id):
         super().set_id( p_id = p_id )
-        try:
-            self.centroid.set_id( p_id = p_id )
-        except:
-            pass
+        self.centroid.id = p_id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_membership(self, p_inst: Instance) -> float:
+    def get_influence(self, p_inst: Instance) -> float:
+        """
+        Default strategy to determine the influence of a cluster on a specified instance based
+        on the metric distance between the instance and the cluster centroid.
+        """
+
         feature_data = p_inst.get_feature_data()
 
         if self._centroid_elem is None:
             self._centroid_elem = Element( p_set=feature_data.get_related_set() )
 
-        self._centroid_elem.set_values( p_value=self.centroid.value )
+        self._centroid_elem.set_values( p_values=self.centroid.value )
 
-        return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid_elem )
+        try:
+            return 1 / feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid_elem )
+        except ZeroDivisionError:
+            return sys.float_info.max
