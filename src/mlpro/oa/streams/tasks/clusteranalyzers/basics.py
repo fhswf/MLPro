@@ -30,13 +30,19 @@
 ## -- 2024-05-27  1.0.0     DA       Initial design finished
 ## -- 2024-05-28  1.0.1     DA       Bugfix in ClusterAnalyzer.new_cluster_allowed()
 ## -- 2024-06-05  1.0.2     DA       Bugfix in ClusterAnalyzer.get_cluster_membership()
+## -- 2024-06-06  1.1.0     DA       New method ClusterAnalyzer._get_next_cluster_id()
+## -- 2024-06-08  1.2.0     DA       Refactoring class ClusterAnalyzer: 
+## --                                - renamed attributes C_MS_SCOPE_* to C_RESULT_SCOPE_*
+## --                                - new method _get_cluster_relations()
+## --                                - new method get_cluster_influences()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2024-06-05)
+Ver. 1.2.0 (2024-06-08)
 
-This module provides templates for cluster analysis to be used in the context of online adaptivity.
+This module provides a template class for online cluster analysis.
 """
+
 
 from matplotlib.figure import Figure
 from mlpro.bf.math.properties import *
@@ -46,12 +52,12 @@ from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.oa.streams import OATask
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster, ClusterId, MembershipValue
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster, ClusterId
 from typing import List, Tuple
 
 
 
-MembershipItem = Tuple[ClusterId, MembershipValue, object]
+ResultItem = Tuple[ClusterId, float, object]
 
 
 
@@ -91,29 +97,29 @@ class ClusterAnalyzer (OATask):
 
     Attributes
     ----------
-    C_MS_SCOPE_ALL : int = 0
-        Membership scope, that includes all clusters
-    C_MS_SCOPE_NONZERO : int = 1
-        Membership scope, that includes just clusters with membership values > 0
-    C_MS_SCOPE_MAX : int = 2
-        Membership scope, that includes just the cluster with the highest membership value.
+    C_RESULT_SCOPE_ALL : int = 0
+        Result scope, that includes all clusters
+    C_RESULT_SCOPE_NONZERO : int = 1
+        Result scope, that includes just clusters with result values > 0
+    C_RESULT_SCOPE_MAX : int = 2
+        Result scope, that includes just the cluster with the highest result value.
     C_CLUSTER_PROPERTIES : PropertyDefinitions
         List of cluster properties supported/maintained by the algorithm. These properties 
         are handed over to each new cluster.
     """
 
-    C_TYPE                  = 'Cluster Analyzer'
+    C_TYPE                          = 'Cluster Analyzer'
 
-    C_EVENT_CLUSTER_ADDED   = 'CLUSTER_ADDED'
-    C_EVENT_CLUSTER_REMOVED = 'CLUSTER_REMOVED'
+    C_EVENT_CLUSTER_ADDED           = 'CLUSTER_ADDED'
+    C_EVENT_CLUSTER_REMOVED         = 'CLUSTER_REMOVED'
 
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
+    C_PLOT_ACTIVE                   = True
+    C_PLOT_STANDALONE               = False
 
-    # Possible membership scopes for method get_cluster_memberships
-    C_MS_SCOPE_ALL : int    = 0
-    C_MS_SCOPE_NONZERO :int = 1
-    C_MS_SCOPE_MAX :int     = 2
+    # Possible result scopes for methods get_cluster_memberships() and get_cluster_influences()
+    C_RESULT_SCOPE_ALL : int        = 0
+    C_RESULT_SCOPE_NONZERO : int    = 1
+    C_RESULT_SCOPE_MAX : int        = 2
 
     # List of cluster properties supported/maintained by the algorithm
     C_CLUSTER_PROPERTIES : PropertyDefinitions = []
@@ -141,6 +147,7 @@ class ClusterAnalyzer (OATask):
         self._cls_cluster   = p_cls_cluster
         self._clusters      = {}
         self._cluster_limit = p_cluster_limit
+        self._next_cluster_id : ClusterId = -1
 
         self._cluster_properties : PropertyDefinitions = self.C_CLUSTER_PROPERTIES.copy()
         self._cluster_properties_dict = {}
@@ -217,29 +224,27 @@ class ClusterAnalyzer (OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
+    def _get_next_cell_id(self) -> ClusterId:
+        self._next_cluster_id += 1
+        return self._next_cluster_id
+    
+
+## -------------------------------------------------------------------------------------------------
     def _add_cluster(self, p_cluster:Cluster) -> bool:
         """
-        Protected method to be used to add a new cluster. Please use as part of your algorithm.
+        Protected method to be used to add a new cluster. Please use as part of your algorithm. 
+        Please use method new_cluster_allowed() before adding a cluster.
 
         Parameters
         ----------
         p_cluster : Cluster
             Cluster object to be added.
-
-        Returns
-        -------
-        successful : Bool
-            True, if the cluster has been added successfully. False otherwise.
         """
 
-        if not self.new_cluster_allowed(): return False
-
-        self._clusters[p_cluster.get_id()] = p_cluster
+        self._clusters[p_cluster.id] = p_cluster
 
         if self.get_visualization(): 
             p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
-
-        return True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -254,68 +259,137 @@ class ClusterAnalyzer (OATask):
         """
 
         p_cluster.remove_plot(p_refresh=True)
-        del self._clusters[p_cluster.get_id()]
+        del self._clusters[p_cluster.id]
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _get_cluster_relations( self, 
+                                p_relation_type : int,
+                                p_inst : Instance,
+                                p_scope : int ) -> List[ResultItem]:
+        """
+        Internal method to determine the relation of the given instance to each cluster as a value in 
+        percent. Currently supported relations are membership and influence. 
+
+        See also: public methods get_cluster_memberships() and get_cluster influences()
+
+                
+        Parameters
+        ----------
+        p_relation_type : int
+            Possible values are 0 (cluster membership) and 1 (cluster influence)
+        p_inst : Instance
+            Instance to be evaluated.
+        p_scope : int
+            Scope of the result list. See class attributes C_RESULT_SCOPE_* for possible values.
+
+        Returns
+        -------
+        results : List[ResultItem]
+            List of result items which are tuples of a cluster id, a relative result 
+            value in [0,1] and a reference to the cluster object.
+        """
+
+        # 1 Determination of membership values of the instance for all clusters
+        sum_results         = 0
+        list_results_abs    = []
+        list_results_rel    = []
+        cluster_max_results = None
+
+        for cluster in self.get_clusters().values():
+
+            if p_relation_type == 0:
+                result_abs  = cluster.get_membership( p_inst = p_inst )
+            else:
+                result_abs  = cluster.get_influence( p_inst = p_inst )
+
+            sum_results += result_abs
+
+            if ( p_scope == self.C_RESULT_SCOPE_NONZERO ) and ( result_abs == 0 ): continue
+
+            if p_scope == self.C_RESULT_SCOPE_MAX:
+                # Cluster with highest membership value is buffered
+                if ( cluster_max_results is None ) or ( result_abs > cluster_max_results[1] ):
+                    cluster_max_results = ( cluster, result_abs )
+            else:
+                list_results_abs.append( (cluster, result_abs) )
+
+        if cluster_max_results is not None:
+            list_results_abs.append( cluster_max_results )            
+
+
+        # 2 Determination of relative result values according to the required scope
+        for result_abs in list_results_abs:
+            try:
+                result_rel = result_abs[1] / sum_results
+            except:
+                result_rel = 0
+
+            list_results_rel.append( ( result_abs[0].id, result_rel, result_abs[0] ) )
+
+        return list_results_rel
+
+    
+## -------------------------------------------------------------------------------------------------
     def get_cluster_memberships( self, 
                                  p_inst : Instance,
-                                 p_scope : int = C_MS_SCOPE_MAX ) -> List[MembershipItem]:
+                                 p_scope : int = C_RESULT_SCOPE_MAX ) -> List[ResultItem]:
         """
-        Method to determine the membership of the given instance to each cluster as a value in 
-        percent. 
+        Method to determine the relative membership of the given instance to each cluster as a value 
+        in [0,1]. 
+        
+        See also: method Cluster.get_membership().
 
         Parameters
         ----------
         p_inst : Instance
             Instance to be evaluated.
         p_scope : int
-            Scope of the result list. See class attributes C_MS_SCOPE_* for possible values. Default
-            value is C_MS_SCOPE_MAX.
+            Scope of the result list. See class attributes C_RESULT_SCOPE_* for possible values. Default
+            value is C_RESULT_SCOPE_MAX.
 
         Returns
         -------
-        membership : List[MembershipItem]
-            List of membership items which are tuples of a cluster id, a relative membership 
-            value in [0,1] and a reference to the cluster object.
+        List[ResultItem]
+            List of membership items which are tuples of a cluster id, a relative membership value 
+            in [0,1], and a reference to the cluster object.
         """
 
-        # 1 Determination of membership values of the instance for all clusters
-        sum_ms          = 0
-        list_ms_abs     = []
-        cluster_max_ms  = None
-
-        for cluster in self.get_clusters().values():
-
-            ms_abs  = cluster.get_membership( p_inst = p_inst )
-            sum_ms += ms_abs
-
-            if ( p_scope != self.C_MS_SCOPE_ALL ) and ( ms_abs == 0 ): continue
-
-            if p_scope == self.C_MS_SCOPE_MAX:
-                # Cluster with highest membership value is buffered
-                if ( cluster_max_ms is None ) or ( ms_abs > cluster_max_ms[1] ):
-                    cluster_max_ms = ( cluster, ms_abs )
-
-            else:
-                list_ms_abs.append( (cluster, ms_abs) )
-
-        if sum_ms == 0: return []
-
-        if cluster_max_ms is not None:
-            list_ms_abs.append( cluster_max_ms )            
-
-
-        # 2 Determination of relative membership values according to the required scope
-        list_ms_rel = []
-
-        for ms_abs in list_ms_abs:
-            ms_rel = ms_abs[1] / sum_ms
-            list_ms_rel.append( ( ms_abs[0].get_id(), ms_rel, ms_abs[0] ) )
-
-        return list_ms_rel
+        return self._get_cluster_relations( p_relation_type = 0,
+                                            p_inst = p_inst,
+                                            p_scope = p_scope )
     
 
+## -------------------------------------------------------------------------------------------------
+    def get_cluster_influences( self, 
+                                p_inst : Instance,
+                                p_scope : int = C_RESULT_SCOPE_MAX ) -> List[ResultItem]:
+        """
+        Method to determine the relative influence of the given instance to each cluster as a value 
+        in [0,1]. 
+        
+        See also: method Cluster.get_influence().
+
+        Parameters
+        ----------
+        p_inst : Instance
+            Instance to be evaluated.
+        p_scope : int
+            Scope of the result list. See class attributes C_RESULT_SCOPE_* for possible values. Default
+            value is C_RESULT_SCOPE_MAX.
+
+        Returns
+        -------
+        List[ResultItem]
+            List of influence items which are tuples of a cluster id, a relative influence value in 
+            [0,1], and a reference to the cluster object.
+        """
+
+        return self._get_cluster_relations( p_relation_type = 1,
+                                            p_inst = p_inst,
+                                            p_scope = p_scope )
+
+        
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
 
