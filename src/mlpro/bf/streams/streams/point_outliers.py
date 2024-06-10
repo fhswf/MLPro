@@ -9,10 +9,11 @@
 ## -- 2024-02-06  1.0.0     DA       First Release
 ## -- 2024-04-26  1.1.0     DA       Refactoring: replaced parameter p_outlier_frequency by
 ## --                                p_outlier_rate
+## -- 2024-06-04  1.1.1     DA       Bugfix: ESpace instead of MSpace
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-26)
+Ver. 1.1.1 (2024-06-04)
 
 This module provides a multivariate benchmark stream with configurable baselines per feature and
 additional random point outliers.
@@ -83,7 +84,7 @@ class StreamMLProPOutliers (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
-        feature_space : MSpace = MSpace()
+        feature_space : MSpace = ESpace()
 
         for i, fct in enumerate(self._functions):
             feature_space.add_dim( Feature( p_name_short = 'f_' + str(i) + fct,

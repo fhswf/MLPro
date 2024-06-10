@@ -28,10 +28,13 @@
 ## --                                Global aliases:
 ## --                                - new alias ValuePrev
 ## --                                - extension of PropertyDefinition by ValuePrev
+## -- 2024-05-31  1.0.0     DA       New class MultiProperty
+## -- 2024-06-03  1.0.1     DA       Method Properties.update_plot(): changed order of plotting
+## -- 2024-06-05  1.1.0     DA       New method Properties.replace_property()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2024-05-30)
+Ver. 1.1.0 (2024-06-05)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -343,6 +346,12 @@ class Properties (Plottable, Renormalizable):
         """
 
         return self._properties
+    
+
+## -------------------------------------------------------------------------------------------------
+    def replace_property(self, p_property : Property ):
+        setattr(self, p_property.name, p_property)
+        self._properties[p_property.name] = p_property
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -362,7 +371,7 @@ class Properties (Plottable, Renormalizable):
         Plottable.init_plot(self, p_figure = p_figure, p_plot_settings = p_plot_settings )
 
         for prop in self.get_properties().values():
-            prop.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings)
+            prop.init_plot( p_figure = self._figure, p_plot_settings = p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -370,10 +379,10 @@ class Properties (Plottable, Renormalizable):
 
         if not self.get_visualization(): return
 
-        Plottable.update_plot(self, **p_kwargs )
-
         for prop in self.get_properties().values():
             prop.update_plot(**p_kwargs)
+
+        Plottable.update_plot(self, **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -392,3 +401,29 @@ class Properties (Plottable, Renormalizable):
 
         for prop in self.get_properties().values():
             prop.renormalize( p_normalizer = p_normalizer )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiProperty (Property, Properties):
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name : str,
+                  p_derivative_order_max: int = 0, 
+                  p_value_prev : ValuePrev = False,
+                  p_properties : PropertyDefinitions = [],
+                  p_visualize: bool = False ):
+        
+        Property.__init__( self, 
+                           p_name,
+                           p_derivative_order_max = p_derivative_order_max, 
+                           p_value_prev = p_value_prev,
+                           p_visualize = p_visualize )
+        
+        Properties.__init__( self,
+                             p_properties = p_properties,
+                             p_visualize = p_visualize )

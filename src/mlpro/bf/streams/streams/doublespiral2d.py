@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-14  0.0.0     DA       Creation 
 ## -- 2022-12-14  1.0.0     DA       First implementation
+## -- 2024-06-04  1.0.1     DA       Bugfix: ESpace instead of MSpace
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-14)
+Ver. 1.0.1 (2024-06-04)
 
 This module provides the native stream class DoubleSpiral2D. It provides 721 instances with 
 2-dimensional feature data that follow a double spiral pattern.
@@ -41,7 +42,7 @@ class DoubleSpiral2D (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
-        feature_space : MSpace = MSpace()
+        feature_space : MSpace = ESpace()
 
         for i in range(2):
             feature_space.add_dim( Feature( p_name_short = 'f' + str(i),

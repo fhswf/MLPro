@@ -15,21 +15,24 @@
 ## -- 2024-05-24  1.4.2     DA       Bugfix in method _update_plot_2d()
 ## -- 2024-05-29  1.5.0     DA       Cleaned the code and completed the documentation
 ## -- 2024-05-30  1.6.0     DA       Global aliases: new boolean param ValuePrev
+## -- 2024-05-31  1.7.0     DA       New global aliases cprop_center_geo*
+## -- 2024-05-31  1.7.1     DA       Improved the stability of the plot methods
+## -- 2024-06-03  1.8.0     DA       Class Point: new attributes color, marker
+## -- 2024-06-05  1.8.1     DA       Bugfix in Point._remove_plot_2d()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2024-05-30)
+Ver. 1.8.1 (2024-06-05)
 
-This module provides class for geometric objects like points, etc.
+This module provides a property class for the geometric shape 'point'.
 
 """ 
 
 
 from matplotlib.figure import Figure
-from mlpro.bf.plot import *
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.bf.plot import PlotSettings
 
 
 
@@ -42,8 +45,12 @@ class Point (Property):
 
     Attributes
     ----------
-    values
+    value
         Current point coordinates
+    color : str
+        Plot color.
+    marker : str
+        Plot marker.
     """
 
     C_PLOT_ACTIVE       = True
@@ -51,15 +58,22 @@ class Point (Property):
     C_PLOT_VALID_VIEWS  = [PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND]
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
+    C_PLOT_COLOR        = 'red'
+    C_PLOT_MARKER       = '+'
+
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
         self._plot_pos = None
         self._plot_vel = None
+        self.color     = self.C_PLOT_COLOR
+        self.marker    = self.C_PLOT_MARKER
         super().init_plot(p_figure, p_plot_settings, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+
+        if self.value is None: return
 
         point_pos = self.value
 
@@ -68,8 +82,8 @@ class Point (Property):
 
         self._plot_pos,  = p_settings.axes.plot( point_pos[0], 
                                                  point_pos[1], 
-                                                 marker='+', 
-                                                 color='red', 
+                                                 marker=self.marker, 
+                                                 color=self.color, 
                                                  linestyle='',
                                                  markersize=3 )
             
@@ -86,11 +100,13 @@ class Point (Property):
                                                      point_pos[1], 
                                                      point_vel[0], 
                                                      point_vel[1],
-                                                     color='red' )
+                                                     color=self.color )
                                                           
                                                          
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+
+        if self.value is None: return
 
         point_pos = self.value
 
@@ -100,8 +116,8 @@ class Point (Property):
         self._plot_pos,  = p_settings.axes.plot( point_pos[0], 
                                                  point_pos[1], 
                                                  point_pos[2],
-                                                 marker='+', 
-                                                 color='red',  
+                                                 marker=self.marker, 
+                                                 color=self.color,  
                                                  linestyle='',
                                                  markersize=3 )
             
@@ -124,28 +140,37 @@ class Point (Property):
                                                       np.array([point_vel[2]]),
                                                       length = len,
                                                       normalize = True,
-                                                      color='red' )
+                                                      color=self.color )
     
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+#        if self.value is none: return
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
-        if self._plot_pos is not None: 
-            self._plot_pos.remove()
-            self._plot_pos = None
+        if self._plot_pos is None: return
+        
+        self._plot_pos.remove()
+        self._plot_pos = None
 
-            if self._plot_vel is not None:
-                self._plot_vel.remove()
-                self._plot_vel = None
+        if self._plot_vel is not None:
+            self._plot_vel.remove()
+            self._plot_vel = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_3d(self):
-        self._remove_plot_2d()
+        if self._plot_pos is None: return
+        
+        self._plot_pos.remove()
+        self._plot_pos = None
+
+        if self._plot_vel is not None:
+            self._plot_vel.remove()
+            self._plot_vel = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -167,3 +192,8 @@ class Point (Property):
 cprop_point  : PropertyDefinition = ( 'point', 0, False, Point )
 cprop_point1 : PropertyDefinition = ( 'point', 1, False, Point )
 cprop_point2 : PropertyDefinition = ( 'point', 2, False, Point )
+
+
+cprop_center_geo  : PropertyDefinition = ( 'center_geo', 0, False, Point )
+cprop_center_geo1 : PropertyDefinition = ( 'center_geo', 1, False, Point )
+cprop_center_geo2 : PropertyDefinition = ( 'center_geo', 2, False, Point )
