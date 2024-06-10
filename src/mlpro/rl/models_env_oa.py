@@ -9,10 +9,11 @@
 ## -- 2023-05-31  0.1.0     LSB      Visulization
 ## -- 2023-05-31  0.1.1     LSB      Cleaning
 ## -- 2023-05-31  0.1.2     LSB      Visualization fixed
+## -- 2023-06-10  0.1.3     LSB      Fixed for refactoring on stream processing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.2 (2023-05-31)
+Ver. 0.1.3 (2023-06-10)
 
 This module provides model classes for adaptive environments
 """
@@ -155,7 +156,7 @@ class OAFctReward(FctReward, Model):
             inst_new = [self._state_obj_new]
 
         # 3. Run the workflow
-        self._wf_reward.run(p_inst = dict(zip([inst.get_id() for inst in inst_new], [(1,inst) for inst in inst_new])))
+        self._wf_reward.run(p_inst = dict(zip([inst.get_id() for inst in inst_new], [(InstTypeNew,inst) for inst in inst_new])))
 
         # 4. Return the results
         return self._wf_reward.get_so().get_results()[self.get_tid()]
@@ -205,8 +206,11 @@ class OAFctReward(FctReward, Model):
             List of old instances to be processed by the workflow.
 
         """
-        instances =  list[sorted(p_inst.values())]
-
+        ids = sorted(p_inst.keys())
+        if len(ids) > 1:
+            instances =  [p_inst[ids[0]][1], p_inst[ids[1]][1]]
+        else:
+            instances = [p_inst[ids[0]][1]]
         if len(instances) == 2 :
             state_new = instances[1]
             self._inst_old = instances[0]
