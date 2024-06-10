@@ -43,8 +43,6 @@ Ver. 1.2.0 (2024-06-08)
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
-#from typing import List, Tuple
-
 import sys
 
 from mlpro.bf.streams import Instance
@@ -112,7 +110,7 @@ class ClusterCentroid (Cluster):
         if self._centroid_elem is None:
             self._centroid_elem = Element( p_set=feature_data.get_related_set() )
 
-        self._centroid_elem.set_values( p_value=self.centroid.value )
+        self._centroid_elem.set_values( p_values=self.centroid.value )
 
         try:
             return 1 / feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid_elem )

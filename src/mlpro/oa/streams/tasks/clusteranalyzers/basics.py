@@ -293,6 +293,7 @@ class ClusterAnalyzer (OATask):
         # 1 Determination of membership values of the instance for all clusters
         sum_results         = 0
         list_results_abs    = []
+        list_results_rel    = []
         cluster_max_results = None
 
         for cluster in self.get_clusters().values():
@@ -304,27 +305,26 @@ class ClusterAnalyzer (OATask):
 
             sum_results += result_abs
 
-            if ( p_scope != self.C_RESULT_SCOPE_ALL ) and ( result_abs == 0 ): continue
+            if ( p_scope == self.C_RESULT_SCOPE_NONZERO ) and ( result_abs == 0 ): continue
 
             if p_scope == self.C_RESULT_SCOPE_MAX:
                 # Cluster with highest membership value is buffered
                 if ( cluster_max_results is None ) or ( result_abs > cluster_max_result[1] ):
-                    cluster_max_result = ( cluster, result_abs )
-
+                    cluster_max_results = ( cluster, result_abs )
             else:
                 list_results_abs.append( (cluster, result_abs) )
-
-        if sum_results == 0: return []
 
         if cluster_max_results is not None:
             list_results_abs.append( cluster_max_results )            
 
 
         # 2 Determination of relative result values according to the required scope
-        list_results_rel = []
+        for result_abs in list_results_abs:
+            try:
+                result_rel = result_abs[1] / sum_results
+            except:
+                result_rel = 0
 
-        for result_abs in list_result_abs:
-            result_rel = result_abs[1] / sum_results
             list_results_rel.append( ( result_abs[0].id, result_rel, result_abs[0] ) )
 
         return list_results_rel
