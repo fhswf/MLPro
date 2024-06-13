@@ -1381,6 +1381,7 @@ class StreamTask (Task):
 
             if inst_type == InstTypeNew:
                 self._plot_inst_ids.append(inst_id)
+                # Handling if the tstamps are timedeltas
                 try:
                     self._plot_nd_xdata.append(inst.tstamp.total_seconds())
                 except:
@@ -1432,6 +1433,7 @@ class StreamTask (Task):
             xlim_id = 0
 
         if isinstance(self._plot_nd_xdata[xlim_id], timedelta):
+            # Handling if the tstamps are timedeltas
             try:
                 p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id].total_seconds(), self._plot_nd_xdata[-1].total_seconds())
             except:
