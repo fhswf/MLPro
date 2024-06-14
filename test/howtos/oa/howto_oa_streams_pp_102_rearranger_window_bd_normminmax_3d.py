@@ -11,10 +11,11 @@
 ## -- 2023-01-09  1.1.0     DA       User input of cycles and visualization step rate
 ## -- 2023-04-10  1.2.0     DA       Refactoring after changes on class OAScenario
 ## -- 2023-05-20  1.2.1     DA       Registered handler of boundary detector to window
+## -- 2024-06-13  1.2.2     LSB      Bug Fix: p_visualize in BD initialization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-05-20)
+Ver. 1.2.2 (2024-06-13)
 
 This module is an example of adaptive normalization of streaming data using MinMax normalizer. To 
 this regard, an online-adadptive custom scenario is set up. It combines a native 10-dimensional 
@@ -95,7 +96,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2.2.3 Boundary detector 
         task_bd = BoundaryDetector( p_name='T3 - Boundary Detector', 
                                     p_ada=True, 
-                                    p_visualize=True,   
+                                    p_visualize=p_visualize,
                                     p_logging=p_logging )
 
         task_window.register_event_handler( p_event_id=RingBuffer.C_EVENT_DATA_REMOVED, p_event_handler=task_bd.adapt_on_event )
