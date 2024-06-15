@@ -10,19 +10,18 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-05-28  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.2.1 (2024-05-28)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides cluster disappearance detector algorithm.
 """
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.disappearance import ClusterDisappearance
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
@@ -43,6 +42,8 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
+                 p_age_threshold : int = None,
+                 p_size_threshold : int = None,
                  p_threshold : float = 0.1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
@@ -61,6 +62,16 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
 
+        self._current_clusters = {}
+        self._age_thresh = p_age_threshold
+        self._size_thresh = p_size_threshold
+
+        if self._age_thresh != None:
+            self.C_PROPERTIY_DEFINITIONS.append(['age', 0, Property])
+
+        if self._size_thresh != None:
+            self.C_PROPERTIY_DEFINITIONS.append(['size', 0, Property])
+
         for x in self.C_PROPERTIY_DEFINITIONS:
             if x not in self.C_REQ_CLUSTER_PROPERTIES:
                 self.C_REQ_CLUSTER_PROPERTIES.append(x)
@@ -70,43 +81,40 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
         if len(unknown_prop) >0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
+        self._current_clusters = {}
 
-        self.previous_centroids = []
-        self.distance_threshold = p_threshold
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict, center: float, centroids: list):
         
+
+        inst = []
+
+        for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
+            inst = inst_1
+
         clusters = self._clusterer.get_clusters()
-        if len(clusters) < self._num_clusters:
-            print((self._num_clusters-len(clusters)), "clusters disappeared")
-            event = ClusterDisappearance()
-        self._num_clusters = len(clusters)
 
-        centroids = [tuple(centroid) for centroid in centroids]
+        missing_clusters = {}
 
-        # Calculate distances between old and new centroids
-        distance_matrix = cdist(self.previous_centroids, centroids)
+        if len(clusters) < len(self._current_clusters):
+            
+            for x in self._current_clusters:
+                if x not in clusters:
+                    missing_clusters[x] = self._current_clusters[x]
 
-        # Find which centroids are considered the same (below distance threshold)
-        matched_old = set()
-        matched_new = set()
-        for i, row in enumerate(distance_matrix):
-            for j, distance in enumerate(row):
-                if distance <= self.distance_threshold:
-                    matched_old.add(i)
-                    matched_new.add(j)
+        if self._age_thresh != None:
+            for x in clusters.keys():
+                if clusters[x].age.value <= self._age_thresh:
+                    missing_clusters[x] = clusters[x]
 
-        merged_clusters = []
-        disappeared_clusters = [self.previous_centroids[i] for i in range(len(self.previous_centroids)) if i not in matched_old]
+        if self._size_thresh != None:
+            for x in clusters.keys():
+                if clusters[x].age.value <= self._size_thresh:
+                    missing_clusters[x] = clusters[x]
 
-        for j in matched_new:
-            if list(distance_matrix[:, j]).count(min(distance_matrix[:, j])) > 1:
-                merged_clusters.append(centroids[j])
+        event = ClusterDisappearance(p_id = self._get_next_anomaly_id,
+                                     p_instances=[inst],
+                                     p_clusters=missing_clusters)
 
-        self.previous_centroids = centroids
-        return {
-            "merged_clusters": merged_clusters,
-            "disappeared_clusters": disappeared_clusters
-        }
-
+        self._current_clusters = clusters

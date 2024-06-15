@@ -10,12 +10,11 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-05-28  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.2.1 (2024-05-28)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -65,18 +64,6 @@ class AnomalyDetectorCB(AnomalyDetector, Properties):
                          **p_kwargs)
         
         self._clusterer = p_clusterer
-        """self._cluster_ids = []
-        self._num_clusters = 0
-        self._ref_centroids = {}
-        self._centroids = {}
-        self._ref_spacial_sizes = {}
-        self._spacial_sizes = {}
-        self._ref_velocities = {}
-        self._velocities = {}
-        self._ref_weights = {}
-        self._weights = {}
-        self._rel_weights = {}
-        self._ref_rel_weights = {}"""
 
 
 ## -------------------------------------------------------------------------------------------------

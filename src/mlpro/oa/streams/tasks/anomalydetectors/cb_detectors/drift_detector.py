@@ -10,19 +10,18 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-05-28  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.2.1 (2024-05-28)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.drift import ClusterDrift
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 import numpy as np
@@ -43,6 +42,9 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
+                 p_velocity_threshold : float = 0.1,
+                 p_acceleration_threshold : float = 0.1,
+                 p_step_rate = 1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -66,29 +68,48 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
+        if len(unknown_prop) > 0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
+        self._cluster_centroids = {}
+        self._vel_thresh = p_velocity_threshold
+        self._acc_thresh = p_acceleration_threshold
+        self._cluster_vel_thresh = []
+        self._cluster_acc_thresh = []
+        self._step_rate = p_step_rate
+        self._count = 0
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict, centroids: list):
-        # Fit the model with new data to update cluster centroids
-        self.model.partial_fit()
-        current_centroids = self.model.cluster_centers_
+    def _run(self, p_inst : InstDict):
 
-        # Calculate the velocity of each cluster
-        velocities = np.linalg.norm(current_centroids - self.prev_centroids, axis=1)
+        if (self._count == 0 ) or (self._count % self._step_rate == 0):
 
-        # Update previous centroids for the next iteration
-        self.prev_centroids = current_centroids
+            inst = []
 
-        # Check for significant changes in cluster velocities
-        mean_velocity = np.mean(velocities)
-        max_velocity = np.max(velocities)
-        velocity_threshold = 0.1  # Adjust this threshold as needed
+            for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
+                inst = inst_1
 
-        if max_velocity > velocity_threshold:
-            return True, mean_velocity, max_velocity
-        else:
-            return False, mean_velocity, max_velocity
+            clusters = self._clusterer.get_clusters()
+
+            drifting_clusters = {}
+
+            for id in clusters.keys():
+                if id not in self._cluster_centroids.keys():
+                    self._cluster_centroids[id] = clusters[id].center_geo.value
+                vel_thresh = []
+                for x in range(len(clusters[id].center_geo.value)):
+                    vel_thresh = max(clusters[id].center_geo.value[x], self._cluster_centroids[id][x])*self._vel_thresh
+                    #acc_thresh = max(clusters[id].center_geo.value[x], self._cluster_centroids[id][x])*self._vel_thresh
+
+                    if vel_thresh <= clusters[id].center_geo.value[x].velocity:
+                        drifting_clusters[id] = clusters[id]
+                        break
+
+            event = ClusterDrift(p_id = self._get_next_anomaly_id,
+                                 p_instances=[inst],
+                                 p_clusters=drifting_clusters)
+            
+        self._count += 1
+            
+
 

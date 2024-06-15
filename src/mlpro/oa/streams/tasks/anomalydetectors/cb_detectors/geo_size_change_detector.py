@@ -10,12 +10,11 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-05-28  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.2.1 (2024-05-28)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -39,14 +38,14 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
 
     """
     
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['size', 2, Property]]
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['geo_size', 1, Property]]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
                  p_threshold_upper_limit : float = None,
                  p_threshold_lower_limit : float = None,
-                 p_threshold_detection : float = None,
+                 p_threshold_detection : float = 0.1,
                  p_threshold_rate_of_change : float = None,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
@@ -79,40 +78,45 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         self._thresh_det = p_threshold_detection
         self._thresh_roc = p_threshold_rate_of_change
 
+        self._prev_geo_sizes = {}
+        self._geo_size_thresh = {}
+
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict, centroids: list):
 
-        inst = p_inst[-1].get_feature_data()
-        feature_values = inst.get_values()
+        inst = []
 
-        cluster_id = 1
+        for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
+            inst = inst_1
+        
+        clusters = self._clusterer.get_clusters()
 
-        if cluster_id not in self._cluster_ids:
-            self._cluster_ids.append(cluster_id)
+        affected_clusters = {}
 
-        if cluster_id not in self._ref_centroids.keys():
-            self._ref_centroids[cluster_id] = self._clusterer.get_clusters()[cluster_id]
-            self._centroids[cluster_id] = self._ref_centroids[cluster_id]
-            center = self._centroids[cluster_id]
-            self._ref_spacial_sizes[cluster_id] =  np.linalg.norm(feature_values - center)
-            self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
+        if self._thresh_ul != None:
+            for x in clusters.keys():
+                if clusters[x].geo_size.value <= self._thresh_ul:
+                    affected_clusters[x] = clusters[x]
+        if self._thresh_ll != None:
+            for x in clusters.keys():
+                if clusters[x].geo_size.value <= self._thresh_ul:
+                    affected_clusters[x] = clusters[x]
 
-        else:
-            center = self._centroids[cluster_id]
-            distance = np.linalg.norm(feature_values - center)
-            if self._threshold != None:
-                if (distance-self._ref_spacial_sizes[cluster_id]) > self._threshold:
-                    self._ref_spacial_sizes[cluster_id] = distance
-                    self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
-                    event = ClusterEnlargement(p_instances=p_inst)
-                else:
-                    self._spacial_sizes[cluster_id] = distance
-            else:
-                if (distance-self._ref_spacial_sizes[cluster_id]) > self._ref_spacial_sizes[cluster_id]*0.05:
-                    self._ref_spacial_sizes[cluster_id] = distance
-                    self._spacial_sizes[cluster_id] = self._ref_spacial_sizes[cluster_id]
-                    event = ClusterEnlargement(p_instances=p_inst)
-                else:
-                    self._spacial_sizes[cluster_id] = distance
-
+        for x in clusters.keys():
+            if x not in self._prev_geo_sizes.keys():
+                self._prev_geo_sizes[x] = clusters[x].geo_size.value
+                self._geo_size_thresh[x] = clusters[x].geo_size.value * self._thresh_det
+            
+            if (self._prev_geo_sizes[x]-clusters[x].geo_size.value) >= self._geo_size_thresh[x]:
+                event = ClusterShrinkage(p_id = self._get_next_anomaly_id,
+                                         p_instances=[inst],
+                                         p_clusters=affected_clusters)
+                self._prev_geo_sizes[x] = clusters[x].geo_size.value
+                self._geo_size_thresh[x] = clusters[x].geo_size.value * self._thresh_det
+            elif (clusters[x].geo_size.value-self._prev_geo_sizes[x]) >= self._geo_size_thresh[x]:
+                event = ClusterEnlargement(p_id = self._get_next_anomaly_id,
+                                         p_instances=[inst],
+                                         p_clusters=affected_clusters)  
+                self._prev_geo_sizes[x] = clusters[x].geo_size.value
+                self._geo_size_thresh[x] = clusters[x].geo_size.value * self._thresh_det  

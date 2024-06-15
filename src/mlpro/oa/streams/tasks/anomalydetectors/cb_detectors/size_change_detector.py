@@ -10,19 +10,18 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-05-28  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.2.1 (2024-05-28)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.size import ClusterSizeVariation
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
@@ -43,7 +42,8 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_threshold : int = 1000,
+                 p_upper_limit : int = 1000,
+                 p_lower_limit : int = 100,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -71,20 +71,28 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
         
-        self._threshold = p_threshold
+        self._upper_thresh = p_upper_limit
+        self._lower_thresh = p_lower_limit
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
+
+        inst = []
+
+        for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
+            inst = inst_1
         
         clusters = self._clusterer.get_clusters()
 
-        ano_scores = []
-        
+        affected_clusters = {}
         for x in clusters.keys():
-            self._weights[x] = len(clusters[x])
-            if self._weights > self._threshold:
-                ano_scores.append(-1)
-            else:
-                ano_scores.append(0)
+        
+            if clusters[x].size.value < self._lower_thresh:
+                affected_clusters[x] = clusters[x]
+            if clusters[x].size.value > self._upper_thresh:
+                affected_clusters[x] = clusters[x]
 
+        event = ClusterSizeVariation(p_id = self._get_next_anomaly_id,
+                                     p_instances=[inst],
+                                     p_clusters=affected_clusters)

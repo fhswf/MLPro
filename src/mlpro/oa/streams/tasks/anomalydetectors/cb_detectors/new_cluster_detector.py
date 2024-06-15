@@ -10,19 +10,18 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-05-28  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.2.1 (2024-05-28)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides new cluster detector algorithm.
 """
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.new_cluster import NewClusterAppearance
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
@@ -37,7 +36,7 @@ class NewClusterDetector(AnomalyDetectorCB):
     This is the class for detecting new clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['centroid', 2, Property]]
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = []
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -65,24 +64,31 @@ class NewClusterDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
+        if len(unknown_prop) > 0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
-        self._previous_clusters = {}
+        self._current_clusters = {}
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict, centroids: list):
-        
+    def _run(self, p_inst : InstDict):
+
+        inst = []
+
+        for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
+            inst = inst_1
+
         clusters = self._clusterer.get_clusters()
-        if len(clusters) > len(self._previous_clusters):
-            print((len(clusters)-self._num_clusters), "New clusters appeared.")
+        if len(clusters) > len(self._current_clusters):
             new_clusters = {}
             for x in clusters:
-                if x not in self._previous_clusters:
+                if x not in self._current_clusters:
                     new_clusters[x] = clusters[x]
-            event = NewClusterAppearance(new_clusters)
-        self._num_clusters = len(clusters)
+            event = NewClusterAppearance(p_id = self._get_next_anomaly_id,
+                                         p_instances=[inst],
+                                         p_clusters=new_clusters)
+            
+        self._current_clusters = clusters
 
         """centroids = [tuple(centroid) for centroid in centroids]
         if not self._previous_centroids:
