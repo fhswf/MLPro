@@ -49,7 +49,7 @@ class StreamMLProRnd10D (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
-        feature_space : MSpace = MSpace()
+        feature_space : MSpace = ESpace()
 
         for i in range(10):
             feature_space.add_dim( Feature( p_name_short = 'f' + str(i),
