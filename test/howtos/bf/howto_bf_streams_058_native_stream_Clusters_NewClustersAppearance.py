@@ -1,14 +1,14 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_005_native_stream_ClusterbasedAnomalies.py
+## -- Module  : howto_bf_streams_058_native_stream_Clusters_NewClustersAppearance.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-04  1.0.0     SK       Creation/First implementation
+## -- 2024-06-17  1.0.0     SK       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-04)
+Ver. 1.0.0 (2024-06-17)
 
 This module demonstrates and visualizes the native stream ClusterbasedAnomalies which generates a
 specified number of n-dimensional instances placed around specified number of centers, resulting in
@@ -46,21 +46,17 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Import a native stream from MLPro
-        stream = StreamMLProClusterGenerator(p_num_dim=2,
-                                                  p_num_instances=1000,
-                                                  p_num_clusters=4,
-                                                  p_radii=[100],
-                                                  p_velocities=[0.0, 0.0, 0.0, 0.0],
-                                                  p_weights=[1],
-                                                  p_change_in_radii=True,
-                                                  p_rate_of_change_of_radius=0.001,
-                                                  p_change_in_velocities=False,
-                                                  p_change_in_weights=False,
-                                                  p_disappearance_of_clusters=False,
-                                                  p_appearance_of_clusters=False,
-                                                  p_points_of_appearance_of_clusters=None,
-                                                  p_visualize = p_visualize,
-                                                  p_logging=p_logging)
+        stream = StreamMLProClusterGenerator(p_num_dim= 2,
+                                             p_num_instances= 2000,
+                                             p_num_clusters= 3,
+                                             p_radii= [100],
+                                             p_distribution_bias= [1, 2, 1, 1],
+                                             p_appearance_of_clusters= True,
+                                             p_points_of_appearance_of_clusters= [400, 200],
+                                             p_num_new_clusters_to_appear= 2,
+                                             p_visualize= p_visualize,
+                                             p_seed= 2,
+                                             p_logging= p_logging)
 
 
         # 2 Set up a stream workflow
@@ -80,7 +76,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 1000
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 2

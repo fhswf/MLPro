@@ -56,7 +56,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
     p_velocities : list
         Velocity of the clusters in unit 1/instance. Default = 0.0.
     p_distribution_bias : list[]
-        List of integer distribution_biass per cluster. For example, a list [1,2] causes the first cluster 
+        List of integer distribution_bias. For example, a list [1,2] causes the first cluster 
         to be flooded with two times more instances than the second one. If empty , all clusters 
         are flooded equally.
     p_change_radii : bool
@@ -73,6 +73,8 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         Instances at which change of velocities occur. Default = None.
     p_num_clusters_for_change_velocities : list
         The number of clusters for which the velocity changes. Default = None.
+    p_changed_velocities : list
+        The changed value of velocities. Default = None.
     p_change_distribution_bias : bool
         If there are changes in distribution_biass of clusters. Default = False.
     p_points_of_change_distribution_bias : list
@@ -83,6 +85,8 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         If new clusters appear. Default = False.
     p_points_of_appearance_of_clusters : list
         Instances at which new clusters appears. Deafult = None.
+    p_num_new_clusters_to_appear : int
+        The number of clusters to appear. Default = None.
     p_disappearance_of_clusters : bool
         If clusters disappears. Default = False.
     p_points_of_disappearance_of_clusters : list
@@ -125,20 +129,31 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                   p_change_velocities : bool = False,
                   p_points_of_change_velocities : list = None,
                   p_num_clusters_for_change_velocities : int = None,
+                  p_changed_velocities : list = None,
                   p_change_distribution_bias : bool = False,
                   p_points_of_change_distribution_bias : list = None,
                   p_num_clusters_for_change_distribution_bias : int = None,
                   p_appearance_of_clusters : bool = False,
                   p_points_of_appearance_of_clusters : list = None,
+                  p_num_new_clusters_to_appear : int = None,
                   p_disappearance_of_clusters : bool = False,
                   p_points_of_disappearance_of_clusters : list = None,
                   p_num_clusters_to_disappear : int = None,
-                  p_split_and_merge_of_clusters : bool = False,
-                  p_num_clusters_for_split_and_merge : int = 2,
+                  p_clusters_split_and_merge : bool = False,
+                  p_clusters_split : bool = False,
+                  p_points_of_split : list = None,
+                  p_velocities_after_split : list = None,
+                  p_num_clusters_to_split_into: int = 2,
                   p_max_clusters_affected : float = 0.75,
                   p_seed = None,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
+        
+        if p_seed is not None:
+            self.set_random_seed(p_seed=p_seed)
+        else:
+            random.seed()
+            np.random.seed()
         
         # Initialize parameters        
         self._num_dim               = p_num_dim
@@ -151,38 +166,66 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         self._current_cluster       = 1
         self._cycle                 = 1
         self.C_NUM_INSTANCES        = p_num_instances
-        self._change_in_radius      = self._change_in_property(p_change_radii,
-                                                               p_points_of_change_radii,
-                                                               p_num_clusters_for_change_radii)
+        self._change_in_radius      = self._change_in_property(change=p_change_radii,
+                                                               point_of_change=p_points_of_change_radii,
+                                                               num_clusters_affected=p_num_clusters_for_change_radii)
         self._roco_radius           = p_rate_of_change_of_radius
-        self._change_in_velocity    = self._change_in_property(p_change_velocities,
-                                                               p_points_of_change_velocities,
-                                                               p_num_clusters_for_change_velocities)
-        self._change_in_distribution_bias= self._change_in_property(p_change_distribution_bias,
-                                                               p_points_of_change_distribution_bias,
-                                                               p_num_clusters_for_change_distribution_bias)
-        self._new_cluster           = self._change_in_property(p_appearance_of_clusters,
-                                                               p_points_of_appearance_of_clusters)
-        self._remove_cluster        = self._change_in_property(p_disappearance_of_clusters,
-                                                               p_points_of_disappearance_of_clusters,
-                                                               p_num_clusters_to_disappear)
-        self._split_and_merge_of_clusters = p_split_and_merge_of_clusters
-        self._num_clusters_for_split_and_merge = p_num_clusters_for_split_and_merge
+        self._change_in_velocity    = self._change_in_property(change=p_change_velocities,
+                                                               point_of_change=p_points_of_change_velocities,
+                                                               num_clusters_affected=p_num_clusters_for_change_velocities,
+                                                               changed_values=p_changed_velocities)
+        self._change_in_distribution_bias= self._change_in_property(change=p_change_distribution_bias,
+                                                               point_of_change=p_points_of_change_distribution_bias,
+                                                               num_clusters_affected=p_num_clusters_for_change_distribution_bias)
+        self._new_cluster           = self._change_in_property(change=p_appearance_of_clusters,
+                                                               point_of_change=p_points_of_appearance_of_clusters,
+                                                               num_clusters_affected=p_num_new_clusters_to_appear)
+        self._remove_cluster        = self._change_in_property(change=p_disappearance_of_clusters,
+                                                               point_of_change=p_points_of_disappearance_of_clusters,
+                                                               num_clusters_affected=p_num_clusters_to_disappear)
+        if p_clusters_split:
+            self._split_and_merge_of_clusters= self._change_in_property(change=p_clusters_split,
+                                                                        point_of_change=p_points_of_split,
+                                                                        num_clusters_affected=p_num_clusters_to_split_into)
+        else:
+            self._split_and_merge_of_clusters= self._change_in_property(change=p_clusters_split_and_merge,
+                                                                        point_of_change=p_points_of_split,
+                                                                        num_clusters_affected=p_num_clusters_to_split_into)
+        self._split_of_clusters = p_clusters_split
+
+        if self._split_and_merge_of_clusters:
+            self._split_and_merge_of_clusters["start"] = self._split_and_merge_of_clusters["start"][:1]
+            self._split_and_merge_of_clusters["end"] = [self.C_NUM_INSTANCES*0.8]
+            self._velocities_split = []
+            self._center_split = []
+            if p_velocities_after_split:
+                if len(p_velocities_after_split) == 1:
+                    self._velocities_split = p_num_clusters_to_split_into*p_num_clusters_to_split_into
+                elif len(p_velocities_after_split) < p_num_clusters_to_split_into:
+                    self._velocities_split = p_velocities_after_split.extend([p_velocities_after_split[0]] *
+                                                    (p_num_clusters_to_split_into-len(p_velocities_after_split)))
+                else:
+                    self._velocities_split = p_velocities_after_split[:p_num_clusters_to_split_into]
+
+            else:
+                for x in range(p_num_clusters_to_split_into):
+                    if max(self._velocities)==0 and min(self._velocities)==0:
+                        self._velocities_split.append(random.random())
+                    else:
+                        a = random.randint(0,1)
+                        if a == 0:
+                            self._velocities_split.append(max(self._velocities)*random.random())
+                        else:
+                            self._velocities_split.append(max(self._velocities)*(1+random.random()))
+        
         self._max_clusters_affected = p_max_clusters_affected
 
         self._outlier_appearance = p_outlier_appearance
         self._outlier_rate       = p_outlier_rate
-
-        if p_seed is not None:
-            self.set_random_seed(p_seed=p_seed)
-        else:
-            random.seed()
-            np.random.seed()
-
+    
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
                                   **p_kwargs)
-        
 
 ## -------------------------------------------------------------------------------------------------
     def _extend_property_list(self, property : list, size : int):
@@ -199,7 +242,8 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _change_in_property(self, change = False, point_of_change = None, num_clusters_affected = None):
+    def _change_in_property(self, change = False, point_of_change = None, num_clusters_affected = None,
+                            changed_values = None):
         """
         Function to assign clusters and the point of change, when there is a change in property
         """
@@ -218,12 +262,24 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                      for _ in clusters]
         else:
             start = point_of_change
+            if len(start) == 1:
+                start *= num_clusters_affected
+            elif len(start) < num_clusters_affected:
+                start.extend([start[0]] * (num_clusters_affected - len(start)))
+            elif len(start) >= num_clusters_affected:
+                start = start[:num_clusters_affected]
+
+
 
         y = 200 if self.C_NUM_INSTANCES > 1000 else int(0.2 * self.C_NUM_INSTANCES)
         z = [x+y for x in start]
         end = [random.randint(x, self.C_NUM_INSTANCES) for x in z]
 
-        return {"clusters": clusters, "start": start, "end": end}
+        if changed_values:
+            if len(changed_values) == 1:
+                changed_values = changed_values*num_clusters
+
+        return {"clusters": clusters, "start": start, "end": end, "changed_values": changed_values}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -266,14 +322,12 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _find_velocity(self, velocity, init_point : list = [], final_point : list = []):
+    def _find_velocity(self, velocity, init_point : list = [], final_point : list = [], steps : int = 1):
         """
         Function to calculate velocity of a cluster.
         """
         if len(final_point) != 0:
-            return [(float(final_point[d]) - init_point[d]) / (int(self.C_NUM_INSTANCES * 0.9)
-                                                               - int(self.C_NUM_INSTANCES * 0.5) - 1.0)
-                    for d in range(self._num_dim)]
+            return [(float(final_point[d]) - init_point[d]) / steps for d in range(self._num_dim)]
 
         velocity_vector = np.array([random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
                                     for _ in range(self._num_dim)])
@@ -312,8 +366,9 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         if not self._split_and_merge_of_clusters:
             if self._change_in_velocity:
                 self._handle_change_in_property("velocity", self._change_in_velocity, 0)
-            if self._change_in_distribution_bias:
-                self._handle_change_in_property("distribution_bias", self._change_in_distribution_bias, 0)
+        
+        if self._change_in_distribution_bias:
+            self._handle_change_in_property("distribution_bias", self._change_in_distribution_bias, 0)
 
         if self._new_cluster:
             self._handle_new_clusters()
@@ -337,18 +392,18 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                     self._clusters[cluster_id]["roc_of_radius"] = self._clusters[cluster_id]["radius"] * change_value
 
                 elif property_name == "velocity":
-                    a = random.randint(0,2)
-                    if a == 0: velocity = 0
+                    if property_change["changed_values"]:
+                        self._clusters[cluster_id]["velocity"] = self._find_velocity(velocity=property_change["changed_values"][idx])
                     else:
                         if max(self._velocities)==0 and min(self._velocities)==0:
-                            velocity = random.random()
+                            velocity = random.random()*0.25
                         else:
                             a = random.randint(0,1)
                             if a == 0:
                                 velocity = max(self._velocities)*random.random()
                             else:
                                 velocity = max(self._velocities)*(1+random.random())
-                    self._clusters[cluster_id]["velocity"] = self._find_velocity(velocity=velocity)
+                        self._clusters[cluster_id]["velocity"] = self._find_velocity(velocity=velocity)
 
                 elif property_name == "distribution_bias":
                     if max(self._distribution_bias)==1 and min(self._distribution_bias)==1:
@@ -376,7 +431,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                 a = random.randint(0, 1)
                 self._velocities.append(min(self._velocities) if a == 0 else (min(self._velocities) + max(self._velocities)) / 2)
                 self._distribution_bias.append(random.randint(1, max(self._distribution_bias)))
-                self._clusters[self._cluster_ids[-1]] = self._define_cluster(id=self._cluster_ids[-1])
+                self._clusters[self._cluster_ids[-1]] = self._define_cluster(cluster_id=self._cluster_ids[-1])
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -410,35 +465,36 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _handle_split_and_merge(self):
-        """if self._splitting_of_clusters and not self._new_cluster:
-            clusters = self._cluster_ids[:self._num_clusters_for_split_and_merge]
-            for cluster_id in clusters:
-                new_clusters = random.sample(range(1, self._num_clusters + 1), self._num_clusters_for_split_and_merge)
-                for new_cluster_id in new_clusters:
-                    if new_cluster_id != cluster_id:
-                        self._clusters[new_cluster_id] = self._define_cluster(new_cluster_id)
-                        self._clusters[new_cluster_id]["center"] = self._clusters[cluster_id]["center"]"""
-        if self._index <= 2:
-            for id in range(self._num_clusters_for_split_and_merge):
-                self._clusters[id+1]["velocity"] = np.zeros(self._num_dim)
-                self._clusters[id+1]["center"] = np.zeros(self._num_dim)
+        if self._index < 2:
+            self._center_split = self._clusters[self._split_and_merge_of_clusters["clusters"][0]]["center"]
+            for id in self._split_and_merge_of_clusters["clusters"]:
+                self._clusters[id]["velocity"] = np.zeros(self._num_dim)
+                self._clusters[id]["center"] = self._center_split
 
-        if self._index == int(self.C_NUM_INSTANCES*0.1):
-            for id in range(self._num_clusters_for_split_and_merge):
-                self._clusters[id+1]["velocity"] = self._find_velocity(velocity=self._velocities[id])
+        if self._index in self._split_and_merge_of_clusters["start"]:
+            x = 0
+            for id in self._split_and_merge_of_clusters["clusters"]:
+                self._clusters[id]["velocity"] = self._find_velocity(velocity=self._velocities_split[x])
+                x += 1
 
-        if self._index == int(self.C_NUM_INSTANCES*0.5)+1:
-            for id in range(self._num_clusters_for_split_and_merge):
-                initial_point = list(self._clusters[id+1]["center"])
-                final_point = list(np.zeros(self._num_dim))
-                self._clusters[id+1]["velocity"] = self._find_velocity(velocity=self._velocities[id],
-                                                                       init_point=initial_point,
-                                                                       final_point=final_point)
+        if not self._split_of_clusters:
 
-        if self._index == int(self.C_NUM_INSTANCES*0.9)+1:
-            for id in range(self._num_clusters_for_split_and_merge):
-                self._clusters[id+1]["velocity"] = np.zeros(self._num_dim)
-                self._clusters[id+1]["center"] = np.zeros(self._num_dim)
+            if self._index == int(self._split_and_merge_of_clusters["start"][0]+
+                                  (self._split_and_merge_of_clusters["end"][0] -
+                                  self._split_and_merge_of_clusters["start"][0])/2):
+                for id in self._split_and_merge_of_clusters["clusters"]:
+                    initial_point = list(self._clusters[id]["center"])
+                    final_point = self._center_split
+                    self._clusters[id]["velocity"] = self._find_velocity(velocity=0,
+                                                                     init_point=initial_point,
+                                                                     final_point=final_point,
+                                                                     steps=int((self._split_and_merge_of_clusters["end"][0] -
+                                                                                self._split_and_merge_of_clusters["start"][0])/2)-1)
+
+            if self._index in self._split_and_merge_of_clusters["end"]:
+                for id in self._split_and_merge_of_clusters["clusters"]:
+                    self._clusters[id]["velocity"] = np.zeros(self._num_dim)
+                    self._clusters[id]["center"] = self._center_split
 
 
 ## -------------------------------------------------------------------------------------------------
