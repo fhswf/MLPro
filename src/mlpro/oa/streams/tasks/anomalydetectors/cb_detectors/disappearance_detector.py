@@ -25,7 +25,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.disappearanc
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
-from scipy.spatial.distance import cdist
+#from scipy.spatial.distance import cdist
 
 
 
@@ -37,14 +37,13 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
     This is the class for detecting the disappearences of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['centroid', 2, Property]]
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = []
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
                  p_age_threshold : int = None,
                  p_size_threshold : int = None,
-                 p_threshold : float = 0.1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -62,15 +61,19 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
 
-        self._current_clusters = {}
-        self._age_thresh = p_age_threshold
-        self._size_thresh = p_size_threshold
+        self._age_thresh            = p_age_threshold
+        self._size_thresh           = p_size_threshold
+        self._prev_clusters         = {}
+        self._deleted_clusters_age  = {}
+        self._deleted_clusters_size = {}
+        self._prev_age              = {}
+        self._age_counter           = {}
 
         if self._age_thresh != None:
-            self.C_PROPERTIY_DEFINITIONS.append(['age', 0, Property])
+            self.C_PROPERTIY_DEFINITIONS.append(('age', 0, False, Property))
 
         if self._size_thresh != None:
-            self.C_PROPERTIY_DEFINITIONS.append(['size', 0, Property])
+            self.C_PROPERTIY_DEFINITIONS.append(('size', 0, False, Property))
 
         for x in self.C_PROPERTIY_DEFINITIONS:
             if x not in self.C_REQ_CLUSTER_PROPERTIES:
@@ -78,43 +81,81 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
-
-        self._current_clusters = {}
+        #if len(unknown_prop) >0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict, center: float, centroids: list):
-        
-
-        inst = []
-
-        for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
-            inst = inst_1
+    def _run(self, p_inst: InstDict):
+        new_instances = []
+        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
+            new_instances.append(inst)
 
         clusters = self._clusterer.get_clusters()
 
+        for x in self._deleted_clusters_age.keys():
+            if x in clusters.keys():
+                if float(clusters[x].age.value) > self._prev_age[x]:
+                    del self._deleted_clusters_age[x]
+                    self._prev_clusters[x] = clusters[x]
+                else:
+                    del clusters[x]
+        
+        for x in self._deleted_clusters_size.keys():
+            if x in clusters.keys():
+                if clusters[x].size.value > self._size_thresh:
+                    del self._deleted_clusters_size[x]
+                    self._prev_clusters[x] = clusters[x]
+                else:
+                    del clusters[x]
+
         missing_clusters = {}
 
-        if len(clusters) < len(self._current_clusters):
+        if len(clusters) < len(self._prev_clusters):
             
-            for x in self._current_clusters:
-                if x not in clusters:
-                    missing_clusters[x] = self._current_clusters[x]
-
-        if self._age_thresh != None:
+            for x in self._prev_clusters.keys():
+                if x not in clusters.keys():
+                    missing_clusters[x] = self._prev_clusters[x]
+                    del self._prev_clusters[x]
+                    
+        """if self._age_thresh != None:
             for x in clusters.keys():
                 if clusters[x].age.value <= self._age_thresh:
                     missing_clusters[x] = clusters[x]
+                    self._deleted_clusters_age[x] = clusters[x]
+                    if x in self._prev_clusters.keys():
+                        del self._prev_clusters[x]"""
 
         if self._size_thresh != None:
             for x in clusters.keys():
-                if clusters[x].age.value <= self._size_thresh:
+                if clusters[x].size.value <= self._size_thresh:
                     missing_clusters[x] = clusters[x]
+                    self._deleted_clusters_size[x] = clusters[x]
+                    if x in self._prev_clusters.keys():
+                        del self._prev_clusters[x]
+        
+        if self._age_thresh != None:
+            for x in clusters.keys():
+                if x not in self._prev_age.keys():
+                    self._prev_age[x] = float(clusters[x].age.value)
+                    self._age_counter[x] = 0
+                else:
+                    if (self._age_counter[x] % self._age_thresh) == 0:
+                        if float(clusters[x].age.value) == self._prev_age[x]:
+                            missing_clusters[x] = clusters[x]
+                            self._deleted_clusters_age[x] = clusters[x]
+                            if x in self._prev_clusters.keys():
+                                del self._prev_clusters[x]
+                        else:
+                            self._prev_age[x] = float(clusters[x].age.value)
+                self._age_counter[x] += 1
 
-        event = ClusterDisappearance(p_id = self._get_next_anomaly_id,
-                                     p_instances=[inst],
-                                     p_clusters=missing_clusters)
 
-        self._current_clusters = clusters
+        if missing_clusters:
+            anomaly = ClusterDisappearance(p_id=self._get_next_anomaly_id,
+                                           p_instances=new_instances,
+                                           p_clusters=missing_clusters,
+                                           p_det_time=str(inst.get_tstamp()))
+            self._raise_anomaly_event(anomaly)
+
+

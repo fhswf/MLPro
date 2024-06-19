@@ -437,9 +437,6 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _handle_remove_clusters(self):
         if self._index in self._remove_cluster["start"]:
-            if self._num_clusters <= len(self._remove_cluster["clusters"]):
-                raise Exception
-            else:
                 ids = [i for i, x in enumerate(self._remove_cluster["start"]) if x == self._index]
                 j=1
                 for i in ids:
