@@ -23,11 +23,13 @@ This module provides templates for anomaly detection to be used in the context o
 
 from typing import List
 from matplotlib.figure import Figure
+from mlpro.bf.math.properties import *
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.various import Log
-from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.streams import Instance, InstDict
+from mlpro.bf.various import *
+from mlpro.bf.plot import *
 from mlpro.oa.streams.tasks import OATask
+from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 
 
@@ -42,6 +44,9 @@ class AnomalyDetector(OATask):
     """
 
     C_TYPE          = 'Anomaly Detector'
+
+    C_EVENT_ANOMALY_ADDED           = 'ANOMALY_ADDED'
+    C_EVENT_ANOMALY_REMOVED         = 'ANOMALY_REMOVED'
 
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False

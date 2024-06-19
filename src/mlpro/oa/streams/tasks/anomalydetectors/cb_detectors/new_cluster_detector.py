@@ -67,51 +67,29 @@ class NewClusterDetector(AnomalyDetectorCB):
         if len(unknown_prop) > 0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
-        self._current_clusters = {}
+        self._prev_clusters = {}
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict):
-
-        inst = []
-
-        for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
-            inst = inst_1
+    def _run(self, p_inst: InstDict):
+        new_instances = []
+        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
+            new_instances.append(inst)
 
         clusters = self._clusterer.get_clusters()
-        if len(clusters) > len(self._current_clusters):
+
+        if len(clusters) > len(self._prev_clusters):
             new_clusters = {}
-            for x in clusters:
-                if x not in self._current_clusters:
+            for x in clusters.keys():
+                if x not in self._prev_clusters.keys():
                     new_clusters[x] = clusters[x]
-            event = NewClusterAppearance(p_id = self._get_next_anomaly_id,
-                                         p_instances=[inst],
-                                         p_clusters=new_clusters)
-            
-        self._current_clusters = clusters
 
-        """centroids = [tuple(centroid) for centroid in centroids]
-        if not self._previous_centroids:
-            self._previous_centroids = centroids
-            return {"new_clusters": centroids, "split_clusters": [], "merged_clusters": []}
+            if new_clusters:  # Only raise an event if there are new clusters
+                anomaly = NewClusterAppearance(p_id=self._get_next_anomaly_id,
+                                               p_instances=new_instances,
+                                               p_clusters=new_clusters,
+                                               p_det_time=str(inst.get_tstamp()))
+                self._raise_anomaly_event(anomaly)
 
-        # Calculate distances between old and new centroids
-        distance_matrix = cdist(self._previous_centroids, centroids)
-
-        # Find which centroids are considered the same (below distance threshold)
-        matched_old = set()
-        matched_new = set()
-        for i, row in enumerate(distance_matrix):
-            for j, distance in enumerate(row):
-                if distance <= self._distance_threshold:
-                    matched_old.add(i)
-                    matched_new.add(j)
-
-        new_clusters = [centroids[j] for j in range(len(centroids)) if j not in matched_new]
-        split_clusters = [self._previous_centroids[i] for i in range(len(self._previous_centroids)) if i not in matched_old]
-        merged_clusters = [centroids[j] for j in matched_new if list(distance_matrix[:, j]).count(distance_matrix[:, j].min()) > 1]
-
-        self._previous_centroids = centroids
-        return {"new_clusters": new_clusters, "split_clusters": split_clusters, "merged_clusters": merged_clusters}"""
-
+            self._prev_clusters.update(new_clusters) 
 

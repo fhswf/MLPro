@@ -31,7 +31,7 @@ from mlpro.bf.math.properties import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCB(AnomalyDetector, Properties):
+class AnomalyDetectorCB(AnomalyDetector):
     """
     This is the base class for cluster-based online anomaly detectors. It raises an event when an
     anomaly is detected in a cluster dataset.

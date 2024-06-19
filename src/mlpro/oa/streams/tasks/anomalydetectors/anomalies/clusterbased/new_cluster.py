@@ -35,7 +35,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics impor
 ## -------------------------------------------------------------------------------------------------
 class NewClusterAppearance (CBAnomaly):
     """
-    Event class to be raised when a new cluster appears.
+    Event class to be raised when a new cluster is detected.
     
     """
 
@@ -43,6 +43,7 @@ class NewClusterAppearance (CBAnomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id : int = 0,
                  p_instances : list[Instance] = None,
                  p_clusters : dict[Cluster] = None,
                  p_ano_scores : list = None,
@@ -51,17 +52,20 @@ class NewClusterAppearance (CBAnomaly):
                  p_det_time : str = None,
                  **p_kwargs):
         
-        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize, p_raising_object=p_raising_object,
-                         p_det_time=p_det_time, **p_kwargs)
-        
-        self._clusters = p_clusters
+        super().__init__(p_id=p_id,
+                         p_instances=p_instances,
+                         p_clusters=p_clusters,
+                         p_ano_scores=p_ano_scores,
+                         p_visualize=p_visualize,
+                         p_raising_object=p_raising_object,
+                         p_det_time=p_det_time,
+                         **p_kwargs)
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
 
-        cluster : Cluster = None
+        """cluster : Cluster = None
 
         for cluster in self._clusters.values(): 
 
@@ -73,7 +77,7 @@ class NewClusterAppearance (CBAnomaly):
                 #ax.add_patch(circle)
             self._colour_id +=1
             if self._colour_id > 9:
-                self._colour_id = 0
+                self._colour_id = 0"""
 
         """if self._rect is None:
             self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)
@@ -94,11 +98,6 @@ class NewClusterAppearance (CBAnomaly):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_nd(p_figure=p_figure, p_settings=p_settings)
-
-
-## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_2d(p_settings, **p_kwargs)
 
@@ -106,11 +105,6 @@ class NewClusterAppearance (CBAnomaly):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
         super()._update_plot_3d(p_settings, **p_kwargs) 
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
-        super()._update_plot_nd(p_settings, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -123,6 +117,3 @@ class NewClusterAppearance (CBAnomaly):
         super()._remove_plot_3d()
   
 
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_nd(self):
-        super()._remove_plot_nd()

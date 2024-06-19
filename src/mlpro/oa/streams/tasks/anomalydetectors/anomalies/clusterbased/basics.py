@@ -22,6 +22,9 @@ This module provides templates for anomaly detection to be used in the context o
 from mlpro.oa.streams.basics import Instance
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from mlpro.bf.mt import Figure, PlotSettings
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
+from matplotlib.figure import Figure
+from matplotlib.text import Text
 
 
 
@@ -47,16 +50,59 @@ class CBAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id : int = 0,
                  p_instances : list[Instance] = None,
-                 p_clusters : dict = None,
+                 p_clusters : dict[Cluster] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  p_det_time : str = None,
                  **p_kwargs):
         
-        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize, p_raising_object=p_raising_object,
-                         p_det_time=p_det_time, **p_kwargs)
+        super().__init__(p_id=p_id,
+                         p_instances=p_instances,
+                         p_ano_scores=p_ano_scores,
+                         p_visualize=p_visualize, 
+                         p_raising_object=p_raising_object,
+                         p_det_time=p_det_time,
+                         **p_kwargs)
         
         self._colour_id = 0
+        self._clusters : dict[Cluster] = p_clusters
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self) -> dict[Cluster]:
+        return self._clusters
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        self._plot_line = None
+        self._plot_label : Text = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings: PlotSettings, p_axlimits_changed: bool, p_ylim, **p_kwargs):
+
+        if ( self._plot_line is not None ) and not p_axlimits_changed: return
+        
+        inst = self.get_instances()[-1]
+
+        inst_id = inst.get_id()
+        xpos    = [inst_id, inst_id]
+        
+        if self._plot_line is None:
+            label = 'PO(' + str(self.get_id()) + ')'
+            self._plot_line  = p_settings.axes.plot(xpos, p_ylim, color='r', linestyle='dashed', lw=1)[0]
+            self._plot_label = p_settings.axes.text(inst_id, p_ylim[1], label, color='r' )
+
+        else:
+            self._plot_line.set_data( xpos, p_ylim )
+            self._plot_label.set(position=(inst_id, p_ylim[1]))
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        if self._plot_line is None: return
+        self._plot_line.remove()
+        self._plot_label.remove()

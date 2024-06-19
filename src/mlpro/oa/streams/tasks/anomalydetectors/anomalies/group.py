@@ -41,6 +41,7 @@ class GroupAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = 0,
                  p_instances : list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
@@ -49,19 +50,17 @@ class GroupAnomaly (Anomaly):
                  p_mean : float= None,
                  p_mean_deviation : float = None,
                  **p_kwargs):
-        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
+        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
         
-        self.instances : list[Instance] = p_instances
-        p_ano_scores = p_ano_scores
         self.plot_update = True
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_instances(self, p_instances, p_ano_scores):
-        self.instances = p_instances
-        self.ano_scores = p_ano_scores
+        self._instances = p_instances
+        self._ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
