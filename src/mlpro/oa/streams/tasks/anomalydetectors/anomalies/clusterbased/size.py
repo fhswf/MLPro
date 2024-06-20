@@ -16,6 +16,9 @@ This module provides templates for anomaly detection to be used in the context o
 """
 
 from mlpro.oa.streams.basics import Instance
+from mlpro.bf.mt import Figure, PlotSettings
+from mlpro.bf.various import *
+from mlpro.bf.plot import *
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import CBAnomaly
 
@@ -37,13 +40,49 @@ class ClusterSizeVariation (CBAnomaly):
     def __init__(self,
                  p_id : int = 0,
                  p_instances : Instance = None,
+                 p_clusters : dict[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  p_det_time : str = None,
                  **p_kwargs):
         
-        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize, p_raising_object=p_raising_object,
-                         p_det_time=p_det_time, **p_kwargs)
+        super().__init__(p_id=p_id,
+                         p_instances=p_instances,
+                         p_ano_scores=p_ano_scores,
+                         p_clusters=p_clusters,
+                         p_visualize=p_visualize,
+                         p_raising_object=p_raising_object,
+                         p_det_time=p_det_time,
+                         **p_kwargs)
 
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_2d(p_settings, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+        super()._update_plot_3d(p_settings, **p_kwargs) 
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        super()._remove_plot_2d()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_3d(self):
+        super()._remove_plot_3d()
+  

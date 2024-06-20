@@ -26,6 +26,7 @@ from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 import numpy as np
 from mlpro.bf.math.properties import *
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import Centroid
 
 
 
@@ -37,14 +38,16 @@ class ClusterDriftDetector(AnomalyDetectorCB):
     This is the class for detecting change in velocity of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['centroid', 2, Property]]
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ('center_geo', 2, False, Centroid),
+                                                     ( 'size', 0, False, Property )]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_velocity_threshold : float = 0.1,
+                 p_velocity_threshold : float = 1.0,
                  p_acceleration_threshold : float = 0.1,
                  p_step_rate = 1,
+                 p_initial_skip : int = 1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -68,26 +71,22 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) > 0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) > 0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._cluster_centroids = {}
         self._vel_thresh = p_velocity_threshold
         self._acc_thresh = p_acceleration_threshold
-        self._cluster_vel_thresh = []
-        self._cluster_acc_thresh = []
         self._step_rate = p_step_rate
         self._count = 0
+        self._init_skip = p_initial_skip
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
-
-        if (self._count == 0 ) or (self._count % self._step_rate == 0):
-
-            inst = []
-
-            for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
-                inst = inst_1
+        if (self._count >= self._init_skip) and ((self._count % self._step_rate) == 0):
+            new_instances = []
+            for inst_id, (inst_type, inst) in sorted(p_inst.items()):
+                new_instances.append(inst)
 
             clusters = self._clusterer.get_clusters()
 
@@ -95,19 +94,22 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 
             for id in clusters.keys():
                 if id not in self._cluster_centroids.keys():
-                    self._cluster_centroids[id] = clusters[id].center_geo.value
-                vel_thresh = []
-                for x in range(len(clusters[id].center_geo.value)):
-                    vel_thresh = max(clusters[id].center_geo.value[x], self._cluster_centroids[id][x])*self._vel_thresh
-                    #acc_thresh = max(clusters[id].center_geo.value[x], self._cluster_centroids[id][x])*self._vel_thresh
+                    self._cluster_centroids[id] = list(clusters[id].centroid.value)
 
-                    if vel_thresh <= clusters[id].center_geo.value[x].velocity:
-                        drifting_clusters[id] = clusters[id]
-                        break
+                else:
+                    for x in range(len(clusters[id].centroid.value)):
+                        if self._vel_thresh <= abs(clusters[id].centroid.value[x]-self._cluster_centroids[id][x]):
+                            drifting_clusters[id] = clusters[id]
+                            self._cluster_centroids[id] = list(clusters[id].centroid.value)
+                            break
 
-            event = ClusterDrift(p_id = self._get_next_anomaly_id,
-                                 p_instances=[inst],
-                                 p_clusters=drifting_clusters)
+            if len(drifting_clusters) != 0:
+
+                anomaly = ClusterDrift(p_id = self._get_next_anomaly_id,
+                                 p_instances=new_instances,
+                                 p_clusters=drifting_clusters,
+                                 p_det_time=str(inst.get_tstamp()))
+                self._raise_anomaly_event(anomaly)
             
         self._count += 1
             

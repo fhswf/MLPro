@@ -33,7 +33,7 @@ from mlpro.bf.math.properties import *
 ## -------------------------------------------------------------------------------------------------
 class ClusterSizeChangeDetector(AnomalyDetectorCB):
     """
-    This is the class for detecting change in weight of clusters.
+    This is the class for detecting change in size/weight of clusters.
 
     """
     C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['size', 2, Property]]
@@ -42,8 +42,9 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_upper_limit : int = 1000,
-                 p_lower_limit : int = 100,
+                 p_upper_limit : int = None,
+                 p_lower_limit : int = None,
+                 
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -77,13 +78,12 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
+        new_instances = []
+        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
+            new_instances.append(inst)
 
-        inst = []
-
-        for inst_id, (inst_id, inst_1) in sorted(p_inst.items()):
-            inst = inst_1
-        
         clusters = self._clusterer.get_clusters()
+
 
         affected_clusters = {}
         for x in clusters.keys():
