@@ -45,7 +45,7 @@ class ClusterDisappearance (CBAnomaly):
     def __init__(self,
                  p_id : int = 0,
                  p_instances : list[Instance] = None,
-                 p__clusters : dict[Cluster] = None,
+                 p_clusters : dict[Cluster] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -54,12 +54,13 @@ class ClusterDisappearance (CBAnomaly):
         
         super().__init__(p_id=p_id,
                          p_instances=p_instances,
-                         p_clusters=p__clusters,
+                         p_clusters=p_clusters,
                          p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize,
                          p_raising_object=p_raising_object,
                          p_det_time=p_det_time,
-                         **p_kwargs)
+                         p_visualize=p_visualize,
+                         p_kwargs=p_kwargs)
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):

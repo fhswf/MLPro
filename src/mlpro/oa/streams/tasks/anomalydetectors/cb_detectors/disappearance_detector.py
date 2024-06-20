@@ -156,6 +156,7 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
                                            p_instances=new_instances,
                                            p_clusters=missing_clusters,
                                            p_det_time=str(inst.get_tstamp()))
+
             self._raise_anomaly_event(anomaly)
 
 
