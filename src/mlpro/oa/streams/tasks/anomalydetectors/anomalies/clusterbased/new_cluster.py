@@ -65,7 +65,7 @@ class NewClusterAppearance (CBAnomaly):
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
 
-        """cluster : Cluster = None
+        cluster : Cluster = None
 
         for cluster in self._clusters.values(): 
 
@@ -77,7 +77,7 @@ class NewClusterAppearance (CBAnomaly):
                 #ax.add_patch(circle)
             self._colour_id +=1
             if self._colour_id > 9:
-                self._colour_id = 0"""
+                self._colour_id = 0
 
         """if self._rect is None:
             self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)

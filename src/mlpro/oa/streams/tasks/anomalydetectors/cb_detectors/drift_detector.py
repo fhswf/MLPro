@@ -24,9 +24,9 @@ from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyD
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.drift import ClusterDrift
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
-import numpy as np
 from mlpro.bf.math.properties import *
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import Centroid
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import cprop_center_geo2
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size2
 
 
 
@@ -38,8 +38,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
     This is the class for detecting change in velocity of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ('center_geo', 2, False, Centroid),
-                                                     ( 'size', 0, False, Property )]
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ cprop_center_geo2,
+                                                     cprop_size2]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -71,8 +71,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        #if len(unknown_prop) > 0:
-        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        if len(unknown_prop) > 0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._cluster_centroids = {}
         self._vel_thresh = p_velocity_threshold
