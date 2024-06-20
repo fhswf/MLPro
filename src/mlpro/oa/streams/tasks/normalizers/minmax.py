@@ -17,6 +17,7 @@
 ## -- 2023-05-03  1.2.1     DA       Bugfix in NormalizerMinMax._update_plot_2d/3d/nd
 ## -- 2023-05-22  1.2.2     SY       Refactoring
 ## -- 2024-05-22  1.3.0     DA       Refactoring and splitting
+## -- 2024-06-13  1.3.1     LSB      Bug Fix: Handling plot data with IDs
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -156,10 +157,11 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
 
             if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
                 self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
-
-            for i in range(len(self._plot_2d_xdata)):
-                self._plot_data_2d[i][0] = self._plot_2d_xdata[i]
-                self._plot_data_2d[i][1] = self._plot_2d_ydata[i]
+            ids = []
+            for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
+                ids.extend([id])
+                self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
+                self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
 
             plot_data_renormalized = self.renormalize(self._plot_data_2d)
 
@@ -167,8 +169,8 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
             self._plot_2d_ydata = {}
 
             for i, data_2d in enumerate(plot_data_renormalized):
-                self._plot_2d_xdata[i] = data_2d[0]
-                self._plot_2d_ydata[i] = data_2d[1]
+                self._plot_2d_xdata[ids[i]] = data_2d[0]
+                self._plot_2d_ydata[ids[i]] = data_2d[1]
 
             self._parameters_updated = False
 
@@ -202,10 +204,12 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
             if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
                 self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
 
-            for i in range(len(self._plot_3d_xdata)):
-                self._plot_data_3d[i][0] = self._plot_3d_xdata[i]
-                self._plot_data_3d[i][1] = self._plot_3d_ydata[i]
-                self._plot_data_3d[i][2] = self._plot_3d_zdata[i]
+            ids = []
+            for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
+                ids.extend([i])
+                self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
+                self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
+                self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
 
             plot_data_renormalized = self.renormalize(self._plot_data_3d)
 
@@ -214,9 +218,9 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
             self._plot_3d_zdata = {}
 
             for i, data_3d in enumerate(plot_data_renormalized):
-                self._plot_3d_xdata[i] = data_3d[0]
-                self._plot_3d_ydata[i] = data_3d[1]
-                self._plot_3d_zdata[i] = data_3d[2]
+                self._plot_3d_xdata[ids[i]] = data_3d[0]
+                self._plot_3d_ydata[ids[i]] = data_3d[1]
+                self._plot_3d_zdata[ids[i]] = data_3d[2]
 
             self._parameters_updated = False
 
@@ -250,7 +254,7 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
 
                 if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
                     self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
-
+                ids = []
                 for j in range(len(self._plot_nd_plots)):
                     for i in range(len(self._plot_nd_plots[0][0])):
                         self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]

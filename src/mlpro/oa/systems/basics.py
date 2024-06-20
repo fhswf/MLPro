@@ -13,6 +13,7 @@
 ## -- 2024-05-24  0.2.0     DA       Refactoring class PseudoTask
 ## --                                - constructor: changes on parameter p_wrap_method
 ## --                                - method _run(): changes on parameters
+## -- 2024-06-10  0.2.1     LSB      Fixing for the refactoring on stream processing
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -210,7 +211,7 @@ class OAFctSTrans(FctSTrans, Model):
             self._setup_wf_strans = self._setup_oafct_strans()
 
         # 3. Running the workflow
-        self._wf_strans.run(p_inst=InstDict({self._state_obj.get_id(): (InstTypeNew, self._state_obj)}))
+        self._wf_strans.run(p_inst=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
 
 
         # 4. get the results
@@ -452,7 +453,7 @@ class OAFctSuccess(FctSuccess, Model):
             self._setup_wf_success = self._setup_oafct_success()
 
         # 3. Run the workflow
-        self._wf_success.run(p_inst=[self._state_obj])
+        self._wf_success.run(p_inst=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
 
 
         # 4. Return the results
@@ -686,7 +687,7 @@ class OAFctBroken(FctBroken, Model):
             self._setup_wf_broken = self._setup_oafct_broken()
 
         # 3. Run the workflow
-        self._wf_broken.run(p_inst=InstDict({self._state_obj.get_id(): (InstTypeNew, self._state_obj)}))
+        self._wf_broken.run(p_inst=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
 
 
         # 4. Return the results
