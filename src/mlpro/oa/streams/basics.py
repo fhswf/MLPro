@@ -22,10 +22,11 @@
 ## --                                - Classes OATrainingResults, OATraining removed
 ## -- 2024-05-22  1.0.0     DA       Initial design finished
 ## -- 2024-05-29  1.0.1     DA       Correction in method OATask.adapt()
+## -- 2024-06-18  1.0.2     DA       Litte code cleanup
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-05-29)
+Ver. 1.0.2 (2024-06-18)
 
 Core classes for online adaptive stream processing.
 
@@ -329,8 +330,6 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
                             p_visualize = p_visualize,
                             p_logging = p_logging,
                             **p_kwargs )
-        
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
