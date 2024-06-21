@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_059_native_stream_Clusters_ClustersDisappear.py
+## -- Module  : howto_bf_streams_071_native_stream_Clusters_3D8C2000.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,13 +10,13 @@
 """
 Ver. 1.0.0 (2024-06-17)
 
-This module demonstrates and visualizes the native stream ClusterbasedAnomalies which generates a
+This module demonstrates and visualizes the native stream Clusters which generates a
 specified number of n-dimensional instances placed around specified number of centers, resulting in
 clouds or clusters whose numbers, size, velocity, acceleration and density can be varied over time.
 
 You will learn:
 
-1) The properties and use of native stream ClusterbasedAnomalies.
+1) The properties and use of native stream Clusters.
 
 2) How to set up a stream workflow without a stream task.
 
@@ -40,22 +40,19 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'My stream scenario'
+    C_NAME      = 'Clusters3D8C2000'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Import a native stream from MLPro
-        stream = StreamMLProClusterGenerator(p_num_dim= 2,
+        stream = StreamMLProClusterGenerator(p_num_dim= 3,
                                              p_num_instances= 2000,
-                                             p_num_clusters= 4,
-                                             p_radii= [100],
-                                             p_distribution_bias= [1, 2, 1],
-                                             p_disappearance_of_clusters= True,
-                                             p_points_of_disappearance_of_clusters= [400, 600],
-                                             p_num_clusters_to_disappear= 2,
+                                             p_num_clusters= 8,
+                                             p_radii= [150, 120, 160, 200, 100, 80, 180, 100],
+                                             p_distribution_bias= [1, 2, 3, 1, 4, 2, 1, 1],
                                              p_visualize= p_visualize,
-                                             p_seed= 2,
+                                             p_seed= 18,
                                              p_logging= p_logging)
 
 
@@ -100,7 +97,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_3D,
                                                         p_view_autoselect = False,
                                                         p_step_rate = step_rate ) )
     input('Press ENTER to start stream processing...')

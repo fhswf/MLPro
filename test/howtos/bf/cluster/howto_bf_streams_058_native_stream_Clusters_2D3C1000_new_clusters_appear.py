@@ -1,22 +1,22 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_057native_stream_Clusters_ChangeInDistributionBias.py
+## -- Module  : howto_bf_streams_058_native_stream_Clusters_2D3C1000_new_clusters_appear.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-17  1.0.0     SK       Creation/First implementation
+## -- 2024-06-21  1.0.0     SK       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-17)
+Ver. 1.0.0 (2024-06-21)
 
-This module demonstrates and visualizes the native stream ClusterbasedAnomalies which generates a
+This module demonstrates and visualizes the native stream Clusters which generates a
 specified number of n-dimensional instances placed around specified number of centers, resulting in
 clouds or clusters whose numbers, size, velocity, acceleration and density can be varied over time.
 
 You will learn:
 
-1) The properties and use of native stream ClusterbasedAnomalies.
+1) The properties and use of native stream Clusters.
 
 2) How to set up a stream workflow without a stream task.
 
@@ -40,7 +40,7 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'My stream scenario'
+    C_NAME      = 'Clusters2D3C1000'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
@@ -48,12 +48,11 @@ class MyScenario (StreamScenario):
         # 1 Import a native stream from MLPro
         stream = StreamMLProClusterGenerator(p_num_dim= 2,
                                              p_num_instances= 2000,
-                                             p_num_clusters= 4,
+                                             p_num_clusters= 3,
                                              p_radii= [100],
-                                             p_distribution_bias= [1, 2, 1, 1],
-                                             p_change_distribution_bias= True,
-                                             p_points_of_change_distribution_bias= [400, 200],
-                                             p_num_clusters_for_change_distribution_bias= 2,
+                                             p_appearance_of_clusters= True,
+                                             p_points_of_appearance_of_clusters= [400, 200],
+                                             p_num_new_clusters_to_appear= 2,
                                              p_visualize= p_visualize,
                                              p_seed= 2,
                                              p_logging= p_logging)
@@ -76,7 +75,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 2000
+    cycle_limit = 1000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 2

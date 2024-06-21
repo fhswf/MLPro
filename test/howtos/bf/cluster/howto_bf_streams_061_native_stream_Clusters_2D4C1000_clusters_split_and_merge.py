@@ -1,22 +1,22 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_060_native_stream_Clusters_SplitAndMerge.py
+## -- Module  : howto_bf_streams_061_native_stream_Clusters_2D4C2000_clusters_split_and_merge.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-17  1.0.0     SK       Creation/First implementation
+## -- 2024-06-21  1.0.0     SK       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-17)
+Ver. 1.0.0 (2024-06-21)
 
-This module demonstrates and visualizes the native stream ClusterbasedAnomalies which generates a
+This module demonstrates and visualizes the native stream Clusters which generates a
 specified number of n-dimensional instances placed around specified number of centers, resulting in
 clouds or clusters whose numbers, size, velocity, acceleration and density can be varied over time.
 
 You will learn:
 
-1) The properties and use of native stream ClusterbasedAnomalies.
+1) The properties and use of native stream Clusters.
 
 2) How to set up a stream workflow without a stream task.
 
@@ -40,7 +40,7 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'My stream scenario'
+    C_NAME      = 'Clusters2D4C2000'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
@@ -50,7 +50,6 @@ class MyScenario (StreamScenario):
                                              p_num_instances= 2000,
                                              p_num_clusters= 5,
                                              p_radii= [50],
-                                             p_velocities= [0],
                                              p_clusters_split_and_merge= True,
                                              p_num_clusters_to_split_into= 3,
                                              p_points_of_split=[100],
