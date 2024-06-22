@@ -7,22 +7,19 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
-## -- 2023-11-21  1.0.1     SK       Time Stamp update
-## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-04-10  1.1.0     DA/SK    Refactoring
+## -- 2024-06-22  1.1.1     SK       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.1.1 (2024-06-22)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.density import ClusterDensityVariation
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
@@ -37,15 +34,16 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change of density of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['density', 2, Property]]
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ( 'density', 0, False, Property )]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_threshold_upper_limit : float = None,
-                 p_threshold_lower_limit : float = None,
-                 p_threshold_detection : float = None,
-                 p_threshold_rate_of_change : float = None,
+                 p_density_thresh : float = None,
+                 p_density_upper_thresh : float = None,
+                 p_density_lower_thresh : float = None,
+                 p_roc_density_thresh : float = 0.1,
+                 p_step_rate = 1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -69,14 +67,21 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) >0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
-        self._thresh_ul = p_threshold_upper_limit
-        self._thresh_ll = p_threshold_lower_limit
-        self._thresh_det = p_threshold_detection
-        self._thresh_roc = p_threshold_rate_of_change
+        self._thresh_u      = p_density_upper_thresh
+        self._thresh_l      = p_density_lower_thresh
+        self._thresh        = p_density_thresh
+        self._thresh_roc    = p_roc_density_thresh
 
+        self._prev_densities     = {}
+        self._prev_roc_densities = {}
+        self._density_thresh     = {}
+        self._roc_density_thresh = {}
+        self._density_buffer     = {}
+
+        self._step_rate = p_step_rate
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict, centroids: list):

@@ -7,14 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
-## -- 2023-11-21  1.0.1     SK       Time Stamp update
-## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-28  1.2.1     SK       Refactoring
+## -- 2024-04-10  1.1.0     DA/SK    Refactoring
+## -- 2024-06-20  1.1.1     SK       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-28)
+Ver. 1.1.1 (2024-06-20)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -71,8 +69,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) > 0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) > 0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._cluster_centroids = {}
         self._vel_thresh = p_velocity_threshold

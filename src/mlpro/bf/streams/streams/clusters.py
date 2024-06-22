@@ -561,7 +561,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         else:
             # 3.3 Generation of a random nD point in a hypercube with edge length (2 * radius) around the center
             for d in range(self._num_dim):
-                point_values[d] = center[d] + random.randint(0, 2 * radius) - radius
+                point_values[d] = center[d] + random.randint(0, int(2 * radius)) - radius
 
         return point_values
     

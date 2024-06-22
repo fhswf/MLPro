@@ -7,14 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
-## -- 2023-11-21  1.0.1     SK       Time Stamp update
-## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-28  1.2.1     SK       Refactoring
+## -- 2024-04-10  1.1.0     DA/SK    Refactoring
+## -- 2024-06-19  1.1.1     SK       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-28)
+Ver. 1.1.1 (2024-06-19)
 
 This module provides cluster disappearance detector algorithm.
 """
@@ -25,7 +23,6 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.disappearanc
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
-#from scipy.spatial.distance import cdist
 
 
 

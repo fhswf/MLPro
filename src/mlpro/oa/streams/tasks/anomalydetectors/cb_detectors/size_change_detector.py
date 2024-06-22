@@ -7,14 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
-## -- 2023-11-21  1.0.1     SK       Time Stamp update
-## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-28  1.2.1     SK       Refactoring
+## -- 2024-04-10  1.1.0     DA/SK    Refactoring
+## -- 2024-06-22  1.1.1     SK       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-28)
+Ver. 1.1.1 (2024-06-22)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -36,15 +34,18 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change in size/weight of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ['size', 2, Property]]
+    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ( 'size', 0, False, Property )]
 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_upper_limit : int = None,
-                 p_lower_limit : int = None,
-                 
+                 p_size_thresh : float = None,
+                 p_size_upper_thresh : float = None,
+                 p_size_lower_thresh : float = None,
+                 p_roc_size_thresh : float = 0.1,
+                 p_step_rate = 1,
+                 p_initial_skip : int = 1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -71,9 +72,19 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
         if len(unknown_prop) >0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
-        
-        self._upper_thresh = p_upper_limit
-        self._lower_thresh = p_lower_limit
+        self._thresh_u      = p_size_upper_thresh
+        self._thresh_l      = p_size_lower_thresh
+        self._thresh        = p_size_thresh
+        self._thresh_roc    = p_roc_size_thresh
+
+        self._prev_sizes      = {}
+        self._prev_roc_sizes  = {}
+        self._size_thresh     = {}
+        self._roc_size_thresh = {}
+        self._size_buffer     = {}
+
+        self._step_rate = p_step_rate
+        self._init_skip = p_initial_skip
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -84,15 +95,41 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
         clusters = self._clusterer.get_clusters()
 
-
         affected_clusters = {}
+
+        if self._thresh_u != None:
+            for x in clusters.keys():
+                if clusters[x].size.value >= self._thresh_u:
+                    affected_clusters[x] = clusters[x]
+        if self._thresh_l != None:
+            for x in clusters.keys():
+                if clusters[x].size.value <= self._thresh_l:
+                    affected_clusters[x] = clusters[x]
+
+        if self._size_thresh:
+            for x in clusters.keys():
+                if x not in self._prev_sizes.keys():
+                    self._prev_sizes[x] = clusters[x].size.value
+                    self._size_thresh[x] = clusters[x].size.value * self._size_thresh
+            
+                if (self._prev_sizes[x]-clusters[x].size.value) >= self._size_thresh[x]:
+                    affected_clusters[x] = clusters[x]
+                    self._prev_sizes[x] = clusters[x].size.value
+                    self._size_thresh[x] = clusters[x].size.value * self._size_thresh
+                elif (clusters[x].size.value-self._prev_sizes[x]) >= self._size_thresh[x]:
+                    affected_clusters[x] = clusters[x] 
+                    self._prev_sizes[x] = clusters[x].size.value
+                    self._size_thresh[x] = clusters[x].size.value * self._size_thresh
+
         for x in clusters.keys():
-        
-            if clusters[x].size.value < self._lower_thresh:
-                affected_clusters[x] = clusters[x]
-            if clusters[x].size.value > self._upper_thresh:
-                affected_clusters[x] = clusters[x]
+            if x not in self._size_buffer.keys():
+                self._size_buffer[x] = []
+            self._size_buffer[x].append(clusters[x].size.value)
+            if len(self._size_buffer[x]) > (self._step_rate+1):
+                self._size_buffer.pop(0)
 
         event = ClusterSizeVariation(p_id = self._get_next_anomaly_id,
                                      p_instances=[inst],
                                      p_clusters=affected_clusters)
+        
+        

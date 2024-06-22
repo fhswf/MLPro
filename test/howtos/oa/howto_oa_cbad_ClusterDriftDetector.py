@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro_int_river
-## -- Module  : howto_oa_cbad_ClusterDisappearance.py
+## -- Module  : howto_oa_cbad_ClusterDriftDetector.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -21,29 +21,30 @@ from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from sparccstream import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.disappearance_detector import ClusterDisappearanceDetector
+from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.drift_detector import ClusterDriftDetector
 
 
 
 # 1 Prepare a scenario
 class MyScenario(OAScenario):
 
-    C_NAME = 'NewClusterDetectorScenario'
+    C_NAME = 'ClusterDriftDetectorScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
         stream = StreamMLProClusterGenerator(p_num_dim=2,
-                                                  p_num_instances=1000,
-                                                  p_num_clusters=4,
-                                                  p_radii=[100],
-                                                  p_velocities=[0.0],
-                                                  p_weights=[1],
-                                                  p_disappearance_of_clusters=True,
-                                                  p_points_of_disappearance_of_clusters=[600, 700, 800, 900],
-                                                  p_num_clusters_to_disappear=3,
-                                                  p_seed=12,
-                                                  p_logging=p_logging)
+                                             p_num_instances=1000,
+                                             p_num_clusters=3,
+                                             p_radii=[100],
+                                             p_velocities=[0.0],
+                                             p_weights=[1],
+                                             p_change_velocities=True,
+                                             p_changed_velocities=[0.2, 0.1],
+                                             p_points_of_change_velocities=[600, 400],
+                                             p_num_clusters_for_change_velocities=2,
+                                             p_seed=12,
+                                             p_logging=p_logging)
 
 
         # 1.2 Set up a stream workflow
@@ -70,10 +71,12 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task = task_clusterer)
 
         # Anomaly Detector
-        task_anomaly_detector = ClusterDisappearanceDetector(p_clusterer=task_clusterer,
-                                                             p_age_threshold=20,
-                                                             p_visualize=p_visualize,
-                                                             p_logging=p_logging)
+        task_anomaly_detector = ClusterDriftDetector(p_clusterer=task_clusterer,
+                                                     p_velocity_threshold=10.0,
+                                                     p_step_rate=10,
+                                                     p_initial_skip=100,
+                                                     p_visualize=p_visualize,
+                                                     p_logging=p_logging)
 
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 
@@ -84,7 +87,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit =1000
+    cycle_limit =3000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
