@@ -42,9 +42,7 @@
 ## --                                - new parameter data_horizon with default value 1000
 ## -- 2024-05-22  2.13.0    DA       New method PlotSettings.copy()
 ## -- 2024-06-04  2.13.1    DA/SK    Turned on TKAgg for Mac
-## -- 2024-06-24  2.14.0    DA       Refactoring/code optimization: 
-## --                                - calling Plottable.__init__() is mandatory now
-## --                                - new auto-managed attribute Plottable._plot_first_time : bool
+## -- 2024-06-24  2.14.0    DA       New auto-managed attribute Plottable._plot_first_time : bool
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -235,8 +233,7 @@ class Plottable:
     def __init__(self, p_visualize:bool=False):
         self._visualize = self.C_PLOT_ACTIVE and p_visualize
         self._plot_settings : PlotSettings = None
-        self._plot_initialized : bool = False
-        self._plot_first_time : bool  = True
+        self._plot_first_time : bool = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -256,7 +253,10 @@ class Plottable:
             C_PLOT_DEFAULT_VIEW).
         """
 
-        if self._plot_initialized: return
+        try:
+            if self._plot_initialized: return
+        except:
+            pass
 
         if p_plot_settings is not None: 
             self._plot_settings = p_plot_settings
@@ -289,7 +289,15 @@ class Plottable:
         """
 
         # 1 Plot functionality turned on? Initialization already called?
-        if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ) or self._plot_initialized: return
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
+        try:
+            if self._plot_initialized: return
+        except:
+            self._plot_own_figure   = False
 
         plt.ioff()
 
@@ -311,7 +319,6 @@ class Plottable:
             self._plot_own_figure   = True
         else:
             self._figure : Figure   = p_figure
-            self._plot_own_figure   = False
 
 
         # 4 Call of all initialization methods of the required views
@@ -404,17 +411,20 @@ class Plottable:
         """
     
         # 1 Plot functionality turned on?
-        if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
         
 
-        # 2 Object has own figure or refresh is forced by caller?
+         # 1 Object has own figure or refresh is forced by caller?
         if not self._plot_own_figure and not p_force: return
             
         if self._plot_own_figure:
             self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
         
 
-        # 3 Refresh plot
+        # 2 Refresh plot
         if ( self._plot_step_counter==0 ) or p_force: self._refresh_plot()
             
 
@@ -504,10 +514,16 @@ class Plottable:
         """
 
         # 0 Plot functionality turned on?
-        if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
             
-        # 1 Plot already initialized?
-        if not self._plot_initialized: self.init_plot()
+         # 1 Plot already initialized?
+        try:
+            if not self._plot_initialized: self.init_plot()
+        except: 
+            self.init_plot()
 
         # 2 Call of all required plot methods
         view = self._plot_settings.view
@@ -515,8 +531,6 @@ class Plottable:
 
         # 3 Update content of own(!) figure after self._plot_step_rate calls
         self.refresh_plot(p_force=False)
-
-        self._plot_first_time = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -579,7 +593,10 @@ class Plottable:
         """
 
         # 1 Plot functionality turned on?
-        if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
             
          # 2 Call _remove_plot method of current view
         view = self._plot_settings.view
@@ -587,7 +604,9 @@ class Plottable:
 
         # 3 Optionally refresh
         if p_refresh: self.refresh_plot(p_force=False)
-    
+
+        self._plot_first_time = True
+   
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
