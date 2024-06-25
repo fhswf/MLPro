@@ -43,10 +43,11 @@
 ## -- 2024-05-22  2.13.0    DA       New method PlotSettings.copy()
 ## -- 2024-06-04  2.13.1    DA/SK    Turned on TKAgg for Mac
 ## -- 2024-06-07  2.13.2    SY       Introducing new data plotting type of Episodic Sum
+## -- 2024-06-24  2.14.0    DA       New auto-managed attribute Plottable._plot_first_time : bool
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.13.2 (2024-06-07)
+Ver. 2.14.0 (2024-06-24)
 
 This module provides various classes related to data plotting.
 
@@ -233,6 +234,7 @@ class Plottable:
     def __init__(self, p_visualize:bool=False):
         self._visualize = self.C_PLOT_ACTIVE and p_visualize
         self._plot_settings : PlotSettings = None
+        self._plot_first_time : bool = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -341,6 +343,7 @@ class Plottable:
 
         # 6 Marker to ensure that initialization runs only once
         self._plot_initialized = True
+        self._plot_first_time  = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -602,7 +605,9 @@ class Plottable:
 
         # 3 Optionally refresh
         if p_refresh: self.refresh_plot(p_force=False)
-    
+
+        self._plot_first_time = True
+   
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
