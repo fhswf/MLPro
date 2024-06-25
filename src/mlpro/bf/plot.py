@@ -43,10 +43,15 @@
 ## -- 2024-05-22  2.13.0    DA       New method PlotSettings.copy()
 ## -- 2024-06-04  2.13.1    DA/SK    Turned on TKAgg for Mac
 ## -- 2024-06-24  2.14.0    DA       New auto-managed attribute Plottable._plot_first_time : bool
+## -- 2024-06-25  2.15.0    DA       Class Plottable:
+## --                                - removed method set_plot_detail_level()
+## --                                - added methods assign_plot_detail_level(), 
+## --                                  get_plot_detail_level() and related property plot_detail_level
+## --                                - added new constant attribute C_PLOT_DETAIL_LEVEL
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.14.0 (2024-06-24)
+Ver. 2.15.0 (2024-06-25)
 
 This module provides various classes related to data plotting.
 
@@ -222,18 +227,25 @@ class Plottable:
         Custom list of views that are supported/implemented (see class PlotSettings)
     C_PLOT_DEFAULT_VIEW : str = ''
         Custom attribute for the default view. See class PlotSettings for more details.
+    C_PLOT_DETAIL_LEVEL : int = 0
+        Custom attribute for the assigned detail level. See method assign_plot_detail_level() for
+        more details.
+    plot_detail_level : int
+        Own plot detail level.
     """
 
     C_PLOT_ACTIVE : bool        = False
     C_PLOT_STANDALONE : bool    = True
     C_PLOT_VALID_VIEWS : list   = []
     C_PLOT_DEFAULT_VIEW : str   = PlotSettings.C_VIEW_ND
+    C_PLOT_DETAIL_LEVEL : int   = 0 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_visualize:bool=False):
-        self._visualize = self.C_PLOT_ACTIVE and p_visualize
+        self._visualize                    = self.C_PLOT_ACTIVE and p_visualize
         self._plot_settings : PlotSettings = None
-        self._plot_first_time : bool = True
+        self.plot_detail_level             = self.C_PLOT_DETAIL_LEVEL
+        self._plot_first_time : bool       = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -268,8 +280,6 @@ class Plottable:
                 raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')    
 
         self._plot_step_counter = 0
-        self.set_plot_step_rate(p_step_rate=self._plot_settings.step_rate)
-        self.set_plot_detail_level(p_detail_level=self._plot_settings.detail_level)
    
 
 ## -------------------------------------------------------------------------------------------------
@@ -293,6 +303,11 @@ class Plottable:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
             return
+
+        try:
+            if ( p_plot_settings.detail_level > 0 ) and ( p_plot_settings.detail_level < self.plot_detail_level ): return
+        except:
+            self.plot_detail_level = self.C_PLOT_DETAIL_LEVEL
 
         try:
             if self._plot_initialized: return
@@ -352,11 +367,30 @@ class Plottable:
 
 ## -------------------------------------------------------------------------------------------------
     def set_plot_step_rate(self, p_step_rate:int):
-        if p_step_rate > 0: self._plot_step_rate = p_step_rate
+        if p_step_rate > 0: self._plot_settings.step_rate = p_step_rate
+
+    
+## -------------------------------------------------------------------------------------------------
+    def get_plot_detail_level(self) -> int:
+        try:
+            return self._plot_detail_level
+        except:
+            self.assign_plot_detail_level( p_detail_level = 0 )
+            return self._plot_detail_level
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_plot_detail_level(self, p_detail_level:int):
+    def assign_plot_detail_level(self, p_detail_level:int):
+        """
+        Assigns an own plot detail level. Plots are carried out only, if the specified detail level
+        is less or equal to self._plot_settings.detail_level or self._plot_settings.detail_level = 0.
+
+        Parameters
+        ----------
+        p_detail_level : int
+            Integer detail level >=0 to be assigned.
+        """
+
         self._plot_detail_level = max(0, p_detail_level)
 
 
@@ -519,17 +553,24 @@ class Plottable:
         except:
             return
             
+
          # 1 Plot already initialized?
         try:
             if not self._plot_initialized: self.init_plot()
         except: 
             self.init_plot()
 
-        # 2 Call of all required plot methods
+
+        # 2 Check the assigned/required detail level
+        if ( self._plot_settings.detail_level > 0 ) and ( self.plot_detail_level < self._plot_settings.detail_level ): return
+
+
+        # 3 Call of all required plot methods
         view = self._plot_settings.view
         self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
 
-        # 3 Update content of own(!) figure after self._plot_step_rate calls
+        
+        # 4 Update content of own(!) figure after self._plot_step_rate calls
         self.refresh_plot(p_force=False)
 
 
@@ -633,6 +674,9 @@ class Plottable:
         """
 
         pass
+
+
+    plot_detail_level = property( fget = get_plot_detail_level, fset = assign_plot_detail_level )
 
 
 
