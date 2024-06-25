@@ -11,10 +11,12 @@
 ## -- 2022-12-16  1.0.2     DA       Little refactoring
 ## -- 2022-12-19  1.0.3     DA       New parameter p_duplicate_data
 ## -- 2024-05-22  1.1.0     DA       Refactoring
+## -- 2024-06-17  1.1.1.    DA       Method Rearranger._prepare_rearrangement(): takeover of feature 
+## --                                and label space from first instance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-05-22)
+Ver. 1.1.1 (2024-06-17)
 
 This module provides a stream task class Rearranger to rearrange the feature and label space of
 instances.
@@ -25,7 +27,7 @@ instances.
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.mt import Task
-from mlpro.bf.math import Element, Set
+from mlpro.bf.math import Element
 from mlpro.bf.streams import Instance, InstDict, StreamTask
 
 
@@ -87,19 +89,8 @@ class Rearranger (StreamTask):
                 
         self._features_new  = p_features_new
         self._labels_new    = p_labels_new
-
-        self._feature_space = Set()
-
-        for f_entry in self._features_new: 
-            for feature in f_entry[1]:
-                self._feature_space.add_dim(p_dim=feature)
-
-        self._label_space   = Set()
-
-        for l_entry in self._labels_new: 
-            for label in l_entry[1]:
-                self._label_space.add_dim(p_dim=label)
-
+        self._feature_space = None
+        self._label_space   = None
         self._prepared      = False
 
 
@@ -112,10 +103,22 @@ class Rearranger (StreamTask):
         self._mapping_f2l = []
         self._mapping_l2l = []
 
-        features = p_inst.get_feature_data().get_dim_ids()
+        # 1.1 Feature space
+        features            = p_inst.get_feature_data().get_dim_ids()
+        self._feature_space = type(p_inst.get_feature_data().get_related_set())()
 
+        for f_entry in self._features_new: 
+            for feature in f_entry[1]:
+                self._feature_space.add_dim(p_dim=feature)
+
+        # 1.2 Label space
         try:
-            labels = p_inst.get_label_data().get_dim_ids()
+            labels            = p_inst.get_label_data().get_dim_ids()
+            self._label_space = type(p_inst.get_label_data().get_related_set())()
+
+            for l_entry in self._labels_new: 
+                for label in l_entry[1]:
+                    self._label_space.add_dim(p_dim=label)
         except:
             labels = []
 
