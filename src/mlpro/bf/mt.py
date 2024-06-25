@@ -34,10 +34,12 @@
 ## -- 2023-03-27  1.9.0     DA       Class Task: added parent class Persistent
 ## -- 2024-01-05  1.9.1     DA       Class Task: bugfix in __init__() regarding name generation
 ## -- 2024-05-31  1.9.2     DA       Class Task: new exception rule for MacOs in meth. init_plot()
+## -- 2024-06-17  2.0.0     DA       Class Workflow: new method get_tasks()
+## -- 2024-06-18  2.1.0     DA       Class Task: new parent class KWArgs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.2 (2024-05-31)
+Ver. 2.1.0 (2024-06-18)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -474,7 +476,7 @@ class Async (Range, Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Task (Async, EventManager, Plottable, Persistent): 
+class Task (Async, EventManager, Plottable, Persistent, KWArgs): 
     """
     Template class for a task, that can run things - and even itself - asynchronously in a thread
     or process. Tasks can run standalone or as part of a workflow (see class Workflow). The integrated
@@ -500,7 +502,7 @@ class Task (Async, EventManager, Plottable, Persistent):
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
-        Further optional named parameters.
+        Further optional keyword arguments.
     """
 
     C_TYPE              = 'Task'
@@ -522,7 +524,7 @@ class Task (Async, EventManager, Plottable, Persistent):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._kwargs            = p_kwargs.copy()
+        KWArgs.__init__(self, **p_kwargs)
 
         self._predecessor_tasks = []
         self._predecessor_ids   = []
@@ -831,7 +833,7 @@ class Workflow (Task):
                        p_class_shared=p_class_shared,
                        p_visualize=p_visualize,
                        p_logging=p_logging,
-                       p_kwargs=p_kwargs )
+                       **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -901,6 +903,11 @@ class Workflow (Task):
             for t_pred in p_pred_tasks: 
                 t_pred.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=p_task.run_on_event)
                 if t_pred in self._final_tasks: self._final_tasks.remove(t_pred)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_tasks(self) -> list:
+        return self._tasks
 
 
 ## -------------------------------------------------------------------------------------------------

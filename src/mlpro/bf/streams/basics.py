@@ -65,15 +65,16 @@
 ## --                                Class StreamTask:
 ## --                                - optimization of code for plotting
 ## -- 2024-05-23  2.0.1     DA       Bugfix in method StreamTask.run()
+## -- 2024-06-07  2.0.2     LSB      Fixing timedelta handling in ND plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2024-05-23)
+Ver. 2.0.2 (2024-06-07)
 
 This module provides classes for standardized stream processing. 
 
 """
-
+import datetime
 
 from matplotlib.figure import Figure
 import random
@@ -1380,7 +1381,11 @@ class StreamTask (Task):
 
             if inst_type == InstTypeNew:
                 self._plot_inst_ids.append(inst_id)
-                self._plot_nd_xdata.append(inst.tstamp)
+                # Handling if the tstamps are timedeltas
+                try:
+                    self._plot_nd_xdata.append(inst.tstamp.total_seconds())
+                except:
+                    self._plot_nd_xdata.append(inst.tstamp)
 
                 feature_data = inst.get_feature_data().get_values()
 
@@ -1427,7 +1432,14 @@ class StreamTask (Task):
         else:
             xlim_id = 0
 
-        p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id], self._plot_nd_xdata[-1])
+        if isinstance(self._plot_nd_xdata[xlim_id], timedelta):
+            # Handling if the tstamps are timedeltas
+            try:
+                p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id].total_seconds(), self._plot_nd_xdata[-1].total_seconds())
+            except:
+                raise Error("time delta could not be processed")
+        else:
+            p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id], self._plot_nd_xdata[-1])
         p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
                     
 

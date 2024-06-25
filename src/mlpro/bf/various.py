@@ -50,10 +50,11 @@
 ## -- 2024-05-19  2.2.0     DA       - class Id: new property id
 ## --                                - class TStamp: new property tstamp
 ## -- 2024-05-21  2.3.0     DA       Class TStamp: introduction of alias TStampType
+## -- 2024-06-18  2.4.0     DA       New class KWArgs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2024-05-21)
+Ver. 2.4.0 (2024-06-18)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -66,8 +67,10 @@ import dill as pkl
 import os
 import sys
 import uuid
-from mlpro.bf.exceptions import *
 from typing import Union
+
+from mlpro.bf.exceptions import *
+
 
 
 # Global dictionary to store paths of pickle files during runtime
@@ -898,3 +901,66 @@ class PersonalisedStamp (Id):
 
         """
         return self._name
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class KWArgs:
+    """
+    Enables standardized access to keyword parameters.
+
+    Parameters
+    ----------
+    p_kwargs : dict
+        Keyword parameters.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, **p_kwargs):
+        self._kwargs = p_kwargs.copy()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_kwargs(self) -> dict:
+        """
+        Returns all keyword parameters.
+
+        Returns
+        -------
+        dict
+            Dictionary with keyword parameters.
+        """
+
+        return self._kwargs
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_kwarg(self, p_name: str, p_default = None):
+        """
+        Returns the value of a keyword parameter or its default value otherwise.
+
+        Parameters
+        ----------
+        p_name : str
+            Name of the keyword parameter.
+        p_default
+            Optional default value, if the parameter in p_name was not provided. An exception is
+            raised, if p_default is None and the keyword parameter was not provided.
+        
+        Returns
+        -------
+        any
+            The value of the keyword parameter if provided. Otherwise, p_default is returned as
+            a default value.
+        """
+
+        try:
+            return self._kwargs[p_name]
+        except:
+            if p_default is None:
+                raise ParamError('Keyword parameter "' + p_name + '" not supplied')
+            else:
+                return p_default

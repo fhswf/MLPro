@@ -35,10 +35,11 @@
 ## --                                - renamed attributes C_MS_SCOPE_* to C_RESULT_SCOPE_*
 ## --                                - new method _get_cluster_relations()
 ## --                                - new method get_cluster_influences()
+## -- 2024-06-16  1.2.1     DA       Bugfix in ClusterAnalyzer.align_cluster_properties()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-06-08)
+Ver. 1.2.1 (2024-06-16)
 
 This module provides a template class for online cluster analysis.
 """
@@ -72,7 +73,7 @@ class ClusterAnalyzer (OATask):
     - Specify all cluster properties provided/maintained by your algorithm in C_CLUSTER_PROPERTIES.
     - Implement method self._adapt() to update your cluster list on new instances
     - Implement method self._adapt_reverse() to update your cluster list on obsolete instances
-    - New cluster: hand over self._cluster_properties on instantiation
+    - New cluster: hand over self._cluster_properties.values() on instantiation
     
     Parameters
     ----------
@@ -149,10 +150,9 @@ class ClusterAnalyzer (OATask):
         self._cluster_limit = p_cluster_limit
         self._next_cluster_id : ClusterId = -1
 
-        self._cluster_properties : PropertyDefinitions = self.C_CLUSTER_PROPERTIES.copy()
-        self._cluster_properties_dict = {}
-        for prop in self._cluster_properties:
-            self._cluster_properties_dict[prop[0]] = prop
+        self._cluster_properties = {}
+        for prop in self.C_CLUSTER_PROPERTIES:
+            self._cluster_properties[prop[0]] = prop
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -175,9 +175,10 @@ class ClusterAnalyzer (OATask):
 
         for p_ext in p_properties:
             try:
-                p_int = self._cluster_properties_dict[p_ext[0]]
+                p_int = self._cluster_properties[p_ext[0]]
                 p_int[1] = p_ext[1]   # alignment of maximum order of derivatives
-                p_int[2] = p_ext[2]   # alignment of property class
+                p_int[2] = p_ext[2]   # alignment of storage of previous values
+                p_int[3] = p_ext[3]   # alignment of property class
             except:
                 # Property not supported by cluster algorithm
                 unknown_properties.append(p_ext[0])
@@ -316,6 +317,7 @@ class ClusterAnalyzer (OATask):
 
         if cluster_max_results is not None:
             list_results_abs.append( cluster_max_results )            
+            sum_results = cluster_max_results[1]
 
 
         # 2 Determination of relative result values according to the required scope
