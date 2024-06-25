@@ -32,10 +32,11 @@
 ## -- 2024-06-03  1.0.1     DA       Method Properties.update_plot(): changed order of plotting
 ## -- 2024-06-05  1.1.0     DA       New method Properties.replace_property()
 ## -- 2024-06-06  1.2.0     DA       New custom method Properties._update_property_links()
+## -- 2024-06-16  1.3.0     DA       New method Properties.get_property_definitions()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-06-06)
+Ver. 1.3.0 (2024-06-16)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -272,6 +273,7 @@ class Properties (Plottable, Renormalizable):
                   p_visualize : bool = False ):
                      
         self._properties = {}
+        self._property_definitions = {}
         self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
         self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
         self._update_property_links()
@@ -310,6 +312,7 @@ class Properties (Plottable, Renormalizable):
                           p_value_prev = p_value_prev,
                           p_visualize = p_visualize )
         self._properties[p_name] = (prop_obj, False)
+        self._property_definitions[p_name] = ( p_name, p_derivative_order_max, p_value_prev, p_cls )
         setattr(self, p_name, prop_obj )
 
 
@@ -348,6 +351,20 @@ class Properties (Plottable, Renormalizable):
         """
 
         return self._properties
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_property_definitions(self) -> PropertyDefinitions:
+        """
+        Returns a list of currently stored property definitions.
+
+        Returns
+        -------
+        PropertyDefinitions
+            List of property definitions
+        """
+
+        return list(self._property_definitions.values())
     
 
 ## -------------------------------------------------------------------------------------------------

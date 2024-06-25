@@ -35,10 +35,11 @@
 ## --                                - removed implementation for get_membership() since this 
 ## --                                  depends on the shape of a cluster body
 ## --                                - implemented new method get_influence()
+## -- 2024-06-18  1.3.0     DA       Removed method ClusterCentroid.__init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-06-08)
+Ver. 1.3.0 (2024-06-18)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -58,18 +59,7 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_ce
 ## -------------------------------------------------------------------------------------------------
 class ClusterCentroid (Cluster):
     """
-    Extended cluster class with a centroid.
-
-    Parameters
-    ----------
-    p_id
-        Optional external id
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_cls_centroid = Point
-        Name of a point class. Default = Point
-    **p_kwargs
-        Further optional keyword arguments.
+    Extended cluster class with a centroid. 
 
     Attributes
     ----------
@@ -78,19 +68,6 @@ class ClusterCentroid (Cluster):
     """
 
     C_PROPERTIES    = [ cprop_centroid ]
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_id,
-                  p_properties : PropertyDefinitions = [],
-                  p_visualize : bool = False ):
-
-        super().__init__( p_id = p_id,
-                          p_properties = p_properties,
-                          p_visualize = p_visualize )
-
-        self._centroid_elem : Element = None
-
 
 # ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id):
@@ -107,12 +84,15 @@ class ClusterCentroid (Cluster):
 
         feature_data = p_inst.get_feature_data()
 
-        if self._centroid_elem is None:
+        try:
+            centroid_elem = self._centroid_elem
+        except:
             self._centroid_elem = Element( p_set=feature_data.get_related_set() )
+            centroid_elem = self._centroid_elem
 
-        self._centroid_elem.set_values( p_values=self.centroid.value )
+        centroid_elem.set_values( p_values=self.centroid.value )
 
         try:
-            return 1 / feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid_elem )
+            return 1 / feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = centroid_elem )
         except ZeroDivisionError:
             return sys.float_info.max
