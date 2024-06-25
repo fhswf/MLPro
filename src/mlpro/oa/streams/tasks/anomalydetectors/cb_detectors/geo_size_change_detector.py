@@ -41,7 +41,8 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_geo_size_thresh : float = 0.1,
+                 p_geo_size_thresh_in_percentage : float = 10.0,
+                 p_relative_thresh : bool = False,
                  p_geo_size_upper_thresh : float = None,
                  p_geo_size_lower_thresh : float = None,
                  p_roc_geo_size_thresh : float = 0.1,
@@ -73,10 +74,11 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         
         self._thresh_u      = p_geo_size_upper_thresh
         self._thresh_l      = p_geo_size_lower_thresh
-        self._thresh        = p_geo_size_thresh
+        self._thresh        = p_geo_size_thresh_in_percentage
         self._thresh_roc    = p_roc_geo_size_thresh
 
         self._prev_geo_sizes  = {}
+        self._rel_thresh      = p_relative_thresh
         self._geo_size_thresh = {}
 
 
@@ -103,7 +105,20 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         for x in clusters.keys():
             if x not in self._prev_geo_sizes.keys():
                 self._prev_geo_sizes[x] = clusters[x].geo_size.value
-                self._geo_size_thresh[x] = clusters[x].geo_size.value * self._geo_size_thresh
+                #self._geo_size_thresh[x] = clusters[x].geo_size.value * self._geo_size_thresh
+            
+            if self._rel_thresh:
+                n = 0
+                s = 0.0
+                for x in clusters.keys():
+                    if clusters[x].geo_size.value > 0.0:
+                        n += 1
+                        s += float(1/clusters[x].geo_size.value)
+                self._geo_size_thresh[x] = (n * self._thresh/100) / s
+
+            else:
+                self._geo_size_thresh[x] = clusters[x].geo_size.value * self._geo_size_thresh / 100
+
             
             if (self._prev_geo_sizes[x]-clusters[x].geo_size.value) >= self._geo_size_thresh[x]:
                 affected_clusters_shrinkage[x] = clusters[x]

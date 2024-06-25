@@ -44,6 +44,7 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                  p_size_upper_thresh : float = None,
                  p_size_lower_thresh : float = None,
                  p_roc_size_thresh : float = 0.1,
+                 p_relative_size_change : bool = False,
                  p_step_rate = 1,
                  p_initial_skip : int = 1,
                  p_name:str = None,
@@ -69,22 +70,27 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) >0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
+        self._rel_size_change = p_relative_size_change
         self._thresh_u      = p_size_upper_thresh
         self._thresh_l      = p_size_lower_thresh
         self._thresh        = p_size_thresh
         self._thresh_roc    = p_roc_size_thresh
 
         self._prev_sizes      = {}
-        self._prev_roc_sizes  = {}
+        #self._prev_roc_sizes  = {}
         self._size_thresh     = {}
-        self._roc_size_thresh = {}
-        self._size_buffer     = {}
 
         self._step_rate = p_step_rate
         self._init_skip = p_initial_skip
+
+        self._size_buffer     = {}
+
+        self._sizes = {}
+        self._count = {}
+        self._distr_bias = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -121,15 +127,35 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                     self._prev_sizes[x] = clusters[x].size.value
                     self._size_thresh[x] = clusters[x].size.value * self._size_thresh
 
-        for x in clusters.keys():
-            if x not in self._size_buffer.keys():
+        if self._rel_size_change:
+            
+            for x in clusters.keys():
+                if x not in self._sizes.keys():
+                    self._sizes[x] = int(clusters[x].size.value)
+                    self._count[x] = 1
+                    self._distr_bias[x] = 0
+
+                else:
+                    if int(clusters[x].size.value) == self._sizes[x]:
+                        self._count[x] += 1
+
+                    else:
+                        self._distr_bias[x] = self._count[x]
+                        self._count[x] = 1
+                        self._sizes[x] = int(clusters[x].size.value)
+            
+            print(self._distr_bias)
+
+
+
+        """if x not in self._size_buffer.keys():
                 self._size_buffer[x] = []
             self._size_buffer[x].append(clusters[x].size.value)
             if len(self._size_buffer[x]) > (self._step_rate+1):
-                self._size_buffer.pop(0)
+                self._size_buffer[x].pop(0)
 
         event = ClusterSizeVariation(p_id = self._get_next_anomaly_id,
                                      p_instances=[inst],
-                                     p_clusters=affected_clusters)
+                                     p_clusters=affected_clusters)"""
         
         
