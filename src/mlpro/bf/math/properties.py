@@ -435,6 +435,10 @@ class Properties (Plottable, Renormalizable):
         if not self.get_visualization(): return
 
         Plottable.init_plot(self, p_figure = p_figure, p_plot_settings = p_plot_settings )
+        try:
+            if not self._plot_initialized: return
+        except:
+            return
 
         for (prop, link) in self.get_properties().values():
             if not link: prop.init_plot( p_figure = self._figure, p_plot_settings = p_plot_settings)

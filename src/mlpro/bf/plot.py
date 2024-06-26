@@ -48,10 +48,11 @@
 ## --                                - added methods assign_plot_detail_level(), 
 ## --                                  get_plot_detail_level() and related property plot_detail_level
 ## --                                - added new constant attribute C_PLOT_DETAIL_LEVEL
+## -- 2024-06-26  2.15.1    DA       Refactoring, corrections, adjustments
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.15.0 (2024-06-25)
+Ver. 2.15.1 (2024-06-26)
 
 This module provides various classes related to data plotting.
 
@@ -244,7 +245,9 @@ class Plottable:
     def __init__(self, p_visualize:bool=False):
         self._visualize                    = self.C_PLOT_ACTIVE and p_visualize
         self._plot_settings : PlotSettings = None
+        self._plot_own_figure : bool       = self.C_PLOT_STANDALONE
         self.plot_detail_level             = self.C_PLOT_DETAIL_LEVEL
+        self._plot_initialized : bool      = False
         self._plot_first_time : bool       = True
 
 
@@ -285,8 +288,7 @@ class Plottable:
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure = None,
-                   p_plot_settings : PlotSettings = None, 
-                   **p_kwargs):
+                   p_plot_settings : PlotSettings = None ) -> bool:
         """
         Initializes the plot functionalities of the class.
 
@@ -296,6 +298,7 @@ class Plottable:
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
         p_plot_settings : PlotSettings
             Optional plot settings. If None, the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
+
         """
 
         # 1 Plot functionality turned on? Initialization already called?
@@ -334,7 +337,7 @@ class Plottable:
             self._plot_own_figure   = True
         else:
             self._figure : Figure   = p_figure
-
+            self._plot_own_figure   = False
 
         # 4 Call of all initialization methods of the required views
         view = self._plot_settings.view
