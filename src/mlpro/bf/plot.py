@@ -48,11 +48,13 @@
 ## --                                - added methods assign_plot_detail_level(), 
 ## --                                  get_plot_detail_level() and related property plot_detail_level
 ## --                                - added new constant attribute C_PLOT_DETAIL_LEVEL
-## -- 2024-06-26  2.15.1    DA       Refactoring, corrections, adjustments
+## -- 2024-06-26  2.16.0    DA       - Refactoring, corrections, adjustments
+## --                                - New property Plottable.color
+## --                                - Class PlotSettings: removed parameter p_plot_depth
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.15.1 (2024-06-26)
+Ver. 2.16.0 (2024-06-26)
 
 This module provides various classes related to data plotting.
 
@@ -111,9 +113,6 @@ class PlotSettings:
     p_plot_horizon : int
         Optional plot horizon for ND plot. A value > 0 limits the number of data entities shown
         in the plot. Default = 500.
-    p_plot_depth : int 
-        Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
-        depth is unlimited. Default = 0.
     p_data_horizon : int
         Optional data horizon for ND plot. A value > 0 limits the number of data entities buffered 
         internally for plotting. Default = 1000.
@@ -145,7 +144,6 @@ class PlotSettings:
                   p_size_y : int = 1,
                   p_step_rate : int = 1,
                   p_plot_horizon : int = 500,
-                  p_plot_depth : int = 0,
                   p_data_horizon : int = 1000,
                   p_detail_level : int = 0,
                   p_force_fg : bool = True,
@@ -163,7 +161,6 @@ class PlotSettings:
         self.size_x          = p_size_x
         self.size_y          = p_size_y
         self.step_rate       = p_step_rate
-        self.plot_depth      = p_plot_depth
         self.detail_level    = p_detail_level
         self.force_fg        = p_force_fg
         self.id              = p_id
@@ -188,8 +185,8 @@ class PlotSettings:
                                p_size_y = self.size_y,
                                p_step_rate = self.step_rate,
                                p_plot_horizon = self.plot_horizon,
-                               p_plot_depth = self.plot_depth,
                                p_data_horizon = self.data_horizon,
+                               p_detail_level = self.detail_level,
                                p_force_fg = self.force_fg,
                                p_id = self.id,
                                p_view_autoselect = self.view_autoselect,
@@ -231,6 +228,8 @@ class Plottable:
     C_PLOT_DETAIL_LEVEL : int = 0
         Custom attribute for the assigned detail level. See method assign_plot_detail_level() for
         more details.
+    color : str
+        Plot color. See also: https://matplotlib.org/stable/gallery/color/named_colors.html
     plot_detail_level : int
         Own plot detail level.
     """
@@ -245,10 +244,11 @@ class Plottable:
     def __init__(self, p_visualize:bool=False):
         self._visualize                    = self.C_PLOT_ACTIVE and p_visualize
         self._plot_settings : PlotSettings = None
-        self._plot_own_figure : bool       = self.C_PLOT_STANDALONE
         self.plot_detail_level             = self.C_PLOT_DETAIL_LEVEL
         self._plot_initialized : bool      = False
         self._plot_first_time : bool       = True
+        self._plot_own_figure : bool       = False
+        self._plot_color                   = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -337,8 +337,8 @@ class Plottable:
             self._plot_own_figure   = True
         else:
             self._figure : Figure   = p_figure
-            self._plot_own_figure   = False
 
+            
         # 4 Call of all initialization methods of the required views
         view = self._plot_settings.view
         try:
@@ -372,13 +372,27 @@ class Plottable:
     def set_plot_step_rate(self, p_step_rate:int):
         if p_step_rate > 0: self._plot_settings.step_rate = p_step_rate
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_plot_color(self):
+        try:
+            return self._plot_color
+        except:
+            self._plot_color = None
+            return self._plot_color
+
     
+## -------------------------------------------------------------------------------------------------
+    def set_plot_color(self, p_color : str):
+        self._plot_color = p_color
+
+
 ## -------------------------------------------------------------------------------------------------
     def get_plot_detail_level(self) -> int:
         try:
             return self._plot_detail_level
         except:
-            self.assign_plot_detail_level( p_detail_level = 0 )
+            self.assign_plot_detail_level( p_detail_level = self.C_PLOT_DETAIL_LEVEL )
             return self._plot_detail_level
 
 
@@ -565,7 +579,7 @@ class Plottable:
 
 
         # 2 Check the assigned/required detail level
-        if ( self._plot_settings.detail_level > 0 ) and ( self.plot_detail_level < self._plot_settings.detail_level ): return
+        if ( self._plot_settings.detail_level > 0 ) and ( self._plot_settings.detail_level < self.plot_detail_level ): return
 
 
         # 3 Call of all required plot methods
@@ -638,7 +652,7 @@ class Plottable:
 
         # 1 Plot functionality turned on?
         try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+            if not self._plot_initialized: return
         except:
             return
             
@@ -679,6 +693,7 @@ class Plottable:
         pass
 
 
+    color             = property( fget = get_plot_color, fset = set_plot_color )
     plot_detail_level = property( fget = get_plot_detail_level, fset = assign_plot_detail_level )
 
 
