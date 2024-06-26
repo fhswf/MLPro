@@ -19,10 +19,11 @@
 ## -- 2024-05-31  1.7.1     DA       Improved the stability of the plot methods
 ## -- 2024-06-03  1.8.0     DA       Class Point: new attributes color, marker
 ## -- 2024-06-05  1.8.1     DA       Bugfix in Point._remove_plot_2d()
+## -- 2024-06-26  1.9.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.1 (2024-06-05)
+Ver. 1.9.0 (2024-06-26)
 
 This module provides a property class for the geometric shape 'point'.
 
@@ -65,7 +66,6 @@ class Point (Property):
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None, **p_kwargs):
         self._plot_pos = None
         self._plot_vel = None
-        self.color     = self.C_PLOT_COLOR
         self.marker    = self.C_PLOT_MARKER
         super().init_plot(p_figure, p_plot_settings, **p_kwargs)
 
@@ -80,10 +80,15 @@ class Point (Property):
         if self._plot_pos is not None:
             self._plot_pos.remove()
 
+        if self.color is not None:
+            color = self.color
+        else:
+            color = self.C_PLOT_COLOR
+                                        
         self._plot_pos,  = p_settings.axes.plot( point_pos[0], 
                                                  point_pos[1], 
                                                  marker=self.marker, 
-                                                 color=self.color, 
+                                                 color=color, 
                                                  linestyle='',
                                                  markersize=3 )
             
@@ -100,7 +105,7 @@ class Point (Property):
                                                      point_pos[1], 
                                                      point_vel[0], 
                                                      point_vel[1],
-                                                     color=self.color )
+                                                     color=color )
                                                           
                                                          
 ## -------------------------------------------------------------------------------------------------
@@ -113,11 +118,16 @@ class Point (Property):
         if self._plot_pos is not None:
             self._plot_pos.remove()
 
+        if self.color is not None:
+            color = self.color
+        else:
+            color = self.C_PLOT_COLOR
+
         self._plot_pos,  = p_settings.axes.plot( point_pos[0], 
                                                  point_pos[1], 
                                                  point_pos[2],
                                                  marker=self.marker, 
-                                                 color=self.color,  
+                                                 color=color,  
                                                  linestyle='',
                                                  markersize=3 )
             
@@ -140,7 +150,7 @@ class Point (Property):
                                                       np.array([point_vel[2]]),
                                                       length = len,
                                                       normalize = True,
-                                                      color=self.color )
+                                                      color=color )
     
 
 ## -------------------------------------------------------------------------------------------------
