@@ -116,7 +116,7 @@ myscenario.reset()
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view=PlotSettings.C_VIEW_ND,
                                                         p_plot_horizon=100,
-                                                        p_data_horizon=150) ) 
+                                                        p_data_horizon=150 ) ) 
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

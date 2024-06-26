@@ -104,6 +104,11 @@ class Cluster (Id, Properties, KWArgs):
         KWArgs.__init__( self, **p_kwargs )
         Properties.__init__( self, p_properties = p_properties, p_visualize = p_visualize )
         Id.__init__( self, p_id = p_id )
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_plot_color(self, p_color):
+        Properties.set_plot_color( self, p_color = p_color)
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -145,3 +150,6 @@ class Cluster (Id, Properties, KWArgs):
         """
 
         raise NotImplementedError
+
+
+    color = property( fget = Properties.get_plot_color, fset = set_plot_color )
