@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies
-## -- Module  : contextual.py
+## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies.clusterbased
+## -- Module  : density.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -11,32 +11,36 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-22  1.2.1     SK       Refactoring
+## -- 2024-05-28  1.2.2     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-10)
+Ver. 1.2.2 (2024-05-28)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
-from mlpro.bf.streams import Instance
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
+from mlpro.oa.streams.basics import Instance
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import CBAnomaly
+
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ContextualAnomaly (Anomaly):
+class ClusterDensityVariation (CBAnomaly):
     """
-    Event class for anomaly events when contextual anomalies are detected
+    Event class to be raised when the density of a cluster changes.
     
     """
 
-    C_NAME      = 'Contextual'
+    C_NAME      = 'Cluster density variation'
 
-# -------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_id : int = 0, 
+                 p_id : int = 0,
                  p_instances : Instance = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
@@ -44,6 +48,7 @@ class ContextualAnomaly (Anomaly):
                  p_det_time : str = None,
                  **p_kwargs):
         
-        super().__init__(p_id = p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
+        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
+

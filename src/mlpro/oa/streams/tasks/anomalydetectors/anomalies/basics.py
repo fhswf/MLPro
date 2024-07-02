@@ -26,6 +26,7 @@ from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
 from mlpro.bf.streams import Instance
+from mlpro.bf.math.properties import PropertyDefinitions, Properties
 
 
 
@@ -63,6 +64,7 @@ class Anomaly (Id, Event, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id : int = 0,
                  p_instances: list[Instance] = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
@@ -70,23 +72,23 @@ class Anomaly (Id, Event, Plottable):
                  p_det_time : str = None,
                  **p_kwargs):
         
-        Id.__init__( self, p_id = 0 )
+        Id.__init__( self, p_id = p_id )
         Event.__init__( self, p_raising_object=p_raising_object,
                         p_tstamp=p_det_time, **p_kwargs)
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self.instances : list[Instance] = p_instances
-        self.ano_scores = p_ano_scores
+        self._instances : list[Instance] = p_instances
+        self._ano_scores = p_ano_scores
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_instances(self) -> list[Instance]:
-        return self.instances
+        return self._instances
     
 
 ## -------------------------------------------------------------------------------------------------
     def get_ano_scores(self):
-        return self.ano_scores
+        return self._ano_scores
     
 
 ## -------------------------------------------------------------------------------------------------
