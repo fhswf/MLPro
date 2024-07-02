@@ -36,7 +36,7 @@ class MyScenario(OAScenario):
                                                   p_num_instances=1000,
                                                   p_num_clusters=3,
                                                   p_radii=[100],
-                                                  p_distribution_bias=[1, 2, 3],
+                                                  p_distribution_bias=[1, 1, 1],
                                                   p_change_distribution_bias=True,
                                                   p_points_of_change_distribution_bias=[600],
                                                   p_num_clusters_for_change_distribution_bias=1,
@@ -69,7 +69,8 @@ class MyScenario(OAScenario):
 
         # Anomaly Detector
         task_anomaly_detector = ClusterSizeChangeDetector(p_clusterer=task_clusterer,
-                                                          p_size_upper_thresh=600,
+                                                          p_roc_size_thresh_in_percentage=50,
+                                                          p_relative_thresh=True,
                                                           p_visualize=p_visualize,
                                                           p_logging=p_logging)
 

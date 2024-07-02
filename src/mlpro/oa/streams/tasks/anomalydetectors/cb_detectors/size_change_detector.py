@@ -154,7 +154,10 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                 if clusters[x].size.value > 0.0:
                     n += 1
                     s += float(1/clusters[x].size.value)
-            return  ((n * thresh/100) / s)
+            if s != 0:
+                print("abc", (n * thresh/100) / s)
+                return  ((n * thresh/100) / s)
+            else: return 0.0
 
         else:
             return  (clusters[id].size.value * thresh / 100)

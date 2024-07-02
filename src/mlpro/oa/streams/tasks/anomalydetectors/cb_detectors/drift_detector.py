@@ -42,9 +42,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_velocity_threshold : float = 1.0,
-                 p_acceleration_threshold : float = 0.1,
-                 p_step_rate = 1,
+                 p_velocity_threshold : float = 4.0,
+                 p_step_rate = 10,
                  p_initial_skip : int = 1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
@@ -73,15 +72,17 @@ class ClusterDriftDetector(AnomalyDetectorCB):
         #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._cluster_centroids = {}
-        self._vel_thresh = p_velocity_threshold
-        self._acc_thresh = p_acceleration_threshold
+        self._thresh = p_velocity_threshold
         self._step_rate = p_step_rate
         self._count = 0
         self._init_skip = p_initial_skip
+        self._centroid_history = {}
+        self._prev_velocities = {}
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
-        if (self._count >= self._init_skip) and ((self._count % self._step_rate) == 0):
+        if (self._count >= self._init_skip):
+
             new_instances = []
             for inst_id, (inst_type, inst) in sorted(p_inst.items()):
                 new_instances.append(inst)
@@ -90,16 +91,29 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 
             drifting_clusters = {}
 
-            for id in clusters.keys():
-                if id not in self._cluster_centroids.keys():
-                    self._cluster_centroids[id] = list(clusters[id].centroid.value)
+            for x in clusters.keys():
+                if x not in self._centroid_history.keys():
+                    self._centroid_history[x] = []
 
-                else:
-                    for x in range(len(clusters[id].centroid.value)):
-                        if self._vel_thresh <= abs(clusters[id].centroid.value[x]-self._cluster_centroids[id][x]):
-                            drifting_clusters[id] = clusters[id]
-                            self._cluster_centroids[id] = list(clusters[id].centroid.value)
+                self._centroid_history[x].append(clusters[x].centroid.value)
+                if len(self._centroid_history[x]) == self._step_rate:
+                    self._prev_velocities[x] = [(a - b)/self._step_rate for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])]
+
+                if len(self._centroid_history[x]) > self._step_rate:
+                    self._centroid_history[x].pop(0)
+
+                    for y in range(len(clusters[x].centroid.value)):
+                        velocity = self._centroid_history[x][-1][y] - self._centroid_history[x][0][y]
+                        if abs(velocity) >= abs(self._prev_velocities[x][y] * self._thresh):
+                            drifting_clusters[x] = clusters[x]
+                            self._prev_velocities[x] = [(a - b)/self._step_rate for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])]
                             break
+
+                        elif abs(velocity) <= abs(self._prev_velocities[x][y] / self._thresh):
+                            drifting_clusters[x] = clusters[x]
+                            self._prev_velocities[x] = [(a - b)/self._step_rate for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])]
+                            break
+
 
             if len(drifting_clusters) != 0:
 
