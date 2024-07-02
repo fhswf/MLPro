@@ -69,8 +69,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        #if len(unknown_prop) > 0:
-        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        if len(unknown_prop) > 0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._cluster_centroids = {}
         self._vel_thresh = p_velocity_threshold

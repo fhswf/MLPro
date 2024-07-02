@@ -67,8 +67,8 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        #if len(unknown_prop) >0:
-        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._thresh_u      = p_density_upper_thresh
         self._thresh_l      = p_density_lower_thresh

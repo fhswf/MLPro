@@ -70,8 +70,8 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        #if len(unknown_prop) >0:
-        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
         self._rel_size_change = p_relative_size_change
         self._thresh_u      = p_size_upper_thresh
