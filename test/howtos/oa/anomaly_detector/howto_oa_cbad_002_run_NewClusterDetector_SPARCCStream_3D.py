@@ -1,16 +1,15 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro_int_river
-## -- Module  : howto_oa_cbad_ClusterDriftDetector.py
+## -- Package : mlpro.test
+## -- Module  : howto_oa_cbad_002_NewClusterDetector_SPARCCStream_3D.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-19  0.0.0     SK       Creation
-## -- 2024-06-19  1.0.0     SK       Release
+## -- 2024-06-22  1.0.0     SK       Creation and Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-19)
+Ver. 1.0.0 (2024-06-22)
 
 
 """
@@ -21,30 +20,27 @@ from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from sparccstream import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.drift_detector import ClusterDriftDetector
+from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.new_cluster_detector import NewClusterDetector
 
 
 
 # 1 Prepare a scenario
 class MyScenario(OAScenario):
 
-    C_NAME = 'ClusterDriftDetectorScenario'
+    C_NAME = 'NewClusterDetectorScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
-        stream = StreamMLProClusterGenerator(p_num_dim=2,
-                                             p_num_instances=1000,
-                                             p_num_clusters=3,
-                                             p_radii=[100],
-                                             p_velocities=[0.0],
-                                             p_weights=[1],
-                                             p_change_velocities=True,
-                                             p_changed_velocities=[0.2, 0.1],
-                                             p_points_of_change_velocities=[600, 400],
-                                             p_num_clusters_for_change_velocities=2,
-                                             p_seed=12,
-                                             p_logging=p_logging)
+        stream = StreamMLProClusterGenerator(p_num_dim=3,
+                                                  p_num_instances=2000,
+                                                  p_num_clusters=6,
+                                                  p_radii=[100],
+                                                  p_appearance_of_clusters=True,
+                                                  p_points_of_appearance_of_clusters=[300, 700, 600, 800],
+                                                  p_num_new_clusters_to_appear=4,
+                                                  p_seed=12,
+                                                  p_logging=p_logging)
 
 
         # 1.2 Set up a stream workflow
@@ -71,12 +67,9 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task = task_clusterer)
 
         # Anomaly Detector
-        task_anomaly_detector = ClusterDriftDetector(p_clusterer=task_clusterer,
-                                                     p_velocity_threshold=10.0,
-                                                     p_step_rate=10,
-                                                     p_initial_skip=100,
-                                                     p_visualize=p_visualize,
-                                                     p_logging=p_logging)
+        task_anomaly_detector = NewClusterDetector(p_clusterer=task_clusterer,
+                                                   p_visualize=p_visualize,
+                                                   p_logging=p_logging)
 
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 
@@ -87,7 +80,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit =3000
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
@@ -112,7 +105,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_3D,
                                                         p_step_rate = step_rate ) )
     input('\nPlease arrange all windows and press ENTER to start stream processing...')
 

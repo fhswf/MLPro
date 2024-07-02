@@ -1,15 +1,15 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro_int_river
-## -- Module  : howto_oa_cbad_011_run_ClusterDisappearanceDetector_2D.py
+## -- Package : mlpro.test
+## -- Module  : howto_oa_cbad_041_run_ClusterSizeChangeDetector_SPARCCStream_2D.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-19  1.0.0     SK       Creation and Release
+## -- 2024-06-22  1.0.0     SK       Creation and Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-19)
+Ver. 1.0.0 (2024-06-22)
 
 
 """
@@ -20,27 +20,26 @@ from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from sparccstream import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.disappearance_detector import ClusterDisappearanceDetector
+from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.size_change_detector import ClusterSizeChangeDetector
 
 
 
 # 1 Prepare a scenario
 class MyScenario(OAScenario):
 
-    C_NAME = 'ClusterDisappearanceScenario'
+    C_NAME = 'ClusterGeometricalSizeChangeDetector'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
         stream = StreamMLProClusterGenerator(p_num_dim=2,
                                                   p_num_instances=1000,
-                                                  p_num_clusters=4,
+                                                  p_num_clusters=3,
                                                   p_radii=[100],
-                                                  p_velocities=[0.0],
-                                                  p_weights=[1],
-                                                  p_disappearance_of_clusters=True,
-                                                  p_points_of_disappearance_of_clusters=[600, 700],
-                                                  p_num_clusters_to_disappear=2,
+                                                  p_distribution_bias=[1, 2, 3],
+                                                  p_change_distribution_bias=True,
+                                                  p_points_of_change_distribution_bias=[600],
+                                                  p_num_clusters_for_change_distribution_bias=1,
                                                   p_seed=12,
                                                   p_logging=p_logging)
 
@@ -69,10 +68,10 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task = task_clusterer)
 
         # Anomaly Detector
-        task_anomaly_detector = ClusterDisappearanceDetector(p_clusterer=task_clusterer,
-                                                             p_age_threshold=10,
-                                                             p_visualize=p_visualize,
-                                                             p_logging=p_logging)
+        task_anomaly_detector = ClusterSizeChangeDetector(p_clusterer=task_clusterer,
+                                                          p_size_upper_thresh=600,
+                                                          p_visualize=p_visualize,
+                                                          p_logging=p_logging)
 
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 

@@ -1,15 +1,15 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro_int_river
-## -- Module  : howto_oa_cbad_002_NewClusterDetector_5D.py
+## -- Package : mlpro.test
+## -- Module  : howto_oa_cbad_004_NewClusterDetector_KMeans_2D.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-22  1.0.0     SK       Creation and Release
+## -- 2024-06-19  1.0.0     SK       Creation and Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-22)
+Ver. 1.0.0 (2024-07-02)
 
 
 """
@@ -19,9 +19,8 @@ from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
-from sparccstream import *
+from mlpro_int_river.wrappers.clusteranalyzers.kmeans import WrRiverKMeans2MLPro
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.new_cluster_detector import NewClusterDetector
-
 
 
 # 1 Prepare a scenario
@@ -32,12 +31,13 @@ class MyScenario(OAScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
-        stream = StreamMLProClusterGenerator(p_num_dim=5,
-                                                  p_num_instances=2000,
+        stream = StreamMLProClusterGenerator(p_num_dim=2,
+                                                  p_num_instances=1000,
                                                   p_num_clusters=3,
                                                   p_radii=[100],
+                                                  p_velocities=[0.0],
                                                   p_appearance_of_clusters=True,
-                                                  p_points_of_appearance_of_clusters=[600, 800],
+                                                  p_points_of_appearance_of_clusters=[300, 700],
                                                   p_num_new_clusters_to_appear=2,
                                                   p_seed=12,
                                                   p_logging=p_logging)
@@ -56,13 +56,13 @@ class MyScenario(OAScenario):
         # 1.2.2 Creation of tasks and add them to the workflow
 
         # Cluster Analyzer
-        task_clusterer = SPARCCStream( p_name = 'SPARCCStream',
-                                       p_range_max = OAWorkflow.C_RANGE_NONE,
-                                       p_cluster_limit = 0,
-                                       p_ada=p_ada,
-                                       p_visualize  = p_visualize,
-                                       p_logging =  p_logging )
-
+        task_clusterer = WrRiverKMeans2MLPro( p_name='#1: KMeans@River',
+                                              p_n_clusters=5,
+                                              p_halflife=0.1, 
+                                              p_sigma=3, 
+                                              p_seed=42,
+                                              p_visualize=p_visualize,
+                                              p_logging=p_logging )
 
         workflow.add_task(p_task = task_clusterer)
 
@@ -80,7 +80,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 2000
+    cycle_limit = 1000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
@@ -105,7 +105,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
                                                         p_step_rate = step_rate ) )
     input('\nPlease arrange all windows and press ENTER to start stream processing...')
 

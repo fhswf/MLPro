@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro_int_river
-## -- Module  : howto_oa_cbad_012_run_ClusterDisappearanceDetector_3D.py
+## -- Package : mlpro.test
+## -- Module  : howto_oa_cbad_031_run_ClusterGeometricalSizeChangeDetector_SPARCCStream_2D.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -20,27 +20,25 @@ from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from sparccstream import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.disappearance_detector import ClusterDisappearanceDetector
+from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.geo_size_change_detector import ClusterGeometricSizeChangeDetector
 
 
 
 # 1 Prepare a scenario
 class MyScenario(OAScenario):
 
-    C_NAME = 'ClusterDisappearanceScenario'
+    C_NAME = 'ClusterGeometricalSizeChangeDetector'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
-        stream = StreamMLProClusterGenerator(p_num_dim=3,
-                                                  p_num_instances=2000,
-                                                  p_num_clusters=4,
+        stream = StreamMLProClusterGenerator(p_num_dim=2,
+                                                  p_num_instances=1000,
+                                                  p_num_clusters=3,
                                                   p_radii=[100],
-                                                  p_velocities=[0.0],
-                                                  p_weights=[1],
-                                                  p_disappearance_of_clusters=True,
-                                                  p_points_of_disappearance_of_clusters=[800, 900],
-                                                  p_num_clusters_to_disappear=2,
+                                                  p_change_radii=True,
+                                                  p_points_of_change_radii=[300, 700],
+                                                  p_num_clusters_for_change_radii=2,
                                                   p_seed=12,
                                                   p_logging=p_logging)
 
@@ -69,10 +67,10 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task = task_clusterer)
 
         # Anomaly Detector
-        task_anomaly_detector = ClusterDisappearanceDetector(p_clusterer=task_clusterer,
-                                                             p_age_threshold=50,
-                                                             p_visualize=p_visualize,
-                                                             p_logging=p_logging)
+        task_anomaly_detector = ClusterGeometricSizeChangeDetector(p_clusterer=task_clusterer,
+                                                                   p_geo_size_upper_thresh=200,
+                                                                   p_visualize=p_visualize,
+                                                                   p_logging=p_logging)
 
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 
@@ -83,7 +81,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 2000
+    cycle_limit = 1000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
@@ -108,7 +106,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_3D,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
                                                         p_step_rate = step_rate ) )
     input('\nPlease arrange all windows and press ENTER to start stream processing...')
 

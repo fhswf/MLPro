@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro_int_river
-## -- Module  : howto_oa_cbad_013_run_ClusterDisappearanceDetector_ND.py
+## -- Package : mlpro.test
+## -- Module  : howto_oa_cbad_012_run_ClusterDisappearanceDetector_SPARCCStream_3D.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -32,14 +32,13 @@ class MyScenario(OAScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
-        stream = StreamMLProClusterGenerator(p_num_dim=5,
-                                                  p_num_instances=1000,
+        stream = StreamMLProClusterGenerator(p_num_dim=3,
+                                                  p_num_instances=2000,
                                                   p_num_clusters=4,
                                                   p_radii=[100],
                                                   p_velocities=[0.0],
-                                                  p_weights=[1],
                                                   p_disappearance_of_clusters=True,
-                                                  p_points_of_disappearance_of_clusters=[600, 700],
+                                                  p_points_of_disappearance_of_clusters=[800, 900],
                                                   p_num_clusters_to_disappear=2,
                                                   p_seed=12,
                                                   p_logging=p_logging)
@@ -70,7 +69,7 @@ class MyScenario(OAScenario):
 
         # Anomaly Detector
         task_anomaly_detector = ClusterDisappearanceDetector(p_clusterer=task_clusterer,
-                                                             p_age_threshold=10,
+                                                             p_age_threshold=50,
                                                              p_visualize=p_visualize,
                                                              p_logging=p_logging)
 
@@ -83,7 +82,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 1000
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
@@ -108,7 +107,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_3D,
                                                         p_step_rate = step_rate ) )
     input('\nPlease arrange all windows and press ENTER to start stream processing...')
 

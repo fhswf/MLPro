@@ -1,15 +1,15 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro_int_river
-## -- Module  : howto_oa_cbad_001_NewClusterDetector_2D.py
+## -- Package : mlpro.test
+## -- Module  : howto_oa_cbad_013_run_ClusterDisappearanceDetector_SPARCCStream_ND.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-19  1.0.0     SK       Creation and Release
+## -- 2024-06-22  1.0.0     SK       Creation and Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-19)
+Ver. 1.0.0 (2024-06-22)
 
 
 """
@@ -20,27 +20,26 @@ from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from sparccstream import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.new_cluster_detector import NewClusterDetector
+from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.disappearance_detector import ClusterDisappearanceDetector
 
 
 
 # 1 Prepare a scenario
 class MyScenario(OAScenario):
 
-    C_NAME = 'NewClusterDetectorScenario'
+    C_NAME = 'ClusterDisappearanceScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
-        stream = StreamMLProClusterGenerator(p_num_dim=2,
+        stream = StreamMLProClusterGenerator(p_num_dim=5,
                                                   p_num_instances=1000,
-                                                  p_num_clusters=3,
+                                                  p_num_clusters=4,
                                                   p_radii=[100],
                                                   p_velocities=[0.0],
-                                                  p_weights=[1],
-                                                  p_appearance_of_clusters=True,
-                                                  p_points_of_appearance_of_clusters=[300, 700],
-                                                  p_num_new_clusters_to_appear=2,
+                                                  p_disappearance_of_clusters=True,
+                                                  p_points_of_disappearance_of_clusters=[600, 700],
+                                                  p_num_clusters_to_disappear=2,
                                                   p_seed=12,
                                                   p_logging=p_logging)
 
@@ -69,9 +68,10 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task = task_clusterer)
 
         # Anomaly Detector
-        task_anomaly_detector = NewClusterDetector(p_clusterer=task_clusterer,
-                                                   p_visualize=p_visualize,
-                                                   p_logging=p_logging)
+        task_anomaly_detector = ClusterDisappearanceDetector(p_clusterer=task_clusterer,
+                                                             p_age_threshold=10,
+                                                             p_visualize=p_visualize,
+                                                             p_logging=p_logging)
 
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 
@@ -107,7 +107,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
                                                         p_step_rate = step_rate ) )
     input('\nPlease arrange all windows and press ENTER to start stream processing...')
 

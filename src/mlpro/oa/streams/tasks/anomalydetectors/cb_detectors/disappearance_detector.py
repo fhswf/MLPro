@@ -115,14 +115,6 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
                     missing_clusters[x] = self._prev_clusters[x]
                     del self._prev_clusters[x]
                     
-        """if self._age_thresh != None:
-            for x in clusters.keys():
-                if clusters[x].age.value <= self._age_thresh:
-                    missing_clusters[x] = clusters[x]
-                    self._deleted_clusters_age[x] = clusters[x]
-                    if x in self._prev_clusters.keys():
-                        del self._prev_clusters[x]"""
-
         if self._size_thresh != None:
             for x in clusters.keys():
                 if clusters[x].size.value <= self._size_thresh:
