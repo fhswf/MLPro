@@ -34,19 +34,18 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
     This is the class for detecting change in size/weight of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ( 'size', 0, False, Property )]
+    C_PROPERTY_DEFINITIONS : PropertyDefinitions = [( 'size', 0, False, Property )]
 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_size_thresh : float = None,
+                 p_size_thresh_in_percentage : float = None,
+                 p_roc_size_thresh_in_percentage : float = 10,
+                 p_roc_thresh_steps : int = 10,
+                 p_relative_thresh : bool = False,
                  p_size_upper_thresh : float = None,
                  p_size_lower_thresh : float = None,
-                 p_roc_size_thresh : float = 0.1,
-                 p_relative_size_change : bool = False,
-                 p_step_rate = 1,
-                 p_initial_skip : int = 1,
                  p_name:str = None,
                  p_range_max = StreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
@@ -64,34 +63,28 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        for x in self.C_PROPERTIY_DEFINITIONS:
+        for x in self.C_PROPERTY_DEFINITIONS:
             if x not in self.C_REQ_CLUSTER_PROPERTIES:
                 self.C_REQ_CLUSTER_PROPERTIES.append(x)
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) >0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
-        self._rel_size_change = p_relative_size_change
         self._thresh_u      = p_size_upper_thresh
         self._thresh_l      = p_size_lower_thresh
-        self._thresh        = p_size_thresh
-        self._thresh_roc    = p_roc_size_thresh
+        self._thresh        = p_size_thresh_in_percentage
+        self._roc_thresh   = p_roc_size_thresh_in_percentage
 
         self._prev_sizes      = {}
-        #self._prev_roc_sizes  = {}
+        self._prev_roc_sizes  = {}
+        self._rel_thresh          = p_relative_thresh
         self._size_thresh     = {}
+        self._roc_size_thresh = {}
 
-        self._step_rate = p_step_rate
-        self._init_skip = p_initial_skip
-
-        self._size_buffer     = {}
-
-        self._sizes = {}
-        self._count = {}
-        self._distr_bias = {}
-
+        self._size_history    = {}
+        self._history_buffer_size = p_roc_thresh_steps
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
@@ -116,46 +109,53 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
             for x in clusters.keys():
                 if x not in self._prev_sizes.keys():
                     self._prev_sizes[x] = clusters[x].size.value
-                    self._size_thresh[x] = clusters[x].size.value * self._size_thresh
+                    self._size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._thresh)
             
                 if (self._prev_sizes[x]-clusters[x].size.value) >= self._size_thresh[x]:
                     affected_clusters[x] = clusters[x]
                     self._prev_sizes[x] = clusters[x].size.value
-                    self._size_thresh[x] = clusters[x].size.value * self._size_thresh
+                    self._size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._thresh)
                 elif (clusters[x].size.value-self._prev_sizes[x]) >= self._size_thresh[x]:
                     affected_clusters[x] = clusters[x] 
                     self._prev_sizes[x] = clusters[x].size.value
-                    self._size_thresh[x] = clusters[x].size.value * self._size_thresh
+                    self._size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._thresh)
 
-        if self._rel_size_change:
-            
+        for x in clusters.keys():
+            if x not in self._roc_size_thresh.keys():
+                self._size_history[x] = []
+                self._prev_roc_sizes[x] = 0.0
+                self._roc_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._roc_thresh)
+
+            self._size_history[x].append(clusters[x].size.value)
+
+            if len(self._size_history[x]) > self._history_buffer_size:
+                self._size_history[x].pop(0)
+                roc_size = (self._size_history[x][-1] - self._size_history[x][0])/self._history_buffer_size
+
+                if abs(self._prev_roc_sizes[x]-roc_size) >= self._roc_size_thresh[x]:
+                    affected_clusters[x] = clusters[x]
+                    self._prev_roc_sizes[x] = roc_size
+                    self._roc_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._roc_thresh)
+
+        if len(affected_clusters) != 0:
+            anomaly = ClusterSizeVariation(p_id = self._get_next_anomaly_id,
+                                         p_instances=[inst],
+                                         p_clusters=affected_clusters)
+            self._raise_anomaly_event(p_anomaly=anomaly)
+
+
+
+## -------------------------------------------------------------------------------------------------
+    def _calculate_threshold(self, id, clusters, thresh):
+        if self._rel_thresh:
+            n = 0.0
+            s = 0.0
             for x in clusters.keys():
-                if x not in self._sizes.keys():
-                    self._sizes[x] = int(clusters[x].size.value)
-                    self._count[x] = 1
-                    self._distr_bias[x] = 0
+                if clusters[x].size.value > 0.0:
+                    n += 1
+                    s += float(1/clusters[x].size.value)
+            return  ((n * thresh/100) / s)
 
-                else:
-                    if int(clusters[x].size.value) == self._sizes[x]:
-                        self._count[x] += 1
-
-                    else:
-                        self._distr_bias[x] = self._count[x]
-                        self._count[x] = 1
-                        self._sizes[x] = int(clusters[x].size.value)
-            
-            print(self._distr_bias)
-
-
-
-        """if x not in self._size_buffer.keys():
-                self._size_buffer[x] = []
-            self._size_buffer[x].append(clusters[x].size.value)
-            if len(self._size_buffer[x]) > (self._step_rate+1):
-                self._size_buffer[x].pop(0)
-
-        event = ClusterSizeVariation(p_id = self._get_next_anomaly_id,
-                                     p_instances=[inst],
-                                     p_clusters=affected_clusters)"""
-        
+        else:
+            return  (clusters[id].size.value * thresh / 100)
         

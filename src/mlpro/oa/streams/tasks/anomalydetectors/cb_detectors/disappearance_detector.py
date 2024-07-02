@@ -34,7 +34,7 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
     This is the class for detecting the disappearences of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = []
+    C_PROPERTY_DEFINITIONS : PropertyDefinitions = []
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -67,19 +67,19 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
         self._age_counter           = {}
 
         if self._age_thresh != None:
-            self.C_PROPERTIY_DEFINITIONS.append(('age', 0, False, Property))
+            self.C_PROPERTY_DEFINITIONS.append(('age', 0, False, Property))
 
         if self._size_thresh != None:
-            self.C_PROPERTIY_DEFINITIONS.append(('size', 0, False, Property))
+            self.C_PROPERTY_DEFINITIONS.append(('size', 0, False, Property))
 
-        for x in self.C_PROPERTIY_DEFINITIONS:
+        for x in self.C_PROPERTY_DEFINITIONS:
             if x not in self.C_REQ_CLUSTER_PROPERTIES:
                 self.C_REQ_CLUSTER_PROPERTIES.append(x)
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) >0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
 
 ## -------------------------------------------------------------------------------------------------

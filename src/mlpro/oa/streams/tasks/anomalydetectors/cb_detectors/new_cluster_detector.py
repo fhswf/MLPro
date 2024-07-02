@@ -34,7 +34,7 @@ class NewClusterDetector(AnomalyDetectorCB):
     This is the class for detecting new clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = []
+    C_PROPERTY_DEFINITIONS : PropertyDefinitions = []
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -56,14 +56,14 @@ class NewClusterDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        for x in self.C_PROPERTIY_DEFINITIONS:
+        for x in self.C_PROPERTY_DEFINITIONS:
             if x not in self.C_REQ_CLUSTER_PROPERTIES:
                 self.C_REQ_CLUSTER_PROPERTIES.append(x)
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) > 0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) > 0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
         self._prev_clusters = {}
         

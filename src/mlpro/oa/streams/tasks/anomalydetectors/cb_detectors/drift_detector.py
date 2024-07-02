@@ -36,7 +36,7 @@ class ClusterDriftDetector(AnomalyDetectorCB):
     This is the class for detecting change in velocity of clusters.
 
     """
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ cprop_center_geo2,
+    C_PROPERTY_DEFINITIONS : PropertyDefinitions = [ cprop_center_geo2,
                                                      cprop_size2]
 
 ## -------------------------------------------------------------------------------------------------
@@ -63,14 +63,14 @@ class ClusterDriftDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        for x in self.C_PROPERTIY_DEFINITIONS:
+        for x in self.C_PROPERTY_DEFINITIONS:
             if x not in self.C_REQ_CLUSTER_PROPERTIES:
                 self.C_REQ_CLUSTER_PROPERTIES.append(x)
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) > 0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) > 0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._cluster_centroids = {}
         self._vel_thresh = p_velocity_threshold

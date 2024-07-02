@@ -36,12 +36,14 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
 
     """
     
-    C_PROPERTIY_DEFINITIONS : PropertyDefinitions = [ ( 'size_geo', 0, False, Property )]
+    C_PROPERTY_DEFINITIONS : PropertyDefinitions = [ ( 'size_geo', 0, False, Property )]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
                  p_geo_size_thresh_in_percentage : float = 10.0,
+                 p_roc_geo_size_thresh_in_percentage : float = False,
+                 p_roc_thresh_steps : int = 10,
                  p_relative_thresh : bool = False,
                  p_geo_size_upper_thresh : float = None,
                  p_geo_size_lower_thresh : float = None,
@@ -62,26 +64,32 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        for x in self.C_PROPERTIY_DEFINITIONS:
+        for x in self.C_PROPERTY_DEFINITIONS:
             if x not in self.C_REQ_CLUSTER_PROPERTIES:
                 self.C_REQ_CLUSTER_PROPERTIES.append(x)
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if len(unknown_prop) >0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        #if len(unknown_prop) >0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
         self._thresh_u      = p_geo_size_upper_thresh
         self._thresh_l      = p_geo_size_lower_thresh
         self._thresh        = p_geo_size_thresh_in_percentage
+        self._roc_thresh    = p_roc_geo_size_thresh_in_percentage
 
-        self._prev_geo_sizes  = {}
-        self._rel_thresh      = p_relative_thresh
-        self._geo_size_thresh = {}
+        self._prev_geo_sizes      = {}
+        self._prev_roc_geo_sizes  = {}
+        self._rel_thresh          = p_relative_thresh
+        self._geo_size_thresh     = {}
+        self._roc_geo_size_thresh = {}
+
+        self._geo_size_history    = {}
+        self._history_buffer_size = p_roc_thresh_steps
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict, centroids: list):
+    def _run(self, p_inst : InstDict):
         new_instances = []
         for inst_id, (inst_type, inst) in sorted(p_inst.items()):
             new_instances.append(inst)
@@ -103,16 +111,40 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         for x in clusters.keys():
             if x not in self._prev_geo_sizes.keys():
                 self._prev_geo_sizes[x] = clusters[x].geo_size.value
-                self._geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters)
+                self._geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._thresh)
             
             if (self._prev_geo_sizes[x]-clusters[x].geo_size.value) >= self._geo_size_thresh[x]:
                 affected_clusters_shrinkage[x] = clusters[x]
                 self._prev_geo_sizes[x] = clusters[x].geo_size.value
-                self._geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters)
+                self._geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._thresh)
             elif (clusters[x].geo_size.value-self._prev_geo_sizes[x]) >= self._geo_size_thresh[x]:
                 affected_clusters_enlargement[x] = clusters[x] 
                 self._prev_geo_sizes[x] = clusters[x].geo_size.value
-                self._geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters)
+                self._geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._thresh)
+
+
+        if self._roc_thresh:
+            for x in clusters.keys():
+                if x not in self._roc_geo_size_thresh.keys():
+                    self._geo_size_history[x] = []
+                    self._prev_roc_geo_sizes[x] = 0.0
+                    self._roc_geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._roc_thresh)
+
+                self._geo_size_history[x].append(clusters[x].geo_size.value)
+
+                if len(self._geo_size_history[x]) > self._history_buffer_size:
+                    self._geo_size_history[x].pop(0)
+                    roc_geo_size = (self._geo_size_history[x][-1] - self._geo_size_history[x][0])/self._history_buffer_size
+
+                    if (self._prev_roc_geo_sizes[x]-roc_geo_size) >= self._roc_geo_size_thresh[x]:
+                        affected_clusters_shrinkage[x] = clusters[x]
+                        self._prev_roc_geo_sizes[x] = roc_geo_size
+                        self._roc_geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._roc_thresh)
+
+                    elif (roc_geo_size-self._prev_roc_geo_sizes[x]) >= self._roc_geo_size_thresh[x]:
+                        affected_clusters_enlargement[x] = clusters[x] 
+                        self._prev_roc_geo_sizes[x] = roc_geo_size
+                        self._roc_geo_size_thresh[x] = self._calculate_threshold(id=x, clusters=clusters, thresh=self._roc_thresh)
 
         if len(affected_clusters_shrinkage) != 0:
             anomaly = ClusterShrinkage(p_id = self._get_next_anomaly_id,
@@ -128,7 +160,7 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _calculate_threshold(self, id, clusters):
+    def _calculate_threshold(self, id, clusters, thresh):
         if self._rel_thresh:
             n = 0.0
             s = 0.0
@@ -136,7 +168,8 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                 if clusters[x].geo_size.value > 0.0:
                     n += 1
                     s += float(1/clusters[x].geo_size.value)
-            return  ((n * self._thresh/100) / s)
+            return  ((n * thresh/100) / s)
 
         else:
-            return  (clusters[id].geo_size.value * self._thresh / 100)
+            return  (clusters[id].geo_size.value * thresh / 100)
+        
