@@ -88,6 +88,7 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         self._history_buffer_size = p_roc_thresh_steps
 
         self._anomolous_clusters  = {}
+        self._visualize = p_visualize
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,13 +160,15 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         if len(affected_clusters_shrinkage) != 0:
             anomaly = ClusterShrinkage(p_id = self._get_next_anomaly_id,
                                          p_instances=new_instances,
-                                         p_clusters=affected_clusters_shrinkage)
+                                         p_clusters=affected_clusters_shrinkage,
+                                         p_visualize=self._visualize)
             self._raise_anomaly_event(p_anomaly=anomaly)
 
         if len(affected_clusters_enlargement) != 0:
             anomaly = ClusterEnlargement(p_id = self._get_next_anomaly_id,
                                          p_instances=new_instances,
-                                         p_clusters=affected_clusters_enlargement)
+                                         p_clusters=affected_clusters_enlargement,
+                                         p_visualize=self._visualize)
             self._raise_anomaly_event(p_anomaly=anomaly)
 
 

@@ -57,32 +57,4 @@ class ClusterSizeVariation (CBAnomaly):
                          **p_kwargs)
 
 
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
 
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
-        super()._update_plot_2d(p_settings, **p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
-        super()._update_plot_3d(p_settings, **p_kwargs) 
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_2d(self):
-        super()._remove_plot_2d()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_3d(self):
-        super()._remove_plot_3d()
-  

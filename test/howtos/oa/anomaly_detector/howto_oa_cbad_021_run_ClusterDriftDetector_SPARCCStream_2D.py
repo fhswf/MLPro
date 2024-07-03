@@ -71,8 +71,8 @@ class MyScenario(OAScenario):
 
         # Anomaly Detector
         task_anomaly_detector = ClusterDriftDetector(p_clusterer=task_clusterer,
-                                                     p_velocity_threshold=2,
-                                                     p_step_rate=30,
+                                                     p_velocity_threshold=50,
+                                                     p_step_rate=10,
                                                      p_initial_skip=300,
                                                      p_visualize=p_visualize,
                                                      p_logging=p_logging)

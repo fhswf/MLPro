@@ -81,6 +81,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
         self._prev_velocities = {}
         self._velocity_thresh = {}
 
+        self._visualize = p_visualize
+
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
         if (self._count >= self._init_skip):
@@ -129,7 +131,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
                 anomaly = ClusterDrift(p_id = self._get_next_anomaly_id,
                                  p_instances=new_instances,
                                  p_clusters=drifting_clusters,
-                                 p_det_time=str(inst.get_tstamp()))
+                                 p_det_time=str(inst.get_tstamp()),
+                                 p_visualize=self._visualize)
                 self._raise_anomaly_event(anomaly)
             
         self._count += 1

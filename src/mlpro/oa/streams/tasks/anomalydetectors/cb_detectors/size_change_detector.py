@@ -85,6 +85,7 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
         self._size_history    = {}
         self._history_buffer_size = p_roc_thresh_steps
+        self._visualize = p_visualize
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
@@ -140,7 +141,8 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
         if len(affected_clusters) != 0:
             anomaly = ClusterSizeVariation(p_id = self._get_next_anomaly_id,
                                          p_instances=[inst],
-                                         p_clusters=affected_clusters)
+                                         p_clusters=affected_clusters,
+                                         p_visualize=self._visualize)
             self._raise_anomaly_event(p_anomaly=anomaly)
 
 

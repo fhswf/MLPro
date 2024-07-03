@@ -65,6 +65,8 @@ class NewClusterDetector(AnomalyDetectorCB):
         #if len(unknown_prop) > 0:
         #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
+        self._p_visualize = p_visualize
+
         self._prev_clusters = {}
         self._visualize = p_visualize
         
@@ -87,8 +89,8 @@ class NewClusterDetector(AnomalyDetectorCB):
                 anomaly = NewClusterAppearance(p_id=self._get_next_anomaly_id,
                                                p_instances=new_instances,
                                                p_clusters=new_clusters,
-                                               p_det_time=str(inst.get_tstamp()))
+                                               p_det_time=str(inst.get_tstamp()),
+                                               p_visualize=self._p_visualize)
                 self._raise_anomaly_event(anomaly)
 
             self._prev_clusters.update(new_clusters) 
-

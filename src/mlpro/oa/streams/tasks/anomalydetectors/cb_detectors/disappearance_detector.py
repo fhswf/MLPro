@@ -81,6 +81,8 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
         #if len(unknown_prop) >0:
         #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
+        self._visualize = p_visualize
+
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
@@ -144,7 +146,8 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
             anomaly = ClusterDisappearance(p_id=self._get_next_anomaly_id,
                                            p_instances=new_instances,
                                            p_clusters=missing_clusters,
-                                           p_det_time=str(inst.get_tstamp()))
+                                           p_det_time=str(inst.get_tstamp()),
+                                           p_visualize=self._visualize)
 
             self._raise_anomaly_event(anomaly)
 

@@ -62,14 +62,16 @@ class NewClusterAppearance (CBAnomaly):
                          **p_kwargs)
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+    """def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
 
         cluster : Cluster = None
 
         for cluster in self._clusters.values(): 
 
-            center = cluster.get_properties()['centroid']._get()
+            pass
+
+            #cluster.color = "yellow"
 
             for r in np.linspace(0, 10, 25):
                 alpha = 1 - r / 10
@@ -79,7 +81,7 @@ class NewClusterAppearance (CBAnomaly):
             if self._colour_id > 9:
                 self._colour_id = 0
 
-        """if self._rect is None:
+        if self._rect is None:
             self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)
             self._plot_rectangle = p_settings.axes.add_patch(self._rect)
             self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
@@ -91,29 +93,3 @@ class NewClusterAppearance (CBAnomaly):
             self._rect.set_height(y2 - y1)
             self._plot_rectangle_t.set_position(((x1+x2)/2, 0))"""
   
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
-        super()._update_plot_2d(p_settings, **p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
-        super()._update_plot_3d(p_settings, **p_kwargs) 
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_2d(self):
-        super()._remove_plot_2d()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_3d(self):
-        super()._remove_plot_3d()
-  
-
