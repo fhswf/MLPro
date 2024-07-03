@@ -77,7 +77,9 @@ class ClusterDriftDetector(AnomalyDetectorCB):
         self._count = 0
         self._init_skip = p_initial_skip
         self._centroid_history = {}
+        self._velocity_history = {}
         self._prev_velocities = {}
+        self._velocity_thresh = {}
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
@@ -94,26 +96,33 @@ class ClusterDriftDetector(AnomalyDetectorCB):
             for x in clusters.keys():
                 if x not in self._centroid_history.keys():
                     self._centroid_history[x] = []
+                    self._velocity_history[x] = []
 
                 self._centroid_history[x].append(clusters[x].centroid.value)
+
+                if (len(self._centroid_history[x]) > 1) and (len(self._centroid_history[x]) <= self._step_rate):
+                    self._velocity_history[x].append([(a - b)/(len(self._centroid_history)-1) for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])])
+
                 if len(self._centroid_history[x]) == self._step_rate:
-                    self._prev_velocities[x] = [(a - b)/self._step_rate for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])]
+                    self._velocity_thresh = self._calculate_threshold(velocities=self._velocity_history)
+
 
                 if len(self._centroid_history[x]) > self._step_rate:
                     self._centroid_history[x].pop(0)
+                    self._velocity_history[x].pop(0)
 
                     for y in range(len(clusters[x].centroid.value)):
-                        velocity = self._centroid_history[x][-1][y] - self._centroid_history[x][0][y]
-                        if abs(velocity) >= abs(self._prev_velocities[x][y] * self._thresh):
+                        velocity = (self._centroid_history[x][-1][y] - self._centroid_history[x][0][y])/(self._step_rate-1)
+                        if abs(velocity) >= abs(self._velocity_thresh[x][0][y]):
                             drifting_clusters[x] = clusters[x]
-                            self._prev_velocities[x] = [(a - b)/self._step_rate for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])]
                             break
 
-                        elif abs(velocity) <= abs(self._prev_velocities[x][y] / self._thresh):
+                        """elif abs(velocity) <= abs(self._velocity_thresh[x][1][y]):
                             drifting_clusters[x] = clusters[x]
-                            self._prev_velocities[x] = [(a - b)/self._step_rate for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])]
-                            break
+                            break"""
 
+                    self._velocity_history[x].append([(a - b)/(len(self._centroid_history)-1) for a, b in zip(self._centroid_history[x][-1], self._centroid_history[x][0])])
+                    self._velocity_thresh = self._calculate_threshold(velocities=self._velocity_history)
 
             if len(drifting_clusters) != 0:
 
@@ -125,5 +134,22 @@ class ClusterDriftDetector(AnomalyDetectorCB):
             
         self._count += 1
             
+
+    ## -------------------------------------------------------------------------------------------------
+    def _calculate_threshold(self, velocities : dict, ):
+
+        thresh = {}
+
+        for x in velocities.keys():
+            thresh[x] = []
+            thresh[x].append([max(column, key=abs)*self._thresh for column in zip(*velocities[x])])
+            thresh[x].append([min(column, key=abs)/self._thresh for column in zip(*velocities[x])])
+
+        return thresh
+
+
+
+
+
 
 

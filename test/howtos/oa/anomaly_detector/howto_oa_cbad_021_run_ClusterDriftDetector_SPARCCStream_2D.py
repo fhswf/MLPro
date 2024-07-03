@@ -39,8 +39,8 @@ class MyScenario(OAScenario):
                                              p_radii=[100],
                                              p_velocities=[0.0],
                                              p_change_velocities=True,
-                                             p_changed_velocities=[0.2, 0.1],
-                                             p_points_of_change_velocities=[600, 400],
+                                             p_changed_velocities=[0.15, 0.15],
+                                             p_points_of_change_velocities=[400, 400],
                                              p_num_clusters_for_change_velocities=2,
                                              p_seed=12,
                                              p_logging=p_logging)
@@ -71,9 +71,9 @@ class MyScenario(OAScenario):
 
         # Anomaly Detector
         task_anomaly_detector = ClusterDriftDetector(p_clusterer=task_clusterer,
-                                                     p_velocity_threshold=300,
-                                                     p_step_rate=10,
-                                                     p_initial_skip=200,
+                                                     p_velocity_threshold=2,
+                                                     p_step_rate=30,
+                                                     p_initial_skip=300,
                                                      p_visualize=p_visualize,
                                                      p_logging=p_logging)
 
@@ -86,7 +86,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit =3000
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
