@@ -59,7 +59,7 @@ Custom Policies
 - **Policy from Third Party Packages**
 
     Alternatively, the user can also apply algorithms from Stable Baselines 3 by using the developed relevant wrapper for the integration between third-party packages and MLPro.
-    For more information, please click :ref:`here<target-package-third>`.
+    For more information, please click :ref:`here<target_extension_hub>`.
 
 - **Algorithm Checker**
 
