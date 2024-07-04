@@ -34,10 +34,12 @@
 ## -- 2024-06-06  1.2.0     DA       New custom method Properties._update_property_links()
 ## -- 2024-06-16  1.3.0     DA       New method Properties.get_property_definitions()
 ## -- 2024-06-26  1.4.0     DA       New method Properties.set_plot_color()
+## -- 2024-06-30  1.5.0     DA       Method Property.set(): new parameters p_upd_time_stamp, 
+## --                                p_upd_derivatives
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-06-26)
+Ver. 1.5.0 (2024-06-30)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -142,7 +144,11 @@ class Property (Plottable, Renormalizable):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def set(self, p_value, p_time_stamp : Union[datetime, int, float] = None): 
+    def set( self, 
+             p_value, 
+             p_time_stamp : Union[datetime, int, float] = None,
+             p_upd_time_stamp : bool = True,
+             p_upd_derivatives : bool = True ): 
         """
         Sets the value of a property at a given time point.
 
@@ -155,6 +161,10 @@ class Property (Plottable, Renormalizable):
         p_time_stamp : : Union[datetime, int, float]
             Optional time stamp of type datetime, int or float. If not provided, an internal continuous
             integer time stamp is generated.
+        p_upd_time_stamp : bool
+            Boolean switch to enable/disable updating the inner time stamps.
+        p_upd_derivatives : bool
+            Boolean swtich to enable/disable updating the derivatives.
         """
 
         # 1 Set value
@@ -163,19 +173,20 @@ class Property (Plottable, Renormalizable):
 
     
         # 2 Preparation of time stamp
-        self._time_stamp_prev = self._time_stamp
+        if p_upd_time_stamp:
+            self._time_stamp_prev = self._time_stamp
 
-        if p_time_stamp is None:
-            try:
-                self._time_stamp = self._time_stamp_prev + 1
-            except:
-                self._time_stamp = 0
-        else:
-            self._time_stamp = p_time_stamp
+            if p_time_stamp is None:
+                try:
+                    self._time_stamp = self._time_stamp_prev + 1
+                except:
+                    self._time_stamp = 0
+            else:
+                self._time_stamp = p_time_stamp
 
 
         # 3 Numeric derivation
-        if self._derivative_order_max > 0:
+        if p_upd_derivatives and ( self._derivative_order_max > 0 ):
 
             # 3.1 Computation of time delta
             if self._time_stamp_prev is not None:
