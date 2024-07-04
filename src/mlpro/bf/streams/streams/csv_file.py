@@ -13,10 +13,11 @@
 ## -- 2023-04-17  1.1.2     DA       Method StreamMLProCSV.set_options(): changed exception type 
 ## --                                to ParamError
 ## -- 2024-06-04  1.1.3     DA       Bugfix: ESpace instead of MSpace
+## -- 2024-07-04  1.1.4     SY       Allowing string in the datasets 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2023-06-04)
+Ver. 1.1.4 (2024-07-04)
 
 This module provides the native stream class StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
@@ -189,8 +190,8 @@ class StreamMLProCSV(Stream):
             
             dim             = self._feature_space.get_num_dim()
             dim_l           = self._label_space.get_num_dim()
-            self._dataset   = np.zeros((self.C_NUM_INSTANCES,dim))
-            self._dataset_l = np.zeros((self.C_NUM_INSTANCES,dim_l))
+            self._dataset   = np.empty((self.C_NUM_INSTANCES,dim), dtype=object)
+            self._dataset_l = np.empty((self.C_NUM_INSTANCES,dim_l), dtype=object)
             extended_data   = {}
             ids             = self._feature_space.get_dim_ids()
             
