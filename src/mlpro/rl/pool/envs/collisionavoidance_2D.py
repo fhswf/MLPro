@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-07-10  0.0.0     MRD/SY   Creation
-## -- 2024-07-10  1.0.0     MRD/SY   Release of first version
+## -- 2024-08-07  1.0.0     MRD/SY   Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-07-10)
+Ver. 1.0.0 (2024-08-07)
 
 This module provides a 2D environment for collision avoidance of a trajectory planning with
 dynamic goals. The DynamicTrajectoryPlanner environment simulates a 2D space where an agent must
@@ -386,14 +386,14 @@ class DynamicTrajectoryPlanner(Environment):
             self._draw_obstacle()
             
         self._calc_init_traj(self.num_traject_point)
+    
+        if self._plot_avail:
+            self.update_plot()
         
         obs = self._get_obs()
         self._state = State(self._state_space)
         for i in range(len(obs)):
             self._state.set_value(self._state.get_dim_ids()[i], obs[i])
-        
-        if self._plot_avail:
-            self.update_plot()
         
         return self._get_obs()
         
