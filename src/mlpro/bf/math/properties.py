@@ -36,10 +36,11 @@
 ## -- 2024-06-26  1.4.0     DA       New method Properties.set_plot_color()
 ## -- 2024-06-30  1.5.0     DA       Method Property.set(): new parameters p_upd_time_stamp, 
 ## --                                p_upd_derivatives
+## -- 2026-07-08  1.6.0     DA       Introduction of kwargs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2024-06-30)
+Ver. 1.6.0 (2024-07-08)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -58,6 +59,7 @@ from datetime import datetime
 import numpy as np
 from matplotlib.figure import Figure
 
+from mlpro.bf.various import KWArgs
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.math.normalizers import Normalizer, Renormalizable
 
@@ -77,7 +79,7 @@ PropertyDefinitions = List[ PropertyDefinition ]
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Property (Plottable, Renormalizable):
+class Property (Plottable, Renormalizable, KWArgs):
     """
     This class implements an enriched managed property. It enables storing a value of any type. In
     case of numeric data (one- or multi-dimensional), an auto-derivation up to a well-defined maximum
@@ -94,8 +96,10 @@ class Property (Plottable, Renormalizable):
         If True, the previous value is stored in value_prev whenever value is updated.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_kwargs : dict
+        Keyword parameters.
 
-    Atttributes
+    Attributes
     -----------
     value : Any
         Current value of the property.
@@ -118,9 +122,11 @@ class Property (Plottable, Renormalizable):
                   p_name : str, 
                   p_derivative_order_max : DerivativeOrderMax = 0, 
                   p_value_prev : ValuePrev = False,
-                  p_visualize : bool = False ):
+                  p_visualize : bool = False,
+                  **p_kwargs ):
 
         Plottable.__init__(self, p_visualize=p_visualize)
+        KWArgs.__init__(self, **p_kwargs)
 
         self.name                   = p_name
         self._value                 = None
@@ -270,7 +276,9 @@ class Properties (Plottable, Renormalizable):
         List of property definitions. 
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
-    
+    p_kwargs : dict
+        Keyword parameters to be handed over to all properties.
+
     Attributes
     ----------
     C_PROPERTIES : PropertyDefinitions
@@ -282,12 +290,13 @@ class Properties (Plottable, Renormalizable):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_properties : PropertyDefinitions = [],
-                  p_visualize : bool = False ):
+                  p_visualize : bool = False,
+                  **p_kwargs ):
                      
         self._properties = {}
         self._property_definitions = {}
-        self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
-        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
+        self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize, **p_kwargs )
+        self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize, **p_kwargs )
         self._update_property_links()
 
         Plottable.__init__( self, p_visualize = p_visualize )
@@ -299,7 +308,8 @@ class Properties (Plottable, Renormalizable):
                       p_derivative_order_max : DerivativeOrderMax = 0, 
                       p_value_prev : ValuePrev = False,
                       p_cls : PropertyClass = Property,
-                      p_visualize : bool = False ):
+                      p_visualize : bool = False,
+                      **p_kwargs ):
         """
         Adds a new managed property as an attribute to the own class. Optionally, auto-derivation can 
         be added for numeric properties (scalar or vectorial). The property is stored in the protected 
@@ -317,12 +327,15 @@ class Properties (Plottable, Renormalizable):
             Optional property class to be used. Default = Property.
         p_visualize : bool
             Boolean switch for visualisation. Default = False.
+        p_kwargs : dict
+            Optional keyword parameters.
         """
 
         prop_obj = p_cls( p_name = p_name, 
                           p_derivative_order_max = p_derivative_order_max, 
                           p_value_prev = p_value_prev,
-                          p_visualize = p_visualize )
+                          p_visualize = p_visualize,
+                          **p_kwargs )
         self._properties[p_name] = (prop_obj, False)
         self._property_definitions[p_name] = ( p_name, p_derivative_order_max, p_value_prev, p_cls )
         setattr(self, p_name, prop_obj )
@@ -331,7 +344,8 @@ class Properties (Plottable, Renormalizable):
 ## -------------------------------------------------------------------------------------------------
     def add_properties( self, 
                         p_property_definitions : PropertyDefinitions,
-                        p_visualize : bool = False ):
+                        p_visualize : bool = False,
+                        **p_kwargs ):
         """
         Adds new managed properties to the own class. See method add_property() for further details.
             
@@ -341,6 +355,8 @@ class Properties (Plottable, Renormalizable):
             List of property definitions.
         p_visualize : bool
             Boolean switch for visualisation. Default = False.
+        p_kwargs : dict
+            Keyword parameters to be handed over to all properties.        
         """
 
         for p in p_property_definitions:
@@ -348,7 +364,8 @@ class Properties (Plottable, Renormalizable):
                                p_derivative_order_max = p[1], 
                                p_value_prev = p[2],
                                p_cls = p[3], 
-                               p_visualize = p_visualize )
+                               p_visualize = p_visualize,
+                               **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -499,6 +516,7 @@ class Properties (Plottable, Renormalizable):
             if not link: prop.renormalize( p_normalizer = p_normalizer )
 
                  
+## -------------------------------------------------------------------------------------------------
     color = property( fget = Plottable.get_plot_color, fset = set_plot_color )
 
 
@@ -515,14 +533,17 @@ class MultiProperty (Property, Properties):
                   p_derivative_order_max: int = 0, 
                   p_value_prev : ValuePrev = False,
                   p_properties : PropertyDefinitions = [],
-                  p_visualize: bool = False ):
+                  p_visualize: bool = False,
+                  **p_kwargs ):
         
         Property.__init__( self, 
                            p_name,
                            p_derivative_order_max = p_derivative_order_max, 
                            p_value_prev = p_value_prev,
-                           p_visualize = p_visualize )
+                           p_visualize = p_visualize,
+                           **p_kwargs )
         
         Properties.__init__( self,
                              p_properties = p_properties,
-                             p_visualize = p_visualize )
+                             p_visualize = p_visualize,
+                             **p_kwargs )
