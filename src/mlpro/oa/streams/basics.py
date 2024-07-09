@@ -155,7 +155,7 @@ class OATask (StreamTask, Model):
                     else:
                         self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
                 except NotImplementedError:
-                    self.log(self.C_LOG_TYPE_S, 'Reverse adaptation not implemented', inst_id)
+                    self.log(self.C_LOG_TYPE_E, 'Reverse adaptation not implemented', inst_id)
 
         # 3 Postprocessing
         try:
