@@ -51,6 +51,7 @@ class Normalizer:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
 
+        self._param_valid = False
         self._param     = None
         self._param_old = None
         self._param_new = None
@@ -71,7 +72,7 @@ class Normalizer:
         boolean:True
             Returns true after setting the parameters
         """
-        self._param = p_param
+        self._param = p_param.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -156,6 +157,7 @@ class Normalizer:
         denormalized_element = self.denormalize(p_data)
         self._set_parameters(self._param_new)
         renormalized_element = self.normalize(denormalized_element)
+        print("Renormalized")
         return renormalized_element
 
 

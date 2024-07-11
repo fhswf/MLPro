@@ -84,7 +84,10 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
             self._plot_data_2d = None
             self._plot_data_3d = None
             self._plot_data_nd = None
-
+        # Debugging
+        self._trial_data_norm = []
+        self._trial_data_renorm = []
+        self._trial_data = {}
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst:InstDict):
@@ -98,12 +101,18 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
         """
         
         # Normalization of all incoming stream instances (order doesn't matter)
-        for (inst_type, inst) in p_inst.values():
+        # for (inst_type, inst) in p_inst.values():
+        pass
+        for ids, (inst_type, inst) in p_inst.items():
             if self._param is None:
                 self.update_parameters( p_set = inst.get_feature_data().get_related_set() )
-
+            if inst_type == InstTypeNew:
+                self._trial_data[ids] = inst.get_feature_data().get_values()
+            elif inst_type == InstTypeDel:
+                del self._trial_data[ids]
             normalized_element = self.normalize(inst.get_feature_data())
             inst.get_feature_data().set_values(normalized_element.get_values())
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -129,17 +138,160 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
         set = p_event_object.get_raising_object().get_related_set()
 
         self.update_parameters(set)
-
-        self._parameters_updated = True
+        if self._visualize:
+            try:
+                self._update_plot_data_2d()
+            except:
+                try:
+                    self._update_plot_data_3d()
+                except:
+                    try:
+                         self._update_plot_data_nd()
+                    except:
+                        raise Error
 
         return True
 
 
+# ## -------------------------------------------------------------------------------------------------
+#     def _update_plot_2d( self,
+#                          p_settings : PlotSettings,
+#                          p_inst : InstDict,
+#                          **p_kwargs ):
+#         """
+#         Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
+#
+#         Parameters
+#         ----------
+#         p_settings : PlotSettings
+#             Object with further plot settings.
+#         p_inst : InstDict
+#             Stream instances to be plotted.
+#         p_kwargs : dict
+#             Further optional plot parameters.
+#         """
+#
+#         if self._parameters_updated and ( len(self._plot_2d_xdata) != 0 ):
+#
+#             if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
+#                 self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
+#             ids = []
+#             for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
+#                 ids.extend([id])
+#                 self._trial_data_norm.append([self._plot_2d_xdata[id], self._plot_2d_ydata[id]])
+#                 self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
+#                 self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
+#
+#             plot_data_renormalized = self.renormalize(self._plot_data_2d)
+#
+#             self._plot_2d_xdata = {}
+#             self._plot_2d_ydata = {}
+#
+#             for i, data_2d in enumerate(plot_data_renormalized):
+#                 self._plot_2d_xdata[ids[i]] = data_2d[0]
+#                 self._plot_2d_ydata[ids[i]] = data_2d[1]
+#                 self._trial_data_renorm.append([data_2d[0], data_2d[1]])
+#             self._parameters_updated = False
+#         print(self._trial_data, self._trial_data_norm, self._trial_data_renorm)
+#         OATask._update_plot_2d( self,
+#                                 p_settings = p_settings,
+#                                 p_inst = p_inst,
+#                                 **p_kwargs )
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def _update_plot_3d( self,
+#                          p_settings : PlotSettings,
+#                          p_inst : InstDict,
+#                          **p_kwargs ):
+#         """
+#         Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
+#
+#         Parameters
+#         ----------
+#         p_settings : PlotSettings
+#             Object with further plot settings.
+#         p_inst : InstDict
+#             Stream instances to be plotted.
+#         p_kwargs : dict
+#             Further optional plot parameters.
+#
+#         """
+#
+#         if self._parameters_updated and ( len(self._plot_3d_xdata) != 0 ):
+#
+#             if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
+#                 self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
+#
+#             ids = []
+#             for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
+#                 ids.extend([i])
+#                 self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
+#                 self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
+#                 self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
+#
+#             plot_data_renormalized = self.renormalize(self._plot_data_3d)
+#
+#             self._plot_3d_xdata = {}
+#             self._plot_3d_ydata = {}
+#             self._plot_3d_zdata = {}
+#
+#             for i, data_3d in enumerate(plot_data_renormalized):
+#                 self._plot_3d_xdata[ids[i]] = data_3d[0]
+#                 self._plot_3d_ydata[ids[i]] = data_3d[1]
+#                 self._plot_3d_zdata[ids[i]] = data_3d[2]
+#
+#             self._parameters_updated = False
+#
+#         OATask._update_plot_3d( self,
+#                                 p_settings = p_settings,
+#                                 p_inst = p_inst,
+#                                 **p_kwargs )
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def _update_plot_nd( self,
+#                          p_settings : PlotSettings,
+#                          p_inst : InstDict,
+#                          **p_kwargs ):
+#         """
+#
+#         Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
+#
+#         Parameters
+#         ----------
+#         p_settings : PlotSettings
+#             Object with further plot settings.
+#         p_inst : InstDict
+#             Stream instances to be plotted.
+#         p_kwargs : dict
+#             Further optional plot parameters.
+#         """
+#
+#         if self._parameters_updated and self._plot_nd_plots:
+#             if (len(self._plot_nd_plots[0][0])) != 0:
+#
+#                 if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
+#                     self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
+#                 ids = []
+#                 for j in range(len(self._plot_nd_plots)):
+#                     for i in range(len(self._plot_nd_plots[0][0])):
+#                         self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
+#
+#                 plot_data_renormalized = self.renormalize(self._plot_data_nd)
+#
+#                 for j in range(len(self._plot_nd_plots)):
+#                     self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
+#
+#
+#                 self._parameters_updated = False
+#
+#         OATask._update_plot_nd( self,
+#                                 p_settings = p_settings,
+#                                 p_inst = p_inst,
+#                                 **p_kwargs )
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d( self,
-                         p_settings : PlotSettings,
-                         p_inst : InstDict,
-                         **p_kwargs ):
+    def _update_plot_data_2d(self):
         """
         Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
 
@@ -152,39 +304,35 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
         p_kwargs : dict
             Further optional plot parameters.
         """
+        try:
+            if len(self._plot_2d_xdata) != 0 and len(self._plot_2d_xdata):
+                if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
+                    self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
+                ids = []
+                for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
+                    ids.extend([id])
+                    self._trial_data_norm.append([self._plot_2d_xdata[id], self._plot_2d_ydata[id]])
+                    self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
+                    self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
 
-        if self._parameters_updated and ( len(self._plot_2d_xdata) != 0 ):
+                plot_data_renormalized = self.renormalize(self._plot_data_2d)
 
-            if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
-                self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
-            ids = []
-            for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
-                ids.extend([id])
-                self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
-                self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
+                self._plot_2d_xdata = {}
+                self._plot_2d_ydata = {}
 
-            plot_data_renormalized = self.renormalize(self._plot_data_2d)
-
-            self._plot_2d_xdata = {}
-            self._plot_2d_ydata = {}
-
-            for i, data_2d in enumerate(plot_data_renormalized):
-                self._plot_2d_xdata[ids[i]] = data_2d[0]
-                self._plot_2d_ydata[ids[i]] = data_2d[1]
-
-            self._parameters_updated = False
-
-        OATask._update_plot_2d( self, 
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
+                for i, data_2d in enumerate(plot_data_renormalized):
+                    self._plot_2d_xdata[ids[i]] = data_2d[0]
+                    self._plot_2d_ydata[ids[i]] = data_2d[1]
+                    self._trial_data_renorm.append([data_2d[0], data_2d[1]])
+                self._parameters_updated = False
+            # print(self._trial_data, self._trial_data_norm, self._trial_data_renorm)
+            print("data:\n",self.normalize(np.array(list(self._trial_data.values()))).shape, len(plot_data_renormalized))
+        except:
+            raise Error
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d( self,
-                         p_settings : PlotSettings,
-                         p_inst : InstDict,
-                         **p_kwargs ):
+    def _update_plot_data_3d(self):
         """
         Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
 
@@ -198,43 +346,35 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
             Further optional plot parameters.
 
         """
+        try:
+            if len(self._plot_3d_xdata) != 0:
+                if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
+                    self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
 
-        if self._parameters_updated and ( len(self._plot_3d_xdata) != 0 ):
+                ids = []
+                for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
+                    ids.extend([i])
+                    self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
+                    self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
+                    self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
 
-            if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
-                self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
+                plot_data_renormalized = self.renormalize(self._plot_data_3d)
 
-            ids = []
-            for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
-                ids.extend([i])
-                self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
-                self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
-                self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
+                self._plot_3d_xdata = {}
+                self._plot_3d_ydata = {}
+                self._plot_3d_zdata = {}
 
-            plot_data_renormalized = self.renormalize(self._plot_data_3d)
+                for i, data_3d in enumerate(plot_data_renormalized):
+                    self._plot_3d_xdata[ids[i]] = data_3d[0]
+                    self._plot_3d_ydata[ids[i]] = data_3d[1]
+                    self._plot_3d_zdata[ids[i]] = data_3d[2]
+        except:
+            pass
 
-            self._plot_3d_xdata = {}
-            self._plot_3d_ydata = {}
-            self._plot_3d_zdata = {}
-
-            for i, data_3d in enumerate(plot_data_renormalized):
-                self._plot_3d_xdata[ids[i]] = data_3d[0]
-                self._plot_3d_ydata[ids[i]] = data_3d[1]
-                self._plot_3d_zdata[ids[i]] = data_3d[2]
-
-            self._parameters_updated = False
-
-        OATask._update_plot_3d( self, 
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd( self,
-                         p_settings : PlotSettings,
-                         p_inst : InstDict,
-                         **p_kwargs ):
+    def _update_plot_data_nd(self):
         """
 
         Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
@@ -249,11 +389,10 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
             Further optional plot parameters.
         """
 
-        if self._parameters_updated and self._plot_nd_plots:
-            if (len(self._plot_nd_plots[0][0])) != 0:
-
+        try:
+            if self._plot_nd_plots:
                 if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
-                    self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
+                        self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
                 ids = []
                 for j in range(len(self._plot_nd_plots)):
                     for i in range(len(self._plot_nd_plots[0][0])):
@@ -263,11 +402,5 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
 
                 for j in range(len(self._plot_nd_plots)):
                     self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
-
-
-                self._parameters_updated = False
-
-        OATask._update_plot_nd( self, 
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
+        except:
+            pass
