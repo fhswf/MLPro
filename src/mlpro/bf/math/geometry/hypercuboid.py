@@ -8,10 +8,11 @@
 ## -- 2024-05-29  0.0.0     DA       Creation
 ## -- 2024-06-03  1.0.0     DA       First implementation
 ## -- 2024-06-05  1.0.1     DA       Stabilization of Hypercuboid.set()
+## -- 2024-06-26  1.1.0     DA       Refactoring of attribute color
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-06-05)
+Ver. 1.1.0 (2024-06-26)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -79,7 +80,6 @@ class Hypercuboid (MultiProperty):
                           p_properties = p_properties,
                           p_visualize = p_visualize )
 
-        self.color      = self.C_PLOT_COLOR
         self.alpha      = self.C_PLOT_ALPHA
         self.fill       = self.C_PLOT_FILL
         self.linewidth  = self.C_PLOT_LINEWIDTH
@@ -139,35 +139,40 @@ class Hypercuboid (MultiProperty):
         if self.value is None: return
         boundaries = self.value
         center_geo = self.center_geo.value 
+        
+
+        # 2 Determine the color of the cuboid
+        if self.color is None: self.color = self.C_PLOT_COLOR
+        color = self.color
         self.center_geo.color = self.color
 
 
         if self._plot_2d_rectangle is None:
-            # 2 Init all plot objects
+            # 3 Init all plot objects
                                                  
-            # 2.1 Init 2d rectangle
+            # 3.1 Init 2d rectangle
             self._plot_2d_rectangle = Rectangle( xy = ( boundaries[0][0], boundaries[1][0] ),
                                                  width = boundaries[0][1] - boundaries[0][0],
                                                  height = boundaries[1][1] - boundaries[1][0],
                                                  fill = self.fill,
-                                                 edgecolor = self.color,
-                                                 color = self.color,
-                                                 facecolor = self.color,
+                                                 edgecolor = color,
+                                                 color = color,
+                                                 facecolor = color,
                                                  linewidth = self.linewidth,
                                                  visible = True,
                                                  alpha = self.alpha )
             
             p_settings.axes.add_patch(self._plot_2d_rectangle)
 
-            # 2.2 Init 2d crosshair through the geometric center
+            # 3.2 Init 2d crosshair through the geometric center
             self._plot_line1 = p_settings.axes.plot( [ center_geo[0], center_geo[0] ], 
                                                      [ boundaries[1][0], boundaries[1][1] ], 
-                                                     color = self.color, 
+                                                     color = color, 
                                                      linestyle = 'dashed', 
                                                      lw = 0.5 )[0]
             self._plot_line2 = p_settings.axes.plot( [ boundaries[0][0], boundaries[0][1] ], 
                                                      [ center_geo[1], center_geo[1] ], 
-                                                     color = self.color, 
+                                                     color = color, 
                                                      linestyle = 'dashed', 
                                                      lw = 0.5 )[0]            
 
@@ -179,9 +184,9 @@ class Hypercuboid (MultiProperty):
                                          width = boundaries[0][1] - boundaries[0][0],
                                          height = boundaries[1][1] - boundaries[1][0] )
             
-            self._plot_2d_rectangle.set( edgecolor = self.color,
-                                         facecolor = self.color,
-                                         color = self.color )
+            self._plot_2d_rectangle.set( edgecolor = color,
+                                         facecolor = color,
+                                         color = color )
                                                              
             # 3.2 Update crosshair lines
             self._plot_line1.set_data( [ center_geo[0], center_geo[0] ], 
@@ -189,8 +194,8 @@ class Hypercuboid (MultiProperty):
             self._plot_line2.set_data( [ boundaries[0][0], boundaries[0][1] ], 
                                        [ center_geo[1], center_geo[1] ] )  
 
-            self._plot_line1.set( color = self.color )
-            self._plot_line2.set( color = self.color )                                                           
+            self._plot_line1.set( color = color )
+            self._plot_line2.set( color = color )                                                           
                                                          
                              
 ## -------------------------------------------------------------------------------------------------
@@ -200,17 +205,22 @@ class Hypercuboid (MultiProperty):
         if self.value is None: return
         b = self.value
         center_geo = self.center_geo.value 
-        self.center_geo.color = self.color
 
+
+        # 2 Determine the color of the cuboid
+        if self.color is None: self.color = self.C_PLOT_COLOR
+        color = self.color
+        self.center_geo.color = self.color
+            
         
         if self._plot_3d_polycollection is None:
-            # 2 Init all plot objects
+            # 3 Init all plot objects
                                                              
-            # 2.1 Init 3d cuboid
+            # 3.1 Init 3d cuboid
             self._plot_3d_polycollection = Poly3DCollection( verts= [], 
                                                              linewidths=self.linewidth,
-                                                             edgecolors=self.color, 
-                                                             facecolors=self.color, 
+                                                             edgecolors=color, 
+                                                             facecolors=color, 
                                                              alpha = self.alpha )
                              
             self._plot_settings.axes.add_collection(self._plot_3d_polycollection)
@@ -219,19 +229,19 @@ class Hypercuboid (MultiProperty):
             self._plot_line1 = p_settings.axes.plot( [ center_geo[0], center_geo[0] ], 
                                                      [ center_geo[1], center_geo[1] ], 
                                                      [ b[2][0], b[2][1] ], 
-                                                     color = self.color, 
+                                                     color = color, 
                                                      linestyle = 'dashed', 
                                                      lw = 0.5 )[0]
             self._plot_line2 = p_settings.axes.plot( [ center_geo[0], center_geo[0] ], 
                                                      [ b[1][0], b[1][1] ],
                                                      [ center_geo[2], center_geo[2] ], 
-                                                     color = self.color, 
+                                                     color = color, 
                                                      linestyle = 'dashed', 
                                                      lw = 0.5 )[0]
             self._plot_line3 = p_settings.axes.plot( [ b[0][0], b[0][1] ], 
                                                      [ center_geo[1], center_geo[1] ], 
                                                      [ center_geo[2], center_geo[2] ], 
-                                                     color = self.color, 
+                                                     color = color, 
                                                      linestyle = 'dashed', 
                                                      lw = 0.5 )[0]
         
@@ -247,9 +257,9 @@ class Hypercuboid (MultiProperty):
                                           [ center_geo[1], center_geo[1] ], 
                                           [ center_geo[2], center_geo[2] ] )
             
-            self._plot_line1.set( color = self.color )
-            self._plot_line2.set( color = self.color )
-            self._plot_line3.set( color = self.color )
+            self._plot_line1.set( color = color )
+            self._plot_line2.set( color = color )
+            self._plot_line3.set( color = color )
 
 
         # 4 Update the 3d cuboid
@@ -285,8 +295,8 @@ class Hypercuboid (MultiProperty):
 
         self._plot_3d_polycollection.set_verts(verts)
 
-        self._plot_3d_polycollection.set( edgecolor = self.color,
-                                          facecolor = self.color )
+        self._plot_3d_polycollection.set( edgecolor = color,
+                                          facecolor = color )
 
 
 ## -------------------------------------------------------------------------------------------------

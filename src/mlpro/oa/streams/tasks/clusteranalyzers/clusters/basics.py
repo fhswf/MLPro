@@ -37,17 +37,18 @@
 ## -- 2024-05-27  1.7.0     DA       Refactoring
 ## -- 2024-05-29  1.8.0     DA       Class Cluster: order of colors changed
 ## -- 2024-06-08  1.9.0     DA       New method Cluster.get_influence()
+## -- 2024-06-18  2.0.0     DA       Class Cluster: new parent class KWArgs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2024-06-08)
+Ver. 2.0.0 (2024-06-18)
 
 This module provides a template class for clusters to be used in cluster analyzer algorithms.
 
 """
 
 
-from mlpro.bf.various import Id
+from mlpro.bf.various import Id, KWArgs
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import PropertyDefinitions, Properties
 from mlpro.bf.streams import Instance
@@ -59,7 +60,7 @@ ClusterId = int
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Cluster (Id, Properties):
+class Cluster (Id, Properties, KWArgs):
     """
     Universal template class for a cluster with any number of properties added by a cluster analyzer. 
 
@@ -71,7 +72,8 @@ class Cluster (Id, Properties):
         List of property definitions. 
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
-    
+    p_kwargs : dict
+        Further parameters.
     """
 
     C_PLOT_ACTIVE           = True
@@ -96,10 +98,17 @@ class Cluster (Id, Properties):
     def __init__( self, 
                   p_id : ClusterId,
                   p_properties : PropertyDefinitions = [],
-                  p_visualize : bool = False ):
+                  p_visualize : bool = False,
+                  **p_kwargs ):
 
+        KWArgs.__init__( self, **p_kwargs )
         Properties.__init__( self, p_properties = p_properties, p_visualize = p_visualize )
         Id.__init__( self, p_id = p_id )
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_plot_color(self, p_color):
+        Properties.set_plot_color( self, p_color = p_color)
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -141,3 +150,6 @@ class Cluster (Id, Properties):
         """
 
         raise NotImplementedError
+
+
+    color = property( fget = Properties.get_plot_color, fset = set_plot_color )

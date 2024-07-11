@@ -9,10 +9,12 @@
 ## -- 2024-05-29  0.2.0     DA       Refactoring
 ## -- 2024-05-30  0.3.0     DA       Global aliases: new boolean param ValuePrev
 ## -- 2024-05-31  0.4.0     DA       Improved the stability of the plot methods
+## -- 2024-06-13  0.5.0     DA       New property definitions cprop_centroid_prev*
+## -- 2024-06-26  0.6.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-05-31)
+Ver. 0.6.0 (2024-06-26)
 
 This module provides ...
 
@@ -109,10 +111,16 @@ class Centroid (Point, Id):
 
         # 0 Intro
         if self.value is None: return
-        super()._update_plot_2d(p_settings, **p_kwargs)
 
         
-        # 1 Get coordinates
+        # 1 Plot the point 
+        color = self.color
+        self.color = None
+        super()._update_plot_2d(p_settings, **p_kwargs)
+        self.color = color
+        
+
+        # 2 Get line coordinates
         centroid = self.value
         ax_xlim  = p_settings.axes.get_xlim()
         ax_ylim  = p_settings.axes.get_ylim()
@@ -120,12 +128,18 @@ class Centroid (Point, Id):
         ylim     = [ min( ax_ylim[0], centroid[1] ), max(ax_ylim[1], centroid[1] ) ]
 
             
-        # 2 Plot a crosshair
-        if self._plot_line1 is None:
-            # 2.1 Add initial crosshair lines
-            cluster_id = self.id
+        # 3 Determine the color of the crosshair
+        cluster_id = self.id
+        if self.color is None:
             col_id = cluster_id % len(Cluster.C_CLUSTER_COLORS)
             color = Cluster.C_CLUSTER_COLORS[col_id]
+        else:
+            color = self.color
+                
+
+        # 4 Plot a crosshair
+        if self._plot_line1 is None:
+            # 4.1 Add initial crosshair lines
             label = ' C' + str(cluster_id) + ' '
             self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], color=color, linestyle='dashed', lw=1, label=label)[0]
             self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, color=color, linestyle='dashed', lw=1)[0]
@@ -136,14 +150,16 @@ class Centroid (Point, Id):
             self._plot_line2_t2 = p_settings.axes.text(centroid[0], ylim[1], label, ha='center', va='bottom',color=color )
             p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', shadow=True, draggable=True)
         else:
-            # 2.2 Update data of crosshair lines
+            # 4.2 Update data of crosshair lines
             self._plot_line1.set_data( xlim, [centroid[1],centroid[1]] )
+            self._plot_line1.set_color( color )
             self._plot_line2.set_data( [centroid[0],centroid[0]], ylim )
-            self._plot_line1_t1.set(position=(centroid[0], centroid[1]) )
-            self._plot_line1_t2.set(position=(xlim[0], centroid[1]))
-            self._plot_line1_t3.set(position=(xlim[1], centroid[1]))
-            self._plot_line2_t1.set(position=(centroid[0], ylim[0]))
-            self._plot_line2_t2.set(position=(centroid[0], ylim[1]))
+            self._plot_line2.set_color( color )
+            self._plot_line1_t1.set(position=(centroid[0], centroid[1]), color=color)
+            self._plot_line1_t2.set(position=(xlim[0], centroid[1]), color=color)
+            self._plot_line1_t3.set(position=(xlim[1], centroid[1]), color=color)
+            self._plot_line2_t1.set(position=(centroid[0], ylim[0]), color=color)
+            self._plot_line2_t2.set(position=(centroid[0], ylim[1]), color=color)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -151,7 +167,13 @@ class Centroid (Point, Id):
 
         # 0 Intro
         if self.value is None: return
-        super()._update_plot_3d(p_settings, **p_kwargs) 
+
+        
+        # 1 Plot the point 
+        color = self.color
+        self.color = None
+        super()._update_plot_3d(p_settings, **p_kwargs)
+        self.color = color
 
         
         # 1 Get coordinates
@@ -178,14 +200,22 @@ class Centroid (Point, Id):
             l2_t1_ha='left'
 
         l3_t1_va='top' 
+            
 
-
-        # 3 Plot a crosshair with label texts
-        if self._plot_line1 is None:
-            # 3.1 Add initial crosshair lines
-            cluster_id = self.get_id()
+        # 3 Determine the color of the crosshair
+        cluster_id = self.id
+        if self.color is None:
             col_id = cluster_id % len(Cluster.C_CLUSTER_COLORS)
             color = Cluster.C_CLUSTER_COLORS[col_id]
+        else:
+            color = self.color
+
+
+        # 4 Plot a crosshair with label texts
+        if self._plot_line1 is None:
+            # 4.1 Add initial crosshair lines
+            cluster_id = self.get_id()
+
             label = ' C' + str(cluster_id) + ' '
             self._plot_line1 = p_settings.axes.plot( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1, label=label)[0]
             self._plot_line2 = p_settings.axes.plot( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]], color=color, linestyle='dashed', lw=1)[0]
@@ -198,15 +228,18 @@ class Centroid (Point, Id):
 
             p_settings.axes.legend(title='Clusters', alignment='left', loc='right', shadow=True, draggable=True)
         else:
-            # 3.2 Update data of crosshair lines
+            # 4.2 Update data of crosshair lines
             self._plot_line1.set_data_3d( xlim, [centroid[1],centroid[1]], [centroid[2],centroid[2]] )
+            self._plot_line1.set_color( color )
             self._plot_line2.set_data_3d( [centroid[0],centroid[0]], ylim, [centroid[2],centroid[2]] )
+            self._plot_line2.set_color( color )
             self._plot_line3.set_data_3d( [centroid[0],centroid[0]], [centroid[1],centroid[1]], zlim )
+            self._plot_line3.set_color( color )
 
-            self._plot_line1_t1.set(position_3d=(centroid[0], centroid[1], centroid[2]))
-            self._plot_line1_t2.set(position_3d=(xlim[0], centroid[1], centroid[2]), ha=l1_t2_ha)
-            self._plot_line2_t1.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=l2_t1_ha)
-            self._plot_line3_t1.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=l3_t1_va)
+            self._plot_line1_t1.set(position_3d=(centroid[0], centroid[1], centroid[2]), color=color)
+            self._plot_line1_t2.set(position_3d=(xlim[0], centroid[1], centroid[2]), ha=l1_t2_ha, color=color)
+            self._plot_line2_t1.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=l2_t1_ha, color=color)
+            self._plot_line3_t1.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=l3_t1_va, color=color)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -268,12 +301,16 @@ class Centroid (Point, Id):
 
 
 
-# Centroid with 0,1,2 order derivatives and plot functionality
-cprop_centroid     : PropertyDefinition = ( 'centroid', 0, False, Centroid )
-cprop_centroid1    : PropertyDefinition = ( 'centroid', 1, False, Centroid )
-cprop_centroid2    : PropertyDefinition = ( 'centroid', 2, False, Centroid )
+# Centroid with 0,1,2 order derivatives and plot functionality with/without storing previous values
+cprop_centroid          : PropertyDefinition = ( 'centroid', 0, False, Centroid )
+cprop_centroid1         : PropertyDefinition = ( 'centroid', 1, False, Centroid )
+cprop_centroid2         : PropertyDefinition = ( 'centroid', 2, False, Centroid )
+
+cprop_centroid_prev     : PropertyDefinition = ( 'centroid', 0, True, Centroid )
+cprop_centroid_prev1    : PropertyDefinition = ( 'centroid', 1, True, Centroid )
+cprop_centroid_prev2    : PropertyDefinition = ( 'centroid', 2, True, Centroid )
 
 # Geometric center with 0,1,2 order derivatives and plot functionality
-cprop_center_geo   : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
-cprop_center_geo1  : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
-cprop_center_geo2  : PropertyDefinition = ( 'center_geo', 2, False, Centroid )
+cprop_center_geo        : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
+cprop_center_geo1       : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
+cprop_center_geo2       : PropertyDefinition = ( 'center_geo', 2, False, Centroid )

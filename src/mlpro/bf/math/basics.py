@@ -574,14 +574,14 @@ class Function:
             p_output_elem_cls   Output element class (compatible to class Element)
         """
 
-        self._input_space = p_input_space
-        self._output_space = p_output_space
+        self._input_space     = p_input_space
+        self._output_space    = p_output_space
         self._output_elem_cls = p_output_elem_cls
-        self.map = self.__call__
+        self.__call__         = self.map 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __call__(self, p_input:Element) -> Element:
+    def __call__(self, p_input: Union[Element,np.array] ) -> Union[Element,np.array]:
         """
         Maps a multivariate abscissa/input element to a multivariate ordinate/output element by 
         calling the custom method _map().
@@ -597,26 +597,55 @@ class Function:
             Output element.
         """
 
+        return self.map(p_input=p_input)
+
+
+## -------------------------------------------------------------------------------------------------
+    def map(self, p_input: Union[Element,np.array] ) -> Union[Element,np.array]:
+        """
+        Maps a multivariate abscissa/input element to a multivariate ordinate/output element by 
+        calling the custom method _map().        
+
+        Parameters
+        ----------
+        p_input : Union[Element,np.array]
+            Input to be mapped.
+        
+        Returns
+        -------
+        output : Union[Element,np.array]
+            Output.
+        """
+
         output = self._output_elem_cls(self._output_space)
         self._map(p_input, output)
         return output
 
 
 ## -------------------------------------------------------------------------------------------------
-    def map(self, p_input: Element) -> Element:
-        """
-        Alternative method to map an input to an output. Actually, it refers to method __call__().
-        Redefining this method has no effect. See method __call__() and constructor for further
-        details.
-        """
-
-        return self.__call__(p_input=p_input)
-
-
-## -------------------------------------------------------------------------------------------------
     def _map(self, p_input: Element, p_output: Element):
         """
         Custom method for own mapping algorithm. See methods __call__() and map() for further details.
+        """
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def map_inverse(self, p_input: Union[Element,np.array] ) -> Union[Element,np.array]:
+        """
+        Inverse mapping by calling custom method _map_inverse().
+        """
+
+        output = self._output_elem_cls(self._output_space)
+        self._map_inverse(p_input, output)
+        return output
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map_inverse(self, p_input: Element, p_output: Element):
+        """
+        Custom method for own inverse mapping algorithm. See method map_inverse() for further details.
         """
         
         raise NotImplementedError

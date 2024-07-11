@@ -32,10 +32,12 @@
 ## -- 2024-06-03  1.0.1     DA       Method Properties.update_plot(): changed order of plotting
 ## -- 2024-06-05  1.1.0     DA       New method Properties.replace_property()
 ## -- 2024-06-06  1.2.0     DA       New custom method Properties._update_property_links()
+## -- 2024-06-16  1.3.0     DA       New method Properties.get_property_definitions()
+## -- 2024-06-26  1.4.0     DA       New method Properties.set_plot_color()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-06-06)
+Ver. 1.4.0 (2024-06-26)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -272,6 +274,7 @@ class Properties (Plottable, Renormalizable):
                   p_visualize : bool = False ):
                      
         self._properties = {}
+        self._property_definitions = {}
         self.add_properties( p_property_definitions = self.C_PROPERTIES, p_visualize = p_visualize )
         self.add_properties( p_property_definitions = p_properties, p_visualize = p_visualize )
         self._update_property_links()
@@ -310,6 +313,7 @@ class Properties (Plottable, Renormalizable):
                           p_value_prev = p_value_prev,
                           p_visualize = p_visualize )
         self._properties[p_name] = (prop_obj, False)
+        self._property_definitions[p_name] = ( p_name, p_derivative_order_max, p_value_prev, p_cls )
         setattr(self, p_name, prop_obj )
 
 
@@ -348,6 +352,20 @@ class Properties (Plottable, Renormalizable):
         """
 
         return self._properties
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_property_definitions(self) -> PropertyDefinitions:
+        """
+        Returns a list of currently stored property definitions.
+
+        Returns
+        -------
+        PropertyDefinitions
+            List of property definitions
+        """
+
+        return list(self._property_definitions.values())
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -411,16 +429,31 @@ class Properties (Plottable, Renormalizable):
             if not link:
                 prop.set_plot_settings( p_plot_settings = p_plot_settings )
 
-            
+
+## -------------------------------------------------------------------------------------------------
+    def set_plot_color(self, p_color : str):
+
+        Plottable.set_plot_color( self, p_color = p_color )
+
+        for (prop, link) in self.get_properties().values():
+            if not link:
+                prop.set_plot_color( p_color = p_color )     
+
+
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
 
         if not self.get_visualization(): return
 
         Plottable.init_plot(self, p_figure = p_figure, p_plot_settings = p_plot_settings )
+        try:
+            if not self._plot_initialized: return
+        except:
+            return
 
         for (prop, link) in self.get_properties().values():
-            if not link: prop.init_plot( p_figure = self._figure, p_plot_settings = p_plot_settings)
+            if not link: 
+                prop.init_plot( p_figure = self._figure, p_plot_settings = p_plot_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -428,8 +461,11 @@ class Properties (Plottable, Renormalizable):
 
         if not self.get_visualization(): return
 
+        if ( self._plot_settings.detail_level > 0 ) and ( self._plot_settings.detail_level < self.plot_detail_level ): return
+
         for (prop, link) in self.get_properties().values():
-            if not link: prop.update_plot(**p_kwargs)
+            if not link: 
+                prop.update_plot(**p_kwargs)
 
         Plottable.update_plot(self, **p_kwargs )
 
@@ -450,6 +486,9 @@ class Properties (Plottable, Renormalizable):
 
         for (prop, link) in self.get_properties().values():
             if not link: prop.renormalize( p_normalizer = p_normalizer )
+
+                 
+    color = property( fget = Plottable.get_plot_color, fset = set_plot_color )
 
 
 
