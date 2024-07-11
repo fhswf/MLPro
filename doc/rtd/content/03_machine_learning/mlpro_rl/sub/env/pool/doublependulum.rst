@@ -148,7 +148,6 @@ states of outer pole and 25% to that of inner pole.
         :math:`s_n` is the normalized state
 
 **Cross Reference**
-    + :ref:`Howto RL-ENV-005: SB3 Policy on Double Pendulum Environment <Howto Env RL 005>`
     + :ref:`API Reference <target_pool_rl_env_double_pendulum>`
 
 
