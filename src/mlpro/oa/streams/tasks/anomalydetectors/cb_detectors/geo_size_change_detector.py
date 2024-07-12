@@ -43,6 +43,7 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                  p_clusterer : ClusterAnalyzer = None,
                  p_geo_size_thresh : float = 0.01,
                  p_roc_geo_size_thresh : float = 0.005,
+                 p_initial_skip : int = 1,
                  p_buffer_size: int = 5,
                  p_window_size: int = 10,
                  p_time_calculation: bool = False,
@@ -82,6 +83,8 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
 
         self._rel_thresh = p_rel_threshold
         self._visualize = p_visualize
+        self._init_skip = p_initial_skip
+        self._count = 1
 
         self._time_calculation = p_time_calculation
         self._buffer_size = p_buffer_size
@@ -187,12 +190,12 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                     second_diff = []
 
                 # Determine the current state
-                if any(d > thresh for d in first_diff):
+                if all(d > thresh for d in first_diff):
                     current_state = "LI"
                     if current_state != self._current_state[id]:
                         affected_clusters_enlargement[id] = clusters[id]
                         self._current_state[id] = current_state
-                elif any(d < -thresh for d in first_diff):
+                elif all(d < -thresh for d in first_diff):
                     current_state = "LD"
                     if current_state != self._current_state[id]:
                         affected_clusters_shrinkage[id] = clusters[id]
@@ -209,6 +212,10 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                         self._current_state[id] = current_state
                 else:
                     current_state = "NC"
+
+        if self._count <= self._init_skip:
+            self._count+= 1
+            return
 
         if len(affected_clusters_shrinkage) != 0:
             anomaly = ClusterShrinkage(p_id = self._get_next_anomaly_id,
