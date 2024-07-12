@@ -6,11 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-07-10  0.0.0     MRD/SY   Creation
-## -- 2024-08-07  1.0.0     MRD/SY   Release of first version
+## -- 2024-07-10  1.0.0     MRD/SY   Release of first version
+## -- 2024-07-12  1.0.1     SY       Add initial and target points into the state space
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-08-07)
+Ver. 1.0.1 (2024-07-12)
 
 This module provides a 2D environment for collision avoidance of a trajectory planning with
 dynamic goals. The DynamicTrajectoryPlanner environment simulates a 2D space where an agent must
@@ -150,23 +151,25 @@ class DynamicTrajectoryPlanner(Environment):
         state_space     = ESpace()
         action_space    = ESpace()
 
-        for x in range(self.num_traject_point-2):
+        for x in range(self.num_traject_point):
             state_space.add_dim(
                 Dimension(
-                    p_name_short='x_'+str(x+1),
+                    p_name_short='x_'+str(x),
                     p_base_set=Dimension.C_BASE_SET_R,
-                    p_name_long='Node '+str(x+1)+' - x-axis',
+                    p_name_long='Node '+str(x)+' - x-axis',
                     p_boundaries=self.x_limit
                     )
                 )
             state_space.add_dim(
                 Dimension(
-                    p_name_short='y_'+str(x+1),
+                    p_name_short='y_'+str(x),
                     p_base_set=Dimension.C_BASE_SET_R,
-                    p_name_long='Node '+str(x+1)+' - y-axis',
+                    p_name_long='Node '+str(x)+' - y-axis',
                     p_boundaries=self.y_limit
                     )
                 )
+
+        for x in range(self.num_traject_point-2):
             action_space.add_dim(
                 Dimension(
                     p_name_short='x_'+str(x+1),
@@ -313,7 +316,13 @@ class DynamicTrajectoryPlanner(Environment):
 ## -------------------------------------------------------------------------------------------------
     def _get_obs(self):
         
-        return self.traject.flatten()   
+        trajectory = np.concatenate([
+            [self.start_pos],
+            self.traject,
+            [self.goal_pos]
+        ])
+        
+        return trajectory.flatten()
         
 
 ## -------------------------------------------------------------------------------------------------
