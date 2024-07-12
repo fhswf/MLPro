@@ -22,10 +22,11 @@
 ## -- 2023-01-12  1.0.13    LSB      Bug Fix
 ## -- 2023-02-13  1.0.14    LSB      BugFix: Changed the direct reference to p_param to a copy object
 ## -- 2024-04-30  1.1.0     DA       Refactoring/separation
+## -- 2024-07-12  1.1.1     LSB      Renormalization error
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-30)
+Ver. 1.1.1 (2024-07-12)
 
 This module provides a class for MinMax normalization.
 """
@@ -88,4 +89,3 @@ class NormalizerMinMax(Normalizer):
             self._param_old = self._param_new.copy()
         self._param = self._param_new.copy()
 
-        print("params updated")

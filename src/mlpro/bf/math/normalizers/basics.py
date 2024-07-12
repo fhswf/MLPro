@@ -23,10 +23,11 @@
 ## -- 2023-02-13  1.0.14    LSB      BugFix: Changed the direct reference to p_param to a copy object
 ## -- 2024-04-30  1.1.0     DA       Refactoring and new class Renormalizable
 ## -- 2024-05-23  1.2.0     DA       Method Normalizer._set_parameters(): little optimization
+## -- 2024-07-12  1.2.1     LSB       Renormalization error
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-23)
+Ver. 1.2.1 (2024-07-12)
 
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
@@ -157,7 +158,6 @@ class Normalizer:
         denormalized_element = self.denormalize(p_data)
         self._set_parameters(self._param_new)
         renormalized_element = self.normalize(denormalized_element)
-        print("Renormalized")
         return renormalized_element
 
 
