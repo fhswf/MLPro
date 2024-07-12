@@ -31,18 +31,21 @@ if __name__ == '__main__':
     # 2 Instantiate Stream
     stream = StreamMLProCSV(p_logging=logging,
                            p_path_load=path,
-                           p_csv_filename="0.csv",
+                           p_csv_filename="SDN-DDoS_Traffic_Dataset.csv",
+                           #p_csv_filename="0.csv",
                            p_delimiter=",",
                            p_frame=True,
                            p_header=True,
-                           p_list_features=["from","to","frame_proto","protocol","control_type","type_cont_messg","DOAGID","DOAGID.1","DOAGID.2","DOAGID.3","DOAG_info","DIO_info","object_cont_pt","lifetime","prefix_info","valid_lifetime","preferred_liftime","reserved","desti_prefix","desti_prefix.1","desti_prefix.2","desti_prefix.3"],
+                           p_list_features=["switch","host","src_ip","dst_ip","pkt_count","byte_count","duration","duration_nsec","tot_duration","flows","packet_per_massg","pktper_flow","byte_per_flow","pkt_rate","pair_flow","Protocol","port_no","tx_bytes","rx_bytes","tx_kbps","rx_kbps","tot_kbps","delay","jitter","packet_loss_rate"],
+                           #p_list_features=["from","to","frame_proto","protocol","control_type","type_cont_messg","DOAGID","DOAGID.1","DOAGID.2","DOAGID.3","DOAG_info","DIO_info","object_cont_pt","lifetime","prefix_info","valid_lifetime","preferred_liftime","reserved","desti_prefix","desti_prefix.1","desti_prefix.2","desti_prefix.3"],
                            p_list_labels=["label"])
 
 
     # 3. load data from the csv file
     data_names = []
     mem_from_csv = DataStoring(data_names)
-    mem_from_csv.load_data(path, "0.csv", ",")
+    mem_from_csv.load_data(path, "SDN-DDoS_Traffic_Dataset.csv", ",")
+    #mem_from_csv.load_data(path, "0.csv", ",")
     
     # 4 Performance test: iterate all data streams dark and measure the time
     input('\nPress ENTER to iterate all streams dark...\n')

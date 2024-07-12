@@ -68,7 +68,11 @@ class MyScenario(OAScenario):
 
         # Anomaly Detector
         task_anomaly_detector = ClusterGeometricSizeChangeDetector(p_clusterer=task_clusterer,
-                                                                   p_geo_size_upper_thresh=200,
+                                                                   p_geo_size_thresh=1000,
+                                                                   p_roc_geo_size_thresh=500,
+                                                                   p_rel_threshold=False,
+                                                                   p_buffer_size=10,
+                                                                   p_window_size=10,
                                                                    p_visualize=p_visualize,
                                                                    p_logging=p_logging)
 
@@ -138,6 +142,7 @@ for anomaly in anomalies.values():
         clusters_affected[x]["centroid"] = list(clusters[x].centroid.value)
         clusters_affected[x]["size"] = clusters[x].size.value
         clusters_affected[x]["age"] = clusters[x].age.value
+        clusters_affected[x]["geometric_size"] = clusters[x].size_geo.value
      
      inst = anomaly.get_instances()[-1].get_id()
      myscenario.log(Log.C_LOG_TYPE_W, 
