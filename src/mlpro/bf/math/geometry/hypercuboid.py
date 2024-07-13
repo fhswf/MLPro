@@ -10,10 +10,11 @@
 ## -- 2024-06-05  1.0.1     DA       Stabilization of Hypercuboid.set()
 ## -- 2024-06-26  1.1.0     DA       Refactoring of attribute color
 ## -- 2024-06-30  1.2.0     DA       Refactoring of method Hypercuboid.set()
+## -- 2024-07-13  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-06-30)
+Ver. 1.3.0 (2024-07-13)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -73,13 +74,15 @@ class Hypercuboid (MultiProperty):
                   p_derivative_order_max: int = 0, 
                   p_value_prev : ValuePrev = False,
                   p_properties : PropertyDefinitions = [],
-                  p_visualize: bool = False ):
+                  p_visualize: bool = False,
+                  **p_kwargs ):
         
         super().__init__( p_name = p_name,
                           p_derivative_order_max = p_derivative_order_max,
                           p_value_prev = p_value_prev,
                           p_properties = p_properties,
-                          p_visualize = p_visualize )
+                          p_visualize = p_visualize,
+                          **p_kwargs )
 
         self.alpha      = self.C_PLOT_ALPHA
         self.fill       = self.C_PLOT_FILL
