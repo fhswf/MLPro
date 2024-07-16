@@ -8,10 +8,11 @@
 ## -- 2024-07-10  0.0.0     MRD/SY   Creation
 ## -- 2024-07-10  1.0.0     MRD/SY   Release of first version
 ## -- 2024-07-12  1.0.1     SY       Add initial and target points into the state space
+## -- 2024-07-16  1.0.2     SY       Update _compute_broken() method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-07-12)
+Ver. 1.0.2 (2024-07-16)
 
 This module provides a 2D environment for collision avoidance of a trajectory planning with
 dynamic goals. The DynamicTrajectoryPlanner environment simulates a 2D space where an agent must
@@ -376,6 +377,14 @@ class DynamicTrajectoryPlanner(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
+        
+        for pt in self.traject:
+            if (pt[0]<self.x_limit[0]) or (pt[0]>self.x_limit[1]):
+                self._state.set_broken(True)
+                return True
+            elif (pt[1]<self.y_limit[0]) or (pt[1]>self.y_limit[1]):
+                self._state.set_broken(True)
+                return True              
         
         self._state.set_broken(False)
         return False
