@@ -88,6 +88,7 @@ class ClusterDriftDetector(AnomalyDetectorCB):
         self._init_skip = p_initial_skip
         self._visualize = p_visualize
         self._count = 0
+        self._count_change = {}
         
         # Data structures for storing previous states and buffers
         self._centroids_history = {}
@@ -98,6 +99,8 @@ class ClusterDriftDetector(AnomalyDetectorCB):
         self._accelerations = {}
         self._scaler = StandardScaler()
         self._cluster_states = {}
+        self._velocity_threshold = {}
+        self._acceleration_threshold = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -111,7 +114,7 @@ class ClusterDriftDetector(AnomalyDetectorCB):
         drifting_clusters = {}
 
         for id, cluster in clusters.items():
-            current_centroid = np.array(cluster.centroid.value).reshape(1, -1)
+            current_centroid = np.array(cluster.centroid.value)
             current_time = time.time()  # Get the current timestamp
 
             # Initialize cluster if it does not exist
@@ -119,44 +122,48 @@ class ClusterDriftDetector(AnomalyDetectorCB):
                 self._initialize_cluster(id, current_centroid, current_time)
 
             # Transform the current centroid using the scaler
-            current_centroid = self._scaler.transform(current_centroid)[0]
+            #self._scaler.partial_fit(current_centroid)
+            #current_centroid = self._scaler.transform(current_centroid)
+            #current_centroid = self._scaler.fit_transform(current_centroid)[0]
             previous_centroid = self._centroids_history[id]
-            previous_time = self._times_history[id]
+            if self._with_time_calculation:
+                previous_time = self._times_history[id]
+            else:
+                previous_time = None
             
             # Calculate velocity
-            velocity = self.calculate_velocity(previous_centroid, current_centroid, previous_time, current_time)
+            velocity = self._calculate_velocity(previous_centroid, current_centroid, previous_time, current_time, cluster_id=id)
+
+            if velocity:
+                # Calculate average velocity
+                average_velocity = self._calculate_avg(self._velocities_history[id])
+                self._velocities[id] = average_velocity
+
+                # Calculate acceleration
+                acceleration = self._calculate_acceleration(self._velocities_history[id], previous_time, current_time, cluster_id=id)
+                if acceleration:
+                    #acceleration = np.nan_to_num(acceleration)
+                    average_acceleration = self._calculate_avg(self._accelerations_history[id])
+                    self._accelerations[id] = average_acceleration
+
+                # Update previous centroid and time
+                self._centroids_history[id] = current_centroid
+                if self._with_time_calculation:
+                    self._times_history[id] = current_time
+        
+                # Clean the velocity to ensure no NaNs or infinities
+                #velocity = np.nan_to_num(velocity)
+
+                # Detect state changes and anomalies
+                state_change = self._detect_state_change(id, average_velocity, average_acceleration, self._velocity_threshold[id], self._acceleration_threshold[id])
             
-            # Clean the velocity to ensure no NaNs or infinities
-            velocity = np.nan_to_num(velocity)
+                if state_change:
+                    drifting_clusters[id] = cluster
 
-            # Update velocity buffer and calculate average velocity using EMA
-            velocity_buffer = self._velocities_history[id]
-            velocity_buffer.append(velocity)
-            average_velocity = self.calculate_ema(velocity_buffer)
-            self._velocities[id] = average_velocity
+                # Calculate dynamic thresholds
+                self._velocity_threshold[id] = self._dynamic_threshold(self._velocity_threshold[id], self._velocities_history[id][-1], self._velocity_thresh_factor)
+                self._acceleration_threshold[id] = self._dynamic_threshold(self._acceleration_threshold[id], self._accelerations_history[id][-1], self._acceleration_thresh_factor)
 
-            # Calculate acceleration
-            acceleration = self.calculate_acceleration(velocity_buffer, previous_time, current_time)
-            acceleration = np.nan_to_num(acceleration)
-            acceleration_buffer = self._velocities_history[id]
-            acceleration_buffer.append(acceleration)
-            average_acceleration = self.calculate_ema(acceleration_buffer)
-            self._accelerations[id] = average_acceleration
-
-            # Update previous centroid and time
-            self._centroids_history[id] = current_centroid
-            if self._with_time_calculation:
-                self._times_history[id] = current_time
-
-            # Calculate dynamic thresholds
-            velocity_threshold = self.dynamic_threshold(velocity_buffer, self._velocity_thresh_factor)
-            acceleration_threshold = self.dynamic_threshold(acceleration_buffer, self._acceleration_thresh_factor)
-
-            # Detect state changes and anomalies
-            state_change = self.detect_state_change(id, average_velocity, average_acceleration, velocity_threshold, acceleration_threshold)
-            
-            if state_change:
-                drifting_clusters[id] = cluster
 
         if (self._count >= self._init_skip):
             if len(drifting_clusters) != 0:
@@ -174,39 +181,53 @@ class ClusterDriftDetector(AnomalyDetectorCB):
     ## -------------------------------------------------------------------------------------------------
     def _initialize_cluster(self, cluster_id, current_centroid, timestamp):
         # Initialize cluster state and data structures
-        self._scaler.partial_fit(current_centroid)
-        current_centroid = self._scaler.transform(current_centroid)[0]
-        self._centroids_history[cluster_id] = current_centroid
-        self._velocities_history[cluster_id] = deque(maxlen=self._buffer_size)
-        self._accelerations_history[cluster_id] = deque(maxlen=self._buffer_size)
-        self._velocities[cluster_id] = np.zeros(current_centroid.shape)
-        self._accelerations[cluster_id] = np.zeros(current_centroid.shape)
+        self._centroids_history[cluster_id] = current_centroid         
+        self._velocities_history[cluster_id] = np.zeros((self._buffer_size, current_centroid.shape[0]))
+        self._accelerations_history[cluster_id] = np.zeros((self._buffer_size, current_centroid.shape[0]))
+        self._velocities[cluster_id] = np.zeros(current_centroid.shape[0])
+        self._accelerations[cluster_id] = np.zeros(current_centroid.shape[0])
         self._cluster_states[cluster_id] = 'initial'
+        self._count_change[cluster_id] = 0
         if self._with_time_calculation:
             self._times_history[cluster_id] = timestamp
 
+        self._velocity_threshold[cluster_id] = np.full(current_centroid.shape[0], self._velocity_thresh_factor)
+        self._acceleration_threshold[cluster_id] = np.full(current_centroid.shape[0], self._acceleration_thresh_factor)
+
 
     ## -------------------------------------------------------------------------------------------------
-    def calculate_velocity(self, previous_centroid, current_centroid, previous_time, current_time):
+    def _calculate_velocity(self, previous_centroid, current_centroid, previous_time, current_time, cluster_id):
         # Calculate the difference in centroids to get velocity
         difference = current_centroid - previous_centroid
         
         # Calculate time-based velocity if enabled
         if self._with_time_calculation and previous_time is not None and current_time is not None:
             time_diff = current_time - previous_time
-            if time_diff > 0:
-                return difference / time_diff
+            if not np.all(difference==0):
+                if time_diff > 0:
+                    velocity = difference / time_diff
+                    self._velocities_history[cluster_id] = np.append(self._velocities_history[cluster_id][1:], [velocity], axis=0)
+                    return True
+                else:
+                    return False
             else:
-                return np.zeros(difference.shape)
+                return False
+            
         else:
-            return difference
-
+            if np.all(difference==0):
+                self._count_change[cluster_id] += 1
+                return False
+            else:
+                velocity = difference/self._count_change[cluster_id]
+                self._count_change[cluster_id] = 1
+                self._velocities_history[cluster_id] = np.append(self._velocities_history[cluster_id][1:], [velocity], axis=0)
+                return True
 
     ## -------------------------------------------------------------------------------------------------
-    def calculate_acceleration(self, velocity_buffer, previous_time, current_time):
+    def _calculate_acceleration(self, velocity_buffer, previous_time, current_time, cluster_id):
         # Calculate acceleration as the change in velocity
         if len(velocity_buffer) < 2:
-            return np.zeros(velocity_buffer[-1].shape)
+            return False
         
         acceleration = velocity_buffer[-1] - velocity_buffer[-2]
         
@@ -214,44 +235,49 @@ class ClusterDriftDetector(AnomalyDetectorCB):
         if self._with_time_calculation and previous_time is not None and current_time is not None:
             time_diff = current_time - previous_time
             if time_diff > 0:
-                return acceleration / time_diff
+                acceleration /= time_diff
+                self._accelerations_history[cluster_id] = np.append(self._accelerations_history[cluster_id][1:], [acceleration], axis=0)
+                return True
             else:
-                return np.zeros(acceleration.shape)
+                return False
         else:
-            return acceleration
+            self._accelerations_history[cluster_id] = np.append(self._accelerations_history[cluster_id][1:], [acceleration], axis=0)
+            return True
 
 
     ## -------------------------------------------------------------------------------------------------
-    def calculate_ema(self, buffer):
+    def _calculate_avg(self, buffer):
+        if len(buffer) == 0:
+            return np.zeros(buffer[0].shape)
+        
+        return np.mean(buffer, axis=0)
+
+
+    ## -------------------------------------------------------------------------------------------------
+    def _calculate_ema(self, buffer):
         # Calculate Exponential Moving Average (EMA) for smoothing
         if len(buffer) == 0:
             return np.zeros(buffer[0].shape)
 
         ema = np.zeros(buffer[0].shape)
+        print(buffer)
+        print(ema)
         alpha = self._ema_alpha
         for i, value in enumerate(buffer):
-            value = np.nan_to_num(value, nan=0.0, posinf=1e6, neginf=-1e6)  # Ensure no NaNs or infinities
-            value = self.clip_values(value)
-            ema = alpha * value + (1 - alpha) * ema if i > 0 else value
+            #value = np.nan_to_num(value, nan=0.0, posinf=1e6, neginf=-1e6)  # Ensure no NaNs or infinities
+            ema = alpha * np.float64(value) + (1 - alpha) * ema if i > 0 else value
+            print(ema)
         return ema
     
 
+    ## -------------------------------------------------------------------------------------------------
+    def _dynamic_threshold(self, threshold, value, threshold_factor):
+        # Calculate dynamic threshold
+        return threshold*(1-self._ema_alpha) + self._ema_alpha*value*threshold_factor
 
 
     ## -------------------------------------------------------------------------------------------------
-    def dynamic_threshold(self, buffer, threshold_factor):
-        # Calculate dynamic threshold based on mean and standard deviation
-        if len(buffer) < 2:
-            return np.zeros(buffer[0].shape) + threshold_factor
-        buffer_array = np.array(buffer)
-        mean = np.mean(buffer_array, axis=0)
-        std = np.std(buffer_array, axis=0)
-        std[std == 0] = 1  # Handle division by zero
-        return mean + threshold_factor * std
-
-
-    ## -------------------------------------------------------------------------------------------------
-    def detect_state_change(self, cluster_id, average_velocity, average_acceleration, velocity_threshold, acceleration_threshold):
+    def _detect_state_change(self, cluster_id, average_velocity, average_acceleration, velocity_threshold, acceleration_threshold):
         # Detect various states of cluster behavior
         previous_state = self._cluster_states[cluster_id]
         
@@ -287,5 +313,3 @@ class ClusterDriftDetector(AnomalyDetectorCB):
     def get_accelerations(self):
         return self._accelerations
     
-    def clip_values(arr, min_value=-1e6, max_value=1e6):
-        return np.clip(arr, min_value, max_value)
