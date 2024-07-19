@@ -1157,8 +1157,6 @@ class StreamTask (Task):
                         raise Error('Data stream does not provide two numeric features')
 
                 feature_values = feature_data.get_values()
-
-                for dim ni inst.get
                 x = feature_values[feature_ids[0]]
                 y = feature_values[feature_ids[1]]
                 self._plot_2d_xdata[inst_id] = x
