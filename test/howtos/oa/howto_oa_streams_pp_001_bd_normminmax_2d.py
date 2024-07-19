@@ -92,7 +92,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 200
     step_rate   = 2
-    logging     = Log.C_LOG_ALL
+    logging     = Log.C_LOG_NOTHING
     visualize   = True
 
 else:
