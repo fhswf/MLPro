@@ -14,10 +14,11 @@
 ## --                                to ParamError
 ## -- 2024-06-04  1.1.3     DA       Bugfix: ESpace instead of MSpace
 ## -- 2024-07-04  1.1.4     SY       Allowing string in the datasets 
+## -- 2024-07-19  1.1.5     SY       Allowing string in the datasets 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2024-07-04)
+Ver. 1.1.5 (2024-07-19)
 
 This module provides the native stream class StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
@@ -124,15 +125,25 @@ class StreamMLProCSV(Stream):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_feature_space(self) -> MSpace:
+    def _setup_feature_space(self, p_data_type_numeric=True) -> MSpace:
         
         feature_space : MSpace = ESpace()
         
         if self._list_features is not None:
-            for ftrs in self._list_features:
+            for num, ftrs in enumerate(self._list_features):
                 if ftrs in self._from_csv.names:
+                    try:
+                        if p_data_type_numeric[num]:
+                            base_set = Feature.C_BASE_SET_R
+                        else:
+                            base_set = Feature.C_BASE_SET_DO
+                    except:
+                        if p_data_type_numeric:
+                            base_set = Feature.C_BASE_SET_R
+                        else:
+                            base_set = Feature.C_BASE_SET_DO
                     feature_space.add_dim(Feature(p_name_short = ftrs,
-                                                  p_base_set = Feature.C_BASE_SET_R,
+                                                  p_base_set = base_set,
                                                   p_name_long = ftrs,
                                                   p_name_latex = '',
                                                   p_description = '',
@@ -151,7 +162,7 @@ class StreamMLProCSV(Stream):
             for ftrs in self._list_labels:
                 if ftrs in self._from_csv.names:
                     label_space.add_dim(Label(p_name_short = ftrs,
-                                              p_base_set = Feature.C_BASE_SET_R,
+                                              p_base_set = Feature.C_BASE_SET_DO,
                                               p_name_long = ftrs,
                                               p_name_latex = '',
                                               p_description = '',
@@ -174,18 +185,28 @@ class StreamMLProCSV(Stream):
                                     self._kwargs['p_header'])
             
             try:
-                extended_data   = []
-                key_0           = list(self._from_csv.memory_dict.keys())[0]
-                for fr in self._from_csv.memory_dict[key_0]:
-                    extended_data.extend(self._from_csv.memory_dict[key_0][fr])
-                self.C_NUM_INSTANCES = self._num_instances = len(extended_data)
+                d_type_numeric  = []
+                for num, el in enumerate(self._list_features):
+                    idx             = list(self._from_csv.memory_dict.keys()).index(el)
+                    extended_data   = []
+                    key_0           = list(self._from_csv.memory_dict.keys())[idx]
+                    for fr in self._from_csv.memory_dict[key_0]:
+                        extended_data.extend(self._from_csv.memory_dict[key_0][fr])
+                    try:
+                        math.prod(extended_data)
+                        d_type_numeric.append(True)
+                    except:
+                        d_type_numeric.append(False)
+                    if num == 0:
+                        self.C_NUM_INSTANCES = self._num_instances = len(extended_data)
             except:
+                d_type_numeric  = False
                 self.C_NUM_INSTANCES = self._num_instances = 0
             
             if self._sampler is not None:
                 self._sampler.set_num_instances(self._num_instances)
 
-            self._feature_space = self._setup_feature_space()
+            self._feature_space = self._setup_feature_space(d_type_numeric)
             self._label_space   = self._setup_label_space()
             
             dim             = self._feature_space.get_num_dim()
