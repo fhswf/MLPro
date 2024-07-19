@@ -174,8 +174,16 @@ class Property (Plottable, Renormalizable, KWArgs):
         """
 
         # 1 Set value
-        if self._sw_value_prev: self._value_prev = self._value
-        self._value      = p_value
+        if self._sw_value_prev: 
+            try:
+                self._value_prev = self._value.copy()
+            except:
+                self._value_prev = self._value
+
+        try:
+            self._value = p_value.copy()
+        except:
+            self._value = p_value
 
     
         # 2 Preparation of time stamp
