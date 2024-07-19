@@ -26,7 +26,7 @@ from mlpro.oa.streams import *
 ## -------------------------------------------------------------------------------------------------
 class MyScenario(OAScenario):
 
-    C_NAME = 'Experiment'
+    C_NAME = 'NDExperiment'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
@@ -57,7 +57,7 @@ class MyScenario(OAScenario):
         workflow = OAWorkflow(p_name='Input Signal',
                               p_range_max=OAWorkflow.C_RANGE_NONE,
                               p_ada=p_ada,
-                              p_visualize=False, 
+                              p_visualize=p_visualize, 
                               p_logging=p_logging)
                               
 
@@ -67,7 +67,7 @@ class MyScenario(OAScenario):
 
         task_rearranger = Rearranger(p_name='T1 - Rearranger',
                                      p_range_max=Task.C_RANGE_NONE,
-                                     p_visualize=True,
+                                     p_visualize=p_visualize,
                                      p_logging=p_logging,
                                      p_features_new=features_new)
 
