@@ -115,103 +115,14 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         affected_clusters_enlargement = {}
 
         for id in clusters.keys():
-            current_time = time.time()
-            if id not in self._geo_size_history.keys():
-                self._geo_size_history[id] = [clusters[id].size_geo.value]
-            else:
-                self._geo_size_history[id].append(clusters[id].size_geo.value)
 
-            if len(self._geo_size_history[id]) > self._buffer_size:
-                self._geo_size_history[id].pop(0)
+            self._update_history(id, clusters[id])
 
-            filtered_sizes = [size for size in self._geo_size_history[id] if size is not None]
-            
-            if not filtered_sizes:
-                avg_size = 0
-            else:
-                avg_size = sum(filtered_sizes) / len(filtered_sizes)
+            avg_size, current_time = self._update_avg_size_and_time(id, clusters[id])
 
-            if id not in self._avg_geo_size_history.keys():
-                self._avg_geo_size_history[id] = [avg_size]
-                self._time_history[id] = [current_time]
-            else:
-                self._avg_geo_size_history[id].append(avg_size)
-                self._time_history[id].append(current_time)
+            self._detect_anomalies(id, clusters[id], affected_clusters_shrinkage, affected_clusters_enlargement,
+                                   avg_size, current_time, thresh, roc_thresh)
 
-            if len(self._avg_geo_size_history[id]) > self._window_size:
-                self._avg_geo_size_history[id].pop(0)
-                self._time_history[id].pop(0)
-
-            if self._thresh_u:
-                if clusters[id].size_geo.value != None:
-                    if clusters[id].size_geo.value >= self._thresh_u:
-                        affected_clusters_enlargement[id] = clusters[id]
-            if self._thresh_l:
-                if clusters[id].size_geo.value != None:
-                    if clusters[id].size_geo.value <= self._thresh_l:
-                        affected_clusters_shrinkage[id] = clusters[id]
-
-            if len(self._avg_geo_size_history[id]) == 1:
-            # Only one data point, not enough to determine any change
-                self._current_state[id] = "NC"
-
-            elif len(self._avg_geo_size_history[id]) == 2:
-                # Only two data points, can determine if there's an initial change
-                if self._time_calculation:
-                    time_diff = self._time_history[id][1] - self._time_history[id][0]
-                    first_diff = (self._avg_geo_size_history[id][1] - self._avg_geo_size_history[id][0]) / time_diff if time_diff != 0 else 0
-                else:
-                    first_diff = self._avg_geo_size_history[id][1] - self._avg_geo_size_history[id][0]
-
-                if first_diff > thresh:
-                    current_state = "LI"
-                    if current_state != self._current_state[id]:
-                        affected_clusters_enlargement[id] = clusters[id]
-                        self._current_state[id] = current_state
-                elif first_diff < -thresh:
-                    current_state = "LD"
-                    if current_state != self._current_state[id]:
-                        affected_clusters_shrinkage[id] = clusters[id]
-                        self._current_state[id] = current_state
-                else:
-                    current_state = "NC"
-
-            else:
-                # Calculate first differences
-                if self._time_calculation:
-                    first_diff = [(self._avg_geo_size_history[id][i+1] - self._avg_geo_size_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._avg_geo_size_history[id])-1)]
-                else:
-                    first_diff = [self._avg_geo_size_history[id][i+1] - self._avg_geo_size_history[id][i] for i in range(len(self._avg_geo_size_history[id])-1)]
-
-                # Calculate second differences if enough data points are available
-                if len(self._avg_geo_size_history[id]) > 2:
-                    second_diff = [first_diff[i+1] - first_diff[i] for i in range(len(first_diff)-1)]
-                else:
-                    second_diff = []
-
-                # Determine the current state
-                if all(d > thresh for d in first_diff):
-                    current_state = "LI"
-                    if current_state != self._current_state[id]:
-                        affected_clusters_enlargement[id] = clusters[id]
-                        self._current_state[id] = current_state
-                elif all(d < -thresh for d in first_diff):
-                    current_state = "LD"
-                    if current_state != self._current_state[id]:
-                        affected_clusters_shrinkage[id] = clusters[id]
-                        self._current_state[id] = current_state
-                elif any(d > thresh for d in first_diff) and any(abs(d2) > roc_thresh for d2 in second_diff):
-                    current_state = "VI"
-                    if current_state != self._current_state[id]:
-                        affected_clusters_enlargement[id] = clusters[id]
-                        self._current_state[id] = current_state
-                elif any(d < -thresh for d in first_diff) and any(abs(d2) > roc_thresh for d2 in second_diff):
-                    current_state = "VD"
-                    if current_state != self._current_state[id]:
-                        affected_clusters_shrinkage[id] = clusters[id]
-                        self._current_state[id] = current_state
-                else:
-                    current_state = "NC"
 
         if self._count <= self._init_skip:
             self._count+= 1
@@ -230,6 +141,123 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                                          p_clusters=affected_clusters_enlargement,
                                          p_visualize=self._visualize)
             self._raise_anomaly_event(p_anomaly=anomaly)
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_history(self, id, cluster):
+            if id not in self._geo_size_history.keys():
+                self._geo_size_history[id] = [cluster.size_geo.value]
+            else:
+                self._geo_size_history[id].append(cluster.size_geo.value)
+
+            if len(self._geo_size_history[id]) > self._buffer_size:
+                self._geo_size_history[id].pop(0)
+
+## -------------------------------------------------------------------------------------------------
+    def _update_avg_size_and_time(self, id, cluster):
+
+        current_time = time.time()
+
+        filtered_sizes = [size for size in self._geo_size_history[id] if size is not None]
+        
+        if not filtered_sizes:
+            avg_size = 0
+        else:
+            avg_size = sum(filtered_sizes) / len(filtered_sizes)
+
+        if id not in self._avg_geo_size_history.keys():
+            self._avg_geo_size_history[id] = [avg_size]
+            self._time_history[id] = [current_time]
+        else:
+            self._avg_geo_size_history[id].append(avg_size)
+            self._time_history[id].append(current_time)
+
+        if len(self._avg_geo_size_history[id]) > self._window_size:
+            self._avg_geo_size_history[id].pop(0)
+            self._time_history[id].pop(0)
+
+        return avg_size, current_time
+
+## -------------------------------------------------------------------------------------------------
+    def _detect_anomalies(self, id, cluster, affected_clusters_shrinkage, affected_clusters_enlargement, avg_size, current_time, thresh, roc_thresh):
+
+            if self._thresh_u and cluster.size_geo.value != None and cluster.size_geo.value >= self._thresh_u:
+                affected_clusters_enlargement[id] = cluster
+            if self._thresh_l and cluster.size_geo.value != None and cluster.size_geo.value <= self._thresh_l:
+                affected_clusters_shrinkage[id] = cluster
+
+            if len(self._avg_geo_size_history[id]) == 1:
+            # Only one data point, not enough to determine any change
+                self._current_state[id] = "NC"
+
+            elif len(self._avg_geo_size_history[id]) == 2:
+                self._initial_change_detection(id, cluster, affected_clusters_shrinkage, affected_clusters_enlargement, thresh)
+
+            else:
+                self._complex_change_detection(id, cluster, affected_clusters_shrinkage, affected_clusters_enlargement, thresh, roc_thresh)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _initial_change_detection(self, id, cluster, affected_clusters_shrinkage, affected_clusters_enlargement, thresh):
+                # Only two data points, can determine if there's an initial change
+                if self._time_calculation:
+                    time_diff = self._time_history[id][1] - self._time_history[id][0]
+                    first_diff = (self._avg_geo_size_history[id][1] - self._avg_geo_size_history[id][0]) / time_diff if time_diff != 0 else 0
+                else:
+                    first_diff = self._avg_geo_size_history[id][1] - self._avg_geo_size_history[id][0]
+
+                if first_diff > thresh:
+                    current_state = "LI"
+                    if current_state != self._current_state[id]:
+                        affected_clusters_enlargement[id] = cluster
+                        self._current_state[id] = current_state
+                elif first_diff < -thresh:
+                    current_state = "LD"
+                    if current_state != self._current_state[id]:
+                        affected_clusters_shrinkage[id] = cluster
+                        self._current_state[id] = current_state
+                else:
+                    self._current_state[id] = "NC"
+
+## -------------------------------------------------------------------------------------------------
+    def _complex_change_detection(self, id, cluster, affected_clusters_shrinkage, affected_clusters_enlargement, thresh, roc_thresh):
+                # Calculate first differences
+                if self._time_calculation:
+                    first_diff = [(self._avg_geo_size_history[id][i+1] - self._avg_geo_size_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._avg_geo_size_history[id])-1)]
+                else:
+                    first_diff = [self._avg_geo_size_history[id][i+1] - self._avg_geo_size_history[id][i] for i in range(len(self._avg_geo_size_history[id])-1)]
+
+                # Calculate second differences if enough data points are available
+                if len(self._avg_geo_size_history[id]) > 2:
+                    second_diff = [first_diff[i+1] - first_diff[i] for i in range(len(first_diff)-1)]
+                else:
+                    second_diff = []
+
+                # Determine the current state
+                if all(d > thresh for d in first_diff):
+                    current_state = "LI"
+                    if current_state != self._current_state[id]:
+                        affected_clusters_enlargement[id] = cluster
+                        self._current_state[id] = current_state
+                elif all(d < -thresh for d in first_diff):
+                    current_state = "LD"
+                    if current_state != self._current_state[id]:
+                        affected_clusters_shrinkage[id] = cluster
+                        self._current_state[id] = current_state
+                elif any(d > thresh for d in first_diff) and any(abs(d2) > roc_thresh for d2 in second_diff):
+                    current_state = "VI"
+                    if current_state != self._current_state[id]:
+                        affected_clusters_enlargement[id] = cluster
+                        self._current_state[id] = current_state
+                elif any(d < -thresh for d in first_diff) and any(abs(d2) > roc_thresh for d2 in second_diff):
+                    current_state = "VD"
+                    if current_state != self._current_state[id]:
+                        affected_clusters_shrinkage[id] = cluster
+                        self._current_state[id] = current_state
+                else:
+                    self._current_state[id] = "NC"
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -72,9 +72,9 @@ class MyScenario(OAScenario):
         # Anomaly Detector
         task_anomaly_detector = ClusterDriftDetector(p_clusterer=task_clusterer,
                                                      p_with_time_calculation=False,
-                                                     p_velocity_threshold_factor=0.2,
-                                                     p_initial_skip=10,
-                                                     p_buffer_size=5,
+                                                     p_velocity_threshold_factor=2,
+                                                     p_initial_skip=300,
+                                                     p_buffer_size=10,
                                                      p_visualize=p_visualize,
                                                      p_logging=p_logging)
 
@@ -87,9 +87,9 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 200
-    logging     = Log.C_LOG_NOTHING
-    #logging     = Log.C_LOG_ALL
+    cycle_limit = 1000
+    #logging     = Log.C_LOG_NOTHING
+    logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
 else:
@@ -105,8 +105,6 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
                                p_cycle_limit=cycle_limit,
                                p_visualize=visualize,
                                p_logging=logging )
-
-
 
 
 # 4 Reset and run own stream scenario
