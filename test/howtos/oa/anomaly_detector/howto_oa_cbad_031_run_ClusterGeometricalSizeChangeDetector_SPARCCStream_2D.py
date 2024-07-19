@@ -37,9 +37,9 @@ class MyScenario(OAScenario):
                                                   p_num_clusters=3,
                                                   p_radii=[100],
                                                   p_change_radii=True,
-                                                  p_rate_of_change_of_radius=0.0001,
-                                                  p_points_of_change_radii=[1000, 1000],
-                                                  p_num_clusters_for_change_radii=2,
+                                                  p_rate_of_change_of_radius=0.0002,
+                                                  p_points_of_change_radii=[1000, 1000, 1000],
+                                                  p_num_clusters_for_change_radii=3,
                                                   p_seed=12,
                                                   p_logging=p_logging)
 
@@ -69,8 +69,8 @@ class MyScenario(OAScenario):
 
         # Anomaly Detector
         task_anomaly_detector = ClusterGeometricSizeChangeDetector(p_clusterer=task_clusterer,
-                                                                   p_geo_size_thresh=200,
-                                                                   p_roc_geo_size_thresh=50,
+                                                                   p_geo_size_thresh_factor=0.002,
+                                                                   p_roc_geo_size_thresh_factor=False,
                                                                    p_initial_skip=800,
                                                                    p_rel_threshold=False,
                                                                    p_buffer_size=10,
