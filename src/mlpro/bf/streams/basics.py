@@ -1349,9 +1349,9 @@ class StreamTask (Task):
             # 4.1 First plot
             inst_ref    = next(iter(p_inst.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
-            p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
-            p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
-            p_settings.axes.set_zlabel(feature_dim[2].get_name_short() )
+            p_settings.axes.set_xlabel(feature_dim[feature_ids[0]].get_name_short() )
+            p_settings.axes.set_ylabel(feature_dim[feature_ids[1]].get_name_short() )
+            p_settings.axes.set_zlabel(feature_dim[feature_ids[2]].get_name_short() )
 
         else:
             self._plot_3d_plot.remove()
