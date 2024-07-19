@@ -66,10 +66,12 @@
 ## --                                - optimization of code for plotting
 ## -- 2024-05-23  2.0.1     DA       Bugfix in method StreamTask.run()
 ## -- 2024-06-07  2.0.2     LSB      Fixing timedelta handling in ND plotting
+## -- 2024-07-19  2.0.3     DA       Class StreamTask: excluded non-numeric feature data from default
+## --                                visualization 2D,3D,ND
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2024-06-07)
+Ver. 2.0.3 (2024-07-19)
 
 This module provides classes for standardized stream processing. 
 
@@ -1028,7 +1030,15 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _finalize_plot_view(self, p_inst_ref : Instance ):
-        num_dim = p_inst_ref.get_feature_data().get_related_set().get_num_dim()
+
+        # Determine the number of numeric(!) dimensions of the feature space
+        num_dim = 0 
+        for dim in p_inst_ref.get_feature_data().get_related_set().get_dims():
+            if dim.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                num_dim += 1
+
+        if num_dim == 0:
+            raise Error('The stream does not provide numeric data')
 
         if num_dim == 2:
             view_new = PlotSettings.C_VIEW_2D
@@ -1130,13 +1140,27 @@ class StreamTask (Task):
         xmax              = None
         ymin              = None
         ymax              = None
+        feature_ids       = None
 
         for inst_id, (inst_type, inst) in p_inst.items():
                
             if inst_type == InstTypeNew:
-                feature_values = inst.get_feature_data().get_values()
-                x = feature_values[0]
-                y = feature_values[1]
+                feature_data   = inst.get_feature_data()
+
+                if feature_ids is None:
+                    feature_ids = []
+                    for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
+                        if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                            feature_ids.append(feature_id)
+
+                    if len(feature_ids) < 2:
+                        raise Error('Data stream does not provide two numeric features')
+
+                feature_values = feature_data.get_values()
+
+                for dim ni inst.get
+                x = feature_values[feature_ids[0]]
+                y = feature_values[feature_ids[1]]
                 self._plot_2d_xdata[inst_id] = x
                 self._plot_2d_ydata[inst_id] = y
 
@@ -1239,14 +1263,29 @@ class StreamTask (Task):
         ymax              = None
         zmin              = None
         zmax              = None
+        feature_ids       = None
 
         for inst_id, (inst_type, inst) in p_inst.items():
                 
             if inst_type == InstTypeNew:
-                feature_values = inst.get_feature_data().get_values()
-                x = feature_values[0]
-                y = feature_values[1]
-                z = feature_values[2]
+
+                feature_data   = inst.get_feature_data()
+
+                if feature_ids is None:
+                    feature_ids = []
+                    for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
+                        if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                            feature_ids.append(feature_id)
+
+                    if len(feature_ids) < 3:
+                        raise Error('Data stream does not provide two numeric features')
+
+                feature_values = feature_data.get_values()
+                                    
+                x = feature_values[feature_ids[0]]
+                y = feature_values[feature_ids[1]]
+                z = feature_values[feature_ids[2]]
+                    
                 self._plot_3d_xdata[inst_id] = x
                 self._plot_3d_ydata[inst_id] = y
                 self._plot_3d_zdata[inst_id] = z
