@@ -8,10 +8,11 @@
 ## -- 2023-07-27  1.0.0     LSB      Creation/Release
 ## -- 2024-05-02  1.1.0     DA       Review/minor adjustments
 ## -- 2024-05-12  1.2.0     DA       Event-based adaption Window->BoundaryDetector added
+## -- 2024-07-19  1.2.1     SY       Refactoring due to method Deriver._prepare_derivation()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-12)
+Ver. 1.2.1 (2024-07-19)
 
 This howto shows an example of complex preprocessing with parallel tasks. It addresses several
 problems like feature rearanging, numerical feature derivation, data windowing, and self-adapting
@@ -86,7 +87,6 @@ class MyScenario (OAScenario):
 
 
         # 2.2 Set up and add a deriver task to extend the feature and label space (1st derivative)
-        features = task1_rearranger._feature_space.get_dims()
         derived_feature = features[0]
 
         task2_deriver1 = Deriver( p_name = '2 - Deriver #1',
@@ -104,7 +104,6 @@ class MyScenario (OAScenario):
 
 
         # 2.3 Set up and add a deriver task to extend the feature and label space (2nd derivative)
-        features = task2_deriver1._feature_space.get_dims()
         derived_feature = features[0]
         
         task3_deriver2 = Deriver( p_name = '3 - Deriver #2',
