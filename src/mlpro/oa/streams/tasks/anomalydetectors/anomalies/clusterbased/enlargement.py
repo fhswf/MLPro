@@ -48,6 +48,6 @@ class ClusterEnlargement (CBAnomaly):
                  p_det_time : str = None,
                  **p_kwargs):
         
-        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
+        super().__init__(p_id=p_id, p_instances=p_instances, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)

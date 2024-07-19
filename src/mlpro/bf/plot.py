@@ -42,6 +42,7 @@
 ## --                                - new parameter data_horizon with default value 1000
 ## -- 2024-05-22  2.13.0    DA       New method PlotSettings.copy()
 ## -- 2024-06-04  2.13.1    DA/SK    Turned on TKAgg for Mac
+## -- 2024-06-07  2.13.2    SY       Introducing new data plotting type of Episodic Sum
 ## -- 2024-06-24  2.14.0    DA       New auto-managed attribute Plottable._plot_first_time : bool
 ## -- 2024-06-25  2.15.0    DA       Class Plottable:
 ## --                                - removed method set_plot_detail_level()
@@ -51,10 +52,11 @@
 ## -- 2024-06-26  2.16.0    DA       - Refactoring, corrections, adjustments
 ## --                                - New property Plottable.color
 ## --                                - Class PlotSettings: removed parameter p_plot_depth
+## -- 2024-07-08  2.16.1    SY       Add MinVal for undefined range in DataPlotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.16.0 (2024-06-26)
+Ver. 2.16.1 (2024-07-08)
 
 This module provides various classes related to data plotting.
 
@@ -745,6 +747,7 @@ class DataPlotting(Persistent):
     C_PLOT_TYPE_CY = 'Cyclic'
     C_PLOT_TYPE_EP = 'Episodic'
     C_PLOT_TYPE_EP_M = 'Episodic Mean'
+    C_PLOT_TYPE_EP_S = 'Episodic Sum'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_data: DataStoring, p_type=C_PLOT_TYPE_EP, p_window=100,
@@ -773,6 +776,8 @@ class DataPlotting(Persistent):
             self.plots_type_ep()
         elif self.type == 'Episodic Mean':
             self.plots_type_ep_mean()
+        elif self.type == 'Episodic Sum':
+            self.plots_type_ep_sum()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -783,6 +788,7 @@ class DataPlotting(Persistent):
 
         for name in self.data.names:
             maxval = 0
+            minval = 0
             try:
                 if self.printing[name][0]:
                     fig = plt.figure(figsize=self.figsize)
@@ -796,10 +802,12 @@ class DataPlotting(Persistent):
                                           color=self.color, alpha=(fr + 1.0) / (len(self.data.memory_dict[name]) + 1))
                         if self.printing[name][2] == -1:
                             maxval = max(max(self.data.get_values(name, fr_id)), maxval)
+                            minval = min(min(self.data.get_values(name, fr_id)), minval)
                         else:
                             maxval = self.printing[name][2]
+                            minval = self.printing[name][1]
                         label.append("%s" % fr_id)
-                    plt.ylim(self.printing[name][1], maxval)
+                    plt.ylim(minval, maxval)
                     plt.xlabel("cycles")
                     plt.legend(label, bbox_to_anchor=(1, 0.5), loc="center left")
                     self.plots[0].append(name)
@@ -820,6 +828,7 @@ class DataPlotting(Persistent):
 
         for name in self.data.names:
             maxval = 0
+            minval = 0
             try:
                 if self.printing[name][0]:
                     fig = plt.figure(figsize=self.figsize)
@@ -832,10 +841,12 @@ class DataPlotting(Persistent):
                         data.extend(self.data.get_values(name, fr_id))
                         if self.printing[name][2] == -1:
                             maxval = max(max(self.data.get_values(name, fr_id)), maxval)
+                            minval = min(min(self.data.get_values(name, fr_id)), minval)
                         else:
                             maxval = self.printing[name][2]
+                            minval = self.printing[name][1]
                     lines += plt.plot(self.moving_mean(data[:], self.window), color=self.color)
-                    plt.ylim(self.printing[name][1], maxval)
+                    plt.ylim(minval, maxval)
                     plt.xlabel("continuous cycles")
                     self.plots[0].append(name)
                     self.plots[1].append(fig)
@@ -855,6 +866,7 @@ class DataPlotting(Persistent):
 
         for name in self.data.names:
             maxval = 0
+            minval = 0
             try:
                 if self.printing[name][0]:
                     fig = plt.figure(figsize=self.figsize)
@@ -867,10 +879,50 @@ class DataPlotting(Persistent):
                         data.extend([statistics.mean(self.data.get_values(name, fr_id))])
                     if self.printing[name][2] == -1:
                         maxval = max(max(data[:]), maxval)
+                        minval = min(min(data[:]), minval)
                     else:
                         maxval = self.printing[name][2]
+                        minval = self.printing[name][1]
                     lines += plt.plot(self.moving_mean(data[:], self.window), color=self.color)
-                    plt.ylim(self.printing[name][1], maxval)
+                    plt.ylim(minval, maxval)
+                    plt.xlabel("episodes")
+                    self.plots[0].append(name)
+                    self.plots[1].append(fig)
+                    if self.showing:
+                        plt.show()
+                    else:
+                        plt.close(fig)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def plots_type_ep_sum(self):
+        """
+        A function to plot data per frame according to its sum value.
+        """
+
+        for name in self.data.names:
+            maxval = 0
+            minval = 0
+            try:
+                if self.printing[name][0]:
+                    fig = plt.figure(figsize=self.figsize)
+                    lines = []
+                    data = []
+                    plt.title(name)
+                    plt.grid(True, which="both", axis="both")
+                    for fr in range(len(self.data.memory_dict[name])):
+                        fr_id = self.data.frame_id[name][fr]
+                        data.extend([sum(self.data.get_values(name, fr_id))])
+                    if self.printing[name][2] == -1:
+                        maxval = max(max(data[:]), maxval)
+                        minval = min(min(data[:]), minval)
+                    else:
+                        maxval = self.printing[name][2]
+                        minval = self.printing[name][1]
+                    lines += plt.plot(self.moving_mean(data[:], self.window), color=self.color)
+                    plt.ylim(minval, maxval)
                     plt.xlabel("episodes")
                     self.plots[0].append(name)
                     self.plots[1].append(fig)

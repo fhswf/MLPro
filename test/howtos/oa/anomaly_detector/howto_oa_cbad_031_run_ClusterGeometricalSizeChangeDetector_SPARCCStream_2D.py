@@ -33,11 +33,12 @@ class MyScenario(OAScenario):
 
         # 1.1 Get MLPro benchmark stream
         stream = StreamMLProClusterGenerator(p_num_dim=2,
-                                                  p_num_instances=1000,
+                                                  p_num_instances=5000,
                                                   p_num_clusters=3,
                                                   p_radii=[100],
                                                   p_change_radii=True,
-                                                  p_points_of_change_radii=[300, 700],
+                                                  p_rate_of_change_of_radius=0.0001,
+                                                  p_points_of_change_radii=[1000, 1000],
                                                   p_num_clusters_for_change_radii=2,
                                                   p_seed=12,
                                                   p_logging=p_logging)
@@ -68,7 +69,12 @@ class MyScenario(OAScenario):
 
         # Anomaly Detector
         task_anomaly_detector = ClusterGeometricSizeChangeDetector(p_clusterer=task_clusterer,
-                                                                   p_geo_size_upper_thresh=200,
+                                                                   p_geo_size_thresh=200,
+                                                                   p_roc_geo_size_thresh=50,
+                                                                   p_initial_skip=800,
+                                                                   p_rel_threshold=False,
+                                                                   p_buffer_size=10,
+                                                                   p_window_size=10,
                                                                    p_visualize=p_visualize,
                                                                    p_logging=p_logging)
 
@@ -81,7 +87,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 1000
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
@@ -138,6 +144,7 @@ for anomaly in anomalies.values():
         clusters_affected[x]["centroid"] = list(clusters[x].centroid.value)
         clusters_affected[x]["size"] = clusters[x].size.value
         clusters_affected[x]["age"] = clusters[x].age.value
+        clusters_affected[x]["geometric_size"] = clusters[x].size_geo.value
      
      inst = anomaly.get_instances()[-1].get_id()
      myscenario.log(Log.C_LOG_TYPE_W, 
