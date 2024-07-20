@@ -1,15 +1,15 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.test
-## -- Module  : howto_oa_cbad_031_run_ClusterGeometricalSizeChangeDetector_SPARCCStream_2D.py
+## -- Module  : howto_oa_cbad_041_run_ClusterSizeChangeDetector_SPARCCStream_2D.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-22  1.0.0     SK       Creation and Release
+## -- 2024-07-20  1.0.0     SK       Creation and Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-22)
+Ver. 1.0.0 (2024-07-20)
 
 
 """
@@ -20,26 +20,26 @@ from mlpro.bf.streams.streams.clouds import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from sparccstream import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.geo_size_change_detector import ClusterGeometricSizeChangeDetector
+from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.density_change_detector import ClusterDensityChangeDetector
 
 
 
 # 1 Prepare a scenario
 class MyScenario(OAScenario):
 
-    C_NAME = 'ClusterGeometricalSizeChangeDetector'
+    C_NAME = 'ClusterDensityChangeDetector'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1.1 Get MLPro benchmark stream
         stream = StreamMLProClusterGenerator(p_num_dim=2,
-                                                  p_num_instances=5000,
+                                                  p_num_instances=1000,
                                                   p_num_clusters=3,
                                                   p_radii=[100],
-                                                  p_change_radii=True,
-                                                  p_rate_of_change_of_radius=0.0002,
-                                                  p_points_of_change_radii=[1200, 1200, 1200],
-                                                  p_num_clusters_for_change_radii=3,
+                                                  p_distribution_bias=[1, 1, 1],
+                                                  p_change_distribution_bias=True,
+                                                  p_points_of_change_distribution_bias=[600],
+                                                  p_num_clusters_for_change_distribution_bias=2,
                                                   p_seed=12,
                                                   p_logging=p_logging)
 
@@ -68,15 +68,11 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task = task_clusterer)
 
         # Anomaly Detector
-        task_anomaly_detector = ClusterGeometricSizeChangeDetector(p_clusterer=task_clusterer,
-                                                                   p_geo_size_thresh_factor=0.001,
-                                                                   p_roc_geo_size_thresh_factor=0.1,
-                                                                   p_initial_skip=1000,
-                                                                   p_rel_threshold=False,
-                                                                   p_buffer_size=20,
-                                                                   p_window_size=50,
-                                                                   p_visualize=p_visualize,
-                                                                   p_logging=p_logging)
+        task_anomaly_detector = ClusterDensityChangeDetector(p_clusterer=task_clusterer,
+                                                             p_density_thresh_factor=1,
+                                                             p_relative_thresh=True,
+                                                             p_visualize=p_visualize,
+                                                             p_logging=p_logging)
 
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 
@@ -87,8 +83,7 @@ class MyScenario(OAScenario):
 
 # 2 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    cycle_limit = 2000
-    #logging     = Log.C_LOG_NOTHING
+    cycle_limit = 1000
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 1
@@ -143,7 +138,7 @@ for anomaly in anomalies.values():
      for x in clusters.keys():
         clusters_affected[x] = {}
         clusters_affected[x]["centroid"] = list(clusters[x].centroid.value)
-        clusters_affected[x]["geometric_size"] = clusters[x].size_geo.value
+        clusters_affected[x]["density"] = clusters[x].size.value/clusters[x].size_geo.value
      
      inst = anomaly.get_instances()[-1].get_id()
      myscenario.log(Log.C_LOG_TYPE_W, 
