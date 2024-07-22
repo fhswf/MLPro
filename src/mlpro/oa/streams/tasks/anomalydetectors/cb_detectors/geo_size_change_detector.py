@@ -47,7 +47,7 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
                  p_ema : float = 0.7,
                  p_window_size: int = 10,
                  p_with_time_calculation: bool = False,
-                 p_rel_threshold : bool = False,
+                 p_relative_thresh : bool = False,
                  p_geo_size_upper_thresh : float = None,
                  p_geo_size_lower_thresh : float = None,
                  p_name:str = None,
@@ -82,7 +82,7 @@ class ClusterGeometricSizeChangeDetector(AnomalyDetectorCB):
         self._roc_thresh    = {"thresh":p_roc_geo_size_thresh_factor}
         self._ema = p_ema
 
-        self._rel_thresh = p_rel_threshold
+        self._rel_thresh = p_relative_thresh
         self._visualize = p_visualize
         self._init_skip = p_initial_skip
         self._count = 1

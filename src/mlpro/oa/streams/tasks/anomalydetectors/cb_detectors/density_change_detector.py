@@ -40,10 +40,10 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_clusterer : ClusterAnalyzer = None,
-                 p_density_thresh_factor : float = 0.01,
+                 p_density_thresh_factor : float = False,
                  p_roc_density_thresh_factor : float = False,
                  p_initial_skip : int = 1,
-                 p_buffer_size: int = 5,
+                 p_ema : float = 0.7,
                  p_window_size: int = 10,
                  p_with_time_calculation: bool = False,
                  p_relative_thresh : bool = False,
@@ -79,6 +79,7 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
         self._thresh_l      = p_density_lower_thresh
         self._thresh        = {"thresh":p_density_thresh_factor}
         self._roc_thresh    = {"thresh":p_roc_density_thresh_factor}
+        self._ema = p_ema
 
         self._rel_thresh = p_relative_thresh
         self._visualize = p_visualize
@@ -86,11 +87,9 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
         self._count = 1
 
         self._time_calculation = p_with_time_calculation
-        self._buffer_size = p_buffer_size
         self._window_size = p_window_size
 
         self._density_history     = {}
-        self._avg_density_history = {}
         self._time_history        = {}
         self._current_state       = {}
 
@@ -109,27 +108,31 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
         for id in clusters.keys():
             if (clusters[id].size_geo.value == None) or (clusters[id].size.value == None) or (clusters[id].size_geo.value == 0):
                 continue
-            if id not in self._thresh.keys():
-                self._thresh[id] = self._thresh["thresh"]
-                if self._roc_thresh["thresh"]:
-                    self._roc_thresh[id] = self._roc_thresh["thresh"]
+
+            if self._thresh["thresh"]:
+                if id not in self._thresh.keys():
+                    self._thresh[id] = self._thresh["thresh"]
+                thresh = self._thresh[id]
+            else:
+                thresh = None
             if self._roc_thresh["thresh"]:
-                roc_thresh = self._roc_thresh[id]
+                if id not in self._roc_thresh.keys():
+                    self._roc_thresh[id] = self._roc_thresh["thresh"]
+                roc_thresh = self._roc_thresh[id]  
             else:
                 roc_thresh = None
 
             if id not in self._density_history.keys():
-                self._update_history(id, clusters[id])
-                self._update_avg_density_and_time(id, current_time)
+                self._density_history[id] = [clusters[id].size.value/clusters[id].size_geo.value]
+                self._time_history[id] = [current_time]
+                self._update_history(id, clusters[id].size.value/clusters[id].size_geo.value ,current_time)
 
-            self._detect_anomalies(id, clusters[id], affected_clusters, self._thresh[id], roc_thresh, current_time)
+            self._detect_anomalies(id, clusters[id], affected_clusters, thresh, roc_thresh, current_time)
             
-            self._update_history(id, clusters[id])
-            self._update_avg_density_and_time(id, current_time)
+            self._update_history(id, clusters[id].size.value/clusters[id].size_geo.value, current_time)
             
             if id in affected_clusters.keys():
                     self._update_threshold(id, clusters)
-
 
         if self._count <= self._init_skip:
             self._count+= 1
@@ -144,33 +147,15 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_history(self, id, cluster):
-        if id not in self._density_history.keys():
-            self._density_history[id] = [cluster.size.value / cluster.size_geo.value]
-        else:
-            self._density_history[id].append(cluster.size.value / cluster.size_geo.value)
+    def _update_history(self, id, value, current_time):
+        avg_size = self._density_history[id][-1]*(1-self._ema) + value*self._ema
 
-        if len(self._density_history[id]) > self._buffer_size:
+        self._density_history[id].append(avg_size)
+        self._time_history[id].append(current_time)
+
+        if len(self._density_history[id]) > self._window_size:
             self._density_history[id].pop(0)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_avg_density_and_time(self, id, current_time):
-
-        if id in self._density_history.keys():
-            if len(self._density_history[id]) != 0:
-                avg_density = sum(self._density_history[id]) / len(self._density_history[id])
-
-                if id not in self._avg_density_history.keys():
-                    self._avg_density_history[id] = [avg_density]
-                    self._time_history[id] = [current_time]
-                else:
-                    self._avg_density_history[id].append(avg_density)
-                    self._time_history[id].append(current_time)
-
-                if len(self._avg_density_history[id]) > self._window_size:
-                    self._avg_density_history[id].pop(0)
-                    self._time_history[id].pop(0)
+            self._time_history[id].pop(0)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -183,120 +168,75 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
                 if (cluster.size.value/cluster.size_geo.value) <= self._thresh_l:
                     affected_clusters[id] = cluster
 
-            if len(self._avg_density_history[id]) == 1:
-            # Only one data point, not enough to determine any change
+            if len(self._density_history[id]) < 3:
                 self._current_state[id] = "NC"
-
-            elif len(self._avg_density_history[id]) == 2:
-                self._initial_change_detection(id, cluster, affected_clusters, thresh, current_time)
-
             else:
-                self._complex_change_detection(id, cluster, affected_clusters, thresh, roc_thresh, current_time)
+                self._state_change_detection(id, cluster, affected_clusters, thresh, roc_thresh, current_time)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _initial_change_detection(self, id, cluster, affected_clusters, thresh, current_time):
-                # Only two data points, can determine if there's an initial change
-                if self._time_calculation:
-                    time_diff = current_time - self._time_history[id][-1]
-                    first_diff = ((cluster.size.value/cluster.size_geo.value) - self._avg_density_history[id][-1]) / time_diff if time_diff != 0 else 0.0
-                else:
-                    first_diff = (cluster.size.value/cluster.size_geo.value) - self._avg_density_history[id][-1]
-
-                if first_diff > thresh:
-                    current_state = "LI"
-                    if current_state != self._current_state[id]:
-                        affected_clusters[id] = cluster
-                        self._current_state[id] = current_state
-                elif first_diff < -thresh:
-                    current_state = "LD"
-                    if current_state != self._current_state[id]:
-                        affected_clusters[id] = cluster
-                        self._current_state[id] = current_state
-                else:
-                    self._current_state[id] = "NC"
-
-## -------------------------------------------------------------------------------------------------
-    def _complex_change_detection(self, id, cluster, affected_clusters, thresh, roc_thresh, current_time):
+    def _state_change_detection(self, id, cluster, affected_clusters, thresh, roc_thresh, current_time):
                 # Calculate first differences
                 if self._time_calculation:
-                    first_diff = [(self._avg_density_history[id][i+1] - self._avg_density_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._avg_density_history[id])-1)]
+                    first_diff = [(self._density_history[id][i+1] - self._density_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._density_history[id])-1)]
                     time_diff = current_time - self._time_history[id][-1]
-                    diff = ((cluster.size.value/cluster.size_geo.value) - self._avg_density_history[id][-1]) / time_diff if time_diff != 0 else 0.0
+                    diff = ((cluster.size.value/cluster.size_geo.value) - self._density_history[id][-1]) / time_diff if time_diff != 0 else 0.0
                     first_diff.append(diff)
                 else:
-                    first_diff = [self._avg_density_history[id][i+1] - self._avg_density_history[id][i] for i in range(len(self._avg_density_history[id])-1)]
-                    diff = (cluster.size.value/cluster.size_geo.value) - self._avg_density_history[id][-1]
+                    first_diff = [self._density_history[id][i+1] - self._density_history[id][i] for i in range(len(self._density_history[id])-1)]
+                    diff = (cluster.size.value/cluster.size_geo.value) - self._density_history[id][-1]
                     first_diff.append(diff)
 
                 # Calculate second differences if enough data points are available
-                if self._roc_thresh["thresh"]:
-                    if len(self._avg_density_history[id]) > 2:
+                if roc_thresh:
+                    if len(self._density_history[id]) > 2:
                         second_diff = [first_diff[i+1] - first_diff[i] for i in range(len(first_diff)-1)]
                     else:
                         second_diff = []
 
-                if self._roc_thresh["thresh"]:
-                    # Determine the current state
-                    if all(d > thresh for d in first_diff):
-                        current_state = "LI"
-                        if current_state != self._current_state[id]:
-                            affected_clusters[id] = cluster
-                            self._current_state[id] = current_state
-                    elif all(d < -thresh for d in first_diff):
-                        current_state = "LD"
-                        if current_state != self._current_state[id]:
-                            affected_clusters[id] = cluster
-                            self._current_state[id] = current_state
-                    elif any(d > thresh for d in first_diff) and any(abs(d2) > roc_thresh for d2 in second_diff):
-                        current_state = "VI"
-                        if current_state != self._current_state[id]:
-                            affected_clusters[id] = cluster
-                            self._current_state[id] = current_state
-                    elif any(d < -thresh for d in first_diff) and any(abs(d2) > roc_thresh for d2 in second_diff):
-                        current_state = "VD"
-                        if current_state != self._current_state[id]:
-                            affected_clusters[id] = cluster
-                            self._current_state[id] = current_state
-                    else:
-                        self._current_state[id] = "NC"
 
-                else:
-                    if all(d > thresh for d in first_diff):
+                current_state = None
+                if thresh:
+                    if any(d > thresh for d in first_diff):
                         current_state = "LI"
-                        if current_state != self._current_state[id]:
-                            affected_clusters[id] = cluster
-                            self._current_state[id] = current_state
-                    elif all(d < -thresh for d in first_diff):
+                    elif any(d < -thresh for d in first_diff):
                         current_state = "LD"
-                        if current_state != self._current_state[id]:
-                            affected_clusters[id] = cluster
-                            self._current_state[id] = current_state
-                    else:
-                        self._current_state[id] = "NC"
+
+                if roc_thresh:
+                    if any(d2 > roc_thresh for d2 in second_diff):
+                        current_state = "VI"
+                    elif any(d2 < -roc_thresh for d2 in second_diff):
+                        current_state = "VD"
+
+                if not current_state:
+                    current_state = "NC"
+
+                if current_state != self._current_state[id]:
+                    affected_clusters[id] = cluster
+                    self._current_state[id] = current_state
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_threshold(self, id, clusters):
-
-        if self._rel_thresh:    
-            n = 0.0
-            s = 0.0
-            for x in clusters.keys():
-                if (clusters[x].size_geo.value > 0.0) and (clusters[x].size.value > 0.0):
-                    n += 1
-                    s += abs(float(clusters[x].size_geo.value/clusters[x].size.value))
-
-            if s != 0.0:
-                self._thresh[id] = ((n * self._thresh["thresh"]/100) / s)
-                if self._roc_thresh["thresh"]:
-                    self._roc_thresh[id] = ((n * self._roc_thresh["thresh"]/100) / s)
-
-            else:
-                self._thresh[id] = self._thresh["thresh"]
-                if self._roc_thresh["thresh"]:
-                    self._roc_thresh[id] = self._roc_thresh["thresh"]
-
+        if (clusters[id].size_geo.value > 0) and (clusters[id].size.value > 0):
+            if self._rel_thresh:    
+                n = 0.0
+                s = 0.0
+                for x in clusters.keys():
+                    if (clusters[x].size_geo.value != None) and (clusters[x].size.value != None):
+                        if (clusters[x].size_geo.value > 0.0) and (clusters[x].size.value > 0.0):
+                            n += 1
+                            s += abs(float(clusters[x].size_geo.value/clusters[x].size.value))
+                if s != 0.0:
+                    if self._thresh["thresh"]:
+                        self._thresh[id] = ((n * self._thresh["thresh"]/100) / s)
+                    if self._roc_thresh["thresh"]:
+                        self._roc_thresh[id] = ((n * self._roc_thresh["thresh"]/100) / s)
+                else:
+                    if self._thresh["thresh"]:
+                        self._thresh[id] = self._thresh["thresh"]
+                    if self._roc_thresh["thresh"]:
+                        self._roc_thresh[id] = self._roc_thresh["thresh"]
         else:
             self._thresh[id] = float(clusters[x].size.value/clusters[id].size_geo.value)*self._thresh["thresh"]
             if self._roc_thresh["thresh"]:
