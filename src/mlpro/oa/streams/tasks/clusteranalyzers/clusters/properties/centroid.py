@@ -309,15 +309,15 @@ class Centroid (Point, Id):
 
 
 # Centroid with 0,1,2 order derivatives and plot functionality with/without storing previous values
-cprop_centroid          : PropertyDefinition = ( 'centroid', 0, False, Centroid )
-cprop_centroid1         : PropertyDefinition = ( 'centroid', 1, False, Centroid )
-cprop_centroid2         : PropertyDefinition = ( 'centroid', 2, False, Centroid )
+cprop_centroid       : PropertyDefinition = ( 'centroid', 0, False, Centroid )
+cprop_centroid1      : PropertyDefinition = ( 'centroid', 1, False, Centroid )
+cprop_centroid2      : PropertyDefinition = ( 'centroid', 2, False, Centroid )
 
-cprop_centroid_prev     : PropertyDefinition = ( 'centroid', 0, True, Centroid )
-cprop_centroid_prev1    : PropertyDefinition = ( 'centroid', 1, True, Centroid )
-cprop_centroid_prev2    : PropertyDefinition = ( 'centroid', 2, True, Centroid )
+cprop_centroid_prev  : PropertyDefinition = ( 'centroid', 0, True, Centroid )
+cprop_centroid_prev1 : PropertyDefinition = ( 'centroid', 1, True, Centroid )
+cprop_centroid_prev2 : PropertyDefinition = ( 'centroid', 2, True, Centroid )
 
 # Geometric center with 0,1,2 order derivatives and plot functionality
-cprop_center_geo        : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
-cprop_center_geo1       : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
-cprop_center_geo2       : PropertyDefinition = ( 'center_geo', 2, False, Centroid )
+cprop_center_geo     : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
+cprop_center_geo1    : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
+cprop_center_geo2    : PropertyDefinition = ( 'center_geo', 2, False, Centroid )

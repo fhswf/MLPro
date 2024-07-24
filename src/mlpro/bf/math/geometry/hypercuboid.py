@@ -360,4 +360,5 @@ class Hypercuboid (MultiProperty):
 
 
 
-cprop_hypercuboid : PropertyDefinition = ( 'hypercuboid', 0, False, Hypercuboid )
+cprop_hypercuboid      : PropertyDefinition = ( 'hypercuboid', 0, False, Hypercuboid )
+cprop_hypercuboid_prev : PropertyDefinition = ( 'hypercuboid', 0, True, Hypercuboid )
