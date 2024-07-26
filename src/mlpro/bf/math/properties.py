@@ -37,10 +37,11 @@
 ## -- 2024-06-30  1.5.0     DA       Method Property.set(): new parameters p_upd_time_stamp, 
 ## --                                p_upd_derivatives
 ## -- 2026-07-08  1.6.0     DA       Introduction of kwargs
+## -- 2024-07-27  1.7.0     DA       Class Property: introduction of self._value_bak
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2024-07-08)
+Ver. 1.7.0 (2024-07-27)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -56,6 +57,8 @@ Hint: plot and renormalization functionality is to be implemented in child class
 
 from typing import List, Union, Tuple
 from datetime import datetime
+
+from collections.abc import Iterable 
 import numpy as np
 from matplotlib.figure import Figure
 
@@ -130,6 +133,7 @@ class Property (Plottable, Renormalizable, KWArgs):
 
         self.name                   = p_name
         self._value                 = None
+        self._value_bak             = None
         self._value_prev            = None
         self._time_stamp            = None
         self._time_stamp_prev       = None
@@ -173,19 +177,22 @@ class Property (Plottable, Renormalizable, KWArgs):
             Boolean swtich to enable/disable updating the derivatives.
         """
 
-        # 1 Set value
-        if self._sw_value_prev: 
+        # 1 Update value
+        if self._sw_value_prev:
+
             try:
-                self._value_prev = self._value.copy()
+                self._value_prev = self._value_bak.copy()
+                self._value_bak  = p_value.copy()
             except:
-                self._value_prev = self._value
+                self._value_prev = self._value_bak
+                self._value_bak  = p_value
 
         try:
             self._value = p_value.copy()
         except:
             self._value = p_value
 
-    
+
         # 2 Preparation of time stamp
         if p_upd_time_stamp:
             self._time_stamp_prev = self._time_stamp
