@@ -31,14 +31,12 @@ if __name__ == '__main__':
     # 2 Instantiate Stream
     stream = StreamMLProCSV(p_logging=logging,
                            p_path_load=path,
-                           p_csv_filename="SDN-DDoS_Traffic_Dataset.csv",
-                           #p_csv_filename="0.csv",
+                           p_csv_filename="UNSW_float_only.csv",
                            p_delimiter=",",
                            p_frame=False,
                            p_header=True,
-                           p_list_features=["switch","host","src_ip","dst_ip","pkt_count","byte_count","duration","duration_nsec","tot_duration","flows","packet_per_massg","pktper_flow","byte_per_flow","pkt_rate","pair_flow","Protocol","port_no","tx_bytes","rx_bytes","tx_kbps","rx_kbps","tot_kbps","delay","jitter","packet_loss_rate"],
-                           #p_list_features=["from","to","frame_proto","protocol","control_type","type_cont_messg","DOAGID","DOAGID.1","DOAGID.2","DOAGID.3","DOAG_info","DIO_info","object_cont_pt","lifetime","prefix_info","valid_lifetime","preferred_liftime","reserved","desti_prefix","desti_prefix.1","desti_prefix.2","desti_prefix.3"],
-                           p_list_labels=["label"])
+                           p_list_features=['dur', 'sbytes', 'dbytes', 'sttl', 'dttl', 'sloss', 'dloss', 'Sload', 'Dload', 'Spkts', 'Dpkts', 'swin', 'dwin', 'stcpb', 'dtcpb', 'smeansz', 'dmeansz', 'trans_depth', 'res_bdy_len', 'Sjit', 'Djit', 'Stime', 'Ltime', 'Sintpkt', 'Dintpkt', 'tcprtt', 'synack', 'ackdat', 'is_sm_ips_ports', 'ct_state_ttl', 'ct_flw_http_mthd', 'is_ftp_login', 'ct_ftp_cmd', 'ct_srv_src', 'ct_srv_dst', 'ct_dst_ltm', 'ct_src_ ltm','ct_src_dport_ltm', 'ct_dst_sport_ltm', 'ct_dst_src_ltm'],
+                           p_list_labels=['Label'])
     
     # 4 Performance test: iterate all data streams dark and measure the time
     input('\nPress ENTER to iterate all streams dark...\n')
@@ -60,6 +58,7 @@ if __name__ == '__main__':
         curr_data = curr_instance.get_feature_data().get_values()
 
     print(curr_data[0])
+
 
 
 

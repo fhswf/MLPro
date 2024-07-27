@@ -113,27 +113,6 @@ class CBAnomaly (Anomaly):
         super()._update_plot_3d(p_settings, **p_kwargs) 
 
 
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, p_axlimits_changed: bool, p_ylim, **p_kwargs):
-
-        if ( self._plot_line is not None ) and not p_axlimits_changed: return
-        
-        inst = self.get_instances()[-1]
-
-        inst_id = inst.get_id()
-        xpos    = [inst_id, inst_id]
-        
-        if self._plot_line is None:
-            label = 'PO(' + str(self.get_id()) + ')'
-            self._plot_line  = p_settings.axes.plot(xpos, p_ylim, color='r', linestyle='dashed', lw=1)[0]
-            self._plot_label = p_settings.axes.text(inst_id, p_ylim[1], label, color='r' )
-
-        else:
-            self._plot_line.set_data( xpos, p_ylim )
-            self._plot_label.set(position=(inst_id, p_ylim[1]))
-
-
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
         super()._remove_plot_2d()

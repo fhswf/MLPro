@@ -42,7 +42,7 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                  p_clusterer : ClusterAnalyzer = None,
                  p_size_thresh_factor : float = False,
                  p_roc_size_thresh_factor : float = False,
-                 p_relative_size_change_thresh : float = 1.2,
+                 #p_relative_size_change_thresh : float = 1.2,
                  p_initial_skip : int = 1,
                  p_ema : float = 0.7,
                  p_window_size: int = 10,
@@ -80,7 +80,7 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
         self._thresh_l      = p_size_lower_thresh
         self._thresh        = {"thresh":p_size_thresh_factor}
         self._roc_thresh    = {"thresh":p_roc_size_thresh_factor}
-        self._rel_change_thresh = p_relative_size_change_thresh
+        #self._rel_change_thresh = p_relative_size_change_thresh
         self._ema = p_ema
         self._rel_thresh = p_relative_thresh
         self._visualize = p_visualize
@@ -90,7 +90,9 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
         self._time_calculation = p_with_time_calculation
         self._window_size = p_window_size
 
-        self._size_history = {}
+        #self._size_history = {}
+        #self._size_count = {}
+        self._avg_size_history = {}
         self._time_history = {}
         self._current_state = {}
         self._buffer = {}
@@ -123,10 +125,12 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
             else:
                 roc_thresh = None
 
-            if id not in self._size_history.keys():
-                self._size_history[id] = [clusters[id].size.value]
+            if id not in self._avg_size_history.keys():
+                self._size_history[id] = []
+                self._avg_size_history[id] = [clusters[id].size.value]
                 self._time_history[id] = [current_time]
                 self._update_history(id, clusters[id].size.value ,current_time)
+            #self._size_history[id].append(clusters[id].size.value)
 
             self._detect_anomalies(id, clusters[id], affected_clusters,
                                    thresh, roc_thresh, current_time)
@@ -150,13 +154,13 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_history(self, id, value, current_time):
-        avg_size = self._size_history[id][-1]*(1-self._ema) + value*self._ema
+        avg_size = self[id][-1]*(1-self._ema) + value*self._ema
 
-        self._size_history[id].append(avg_size)
+        self[id].append(avg_size)
         self._time_history[id].append(current_time)
 
-        if len(self._size_history[id]) > self._window_size:
-            self._size_history[id].pop(0)
+        if len(self[id]) > self._window_size:
+            self._avg_size_history[id].pop(0)
             self._time_history[id].pop(0)
 
 
@@ -168,7 +172,7 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
             if self._thresh_l and cluster.size.value != None and cluster.size.value <= self._thresh_l:
                 affected_clusters[id] = cluster
 
-            if len(self._size_history[id]) < 3:
+            if len(self._avg_size_history[id]) < 3:
                 self._current_state[id] = "NC"
             else:
                 self._state_change_detection(id, cluster, affected_clusters, thresh, roc_thresh, current_time)
@@ -178,26 +182,26 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
     def _state_change_detection(self, id, cluster, affected_clusters, thresh, roc_thresh, current_time):
                 # Calculate first differences
                 if self._time_calculation:
-                    first_diff = [(self._size_history[id][i+1] - self._size_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._size_history[id])-1)]
+                    first_diff = [(self._avg_size_history[id][i+1] - self._avg_size_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._avg_size_history[id])-1)]
                     time_diff = current_time - self._time_history[id][-1]
-                    diff = (cluster.size.value - self._size_history[id][-1]) / time_diff if time_diff != 0 else 0.0
+                    diff = (cluster.size.value - self._avg_size_history[id][-1]) / time_diff if time_diff != 0 else 0.0
                     first_diff.append(diff)
                 else:
-                    first_diff = [self._size_history[id][i+1] - self._size_history[id][i] for i in range(len(self._size_history[id])-1)]
-                    diff = cluster.size.value - self._size_history[id][-1]
+                    first_diff = [self._avg_size_history[id][i+1] - self._avg_size_history[id][i] for i in range(len(self._avg_size_history[id])-1)]
+                    diff = cluster.size.value - self._avg_size_history[id][-1]
                     first_diff.append(diff)
 
 
                 # Calculate second differences if enough data points are available
                 if roc_thresh:
-                    if len(self._size_history[id]) > 2:
+                    if len(self._avg_size_history[id]) > 2:
                         second_diff = [first_diff[i+1] - first_diff[i] for i in range(len(first_diff)-1)]
                     else:
                         second_diff = []
 
-                if self._rel_change_thresh:
-                    if abs(diff) > self._rel_change_thresh:
-                        affected_clusters[id] = cluster
+                #if self._rel_change_thresh:
+                #    if abs(diff) > self._rel_change_thresh:
+                #        affected_clusters[id] = cluster
 
                 current_state = None
                 if thresh:
