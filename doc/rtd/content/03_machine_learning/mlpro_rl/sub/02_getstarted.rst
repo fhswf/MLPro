@@ -9,8 +9,12 @@ No experience with MLPro? To learn more about MLPro, please refer to the :ref:`G
 By following the step-by-step guidelines below, we expect users to gain practical understanding of MLPro-RL and begin using it effectively.
 
 **1. What is Reinforcement Learning?**
-   If you are unfamiliar with reinforcement learning, we recommend starting with an understanding of its basic concepts.
-   There are many references, articles, papers, books, and videos available online that explain reinforcement learning.
+   Reinforcement Learning is a type of machine learning where an agent learns to make decisions by interacting with an environment.
+   The agent receives feedback in the form of rewards or penalties based on its actions, guiding it to discover strategies that maximize cumulative rewards.
+   Unlike supervised learning, where the model learns from labeled data, reinforcement learning involves exploring different actions and learning from the consequences.
+   The agent uses this feedback to adjust its strategy over time, gradually improving its performance. Key concepts in reinforcement learning include exploration (trying new actions) and exploitation (choosing the best-known actions).
+   This approach is commonly used in areas like robotics, game playing, and autonomous systems.
+   
    For a deeper understanding, we recommend reading the book by Sutton and Barto, titled: `Reinforcement Learning: An Introduction <https://dl.acm.org/doi/10.5555/3312046>`_.
 
 **2. What is MLPro-RL?**

@@ -13,6 +13,7 @@ By following the step-by-step guidelines below, we expect you to gain a practica
    Dynamic Games extend this concept to situations where decisions are made sequentially over time, with each player’s strategy evolving based on previous actions and outcomes.
    These games often involve strategies that adapt as the game progresses, reflecting changing conditions and information.
    The study of dynamic games helps understand complex interactions in fields like economics, politics, and biology, where decisions are interdependent and evolve over time.
+   
    For a deeper understanding, we recommend reading the book by Dario Bauso, titled: `Game Theory with Engineering Applications <https://dl.acm.org/doi/10.5555/2948750>`_.
 
 **2. What is MLPro-GT?**
