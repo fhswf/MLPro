@@ -19,14 +19,14 @@ from mlpro.bf.data import *
 from pathlib import Path
 from mlpro.bf.streams.tasks import Rearranger
 from mlpro.oa.streams import *
-from mlpro_int_river.wrappers.clusteranalyzers.denstream import *
+from mlpro_int_river.wrappers.clusteranalyzers import WrRiverCluStream2MLPro
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MyScenario(OAScenario):
 
-    C_NAME = '2DExperiment'
+    C_NAME = '3DExperiment'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
@@ -75,15 +75,20 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task=task_rearranger)
 
         # Cluster Analyzer
-        task_clusterer = WrRiverDenStream2MLPro( p_name='t1',
-                                           p_decaying_factor=0.01,
-                                           p_beta=0.5,
-                                           p_mu=2.5,
-                                           p_epsilon=0.5,
-                                           p_n_samples_init=10,
-                                           p_visualize=p_visualize, 
-                                           p_logging=p_logging )
-
+        task_clusterer = WrRiverCluStream2MLPro(p_name='#1: CluStream@River',
+                                                p_n_macro_clusters = 3,
+                                                p_max_micro_clusters = 20,
+                                                p_micro_cluster_r_factor = 2,
+                                                p_time_window = 100,
+                                                p_time_gap = 10,
+                                                p_seed = 41,
+                                                p_halflife = 1.0,
+                                                p_mu = 1,
+                                                p_sigma = 1,
+                                                p_p = 2,
+                                                p_visualize=p_visualize,
+                                                p_logging=p_logging )
+        
         workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_rearranger])
 
 

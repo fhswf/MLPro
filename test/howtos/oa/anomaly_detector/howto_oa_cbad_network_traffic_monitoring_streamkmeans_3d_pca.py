@@ -19,14 +19,14 @@ from mlpro.bf.data import *
 from pathlib import Path
 from mlpro.bf.streams.tasks import Rearranger
 from mlpro.oa.streams import *
-from mlpro_int_river.wrappers.clusteranalyzers import WrRiverDBStream2MLPro
+from mlpro_int_river.wrappers.clusteranalyzers import WrRiverStreamKMeans2MLPro
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MyScenario(OAScenario):
 
-    C_NAME = '3DExperiment'
+    C_NAME = '2DExperiment'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
@@ -75,14 +75,15 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task=task_rearranger)
 
         # Cluster Analyzer
-        task_clusterer = WrRiverDBStream2MLPro( p_name='t1',
-                                          p_clustering_threshold = 1.5,
-                                          p_fading_factor = 0.05,
-                                          p_cleanup_interval = 4,
-                                          p_intersection_factor = 0.5,
-                                          p_minimum_weight = 1.0,
-                                          p_visualize=p_visualize, 
-                                          p_logging=p_logging )
+        task_clusterer = WrRiverStreamKMeans2MLPro( p_name='StreamKMeans@River',
+                                                   p_chunk_size=50,
+                                                   p_n_clusters=3,
+                                                   p_halflife=1, 
+                                                   p_sigma=5,
+                                                   p_seed=44,
+                                                   p_visualize=p_visualize,
+                                                   p_logging=p_logging )
+
 
         workflow.add_task(p_task = task_clusterer, p_pred_tasks=[task_rearranger])
 
