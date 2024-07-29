@@ -8,49 +8,40 @@ However, we are working on it to enhance MLPro-SL and bring you full supervised 
 At the moment, we provide a basic template class for :ref:`supervised learning adaptive function <target_bf_sl_afct>`, which has been extended to the feedforward neural network.
 We introduce MLP as a sample of the MLPro-SL model and provide a ready-to-use :ref:`PyTorch-based <_target_sl_afct_pool_pytorch>` multilayer perceptron network.
 
+No experience with MLPro? To learn more about MLPro, please refer to the :ref:`Getting Started page of MLPro <target_mlpro_getstarted>`.
+
 After following the below step-by-step guideline, we expect the user understands the MLPro-SL in practice and starts using MLPro-SL.
 
-**1. What is MLPro?**
-   If you are a first-time user of MLPro, you might wonder what is MLPro.
-   Therefore, we recommend initially start with understanding MLPro by checking out the following steps:
+**1. What is Supervised Learning?**
+   If you have not worked with supervised learning before, we recommend starting with an understanding of its basic concepts.
+   There are numerous references, articles, papers, books, and videos available online that explain supervised learning.
+   In brief, supervised learning is a type of machine learning where a model is trained on a labeled dataset, meaning each training example is paired with the correct output.
+   The model learns to map inputs to the correct outputs by minimizing the difference between its predictions and the actual labels.
+   Once trained, it can then make predictions on new, unseen data based on the patterns it has learned.
 
-   (a) :ref:`MLPro: An Introduction <target_mlpro_introduction>`
-
-   (b) `introduction video of MLPro <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc1.mp4>`_
-
-   (c) :ref:`installing and getting started with MLPro <target_mlpro_getstarted>`
-
-   (d) `MLPro paper in Software Impact journal <https://doi.org/10.1016/j.simpa.2022.100421>`_
-
-**2. What is Supervised Learning?**
-   If you have not dealt with supervised learning, we recommend starting to understand at least the basic concept of supervised learning.
-   There are plenty of references, articles, papers, books, or videos on the internet that explains supervised learning.
-   As an overview, supervised learning is a type of machine learning in which a model is trained on a labelled dataset to predict the output for new/unseen inputs.
-   Supervised learning can be used to build a predictive model that can make predictions based on available data.
-
-**3. What is MLPro-SL?**
-   We expect that you have a basic knowledge of MLPro and supervised learning.
-   Therefore, you need to understand the overview of MLPro-SL by following the steps below:
+**2. What is MLPro-SL?**
+   We assume you have a fundamental understanding of MLPro and supervised learning.
+   Therefore, you need to familiarize yourself with the overview of MLPro-SL by following these steps:
 
    (a) :ref:`MLPro-SL introduction page <target_overview_SL>`
 
-**4. Understanding Adapative Function in MLPro-SL**
-   First of all, it is important to understand the adaptive function in MLPro-SL, which can be found on :ref:`this page <target_bf_sl_afct>`.
+**3. Understanding Adapative Function in MLPro-SL**
+   Firstly, it is essential to understand the adaptive function in MLPro-SL, which can be found on  :ref:`this page <target_bf_sl_afct>`.
 
-   Then, you can start following some of our howto files related to the adaptive function in MLPro-SL, which is used for model-based RL, as follows:
+   Next, you can refer to our how-to files related to the adaptive function in MLPro-SL, which is used for model-based RL, as outlined below:
 
-   (a) :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
+   (a) `Howto RL-MB-001: Train and Reload Model Based Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_001_train_and_reload_model_based_agent_gym%20copy.html>`_
 
-   (b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+   (b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
 
-   For more advanced supervised learning technique in model-based RL, e.g. applying a native model-based RL network, here is an example that can be used as a reference:
-   
-   (c) :ref:`Howto RL-MB-003: MBRL on RobotHTM Environment <Howto MB RL 003>`
+   For more advanced supervised learning techniques in model-based RL, such as using a native model-based RL network, you can refer to the following example:
+
+   (c) `Howto RL-MB-002: MBRL on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
 
 
-**5. Additional Guidance**
-   After following the previous steps, we hope that you could practice MLPro-SL and start using this subpackage for your SL-related activities.
-   For more advanced features, we highly recommend you to check out the following files:
+**4. Additional Guidance**
+   After completing the previous steps, we encourage you to practice with MLPro-SL and begin using this subpackage for your supervised learning activities. 
+   For more advanced features, we recommend reviewing the following files:
 
    (a) :ref:`API Reference: MLPro-SL <target_api_sl>`
    
