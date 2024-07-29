@@ -10,9 +10,9 @@ It is compatible with single-agent but does not have its own policy.
 Instead, it is utilized to combine and control any quantity of single agents that together control the action calculation.
 Every single agent in this situation interacts with a separate portion of the surrounding multi-observation agents and action space.
 Multi-agent interactions take place in appropriate contexts that support the scalar reward per agent reward type. 
-These are native applications that incorporate the MLPro environment template or PettingZoo environments that may be incorporated using the corresponding :ref:`wrapper class<target-package-third>` offered by MLPro.
+These are native applications that incorporate the MLPro environment template or PettingZoo environments that may be incorporated using the corresponding :ref:`wrapper class<target_extension_hub>` offered by MLPro.
 
 
 **Cross Reference**
-    - :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`
+    - `Howto RL-AGENT-004: Train Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
     - :ref:`MLPro-RL: Training <target_training_RL>`
