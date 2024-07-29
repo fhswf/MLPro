@@ -9,10 +9,11 @@
 ## -- 2023-02-05  1.0.0     SY       First version release
 ## -- 2023-02-07  1.1.0     SY       Change the dataset to doublespiral2d
 ## -- 2023-02-12  1.2.0     DA       New plot parameter p_view_autoselect
+## -- 2024-07-17  1.2.1     SY       Refactoring due to method Deriver._prepare_derivation()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-02-12)
+Ver. 1.2.1 (2024-07-17)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -91,34 +92,30 @@ class MyScenario (StreamScenario):
         workflow.add_task( p_task=task_rearranger )
 
         # 2.2 Set up and add a deriver task to extend the feature and label space (1st derivative)
-        features = task_rearranger._feature_space.get_dims()
         derived_feature = features[0]
+        order_derivative = 1
 
         task_deriver_1 = Deriver( p_name='T2 - Deriver 1',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
-                                  p_features=features,
-                                  p_label=None,
                                   p_derived_feature=derived_feature,
                                   p_derived_label=None,
-                                  p_order_derivative=1 )
+                                  p_order_derivative=order_derivative )
 
         workflow.add_task( p_task=task_deriver_1, p_pred_tasks=[task_rearranger] )
 
         # 2.3 Set up and add a deriver task to extend the feature and label space (2nd derivative)
-        features = task_deriver_1._feature_space.get_dims()
         derived_feature = features[0]
+        order_derivative = 2
         
         task_deriver_2 = Deriver( p_name='T3 - Deriver 2',
                                   p_range_max=Task.C_RANGE_THREAD,
                                   p_visualize=p_visualize,
                                   p_logging=p_logging,
-                                  p_features=features,
-                                  p_label=None,
                                   p_derived_feature=derived_feature,
                                   p_derived_label=None,
-                                  p_order_derivative=2 )
+                                  p_order_derivative=order_derivative )
 
         workflow.add_task( p_task=task_deriver_2, p_pred_tasks=[task_rearranger, task_deriver_1] )
 
