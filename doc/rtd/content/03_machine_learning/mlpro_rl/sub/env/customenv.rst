@@ -196,7 +196,7 @@ Developing Custom Environments
 
     Alternatively, if your environment follows Gym or PettingZoo interface, you can apply our
     relevant useful wrappers for the integration between third party packages and MLPro. For more
-    information, please click :ref:`here<target-package-third>`.
+    information, please click :ref:`here<target_extension_hub>`.
 
 - **Environment Checker**
 

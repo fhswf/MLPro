@@ -3,7 +3,7 @@ Model-Based Agents
 ==================
 
 Model-Based Agents have a dissimilar learning target as Model-Free Agents, whereas learning the environment model is not required in the model-free RL.
-An environment model can be incorporated into a single agent, see :ref:`EnvModel <customEnvModel>` for an overview.
+An environment model can be incorporated into a single agent, as **EnvModel**.
 Then, this model learns the behaviour and dynamics of the environment.
 After learning the environment, the model is optimized to be able to accurately predict the output states, rewards, or status of the environment with respect to the calculated actions.
 As a result, if the predictions of the subsequent state and reward diverge too far from the actual values of the environment, the environment model itself is incorporated into the agent's adaptation process and is always retrained.
@@ -112,8 +112,8 @@ the original environment module.
 
 **Cross Reference**
 
-    - :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
-    - :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
-    - :ref:`Howto RL-MB-003: MBRL on RobotHTM Environment <Howto MB RL 003>`
+    - `Howto RL-AGENT-001: Train and Reload Single Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
+    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
+    - `Howto RL-MB-002: MBRL on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
     - :ref:`MLPro-SL <target_bf_sl_afct>`
 
