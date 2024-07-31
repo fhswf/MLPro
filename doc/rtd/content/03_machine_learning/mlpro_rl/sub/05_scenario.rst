@@ -26,5 +26,5 @@ Moreover, the users can create either a single-agent scenario or a multi-agent s
 **Cross Reference**
 
   - :ref:`MLPro-RL: Training <target_training_RL>`
-  - :ref:`Howto RL-AGENT-001: Run an Agent with Own Policy <Howto Agent RL 001>`
-  - :ref:`Howto RL-AGENT-003: Run Multi-Agent with Own Policy <Howto Agent RL 003>`
+  - `Howto RL-AGENT-001: Run an Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment.html>`_
+  - `Howto RL-AGENT-003: Run Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment.html>`_

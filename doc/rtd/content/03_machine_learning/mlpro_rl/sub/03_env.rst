@@ -33,17 +33,17 @@ There are two main possibilities to set up an environment in MLPro, such as,
    env/customenv
    env/pool
 
-Alternatively, you can also :ref:`reuse available environments from 3rd-party packages via wrapper classes <target-package-third>` (currently available: OpenAI Gym or PettingZoo).
+Alternatively, you can also :ref:`reuse available environments from 3rd-party packages via wrapper classes <target_extension_hub>` (currently available: Gymnasium or PettingZoo).
    
 For reusing the 3rd packages, we develop a wrapper technology to transform the environment from the 3rd-party package to the MLPro-compatible environment.
 Additionally, we also provide the wrapper for the other way around, which is from MLPro Environment to the 3rd-party package.
-At the moment, there are two ready-to-use wrapper classes. The first wrapper class is intended for OpenAI Gym and the second wrapper is intended for PettingZoo.
+At the moment, there are two ready-to-use wrapper classes. The first wrapper class is intended for Gymnasium and the second wrapper is intended for PettingZoo.
 The guide to using the wrapper classes is step-by-step explained in our how-to files, as follows:
 
-(1) :ref:`OpenAI Gym to MLPro <Howto WP RL 004>`,
+(1) `Gymnasium to MLPro <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_002_gymnasium_environment_to_mlpro_environment.html>`_,
 
-(2) :ref:`MLPro to OpenAI Gym <Howto WP RL 001>`,
+(2) `MLPro to Gymnasium <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_001_mlpro_environment_to_gymnasium_environment.html>`_,
 
-(3) :ref:`PettingZoo to MLPro <Howto WP RL 003>`, and
+(3) `PettingZoo to MLPro <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_002_run_multiagent_with_own_policy_on_petting_zoo_environment.html>`_, and
 
-(4) :ref:`MLPro to PettingZoo <Howto WP RL 002>`.
+(4) `MLPro to PettingZoo <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_001_mlpro_environment_to_petting_zoo_environment.html>`_.

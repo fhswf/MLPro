@@ -44,7 +44,7 @@ After following the below step-by-step guideline, we expect the user understands
 
    (a) :ref:`Howto RL-001: Reward <Howto RL 001>`
 
-   (b) :ref:`Howto RL-AGENT-001: Run an Agent with Own Policy <Howto Agent RL 001>`
+   (b) `Howto RL-AGENT-001: Run an Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment.html>`_
 
 **5. Understanding Agent in MLPro-RL**
    In reinforcement learning, we have two types of agents, such as a single-agent RL or a multi-agent RL. Both of the types are covered by MLPro-RL.
@@ -52,9 +52,9 @@ After following the below step-by-step guideline, we expect the user understands
 
    Then, you need to understand how to set up a single-agent and a multi-agent RL in MLPro-RL by following these examples:
 
-   (a) :ref:`Howto RL-AGENT-001: Run an Agent with Own Policy <Howto Agent RL 001>`
+   (a) `Howto RL-AGENT-001: Run an Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment.html>`_
 
-   (b) :ref:`Howto RL-AGENT-003: Run Multi-Agent with Own Policy <Howto Agent RL 003>`
+   (b) `Howto RL-AGENT-003: Run Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment.html>`_
 
 **6. Selecting between Model-Free and Model-Based RL**
    In this section, you need to select your direction of the RL training, whether it is a model-free RL or a model-based RL.
@@ -66,36 +66,32 @@ After following the below step-by-step guideline, we expect the user understands
 
       (a) `A sample application video of MLPro-RL on a UR5 robot <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc2.mp4>`_
 
-      (b) :ref:`Howto RL-AGENT-002: Train an Agent with Own Policy <Howto Agent RL 002>`
+      (b) `Howto RL-AGENT-002: Train an Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.html>`_
 
-      (c) :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`
+      (c) `Howto RL-AGENT-004: Train Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
    
    * Model-Based Reinforcement Learning
 
       Model-based RL contains two learning paradigms, such as learning the environment (model-based learning) and utilizing the model (e.g. as an action planner).
       To practice model-based RL in the MLPro-RL package, here are a howto file that can be followed:
 
-      (a) :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
+      (a) `Howto RL-MB-001: Train and Reload Model Based Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_001_train_and_reload_model_based_agent_gym%20copy.html>`_
 
-      (b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+      (b) :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
 
       For more advanced MBRL technique, e.g. applying a native MBRL network, here is an example that can be used as a reference:
       
-      (c) :ref:`Howto RL-MB-003: MBRL on RobotHTM Environment <Howto MB RL 003>`
+      (c) `Howto RL-MB-002: MBRL on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
 
 
 **7. Additional Guidance**
    After following the previous steps, we hope that you could practice MLPro-RL and start using this subpackage for your RL-related activities.
    For more advanced features, we highly recommend you to check out the following howto files:
 
-   (a) :ref:`Howto RL-AGENT-011: Train and Reload Single Agent (Gym) <Howto Agent RL 011>`
+   (a) `Howto RL-AGENT-001: Train and Reload Single Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
 
-   (b) :ref:`Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo) <Howto Agent RL 021>`
+   (b) `Howto RL-HT-001: Hyperparameter Tuning using Hyperopt <https://mlpro-int-hyperopt.readthedocs.io/en/latest/content/01_examples_pool/howto.rl.ht.001.html>`_
 
-   (c) :ref:`Howto RL-HT-001: Hyperopt <Howto RL HT 001>`
+   (c) `Howto RL-HT-001: Hyperparameter Tuning using Optuna <https://mlpro-int-optuna.readthedocs.io/en/latest/content/01_examples_pool/howto.rl.ht.002.html>`_
 
-   (d) :ref:`Howto RL-HT-002: Optuna <Howto RL HT 002>`
-
-   (e) :ref:`Howto RL-ATT-001: Stagnation Detection <Howto RL ATT 001>`
-
-   (f) :ref:`Howto RL-ATT-002: SB3 Policy with Stagnation Detection <Howto RL ATT 002>`
+   (d) `Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_

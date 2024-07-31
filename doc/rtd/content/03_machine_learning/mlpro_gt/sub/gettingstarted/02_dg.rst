@@ -55,8 +55,8 @@ After following the below step-by-step guideline, we expect the user understands
    After following the previous steps, we hope that you could practice MLPro-GT and start using this subpackage for your GT-related activities.
    For more advanced features, we highly recommend you to check out the following howto files:
 
-   (a) :ref:`Howto RL-HT-001: Hyperopt <Howto RL HT 001>`
+   (a) `Howto RL-HT-001: Hyperparameter Tuning using Hyperopt <https://mlpro-int-hyperopt.readthedocs.io/en/latest/content/01_examples_pool/howto.rl.ht.001.html>`_
 
-   (b) :ref:`Howto RL-HT-002: Optuna <Howto RL HT 002>`
+   (b) `Howto RL-HT-001: Hyperparameter Tuning using Optuna <https://mlpro-int-optuna.readthedocs.io/en/latest/content/01_examples_pool/howto.rl.ht.002.html>`_
 
-   (c) :ref:`Howto RL-ATT-001: Stagnation Detection <Howto RL ATT 001>`
+   (c) `Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_
