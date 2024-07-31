@@ -78,7 +78,7 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task=task_rearranger)
 
         # 2.2.2 Window to buffer some data
-        task_window = RingBuffer( p_buffer_size=100, 
+        task_window = RingBuffer( p_buffer_size=200, 
                                   p_delay=True,
                                   p_enable_statistics=True,
                                   p_name='T2 - Ring Buffer',
@@ -97,7 +97,8 @@ class MyScenario(OAScenario):
                                        p_visualize  = p_visualize,
                                        p_logging =  p_logging )"""
         
-        task_clusterer = SPARCCStreamHCLL(p_cluster_limit=100,
+        task_clusterer = SPARCCStreamHCLL(p_cluster_limit=10,
+                                          p_size_limit =50,
                                           p_range_max = OAWorkflow.C_RANGE_NONE,
                                           p_ada=p_ada,
                                           p_visualize  = p_visualize,
