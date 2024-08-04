@@ -53,6 +53,7 @@ class CBAnomaly (Anomaly):
                  p_id : int = 0,
                  p_instances : list[Instance] = None,
                  p_clusters : dict[Cluster] = None,
+                 p_properties : dict = None,
                  p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
@@ -69,10 +70,16 @@ class CBAnomaly (Anomaly):
         
         self._colour_id = 0
         self._clusters : dict[Cluster] = p_clusters
+        self._properties : dict = p_properties
 
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> dict[Cluster]:
         return self._clusters
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_properties(self) -> dict[Cluster]:
+        return self._properties
     
 
 ## -------------------------------------------------------------------------------------------------
