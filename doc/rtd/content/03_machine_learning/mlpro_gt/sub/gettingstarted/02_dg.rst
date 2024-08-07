@@ -1,49 +1,36 @@
 MLPro-GT-DG - Dynamic Games
 ---------------------------
 
-Here is a concise series to introduce all users to the MLPro-GT-DG in a practical way, whether you are a first-timer or an experienced MLPro user.
+Here is a concise series designed to practically introduce all users to MLPro-GT-DG, whether you are new to it or an experienced MLPro user.
 
-If you are a first-timer, then you can begin with **Section (1) What is MLPro?**.
+No experience with MLPro? To learn more about MLPro, please refer to the :ref:`Getting Started page of MLPro <target_mlpro_getstarted>`.
 
-If you have understood MLPro but not the game theoretical approach in the engineering field, then you can jump to **Section (2) What is Game Theory?**.
+By following the step-by-step guidelines below, we expect you to gain a practical understanding of MLPro-GT and begin using MLPro-GT-DG.
 
-If you have experience in both MLPro and game theory, then you can directly start with **Section (3) What is MLPro-GT?**.
+**1. What are Game Theory and Dynamic Games?**
+   Game Theory is a field of mathematics that studies strategic interactions where the outcome for each participant depends on the choices of all involved.
+   It models situations where individuals or entities make decisions to maximize their own payoffs, considering the potential responses of others.
+   Dynamic Games extend this concept to situations where decisions are made sequentially over time, with each player’s strategy evolving based on previous actions and outcomes.
+   These games often involve strategies that adapt as the game progresses, reflecting changing conditions and information.
+   The study of dynamic games helps understand complex interactions in fields like economics, politics, and biology, where decisions are interdependent and evolve over time.
+   
+   For a deeper understanding, we recommend reading the book by Dario Bauso, titled: `Game Theory with Engineering Applications <https://dl.acm.org/doi/10.5555/2948750>`_.
 
-After following the below step-by-step guideline, we expect the user understands the MLPro-GT in practice and starts using MLPro-GT-DG.
-
-**1. What is MLPro?**
-   If you are a first-time user of MLPro, you might wonder what is MLPro.
-   Therefore, we recommend initially starting with understanding MLPro by checking out the following steps:
-
-   (a) :ref:`MLPro: An Introduction <target_mlpro_introduction>`
-
-   (b) `introduction video of MLPro <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc1.mp4>`_
-
-   (c) :ref:`installing and getting started with MLPro <target_mlpro_getstarted>`
-
-   (d) `MLPro paper in Software Impact journal <https://doi.org/10.1016/j.simpa.2022.100421>`_
-
-**2. What is Game Theory?**
-   If you have not dealt with game theory for engineering applications, we recommend starting to understand at least the basic concept of game theory.
-   There are plenty of references, articles, papers, books, or videos on the internet that explains the game theory.
-   But, for deep understanding, we recommend you to read the book from Dario Bauso, which is `Game Theory with Engineering Applications <https://dl.acm.org/doi/10.5555/2948750>`_.
-
-**3. What is MLPro-GT?**
-   We expect that you have a basic knowledge of MLPro and game theory.
-   Therefore, you need to understand the overview of MLPro-GT by following the steps below:
+**2. What is MLPro-GT?**
+   We assume you have a basic understanding of MLPro and game theory.
+   Therefore, you should familiarize yourself with the overview of MLPro-GT by following these steps:
 
    (a) :ref:`MLPro-GT introduction page <target_overview_GT>`
 
    (b) `Section 5 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
 
-**4. Understanding Game Board and Player in MLPro-GT-DG**
-   First of all, it is important to understand the structure of a game board in MLPro-GT, which can be found on :ref:`this page <target_gb_gt>`.
+**3. Understanding Game Board and Player in MLPro-GT-DG**
+   Firstly, it is important to understand the structure of a game board in MLPro-GT, which can be found on :ref:`this page <target_gb_gt>`.
 
-   In reinforcement learning, we have two types of agents, such as a single-agent RL or a multi-agent RL. Both of the types are covered by MLPro-RL.
-   Meanwhile, in MLPro-GT, we focus on a multi-player GT because there are no significant advantages of using game theory for single-player.
-   To understand a player in MLPro-GT, you can visit :ref:`this page <target_players_GT>`.
+   MLPro-GT focuses on multi-player game theory, as game theory offers no significant advantages for single-player scenarios.
+   To understand the concept of a player in MLPro-GT, you can visit :ref:`this page <target_players_GT>`.
 
-   Then, you can start following some of our howto files and a sample application that shows how to run and train multi-player with their own policy, as follows:
+   Next, you can refer to our how-to files and a sample application that demonstrate how to run and train multi-player scenarios with their own policies, as outlined below:
 
    (a) :ref:`Howto GT-001: Run Multi-Player with Own Policy <Howto GT 001>`
 
@@ -51,12 +38,12 @@ After following the below step-by-step guideline, we expect the user understands
 
    (c) `Section 6.2 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
 
-**5. Additional Guidance**
-   After following the previous steps, we hope that you could practice MLPro-GT and start using this subpackage for your GT-related activities.
-   For more advanced features, we highly recommend you to check out the following howto files:
+**4. Additional Guidance**
+   After completing the previous steps, we hope you will be able to practice with MLPro-GT and begin using this subpackage for your game theory-related activities.
+   For more advanced features, we strongly recommend reviewing the following how-to files:
 
-   (a) :ref:`Howto RL-HT-001: Hyperopt <Howto RL HT 001>`
+   (a) `Howto RL-HT-001: Hyperparameter Tuning using Hyperopt <https://mlpro-int-hyperopt.readthedocs.io/en/latest/content/01_examples_pool/howto.rl.ht.001.html>`_
 
-   (b) :ref:`Howto RL-HT-002: Optuna <Howto RL HT 002>`
+   (b) `Howto RL-HT-001: Hyperparameter Tuning using Optuna <https://mlpro-int-optuna.readthedocs.io/en/latest/content/01_examples_pool/howto.rl.ht.002.html>`_
 
-   (c) :ref:`Howto RL-ATT-001: Stagnation Detection <Howto RL ATT 001>`
+   (c) `Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_
