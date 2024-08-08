@@ -43,7 +43,7 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
                  p_density_thresh_factor : float = False,
                  p_roc_density_thresh_factor : float = False,
                  p_initial_skip : int = 1,
-                 p_ema : float = 0.7,
+                 p_ema_alpha : float = 0.7,
                  p_window_size: int = 10,
                  p_with_time_calculation: bool = False,
                  p_relative_thresh : bool = False,

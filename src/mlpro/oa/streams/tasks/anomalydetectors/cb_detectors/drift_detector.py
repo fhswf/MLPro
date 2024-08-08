@@ -23,10 +23,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.drift import
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import cprop_center_geo2
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size2
-from collections import deque
-from sklearn.preprocessing import StandardScaler
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import cprop_centroid2
 import time
 
 
@@ -38,8 +35,7 @@ class ClusterDriftDetector(AnomalyDetectorCB):
     This is the class for detecting change in velocity of clusters.
 
     """
-    C_PROPERTY_DEFINITIONS : PropertyDefinitions = [ cprop_center_geo2,
-                                                     cprop_size2]
+    C_PROPERTY_DEFINITIONS : PropertyDefinitions = [cprop_centroid2]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -49,7 +45,7 @@ class ClusterDriftDetector(AnomalyDetectorCB):
                  p_state_change_detection : bool = False,
                  p_min_acceleration_threshold : float = False,
                  p_buffer_size = 5,
-                 p_ema_alpha : float = 0.3,
+                 p_ema_alpha : float = 0.7,
                  p_with_time_calculation : bool = True, 
                  p_initial_skip : int = 1,
                  p_name:str = None,
