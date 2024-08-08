@@ -8,11 +8,11 @@
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2024-04-10  1.1.0     DA/SK    Refactoring
-## -- 2024-06-19  1.1.1     SK       Bug Fix
+## -- 2024-05-28  1.2.0     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-06-19)
+Ver. 1.2.0 (2024-05-28)
 
 This module provides cluster disappearance detector algorithm.
 """
@@ -71,17 +71,6 @@ class ClusterDisappearanceDetector(AnomalyDetectorCB):
 
         if self._size_thresh != None:
             self.C_PROPERTY_DEFINITIONS.append(('size', 0, False, Property))
-
-        for x in self.C_PROPERTY_DEFINITIONS:
-            if x not in self.C_REQ_CLUSTER_PROPERTIES:
-                self.C_REQ_CLUSTER_PROPERTIES.append(x)
-
-        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
-
-        if len(unknown_prop) >0:
-            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
-
-        self._visualize = p_visualize
 
 
 ## -------------------------------------------------------------------------------------------------

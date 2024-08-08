@@ -8,13 +8,13 @@
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2024-04-10  1.1.0     DA/SK    Refactoring
-## -- 2024-06-22  1.1.1     SK       Bug Fix
+## -- 2024-05-28  1.2.0     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-06-22)
+Ver. 1.2.0 (2024-05-28)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides cluster size change detector algorithm.
 """
 
 from mlpro.oa.streams.basics import *
@@ -42,7 +42,6 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                  p_clusterer : ClusterAnalyzer = None,
                  p_size_thresh_factor : float = False,
                  p_roc_size_thresh_factor : float = False,
-                 #p_relative_size_change_thresh : float = 1.2,
                  p_initial_skip : int = 1,
                  p_ema : float = 0.7,
                  p_window_size: int = 10,
@@ -67,20 +66,10 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
                          p_logging = p_logging,
                          **p_kwargs)
         
-        for x in self.C_PROPERTY_DEFINITIONS:
-            if x not in self.C_REQ_CLUSTER_PROPERTIES:
-                self.C_REQ_CLUSTER_PROPERTIES.append(x)
-
-        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
-
-        #if len(unknown_prop) >0:
-        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
-
         self._thresh_u      = p_size_upper_thresh
         self._thresh_l      = p_size_lower_thresh
         self._thresh        = {"thresh":p_size_thresh_factor}
         self._roc_thresh    = {"thresh":p_roc_size_thresh_factor}
-        #self._rel_change_thresh = p_relative_size_change_thresh
         self._ema = p_ema
         self._rel_thresh = p_relative_thresh
         self._visualize = p_visualize
@@ -90,8 +79,6 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
         self._time_calculation = p_with_time_calculation
         self._window_size = p_window_size
 
-        #self._size_history = {}
-        #self._size_count = {}
         self._avg_size_history = {}
         self._time_history = {}
         self._current_state = {}
@@ -166,63 +153,63 @@ class ClusterSizeChangeDetector(AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
     def _detect_anomalies(self, id, cluster, affected_clusters, thresh, roc_thresh, current_time):
-            if self._thresh_u and cluster.size.value != None and cluster.size.value >= self._thresh_u:
-                affected_clusters[id] = cluster
-                
-            if self._thresh_l and cluster.size.value != None and cluster.size.value <= self._thresh_l:
-                affected_clusters[id] = cluster
+        if self._thresh_u and cluster.size.value != None and cluster.size.value >= self._thresh_u:
+            affected_clusters[id] = cluster
+            
+        if self._thresh_l and cluster.size.value != None and cluster.size.value <= self._thresh_l:
+            affected_clusters[id] = cluster
 
-            if len(self._avg_size_history[id]) < 3:
-                self._current_state[id] = "NC"
-            else:
-                self._state_change_detection(id, cluster, affected_clusters, thresh, roc_thresh, current_time)
+        if len(self._avg_size_history[id]) < 3:
+            self._current_state[id] = "NC"
+        else:
+            self._state_change_detection(id, cluster, affected_clusters, thresh, roc_thresh, current_time)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _state_change_detection(self, id, cluster, affected_clusters, thresh, roc_thresh, current_time):
-                # Calculate first differences
-                if self._time_calculation:
-                    first_diff = [(self._avg_size_history[id][i+1] - self._avg_size_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._avg_size_history[id])-1)]
-                    time_diff = current_time - self._time_history[id][-1]
-                    diff = (cluster.size.value - self._avg_size_history[id][-1]) / time_diff if time_diff != 0 else 0.0
-                    first_diff.append(diff)
-                else:
-                    first_diff = [self._avg_size_history[id][i+1] - self._avg_size_history[id][i] for i in range(len(self._avg_size_history[id])-1)]
-                    diff = cluster.size.value - self._avg_size_history[id][-1]
-                    first_diff.append(diff)
+        # Calculate first differences
+        if self._time_calculation:
+            first_diff = [(self._avg_size_history[id][i+1] - self._avg_size_history[id][i]) / (self._time_history[id][i+1] - self._time_history[id][i]) if (self._time_history[id][i+1] - self._time_history[id][i]) != 0 else 0 for i in range(len(self._avg_size_history[id])-1)]
+            time_diff = current_time - self._time_history[id][-1]
+            diff = (cluster.size.value - self._avg_size_history[id][-1]) / time_diff if time_diff != 0 else 0.0
+            first_diff.append(diff)
+        else:
+            first_diff = [self._avg_size_history[id][i+1] - self._avg_size_history[id][i] for i in range(len(self._avg_size_history[id])-1)]
+            diff = cluster.size.value - self._avg_size_history[id][-1]
+            first_diff.append(diff)
 
 
-                # Calculate second differences if enough data points are available
-                if roc_thresh:
-                    if len(self._avg_size_history[id]) > 2:
-                        second_diff = [first_diff[i+1] - first_diff[i] for i in range(len(first_diff)-1)]
-                    else:
-                        second_diff = []
+        # Calculate second differences if enough data points are available
+        if roc_thresh:
+            if len(self._avg_size_history[id]) > 2:
+                second_diff = [first_diff[i+1] - first_diff[i] for i in range(len(first_diff)-1)]
+            else:
+                second_diff = []
 
-                #if self._rel_change_thresh:
-                #    if abs(diff) > self._rel_change_thresh:
-                #        affected_clusters[id] = cluster
+        #if self._rel_change_thresh:
+        #    if abs(diff) > self._rel_change_thresh:
+        #        affected_clusters[id] = cluster
 
-                current_state = None
-                if thresh:
-                    if any(d > thresh for d in first_diff):
-                        current_state = "LI"
-                    elif any(d < -thresh for d in first_diff):
-                        current_state = "LD"
+        current_state = None
+        if thresh:
+            if any(d > thresh for d in first_diff):
+                current_state = "LI"
+            elif any(d < -thresh for d in first_diff):
+                current_state = "LD"
 
-                if roc_thresh:
-                    if any(d2 > roc_thresh for d2 in second_diff):
-                        current_state = "VI"
-                    elif any(d2 < -roc_thresh for d2 in second_diff):
-                        current_state = "VD"
+        if roc_thresh:
+            if any(d2 > roc_thresh for d2 in second_diff):
+                current_state = "VI"
+            elif any(d2 < -roc_thresh for d2 in second_diff):
+                current_state = "VD"
 
-                if not current_state:
-                    current_state = "NC"
+        if not current_state:
+            current_state = "NC"
 
-                if current_state != self._current_state[id]:
-                    affected_clusters[id] = cluster
-                    self._current_state[id] = current_state
-                    
+        if current_state != self._current_state[id]:
+            affected_clusters[id] = cluster
+            self._current_state[id] = current_state
+            
 
 ## -------------------------------------------------------------------------------------------------
     def _update_threshold(self, id, clusters):

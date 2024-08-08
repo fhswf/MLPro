@@ -11,13 +11,13 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-22  1.2.1     SK       Refactoring
-## -- 2024-05-28  1.2.2     SK       Refactoring
+## -- 2024-05-28  1.3.0     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-28)
+Ver. 1.3.0 (2024-05-28)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides a template class for cluster drift to be used in anomaly detection algorithms.
 """
 
 from mlpro.oa.streams.basics import Instance
@@ -37,6 +37,26 @@ class ClusterDrift (CBAnomaly):
     """
     Event class to be raised when cluster drift detected.
     
+    Parameters
+    ----------
+    p_id : int
+        Anomaly ID. Default value = 0.
+    p_instances : Instance
+        List of instances. Default value = None.
+    p_clusters : dict[Cluster]
+        Clusters associated with the anomaly. Default = None.
+    p_properties : dict
+        Poperties of clusters associated with the anomaly. Default = None.
+    p_ano_scores : list
+        List of anomaly scores of instances. Default = None.
+    p_det_time : str
+        Time of occurance of anomaly. Default = None.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_raising_object : object
+        Reference of the object raised. Default = None.
+    **p_kwargs
+        Further optional keyword arguments.
     """
 
     C_NAME      = 'Cluster drift Anomaly'

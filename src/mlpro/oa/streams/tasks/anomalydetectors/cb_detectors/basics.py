@@ -10,20 +10,19 @@
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-28  1.2.1     SK       Refactoring
+## -- 2024-05-28  1.3.0     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-28)
+Ver. 1.3.0 (2024-05-28)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides template for cluster-based anomaly detection algorithms to be used in the context of online adaptivity.
 """
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
-from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
 
 
@@ -65,24 +64,14 @@ class AnomalyDetectorCB(AnomalyDetector):
         
         self._clusterer = p_clusterer
 
+        for x in self.C_PROPERTY_DEFINITIONS:
+            if x not in self.C_REQ_CLUSTER_PROPERTIES:
+                self.C_REQ_CLUSTER_PROPERTIES.append(x)
 
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        if not self.get_visualization(): return
+        #if len(unknown_prop) >0:
+        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        
+        self._visualize = p_visualize
 
-        super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
-
-        for anomaly in self._anomalies.values():
-            anomaly.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
-
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot( self, 
-                     p_inst : InstDict = None, 
-                     **p_kwargs ):
-
-        if not self.get_visualization(): return
-
-        for anomaly in self._anomalies.values():
-            anomaly.update_plot(p_inst = p_inst, **p_kwargs)
