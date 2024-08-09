@@ -20,11 +20,6 @@ Ver. 1.3.0 (2024-05-28)
 This module provides a template class for cluster drift to be used in anomaly detection algorithms.
 """
 
-from mlpro.oa.streams.basics import Instance
-from mlpro.bf.mt import Figure, PlotSettings
-from mlpro.bf.various import *
-from mlpro.bf.plot import *
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import CBAnomaly
 
 
@@ -37,48 +32,8 @@ class ClusterDrift (CBAnomaly):
     """
     Event class to be raised when cluster drift detected.
     
-    Parameters
-    ----------
-    p_id : int
-        Anomaly ID. Default value = 0.
-    p_instances : Instance
-        List of instances. Default value = None.
-    p_clusters : dict[Cluster]
-        Clusters associated with the anomaly. Default = None.
-    p_properties : dict
-        Poperties of clusters associated with the anomaly. Default = None.
-    p_ano_scores : list
-        List of anomaly scores of instances. Default = None.
-    p_det_time : str
-        Time of occurance of anomaly. Default = None.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_raising_object : object
-        Reference of the object raised. Default = None.
-    **p_kwargs
-        Further optional keyword arguments.
     """
 
     C_NAME      = 'Cluster drift Anomaly'
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_id : int = 0,
-                 p_instances : list[Instance] = None,
-                 p_clusters : dict[Cluster] = None,
-                 p_properties : dict = None,
-                 p_ano_scores : list = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
-                 p_det_time : str = None,
-                 **p_kwargs):
-        
-        super().__init__(p_id=p_id,
-                         p_instances=p_instances,
-                         p_clusters=p_clusters,
-                         p_properties=p_properties,
-                         p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize,
-                         p_raising_object=p_raising_object,
-                         p_det_time=p_det_time, **p_kwargs)
 
