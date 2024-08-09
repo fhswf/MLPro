@@ -7,18 +7,14 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
-## -- 2023-11-21  1.0.1     SK       Time Stamp update
-## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-04-16  1.3.0     DA       Finished visualisation
-## -- 2024-05-07  1.3.1     SK       Bug fix related to p_instances
-## -- 2024-05-22  1.2.1     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2024-05-07)
+Ver. 1.2.0 (2024-04-10)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+
+This module provides a template class for point anomaly event to be used in anomaly detection algorithms.
 """
 
 from mlpro.bf.plot import PlotSettings
@@ -35,6 +31,24 @@ class PointAnomaly (Anomaly):
     """
     Event class for anomaly events when point anomalies are detected.
     
+    Parameters
+    ----------
+    p_id : int
+        Anomaly ID. Default value = 0.
+    p_instances : Instance
+        List of instances. Default value = None.
+    p_ano_scores : list
+        List of anomaly scores of instances. Default = None.
+    p_det_time : str
+        Time of occurance of anomaly. Default = None.
+    p_deviation : float
+        The deviation of the anomaly. Default = None.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_raising_object : object
+        Reference of the object raised. Default = None.
+    **p_kwargs
+        Further optional keyword arguments.
     """
 
     C_NAME              = 'Point'
@@ -44,24 +58,37 @@ class PointAnomaly (Anomaly):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = 0,
                  p_instances : list[Instance] = None,
                  p_ano_scores : list = None,
+                 p_det_time : str = None,
+                 p_deviation : float = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
-                 p_det_time : str = None,
-                 p_deviation : float=None,
                  **p_kwargs):
         
-        super().__init__( p_instances=p_instances, 
+        super().__init__( p_id=p_id,
+                          p_instances=p_instances, 
                           p_ano_scores=p_ano_scores,
                           p_visualize=p_visualize, 
                           p_raising_object=p_raising_object,
                           p_det_time=p_det_time, 
                           **p_kwargs )
         
-        self.instances : list[Instance] = p_instances
-        self.ano_scores = p_ano_scores
+        self._deviation = p_deviation
+        
 
+## -------------------------------------------------------------------------------------------------
+    def get_deviation(self) -> float:
+        """
+        Method that returns the deviation of anomaly from the normal distribution of data.
+        
+        Returns
+        -------
+        float
+            The devaition of anomaly from the normal data distribution.
+        """
+        return self._instances
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):

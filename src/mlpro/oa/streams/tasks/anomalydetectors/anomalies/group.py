@@ -11,13 +11,13 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
-## -- 2024-05-22  1.2.1     SK       Refactoring
+## -- 2024-05-22  1.3.0     SK       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-07)
+Ver. 1.3.0 (2024-05-22)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides a template class for group anomaly to be used in anomaly detection algorithms.
 """
 
 from mlpro.bf.plot import PlotSettings
@@ -35,34 +35,91 @@ class GroupAnomaly (Anomaly):
     """
     Event class for anomaly events when group anomalies are detected.
     
+    Parameters
+    ----------
+    p_id : int
+        Anomaly ID. Default value = 0.
+    p_instances : Instance
+        List of instances. Default value = None.
+    p_ano_scores : list
+        List of anomaly scores of instances. Default = None.
+    p_det_time : str
+        Time of occurance of anomaly. Default = None.
+    p_mean : float
+        The mean value of the anomaly. Default = None.
+    p_mean_deviation : float
+        The mean deviation of the anomaly. Default = None.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_raising_object : object
+        Reference of the object raised. Default = None.
+    **p_kwargs
+        Further optional keyword arguments.
     """
 
     C_NAME      = 'Group'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = 0,
                  p_instances : list[Instance] = None,
                  p_ano_scores : list = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
                  p_det_time : str = None,
                  p_mean : float= None,
                  p_mean_deviation : float = None,
+                 p_visualize : bool = False,
+                 p_raising_object : object = None,
                  **p_kwargs):
-        super().__init__(p_instance=p_instances, p_ano_scores=p_ano_scores,
+        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
                          p_visualize=p_visualize, p_raising_object=p_raising_object,
                          p_det_time=p_det_time, **p_kwargs)
         
-        self.instances : list[Instance] = p_instances
-        p_ano_scores = p_ano_scores
         self.plot_update = True
+        self._mean = p_mean
+        self._mean_deviation = p_mean_deviation
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_instances(self, p_instances, p_ano_scores):
-        self.instances = p_instances
-        self.ano_scores = p_ano_scores
+    def set_instances(self, p_instances = None, p_ano_scores = None):
+        """
+        Method to set the instances associated with the anomaly.
+        
+        Parameters
+        ----------
+        p_instances : list[Instance]
+            List of instances. Default is None.
+        p_ano_scores : list
+            List of anomaly scores.
+        """
+        self._instances = p_instances
+        self._ano_scores = p_ano_scores
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_mean(self) -> float:
+        """
+        Method that returns the mean value of the anomaly.
+        
+        Returns
+        -------
+        float
+            The mean value of the anomaly.
+        """
+        return self._mean
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_mean_deviation(self) -> float:
+        """
+        Method that returns the mean deviation of anomaly from the normal distribution of data.
+        
+        Returns
+        -------
+        float
+            The mean devaition of the anomaly from the normal data distribution.
+        """
+        return self._mean_deviation
+    
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
@@ -123,3 +180,4 @@ class GroupAnomaly (Anomaly):
 
         if self._plot_rectangle is not None: self._plot_rectangle .remove()
         if self._plot_rectangle_t is not None: self._plot_rectangle_t.remove()
+
