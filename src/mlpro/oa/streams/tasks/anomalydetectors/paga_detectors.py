@@ -33,6 +33,25 @@ class AnomalyDetectorPAGA(AnomalyDetector):
     anomaly is detected. This class has the added functionality to differentiate between different
     types of anomalies.
 
+    Parameters
+    ----------
+    p_group_anomaly_det : bool
+        Paramter to activate group anomaly detection. Default is True.
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
+
     """
 
     C_NAME          = 'Anomaly Detector'
