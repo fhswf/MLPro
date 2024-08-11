@@ -1,6 +1,6 @@
 .. _target_api_oa_streams_basics:
-OA-STREAMS-BASICS - Basic Classes for Processing
-================================================
+Basic Classes for Processing
+============================
 
 .. image:: images/MLPro-OA-Stream-Processing_class_diagram.drawio.png
    :scale: 50%

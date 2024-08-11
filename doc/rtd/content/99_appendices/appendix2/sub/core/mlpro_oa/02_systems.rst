@@ -1,6 +1,6 @@
 .. _target_api_oa_systems:
-OA-SYSTEMS - Online Adaptive Systems
-====================================
+OA Systems
+==========
 
 .. toctree::
    :maxdepth: 2

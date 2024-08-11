@@ -18,13 +18,13 @@
 ## -- 2023-05-22  1.2.2     SY       Refactoring
 ## -- 2024-05-22  1.3.0     DA       Refactoring and splitting
 ## -- 2024-06-13  1.3.1     LSB      Bug Fix: Handling plot data with IDs
-## -- 2024-07-12  1.3.2     LSB       Renormalization error
+## -- 2024-07-12  1.3.2     LSB      Renormalization error
 ## -------------------------------------------------------------------------------------------------
 
 """
 Ver. 1.3.3 (2024-07-12)
 
-This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
+This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
 
 

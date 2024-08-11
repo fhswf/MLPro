@@ -1,6 +1,6 @@
 .. _target_api_oa_stream_tasks_prepro:
-OA-STREAMS-TASKS - Data Preprocessing
-=====================================
+OA Data Preprocessing
+=====================
 
 .. image:: images/MLPro-OA-Preprocessing-Tasks_class_diagram.drawio.png
    :scale: 50%
@@ -16,10 +16,20 @@ Boundary Detector
    :show-inheritance:
 
 
-Normalizers
------------
+Normalizer MinMax
+-----------------
 
-.. automodule:: mlpro.oa.streams.tasks.normalizers
+.. automodule:: mlpro.oa.streams.tasks.normalizers.minmax
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+
+
+Normalizer ZTrans
+-----------------
+
+.. automodule:: mlpro.oa.streams.tasks.normalizers.ztrans
    :members:
    :undoc-members:
    :private-members:
