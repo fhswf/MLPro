@@ -13,10 +13,11 @@
 ## -- 2024-04-11  1.3.0     DA       Methods AnomalyDetector.init/update_plot: determination and
 ## --                                forwarding of changes on ax limits
 ## -- 2024-05-22  1.4.0     SK       Refactoring
+## -- 2024-08-12  1.4.1     DA       Correction in AnomalyDetector.update_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-05-11)
+Ver. 1.4.1 (2024-08-12)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -193,7 +194,7 @@ class AnomalyDetector(OATask):
     
         if not self.get_visualization(): return
 
-        super().update_plot(p_inst, **p_kwargs)
+        # super().update_plot(p_inst, **p_kwargs)
 
         axes = self._plot_settings.axes
 

@@ -9,14 +9,15 @@
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    
+## -- 2024-04-10  1.2.0     DA/SK    Code review
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
+## -- 2024-08-12  1.3.0     DA       Review and adjustments on documentation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-07)
+Ver. 1.3.0 (2024-08-12)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides a ready-to-use detector for point and group anomalies.
 """
 
 from mlpro.oa.streams.basics import *
@@ -29,9 +30,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorPAGA(AnomalyDetector):
     """
-    This is the base class for multivariate online anomaly detectors. It raises an event when an
-    anomaly is detected. This class has the added functionality to differentiate between different
-    types of anomalies.
+    This class implements a ready-to-use detector for point and group anomalies.
 
     Parameters
     ----------
