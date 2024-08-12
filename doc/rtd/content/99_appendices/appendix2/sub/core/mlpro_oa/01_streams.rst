@@ -2,8 +2,11 @@
 OA Stream Processing
 ====================
 
-.. toctree::
-   :maxdepth: 2
-   :glob:
+.. image:: streams/images/MLPro-OA-Stream-Processing_class_diagram.drawio.png
+   :scale: 50%
    
-   streams/*
+.. automodule:: mlpro.oa.streams.basics
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
