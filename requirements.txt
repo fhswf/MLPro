@@ -5,4 +5,3 @@ matplotlib>=3.7.1
 scipy>=1.10.1
 multiprocess>=0.70.14
 pandas>=2.1.3
-mlpro_int_river
