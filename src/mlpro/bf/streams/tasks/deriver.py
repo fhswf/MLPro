@@ -9,10 +9,12 @@
 ## -- 2023-02-05  1.0.0     SY       First version release
 ## -- 2024-05-10  1.0.1     DA/SY    Bugfix in Deriver.__init__()
 ## -- 2024-05-22  1.1.0     DA       Refactoring
+## -- 2024-07-17  1.1.1     SY       Method Deriver._prepare_derivation(): takeover of feature 
+## --                                and label space from first instance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-05-22)
+Ver. 1.1.1 (2024-07-17)
 
 This module provides a stream task class Deriver to derive the data of instances.
 """
@@ -21,7 +23,7 @@ This module provides a stream task class Deriver to derive the data of instances
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.mt import Task
-from mlpro.bf.math import Set, Element
+from mlpro.bf.math import Element
 from mlpro.bf.streams import Instance, InstDict, StreamTask, Feature, Label
 from mlpro.bf.physics import TransferFunction
 import numpy as np
@@ -47,11 +49,7 @@ class Deriver(StreamTask):
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_features : list
-        The list of current features in the stream. Default = None.
-    p_labels : list
-        The list of current labels in the stream. Default = None.
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     p_derived_feature : Feature
         A pre-selected feature that would like to be derived. Default = None.
     p_derived_label : Feature
@@ -71,9 +69,7 @@ class Deriver(StreamTask):
                   p_range_max = Task.C_RANGE_THREAD, 
                   p_duplicate_data:bool = False,
                   p_visualize:bool = False, 
-                  p_logging = Log.C_LOG_ALL, 
-                  p_features:list = None,
-                  p_labels:list = None,
+                  p_logging = Log.C_LOG_ALL,
                   p_derived_feature:Feature = None,
                   p_derived_label:Label = None,
                   p_order_derivative:int = 1,
@@ -92,35 +88,55 @@ class Deriver(StreamTask):
         if not isinstance(p_derived_feature, Feature):
             raise ParamError('Please provide a feature to be derived')
         
-        self._idx_feature = p_features.index(p_derived_feature)
-        self._feature_space = Set()
-        self._order_derivative = p_order_derivative
-        self._tic = 0
-        self._mem_values = []
-        self._mem_time_stamp = []
+        self._order_derivative  = p_order_derivative
+        self._tic               = 0
+        self._mem_values        = []
+        self._mem_time_stamp    = []
 
-        for feature in p_features:
-            self._feature_space.add_dim(p_dim=feature)
-        feature = p_derived_feature.copy()
-        feature._name_short = feature._name_short + ' OD-' + str(self._order_derivative)
-        feature._name_long = feature._name_long + ' OD-' + str(self._order_derivative)
-        self._feature_space.add_dim(p_dim=feature)
-        
-        if (p_labels is not None) and (not isinstance(p_derived_label, Label)):
-            self._idx_label = p_labels.index(p_derived_label)
-            self._label_space = Set()
-            for label in p_labels:
-                self._label_space.add_dim(p_dim=label)
-            label = p_derived_label.copy()
-            label._name_short = label._name_short + ' OD-' + str(self._order_derivative)
-            label._name_long = label._name_long + ' OD-' + str(self._order_derivative)
-            self._label_space.add_dim(p_dim=label)
+        self._derived_feature   = p_derived_feature
+        self._derived_label     = p_derived_label
+        self._feature_space     = None
+        self._label_space       = None
+        self._prepared          = False
         
         self._derivative_func = DerivativeFunction(p_name='derivative_func',
                                                    p_type=TransferFunction.C_TRF_FUNC_CUSTOM,
                                                    p_logging=p_logging,
                                                    p_dt=0,
                                                    order=self._order_derivative)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _prepare_derivation(self, p_inst:Instance):
+
+        # 1 Feature space
+        features                = p_inst.get_feature_data().get_dim_ids()
+        self._feature_space     = type(p_inst.get_feature_data().get_related_set())()
+        self._idx_feature       = features.index(self._derived_feature.get_id())
+        
+        for feature in p_inst.get_feature_data().get_related_set().get_dims():
+            self._feature_space.add_dim(p_dim=feature)
+
+        feature                 = self._derived_feature.copy()
+        feature._name_short     = feature._name_short + ' OD-' + str(self._order_derivative)
+        feature._name_long      = feature._name_long + ' OD-' + str(self._order_derivative)
+        self._feature_space.add_dim(p_dim=feature)
+        
+        # 2 Label space
+        try:
+            labels              = p_inst.get_label_data().get_dim_ids()
+            self._label_space   = type(p_inst.get_label_data().get_related_set())()
+            self._idx_label     = labels.index(self._derived_label.get_id())
+            
+            for label in p_inst.get_label_data().get_related_set().get_dims():
+                self._label_space.add_dim(p_dim=label)
+
+            label               = self._derived_label.copy()
+            label._name_short   = label._name_short + ' OD-' + str(self._order_derivative)
+            label._name_long    = label._name_long + ' OD-' + str(self._order_derivative)
+            self._label_space.add_dim(p_dim=label)
+        except:
+            labels              = []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -175,7 +191,15 @@ class Deriver(StreamTask):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict ):
+    def _run(self, p_inst:InstDict):
+
+        if not self._prepared:
+            try:
+                (inst_type, inst) = next(iter(p_inst.values()))
+                self._prepare_derivation(p_inst=inst)
+                self._prepared = True
+            except:
+                return
 
         for (inst_type,inst) in sorted(p_inst.values()):
             self._derive_data(p_inst=inst)

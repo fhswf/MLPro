@@ -1,9 +1,12 @@
 .. _target_api_oa_systems:
-OA-SYSTEMS - Online Adaptive Systems
-====================================
+OA Systems
+==========
 
-.. toctree::
-   :maxdepth: 2
-   :glob:
+.. image:: systems/images/MLPro-OA-Systems_OASystems.drawio.png
+   :scale: 50%
    
-   systems/*
+.. automodule:: mlpro.oa.systems.basics
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:

@@ -38,10 +38,11 @@
 ## -- 2024-05-29  1.8.0     DA       Class Cluster: order of colors changed
 ## -- 2024-06-08  1.9.0     DA       New method Cluster.get_influence()
 ## -- 2024-06-18  2.0.0     DA       Class Cluster: new parent class KWArgs
+## -- 2024-07-08  2.1.0     DA       Class Cluster: hand over of kwargs to inner properties
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2024-06-18)
+Ver. 2.1.0 (2024-07-08)
 
 This module provides a template class for clusters to be used in cluster analyzer algorithms.
 
@@ -102,7 +103,7 @@ class Cluster (Id, Properties, KWArgs):
                   **p_kwargs ):
 
         KWArgs.__init__( self, **p_kwargs )
-        Properties.__init__( self, p_properties = p_properties, p_visualize = p_visualize )
+        Properties.__init__( self, p_properties = p_properties, p_visualize = p_visualize, **p_kwargs )
         Id.__init__( self, p_id = p_id )
 
 
@@ -152,4 +153,5 @@ class Cluster (Id, Properties, KWArgs):
         raise NotImplementedError
 
 
+## -------------------------------------------------------------------------------------------------
     color = property( fget = Properties.get_plot_color, fset = set_plot_color )

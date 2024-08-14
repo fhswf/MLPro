@@ -9,14 +9,15 @@
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2023-11-21  1.0.1     SK       Time Stamp update
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    
+## -- 2024-04-10  1.2.0     DA/SK    Code review
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
+## -- 2024-08-12  1.3.0     DA       Review and adjustments on documentation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-07)
+Ver. 1.3.0 (2024-08-12)
 
-This module provides templates for anomaly detection to be used in the context of online adaptivity.
+This module provides a ready-to-use detector for point and group anomalies.
 """
 
 from mlpro.oa.streams.basics import *
@@ -29,9 +30,26 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorPAGA(AnomalyDetector):
     """
-    This is the base class for multivariate online anomaly detectors. It raises an event when an
-    anomaly is detected. This class has the added functionality to differentiate between different
-    types of anomalies.
+    This class implements a ready-to-use detector for point and group anomalies.
+
+    Parameters
+    ----------
+    p_group_anomaly_det : bool
+        Paramter to activate group anomaly detection. Default is True.
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
 
     """
 

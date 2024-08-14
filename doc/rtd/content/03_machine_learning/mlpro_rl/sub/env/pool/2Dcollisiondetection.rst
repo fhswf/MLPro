@@ -4,25 +4,28 @@
 
 .. automodule:: mlpro.rl.pool.envs.collisionavoidance_2D
 
-
--- overview of 2D collision avoidance environment, what are the objectives
-
--- gif
-
 .. image:: images/2Dcollisionavoidance_1.gif
     :width: 650px
     :align: center
 
--- reward function is not defined
+The above figure illustrates a sample running environment.
+In this environment, the blue box in the center represents a collision.
+The blue node indicates the starting point, while the green node denotes the target.
+The "x" nodes represent intermediate nodes generated to create a path between the starting and target nodes.
+Paths between nodes are depicted as linear connections.
+A black line between two nodes signifies a collision-free path, whereas a red line indicates a collision along the path.
+Additionally, red "x" nodes denote nodes involved in collisions, while black "x" nodes indicate non-colliding nodes.
 
--- target positions can be dynamics
+The number of points can be defined by the parameter **p_cycle_limit**.
+For example, if **p_cycle_limit** is set to 5, the environment will include a starting node, a target node, and 3 "x" nodes.
+Users can also define the size of the environment by adjusting the **p_xlimit** and **p_ylimit** parameters of the frame.
+The starting node is specified by the **p_start_pos** parameter.
+The target node, however, is dynamic, allowing multiple target nodes to be chosen randomly each time the environment is reset.
+This list of target nodes is defined by the **p_multi_goals** parameter.
+Additionally, obstacles can be repositioned by modifying the **p_obstacles** parameter.
 
--- number of points can be defined
-
--- collision can alos 
-
--- it always start with linear path
-
+Every time the environment is reset, we begin with a straight line where the "x" nodes are placed equidistantly along the linear path from the starting node to the target node.
+The objective is to adjust the positions of the "x" nodes to avoid collisions and to find the shortest possible path.
 
 The 2D collision avoidance environment can be imported via:
 
@@ -32,9 +35,10 @@ The 2D collision avoidance environment can be imported via:
 
 
 **Prerequisites**
-Please install below package to use the MLPro's BGLP environment
+Please install below packages to use the MLPro's 2D collision avoidance environment
 
  - `NumPy <https://pypi.org/project/numpy/>`_
+ - `Matplotlib <https://pypi.org/project/matplotlib/>`_
 
 
 
@@ -65,94 +69,56 @@ Please install below package to use the MLPro's BGLP environment
 
 **Action Space**
 
--- to be edit
-
-In this environment, we consider 5 actuators to be controlled. 
-Thus, there are 5 agents and 5 joint actions because each agent requires an action.
-Every action is normalized within a range between 0 and 1, except for Agent 3.
-0 means the minimum possible action and 1 means the maximum possible action.
-For Agent 3, the vibratory conveyor has a different character than other actuators, which mostly perform in a continuous manner.
-The vibratory conveyor can only be either fully switched-on or switched-off. Therefore the base set of action for Agent 3 is an integer (0/1).
-0 means off and 1 means on.
-
-+-------+-------------------+--------+-------------------+--------------+
-| Agent | Actuator          | Station| Parameter         | Boundaries   |
-+=======+===================+========+===================+==============+
-|   1   | Conveyor Belt     | A      | rpm               | 450 ... 1800 |
-+-------+-------------------+--------+-------------------+--------------+
-|   2   | Vacuum Pump       | B      | on-duration (sec) | 0 ... 4.575  |
-+-------+-------------------+--------+-------------------+--------------+
-|   3   | Vibratory Conveyor| B      | on/off            | 0/1          |
-+-------+-------------------+--------+-------------------+--------------+
-|   4   | Vacuum Pump       | C      | on-duration (sec) | 0 ... 9.5    |
-+-------+-------------------+--------+-------------------+--------------+
-|   5   | Rotary Feeder     | C      | rpm               | 450 ... 1450 |
-+-------+-------------------+--------+-------------------+--------------+
+In this environment, we control the movement of the "x" nodes along the x- and y-axes, which is defined as the action of the agent.
+Therefore, the action space dimension of the agent is [p_num_point-2, 2].
+For instance, if **p_num_point** is 5, the action space dimension is [3, 2].
+Additionally, the action boundaries are defined by the parameter **p_action_boundaries** during the initialization of the environment.
+This means that each "x" node can only move within these boundaries along the x- and y-axes at each time step.
   
   
 **State Space**
 
--- to be edit
-
-The state information in the BGLP is the fill levels of the reservoirs.
-Each agent is always placed in between two reservoirs, e.g. between a silo and a hopper or vice versa.
-Therefore, each agent has two state information, which is shared with their neighbours.
-Every state is normalized within a range between 0 and 1.
-0 means the minimum fill-level and 1 means the maximum fill-level.
-
-+------+----------+--------+--------+---------------+
-| Agent| State No.| Element| Station| Boundaries    |
-+======+==========+========+========+===============+
-|      | 1        | Silo   | A      | 0 ... 17.42 L |
-+ 1    +----------+--------+--------+---------------+
-|      | 2        |        |        |               |
-+------+----------+ Hopper + A      + 0 ... 9.1 L   +
-|      | 1        |        |        |               |
-+ 2    +----------+--------+--------+---------------+
-|      | 2        |        |        |               |
-+------+----------+ Silo   + B      + 0 ... 17.42 L +
-|      | 1        |        |        |               |
-+ 3    +----------+--------+--------+---------------+
-|      | 2        |        |        |               |
-+------+----------+ Hopper + B      + 0 ... 9.1 L   +
-|      | 1        |        |        |               |
-+ 4    +----------+--------+--------+---------------+
-|      | 2        |        |        |               |
-+------+----------+ Silo   + C      + 0 ... 17.42 L +
-|      | 1        |        |        |               |
-+ 5    +----------+--------+--------+---------------+
-|      | 2        | Hopper | C      | 0 ... 9.1 L   |
-+------+----------+--------+--------+---------------+
+The state information in this environment consists of the positions of each node, including the starting node, the current positions of the "x" nodes, and the current target node.
+Each position includes both x- and y-coordinates.
+Therefore, the state space dimension is [p_num_point, 2]. For example, if **p_num_point** is 5, the state space dimension is [5, 2].
   
   
 **Reward Structure**
 
--- to be edit
-
-The reward structure is implemented according to `this paper <https://doi.org/10.1016/j.compchemeng.2021.107382>`_.
-You can also find the source code of the reward structure, `here <https://github.com/fhswf/MLPro/blob/13b7b8a82d90b626f40ea7c268706e43889b9e00/src/mlpro/rl/pool/envs/bglp.py#L971-L982>`_.
-The given reward is an individual scalar reward for each agent. To be noted, this reward function is more suitable for a continuous production scenario.
-
-If you would like to implement a customized reward function, you can follow these lines of codes:
+Currently, there is no predefined reward function in this environment.
+Users who wish to create a custom reward function can refer to the following code snippet as a guide:
 
 .. code-block:: python
 
-    class MyBGLP(BGLP):
-    
-        def calc_reward(self):
+    class MyDynamicTrajectoryPlanner(DynamicTrajectoryPlanner):
         
-            # Each agent has an individual reward
-            if self.reward_type == Reward.C_TYPE_EVERY_AGENT:
-                for actnum in range(len(self.acts)):
-                    acts = self.acts[actnum]
-                    self.reward[actnum] = 0
-                return self.reward[:]
+        def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+            
+            number_of_collide_points = 0
+            number_of_collide_lines = 0
+            for _ in self.collide_point_list:
+                number_of_collide_points += 1
+            for _ in self.collide_line_list:
+                number_of_collide_lines += 1
+
+            distance = self._calc_distance()
+            
+            total_rewards = 0
                 
-            # Overall reward
-            elif self.reward_type == Reward.C_TYPE_OVERALL:
-                self.overall_reward = 0
-                return self.overall_reward
+            reward = Reward()
+            reward.set_overall_reward(total_rewards)
+            
+            return reward
  
+The provided code snippet outlines parameters that can assist in calculating custom reward functions:
+
+    (1) **number_of_collide_points**: Represents the count of points colliding with obstacles.
+
+    (2) **number_of_collide_lines**: Indicates the number of lines colliding with obstacles.
+
+    (3) **distance**: Refers to the current trajectory distance from the starting to the target nodes through all "x" nodes.
+
+Users can define their own reward function by replacing **total_rewards=0** with their specific logic.
 
 **Cross Reference**
 
@@ -161,6 +127,4 @@ If you would like to implement a customized reward function, you can follow thes
 
 **Citation**
 
--- to be edit
-
-If you apply this environment in your research or work, please :ref:`cite <target_publications>` us and the `original paper <https://doi.org/10.1016/j.compchemeng.2021.107382>`_.
+If you apply this environment in your research or work, please :ref:`cite <target_publications>` us.

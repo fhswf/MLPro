@@ -306,7 +306,7 @@ class ClusterAnalyzer (OATask):
 
             sum_results += result_abs
 
-            if ( p_scope == self.C_RESULT_SCOPE_NONZERO ) and ( result_abs == 0 ): continue
+            if ( p_scope != self.C_RESULT_SCOPE_ALL ) and ( result_abs == 0 ): continue
 
             if p_scope == self.C_RESULT_SCOPE_MAX:
                 # Cluster with highest membership value is buffered
