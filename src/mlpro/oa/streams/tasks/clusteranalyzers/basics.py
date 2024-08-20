@@ -36,10 +36,11 @@
 ## --                                - new method _get_cluster_relations()
 ## --                                - new method get_cluster_influences()
 ## -- 2024-06-16  1.2.1     DA       Bugfix in ClusterAnalyzer.align_cluster_properties()
+## -- 2024-08-20  1.3.0     DA       Raising of events Cluster.C_CLUSTER_ADDED, Cluster.C_CLUSTER_REMOVED
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-06-16)
+Ver. 1.3.0 (2024-08-20)
 
 This module provides a template class for online cluster analysis.
 """
@@ -247,6 +248,10 @@ class ClusterAnalyzer (OATask):
         if self.get_visualization(): 
             p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
+        self._raise_event( p_event_id = self.C_EVENT_CLUSTER_ADDED, 
+                           p_event_object = Event( p_raising_object = self,
+                                                   p_cluster = p_cluster ) )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_cluster(self, p_cluster:Cluster):
@@ -261,6 +266,10 @@ class ClusterAnalyzer (OATask):
 
         p_cluster.remove_plot(p_refresh=True)
         del self._clusters[p_cluster.id]
+
+        self._raise_event( p_event_id = self.C_EVENT_CLUSTER_REMOVED, 
+                           p_event_object = Event( p_raising_object = self,
+                                                   p_cluster = p_cluster ) )
 
 
 ## -------------------------------------------------------------------------------------------------
