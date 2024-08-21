@@ -37,16 +37,20 @@
 ## --                                - new method get_cluster_influences()
 ## -- 2024-06-16  1.2.1     DA       Bugfix in ClusterAnalyzer.align_cluster_properties()
 ## -- 2024-08-20  1.3.0     DA       Raising of events Cluster.C_CLUSTER_ADDED, Cluster.C_CLUSTER_REMOVED
+## -- 2024-08-21  1.3.1     DA       Resolved name collision of class mlpro.bf.events.Event
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-08-20)
+Ver. 1.3.1 (2024-08-21)
 
 This module provides a template class for online cluster analysis.
 """
 
 
+from typing import List, Tuple
 from matplotlib.figure import Figure
+
+from mlpro.bf.events import Event as MLProEvent
 from mlpro.bf.math.properties import *
 from mlpro.bf.mt import PlotSettings
 from mlpro.bf.streams import Instance, InstDict
@@ -55,7 +59,6 @@ from mlpro.bf.plot import *
 from mlpro.oa.streams import OATask
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster, ClusterId
-from typing import List, Tuple
 
 
 
@@ -249,8 +252,8 @@ class ClusterAnalyzer (OATask):
             p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
         self._raise_event( p_event_id = self.C_EVENT_CLUSTER_ADDED, 
-                           p_event_object = Event( p_raising_object = self,
-                                                   p_cluster = p_cluster ) )
+                           p_event_object = MLProEvent( p_raising_object = self,
+                                                        p_cluster = p_cluster ) )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -268,8 +271,8 @@ class ClusterAnalyzer (OATask):
         del self._clusters[p_cluster.id]
 
         self._raise_event( p_event_id = self.C_EVENT_CLUSTER_REMOVED, 
-                           p_event_object = Event( p_raising_object = self,
-                                                   p_cluster = p_cluster ) )
+                           p_event_object = MLProEvent( p_raising_object = self,
+                                                        p_cluster = p_cluster ) )
 
 
 ## -------------------------------------------------------------------------------------------------
