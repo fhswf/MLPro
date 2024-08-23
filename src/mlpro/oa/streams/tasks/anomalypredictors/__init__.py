@@ -1,1 +1,1 @@
-from mlpro.oa.streams.tasks.anomalypredictors.basics import AnomalyPredictor
+from mlpro.oa.streams.tasks.anomalypredictors.basics import AnomalyPredictor, AnomalyPrediction
