@@ -36,11 +36,24 @@ an anomaly is detected linked to that specific cluster. An overview of the anoma
 the screen following the run.
 
 """
+from mlpro.bf.math import Event
+from mlpro.bf.mt import Event
 from mlpro.bf.streams.streams import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from mlpro_int_river.wrappers.clusteranalyzers.kmeans import WrRiverKMeans2MLPro
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.drift_detector import ClusterDriftDetector
+from mlpro.oa.streams.tasks.anomalypredictors.tsf.ad_based import AnomalyPredictorAD
+
+
+
+
+class DevindisPredictor (AnomalyPredictorAD):
+
+    def _adapt_on_event(self, p_event_id: str, p_event_object: Event) -> bool:
+        
+        # Set breakpoint here...
+        pass
 
 
 
@@ -102,10 +115,11 @@ class MyScenario(OAScenario):
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 
         # Anomaly Predictor
-        task_anomaly_predictor = ClusterDriftDetector(p_visualize=p_visualize,
-                                                              p_logging=p_logging)
-
-        workflow.adapt_on_event(p_task=task_anomaly_detector)
+        task_anomaly_predictor = DevindisPredictor( p_visualize=p_visualize,
+                                                    p_logging=p_logging)
+        
+        task_anomaly_detector.register_event_handler( p_event_id = 'Anomaly',
+                                                      p_event_handler = task_anomaly_predictor.adapt_on_event )
 
         # 1.3 Return stream and workflow
         return stream, workflow
