@@ -101,6 +101,12 @@ class MyScenario(OAScenario):
         
         workflow.add_task(p_task=task_anomaly_detector, p_pred_tasks=[task_clusterer])
 
+        # Anomaly Predictor
+        task_anomaly_predictor = ClusterDriftDetector(p_visualize=p_visualize,
+                                                              p_logging=p_logging)
+
+        workflow.adapt_on_event(p_task=task_anomaly_detector)
+
         # 1.3 Return stream and workflow
         return stream, workflow
 
