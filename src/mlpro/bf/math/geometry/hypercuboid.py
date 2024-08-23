@@ -11,10 +11,11 @@
 ## -- 2024-06-26  1.1.0     DA       Refactoring of attribute color
 ## -- 2024-06-30  1.2.0     DA       Refactoring of method Hypercuboid.set()
 ## -- 2024-07-13  1.3.0     DA       Refactoring
+## -- 2024-08-20  1.4.0     DA       New method Hypercuboid.check_collision()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-07-13)
+Ver. 1.4.0 (2024-08-20)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -355,7 +356,23 @@ class Hypercuboid (MultiProperty):
         self._value = p_normalizer.renormalize( p_data=np.array(self.value) )
 
 
+## -------------------------------------------------------------------------------------------------
+    def check_collision(self, p_hypercuboid ) -> bool:
+        bdr_other  = p_hypercuboid.value
+        collision  = True
+
+        for dim, (bdr_left,bdr_right) in enumerate(self._value):
+            if ( bdr_other[dim][0] > bdr_right ) or ( bdr_other[dim][1] < bdr_left ):
+                collision = False
+                break
+
+        return collision
+
+
+## -------------------------------------------------------------------------------------------------
     value       = property( fget = _get, fset = set)
+
+
 
 
 
