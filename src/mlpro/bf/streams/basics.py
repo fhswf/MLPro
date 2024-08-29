@@ -390,7 +390,9 @@ class Sampler (ScientificObject):
 
         Parameters
         ----------
-        p_inst : Instance
+        p_inst : Instancep_set = {}
+p_set[0] = tuple([1,Instance(12)])
+print(p_set)
             An input instance to be filtered.
 
         Returns
