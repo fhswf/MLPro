@@ -14,100 +14,74 @@ Ver. 0.0.0 (2024-08-31)
 This module provides ...
 """
 
-
-# from mlpro.bf.various import *
+from mlpro.bf.streams.basics import InstDict, Instance, StreamTask, StreamWorkflow
+from mlpro.bf.systems import Action, System
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Example:
+class SetPoint (Instance):
     """
-    The __init__ method should be documented in the class level docstring and the docstring itself
-    should not go beyond 100 characters length (within the dash separator). Sections inside the 
-    docstring can be seperated like the reStructuredText format.
-    
-    Parameters are documented in the Parameters section.
-    Public attributes of classes are documented inisde Attributes section.
-    Returns attronites are documented in the Returns section.
-    
-    A few examples of data types: int / str / bool / list of str / tuple of int / float / None / dict.
-    If the parameters have default values, you should add "TYPE, optional" as part of the type
-    and "The default is ...." as part of the description.
-    
-    .. _Further_formatting_information: 
-        https://numpydoc.readthedocs.io/en/latest/format.html
-    
-    Notes
-    -----
-        The content inside the section should be indented. 
-    
-    Parameters
-    ----------
-    p_arg1 : str
-        Explanation of the first parameter.
-    p_arg2 : bool
-        Explanation of the second parameter. The default is True.
-        
-    Attributes
-    ----------
-    C_MY_CONSTANT = 'My static value'
-        Explanation of the public constant C_MY_CONSTANT.
-
     """
-    
-    attr1 = None
+
+    pass
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_arg1 : str, 
-                  p_arg2 : bool = True ):
-                  
-        self.attr1 = p_arg1
+## -------------------------------------------------------------------------------------------------
+class CTRLError (Instance):
+    """
+    """
+
+    pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Controller (StreamTask):
+    """
+    Template class for closed-loop controllers.
+    """
+
+    C_TYPE          = 'Controller'
+    C_NAME          = '????'
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_parameter(self, **p_param):
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def example_method(self, p_arg1):
+    def _run(self, p_inst: InstDict):
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_action(self, p_ctrl_error: CTRLError) -> Action:
         """
-        Example on how to document return type. 
-        
-        Notes
-        -----
-            The name of the return value is required for better understanding 
-            of the code. The return value is parsed similarly as parameters 
-            value, meaning that multiple return value is also possible.
-        
+        Custom method to compute and return an action based on an incoming control error.
+
         Parameters
         ----------
-        p_arg1 : TYPE
-            explanation of the first parameter.
-                
+        p_ctrl_error : CTRLError
+            Control error.
+
+
         Returns
         -------
-        p_arg1: TYPE
-            Description of the returned value.
-        """
-        return p_arg1
-        
 
-## -------------------------------------------------------------------------------------------------
-    def example_method_no_return(self, p_arg1):
         """
-        Example on how to document return type. 
-        
-        Notes
-        -----
-            When there is no item to be returned, the return section is omitted.
-        
-        Parameters
-        ----------
-        p_arg1 : TYPE
-            explanation of the first parameter.
-                
-        """
-        return 
+
+        raise NotImplementedError
 
 
 
@@ -115,22 +89,22 @@ class Example:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Example2:
+class MultiController (Controller, StreamWorkflow):
     """
-    ...
-
     """
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_arg1, p_arg2):
-        pass
+    C_TYPE          = 'Multi-Controller'
+    C_NAME          = ''
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
-    def example_method(self, p_arg1):
-        """
-        """
-        pass
+## -------------------------------------------------------------------------------------------------
+class ControlSystem (Controller, StreamWorkflow):
+    """
+    """
 
-
-
+    C_TYPE          = 'Control System'
+    C_NAME          = ''
