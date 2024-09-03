@@ -19,8 +19,13 @@ https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_c
 
 """
 
+from mlpro.bf.math.basics import Log,Set
+from mlpro.bf.mt import Log, Task
 from mlpro.bf.systems import Action
 from mlpro.bf.control.basics import CTRLError, Controller
+from mlpro.bf.various import Log
+from datetime import datetime, timedelta
+import numpy as np 
 
 
 
@@ -31,6 +36,22 @@ class PIDController (Controller):
     """
     PID controller.
     """
+
+
+    def __init__(self,kp: float, ki: float,kd: float,disable_integral:bool = False,disable_derivitave:bool = False,enable_windup: bool = False,windup_limit:float =0,output_limits: tuple = (0,100) ,p_name: str = None, p_range_max=Task.C_RANGE_THREAD, p_duplicate_data: bool = False, p_visualize: bool = False, p_logging=Log.C_LOG_ALL, **p_kwargs):
+        super().__init__(p_name, p_range_max, p_duplicate_data, p_visualize, p_logging, **p_kwargs)
+
+        self.kp = kp
+        self.Ti = ki
+        self.Td = kd
+        self.disable_integral = disable_integral
+        self.disable_derivitave = disable_derivitave
+        self.integral = 0.0
+        self.prev_error = 0.0      
+        self.previous_time = None
+        self.enable_windup = enable_windup
+        self.windup_limit = windup_limit
+        self.output_limits = output_limits
 
 ## -------------------------------------------------------------------------------------------------
     def set_parameter(self, **p_param):
@@ -46,14 +67,81 @@ class PIDController (Controller):
         p_par3 : type3
             Description 3
         """
-        
-        raise NotImplementedError
+
+        # set kp value
+        self.kp = p_param['kp']
+        # set ki value
+        self.ki = p_param['ki']
+        #set kd value
+        self.kd = p_param['kd']      
+
     
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_ctrl_error: CTRLError) -> Action:
-        """
-        ...
-        """
+
+        #get control error
+        crtl_error = p_ctrl_error.get_feature_data().get_values()[0]
+        delta_time = 0
+        current_time =datetime.now()
+
+        #calculate time difference
+        if self.previous_time is not None:
+            delta_time = current_time- self.previous_time
+            delta_time = delta_time.total_seconds()
+
+        #propertional term 
+        p_term = self.kp * delta_time
+
+        #integral term
+        i_term = 0
+
+        #ignore i term , if it is disabled
+        if not self.disable_integral:
+
+            self.integral += crtl_error*delta_time
+            # anti - windup 
+            if self.enable_windup and self.windup_limit is not None:
+                self._integral = max(min(self._integral, self.windup_limit), -self.windup_limit)
+
+            i_term = self.ki* self.integral
+
+
+        # derivitave term 
+        d_term =0
+
+        #ignore i term , if it is disabled or delta is equal zero 
+        if delta_time> 0 and not self.disable_derivitave:
+            d_term = self.kd*(crtl_error- self.prev_error)/delta_time
         
-        raise NotImplementedError
+        #compute output 
+        output = p_term+i_term+d_term
+
+        #apply output limits
+        lower_bound, upper_bound = self.output_limits
+
+        output = min(max(output,lower_bound), upper_bound)
+
+        # safe the current values for the next iteration
+        self.prev_error = crtl_error
+        self.previous_time = current_time
+        output = np.array([output],dtype=float)
+
+
+        return Action(p_action_space=Set(),p_values=[output])
+
+
+
+
+        
+
+
+
+       
+
+
+        
+        
+        
+    
+
