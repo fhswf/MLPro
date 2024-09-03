@@ -136,11 +136,16 @@ def create_instance():
     print(inst.get_feature_data().get_values())
 
 
-pid = PIDController(12,1,2)
+pid = PIDController(12,10,2.5)
 p_set = Set()
 elem = Element(p_set=p_set)
 elem.set_values([12])
 error = CTRLError(elem)
-print(pid.compute_action(error))
+
+for i in range(2):
+    print(pid.compute_action(error))
+    elem = Element(p_set=p_set)
+    elem.set_values([11])
+    error = CTRLError(elem)
 
 

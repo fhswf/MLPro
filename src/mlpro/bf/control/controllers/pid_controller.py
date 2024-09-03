@@ -38,17 +38,17 @@ class PIDController (Controller):
     """
 
 
-    def __init__(self,kp: float, ki: float,kd: float,disable_integral:bool = False,disable_derivitave:bool = False,enable_windup: bool = False,windup_limit:float =0,output_limits: tuple = (0,100) ,p_name: str = None, p_range_max=Task.C_RANGE_THREAD, p_duplicate_data: bool = False, p_visualize: bool = False, p_logging=Log.C_LOG_ALL, **p_kwargs):
+    def __init__(self,Kp: float, Ti: float,Td: float,disable_integral:bool = False,disable_derivitave:bool = False,enable_windup: bool = False,windup_limit:float =0,output_limits: tuple = (0,100) ,p_name: str = None, p_range_max=Task.C_RANGE_THREAD, p_duplicate_data: bool = False, p_visualize: bool = False, p_logging=Log.C_LOG_ALL, **p_kwargs):
         super().__init__(p_name, p_range_max, p_duplicate_data, p_visualize, p_logging, **p_kwargs)
 
-        self.kp = kp
-        self.Ti = ki
-        self.Td = kd
+        self.Kp = Kp
+        self.Ti = Ti  # [s] 
+        self.Td = Td  # [s]
         self.disable_integral = disable_integral
         self.disable_derivitave = disable_derivitave
         self.integral = 0.0
         self.prev_error = 0.0      
-        self.previous_time = None
+        self.previous_time = None #[datetime]
         self.enable_windup = enable_windup
         self.windup_limit = windup_limit
         self.output_limits = output_limits
@@ -69,11 +69,11 @@ class PIDController (Controller):
         """
 
         # set kp value
-        self.kp = p_param['kp']
+        self.Kp = p_param['Kp']
         # set ki value
-        self.ki = p_param['ki']
+        self.Ti = p_param['Ti']
         #set kd value
-        self.kd = p_param['kd']      
+        self.Td = p_param['Td']      
 
     
 
@@ -91,7 +91,7 @@ class PIDController (Controller):
             delta_time = delta_time.total_seconds()
 
         #propertional term 
-        p_term = self.kp * delta_time
+        p_term = self.Kp * crtl_error
 
         #integral term
         i_term = 0
@@ -99,12 +99,16 @@ class PIDController (Controller):
         #ignore i term , if it is disabled
         if not self.disable_integral:
 
+            #calculat integral term
             self.integral += crtl_error*delta_time
+
             # anti - windup 
             if self.enable_windup and self.windup_limit is not None:
                 self._integral = max(min(self._integral, self.windup_limit), -self.windup_limit)
 
-            i_term = self.ki* self.integral
+            #calculate i term , if Ti not zero
+            if self.Ti != 0:
+                 i_term = (self.Kp/self.Ti)* self.integral 
 
 
         # derivitave term 
@@ -112,12 +116,12 @@ class PIDController (Controller):
 
         #ignore i term , if it is disabled or delta is equal zero 
         if delta_time> 0 and not self.disable_derivitave:
-            d_term = self.kd*(crtl_error- self.prev_error)/delta_time
+            d_term = self.Kp*self.Td*(crtl_error- self.prev_error)/delta_time
         
-        #compute output 
+        #compute action value 
         output = p_term+i_term+d_term
 
-        #apply output limits
+        #apply action limits
         lower_bound, upper_bound = self.output_limits
 
         output = min(max(output,lower_bound), upper_bound)
@@ -127,7 +131,7 @@ class PIDController (Controller):
         self.previous_time = current_time
         output = np.array([output],dtype=float)
 
-
+        #return action value
         return Action(p_action_space=Set(),p_values=[output])
 
 
