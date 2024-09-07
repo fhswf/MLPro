@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-08-31  0.0.0     DA       Creation 
 ## -- 2024-09-04  0.1.0     DA       Updates on class design
+## -- 2024-09-07  0.2.0     DA       Classes CTRLError, Controller: design updates
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-09-04)
+Ver. 0.2.0 (2024-09-07)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -20,7 +21,7 @@ from mlpro.bf.various import Log
 from mlpro.bf.mt import Task, Workflow
 from mlpro.bf.math import Function
 from mlpro.bf.streams import InstDict, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
-from mlpro.bf.systems import Action, System
+from mlpro.bf.systems import ActionElement, Action, System
 from mlpro.bf.various import Log
 
 
@@ -32,7 +33,18 @@ class SetPoint (Instance):
     """
     """
 
-    pass
+## -------------------------------------------------------------------------------------------------
+    def _get_values(self):
+        return self.get_feature_data().get_values()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_values(self, p_values):
+        self.get_feature_data().set_values( p_values = p_values)
+
+
+## -------------------------------------------------------------------------------------------------
+    values = property( fget=_get_values, fset=_set_values )
 
 
 
@@ -44,7 +56,18 @@ class CTRLError (Instance):
     """
     """
 
-    pass
+## -------------------------------------------------------------------------------------------------
+    def _get_values(self):
+        return self.get_feature_data().get_values()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_values(self, p_values):
+        self.get_feature_data().set_values( p_values = p_values)
+
+
+## -------------------------------------------------------------------------------------------------
+    values = property( fget=_get_values, fset=_set_values )
 
 
 
@@ -85,6 +108,43 @@ class Controller (StreamTask):
 
         Returns
         -------
+
+        """
+
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_action( self, 
+                         p_ctrl_error : CTRLError, 
+                         p_action_element : ActionElement,
+                         p_ctrl_id : int = 0,
+                         p_ae_id : int = 0 ):
+        """
+        Custom method to compute and an action based on an incoming control error. The result needs
+        to be stored in the action element handed over. I/O values can be accessed as follows:
+
+        SISO
+        ----
+        Get single error value: error_siso = p_ctrl_error.values[p_ctrl_id]
+        Set single action value: p_action_element.values[p_ae_id] = action_siso
+
+        MIMO
+        ----
+        Get multiple error values: error_mimo = p_ctrl_error.values
+        Set multiplie action values: p_action_element.values = action_mimo
+
+
+        Parameters
+        ----------
+        p_ctrl_error : CTRLError
+            Control error.
+        p_action_element : ActionElement
+            Action element to be filled with resulting action value(s).
+        p_ctrl_id : int = 0
+            SISO controllers only. Id of the related source value in p_ctrl_error.
+        p_ae_id : int = 0 
+            SISO controller olny. Id of the related destination value in p_action_element.
 
         """
 
