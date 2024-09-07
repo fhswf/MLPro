@@ -45,10 +45,13 @@
 ## -- 2023-05-01  2.0.0     LSB      New class MultiSystem
 ## -- 2024-05-14  2.0.1     SY       Migration from MLPro to MLPro-Int-MuJoCo
 ## -- 2024-05-24  2.1.0     DA       Class State: removed parent class TStamp
+## -- 2024-09-07  2.2.0     DA       - Class ActionElement: new property values
+## --                                - Renamed Class Controller to SAGateway
+## --                                - Renamed method System.add_controller to add_sagateway
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2024-05-24)
+Ver. 2.2.0 (2024-09-07)
 
 This module provides models and templates for state based systems.
 """
@@ -243,6 +246,13 @@ class ActionElement (Element):
 ## -------------------------------------------------------------------------------------------------
     def set_weight(self, p_weight):
         self.weight = p_weight
+
+
+## -------------------------------------------------------------------------------------------------
+    values = property( fget=Element.get_values, fset=Element.set_values)
+
+
+    
 
 
 
@@ -504,20 +514,20 @@ class Actuator (Dimension):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Controller (EventManager):
+class SAGateway (EventManager):
     """
-    Template for a controller that enables access to sensors and actuators.
+    Template for a gateway implementation that enables access to sensors and actuators.
 
     Parameters
     ----------
     p_id
-        Unique id of the controller.
+        Unique id of the gateway.
     p_name : str
-        Optional name of the controller.
+        Optional name of the gateway.
     p_logging 
         Log level (see class Log for more details). Default = Log.C_LOG_ALL.
     p_kwargs : dict
-        Further keyword arguments specific to the controller.
+        Further keyword arguments specific to the gateway.
 
     Attributes
     ----------
@@ -525,7 +535,7 @@ class Controller (EventManager):
         Event that is raised on a communication error
     """
 
-    C_TYPE              = 'Controller'
+    C_TYPE              = 'SAGateway'
     C_EVENT_COMM_ERROR  = 'COMM_ERROR'
 
 ## -------------------------------------------------------------------------------------------------
@@ -546,7 +556,7 @@ class Controller (EventManager):
 ## -------------------------------------------------------------------------------------------------
     def reset(self) -> bool:
         """
-        Resets the controller by calling custom method _reset().
+        Resets the gateway by calling custom method _reset().
 
         Returns
         -------
@@ -580,7 +590,7 @@ class Controller (EventManager):
 ## -------------------------------------------------------------------------------------------------
     def add_sensor(self, p_sensor : Sensor):
         """
-        Adds a sensor to the controller.
+        Adds a sensor to the gateway.
 
         Parameters
         ----------
@@ -666,7 +676,7 @@ class Controller (EventManager):
 ## -------------------------------------------------------------------------------------------------
     def add_actuator(self, p_actuator : Actuator):
         """
-        Adds an actuator to the controller.
+        Adds an actuator to the gateway.
 
         Parameters
         ----------
@@ -1153,7 +1163,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         self._state                 = None
         self._prev_state            = None
         self._last_action           = None
-        self._controllers           = []
+        self._gateways           = []
         self._mapping_actions       = {}
         self._mapping_states        = {}
         self._t_step = p_t_step
@@ -1415,7 +1425,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
             self._state.set_initial(True)
 
         if self.get_mode() == Mode.C_MODE_REAL:
-            for con in self._controllers: con.reset()
+            for con in self._gateways: con.reset()
             self._import_state()
 
 
@@ -1435,31 +1445,31 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_controller(self, p_controller : Controller, p_mapping : list) -> bool:
+    def add_gateway(self, p_gateway : SAGateway, p_mapping : list) -> bool:
         """
-        Adds a controller and a related mapping of states and actions to sensors and actuators.
+        Adds a sensor/actuator-gateway and a related mapping of states and actions to sensors and actuators.
 
         Parameters
         ----------
-        p_controller : Controller
-            Controller object to be added.
+        p_gateway : SAGateway
+            gateway object to be added.
         p_mapping : list
             A list of mapping tuples following the syntax ( [Type = 'S' or 'A'], [Name of state/action] [Name of sensor/actuator] )
 
         Returns
         -------
         successful : bool
-            True, if controller and related mapping was added successfully. False otherwise.
+            True, if gateway and related mapping was added successfully. False otherwise.
         """
 
         # 0 Preparation
         states      = self._state_space
         actions     = self._action_space
-        sensors     = p_controller.get_sensors()
-        actuators   = p_controller.get_actuators()
+        sensors     = p_gateway.get_sensors()
+        actuators   = p_gateway.get_actuators()
         mapping_int = []
         successful  = True
-        self.log(Log.C_LOG_TYPE_I, 'Adding controller "' + p_controller.get_name() + '"...')
+        self.log(Log.C_LOG_TYPE_I, 'Adding gateway "' + p_gateway.get_name() + '"...')
 
 
         # 1 Check/conversion of mapping entries
@@ -1502,21 +1512,21 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
                 raise ParamError('Type "' + entry[0] + '" not valid!')
 
         if not successful:
-            self.log(Log.C_LOG_TYPE_E, 'Controller "' + p_controller.get_name() + '" could not be added')
+            self.log(Log.C_LOG_TYPE_E, 'SA-Gateway "' + p_gateway.get_name() + '" could not be added')
             return False
 
 
-        # 2 Takeover of mapping entries and controller
+        # 2 Takeover of mapping entries and gateway
         for entry in mapping_int:
             if entry[0] == 'S':
-                self._mapping_states[entry[3]] = ( p_controller, entry[4] )
+                self._mapping_states[entry[3]] = ( p_gateway, entry[4] )
                 self.log(Log.C_LOG_TYPE_I, 'State component "' + entry[1] + '" assigned to sensor "' + entry[2] +'"')
             else:
-                self._mapping_actions[entry[3]] = ( p_controller, entry[4] )
+                self._mapping_actions[entry[3]] = ( p_gateway, entry[4] )
                 self.log(Log.C_LOG_TYPE_I, 'Action component "' + entry[1] + '" assigned to actuator "' + entry[2] +'"')
 
-        self._controllers.append(p_controller)
-        self.log(Log.C_LOG_TYPE_I, 'Controller "' + p_controller.get_name() + '" added successfully')
+        self._gateways.append(p_gateway)
+        self.log(Log.C_LOG_TYPE_I, 'SA-Gateway "' + p_gateway.get_name() + '" added successfully')
         return True
 
 
@@ -1806,7 +1816,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
             try:
                 mapping = self._mapping_states[state_dim_id]
             except:
-                self.log(Log.C_LOG_TYPE_E, 'State component "' + state_dim_name + '" not assigned to a controller/sensor')
+                self.log(Log.C_LOG_TYPE_E, 'State component "' + state_dim_name + '" not assigned to a gateway/sensor')
                 successful = False
             else:
                 sensor_value = mapping[0].get_sensor_value( p_id = mapping[1] )
@@ -1844,7 +1854,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
                     mapping = self._mapping_actions[action_dim_id]
                 except:
                     action_dim_name = action_elem.get_related_set().get_dim(action_dim_id).get_name()
-                    self.log(Log.C_LOG_TYPE_E, 'Action component "' + action_dim_name + '" not assigned to a controller/sensor')
+                    self.log(Log.C_LOG_TYPE_E, 'Action component "' + action_dim_name + '" not assigned to a gateway/sensor')
                     successful = False
                 else:
                     actuator_value = action_elem.get_value(p_dim_id=action_dim_id)
