@@ -36,7 +36,7 @@ import random
 
 
 
-class MyController (Controller):
+class MyController (SAGateway):
 
     C_NAME      = 'Dummy'
 
