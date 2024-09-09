@@ -48,10 +48,12 @@
 ## -- 2024-09-07  2.2.0     DA       - Class ActionElement: new property values
 ## --                                - Renamed Class Controller to SAGateway
 ## --                                - Renamed method System.add_controller to add_sagateway
+## -- 2024-09-09  2.3.0     DA       - Class ActionElement: new parent KWArgs
+## --                                - Class Action: parent TSTamp replaced by Instance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2024-09-07)
+Ver. 2.3.0 (2024-09-09)
 
 This module provides models and templates for state based systems.
 """
@@ -95,6 +97,8 @@ class State(Instance, Element):
         This optional flag labels the state as a final error state. Default=False.
     p_timeout : bool
         This optional flag signals that the cycle limit of an episode has been reached. Default=False.
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -217,7 +221,7 @@ class State(Instance, Element):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ActionElement (Element):
+class ActionElement (Element, KWArgs):
     """
     Single entry of an action. See class Action for further details.
 
@@ -227,14 +231,18 @@ class ActionElement (Element):
         Related action space.
     p_weight : float
         Weight of action element. Default = 1.0.
+    p_kwargs : dict
+        Further optional named parameters.    
     """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_action_space : Set, 
-                  p_weight : float = 1.0):
+                  p_weight : float = 1.0,
+                  **p_kwargs):
 
-        super().__init__(p_action_space)
+        Element.__init__(self, p_action_space)
+        KWArgs.__init__(self, **p_kwargs)
         self.set_weight(p_weight)
 
 
@@ -255,17 +263,13 @@ class ActionElement (Element):
     
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Action(ElementList, TStamp):
+class Action(Instance, ElementList):
     """
-    Objects of this class represent actions of (multi-)agents. Every element
-    of the internal list is related to an agent, and its partial subsection.
-    Action values for the first agent can be added while object instantiation.
-    Action values of further agents can be added by using method self.add_elem().
+    Objects of this class represent actions of (multi-)agents. Every element of the internal list is
+    related to an agent, and its partial subsection. Action values for the first agent can be added 
+    while object instantiation. Action values of further agents can be added by using method self.add_elem().
 
     Parameters
     ----------
@@ -281,15 +285,18 @@ class Action(ElementList, TStamp):
     def __init__( self, 
                   p_agent_id = 0, 
                   p_action_space : Set = None, 
-                  p_values: np.ndarray = None ):
+                  p_values: np.ndarray = None,
+                  p_tstamp : TStampType = None ):
 
         ElementList.__init__(self)
-        TStamp.__init__(self)
+        action_elem = None
 
-        if (p_action_space is not None) and (p_values is not None):
-            e = ActionElement(p_action_space)
-            e.set_values(p_values)
-            self.add_elem(p_agent_id, e)
+        if ( p_action_space is not None ) and ( p_values is not None ):
+            action_elem = ActionElement(p_action_space)
+            action_elem.set_values(p_values)
+            self.add_elem(p_agent_id, action_elem)
+
+        Instance.__init__( self, p_feature_data=action_elem, p_tstamp = p_tstamp )
 
 
 ## -------------------------------------------------------------------------------------------------
