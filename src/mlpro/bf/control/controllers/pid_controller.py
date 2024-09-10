@@ -137,7 +137,7 @@ class PIDController (Controller):
 
             # anti - windup 
             if self.enable_windup and self.windup_limit is not None:
-                self._integral = max(min(self._integral, self.windup_limit), -self.windup_limit)
+                self.integral = max(min(self.integral, self.windup_limit), -self.windup_limit)
 
             #calculate i term , if Ti not zero
             if self.Ti != 0:
