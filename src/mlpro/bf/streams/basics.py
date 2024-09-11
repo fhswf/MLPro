@@ -68,12 +68,13 @@
 ## -- 2024-06-07  2.0.2     LSB      Fixing timedelta handling in ND plotting
 ## -- 2024-07-19  2.0.3     DA       Class StreamTask: excluded non-numeric feature data from default
 ## --                                visualization 2D,3D,ND
+## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.3 (2024-07-19)
+Ver. 2.1.0 (2024-09-11)
 
-This module provides classes for standardized stream processing. 
+This module provides classes for standardized data stream processing. 
 
 """
 import datetime
@@ -83,7 +84,7 @@ import random
 from typing import Dict, Tuple
 
 from mlpro.bf.math.basics import *
-from mlpro.bf.various import *
+from mlpro.bf.various import Id, TStamp, KWArgs
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import Dimension, Element
@@ -113,7 +114,7 @@ InstId = int
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Instance (Id, TStamp):
+class Instance (Id, TStamp, KWArgs):
     """
     Instance class to store the current instance and the corresponding labels of the stream
 
@@ -141,8 +142,7 @@ class Instance (Id, TStamp):
         self._feature_data = p_feature_data
         self._label_data   = p_label_data
         TStamp.__init__(self, p_tstamp=p_tstamp)
-        # Id.__init__(self, p_id = 0)
-        self._kwargs       = p_kwargs.copy()
+        KWArgs.__init__(self, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ class Instance (Id, TStamp):
 
 ## -------------------------------------------------------------------------------------------------
     def get_kwargs(self):
-        return self._kwargs
+        return self._get_kwargs()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ class Instance (Id, TStamp):
         duplicate = self.__class__( p_feature_data=self.get_feature_data().copy(),
                                     p_label_data=self.get_label_data(),
                                     p_tstamp=self.get_tstamp(),
-                                    p_kwargs=self._kwargs )
+                                    p_kwargs=self._get_kwargs() )
         duplicate.id = self.id
         return duplicate
 
@@ -1227,8 +1227,14 @@ class StreamTask (Task):
 
         # 5 Update of ax limits
         if ax_limits_changed:
-            p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
-            p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
+            try:
+                p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
+            except:
+                pass
+            try:
+                p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
+            except:
+                pass
 
 
 ## -------------------------------------------------------------------------------------------------
