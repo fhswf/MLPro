@@ -8,18 +8,21 @@
 ## -- 2024-08-31  0.0.0     DA       Creation 
 ## -- 2024-09-04  0.1.0     DA       Updates on class design
 ## -- 2024-09-07  0.2.0     DA       Classes CTRLError, Controller: design updates
+## -- 2024-09-11  0.3.0     DA       - class CTRLError renamed ControlError
+## --                                - new class ControlPanel
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-09-07)
+Ver. 0.3.0 (2024-09-11)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf.math.basics import Element
+from mlpro.bf.various import Log, TStampType
 from mlpro.bf.mt import Task, Workflow
-from mlpro.bf.math import Function
+from mlpro.bf.math import Element, Function
 from mlpro.bf.streams import InstDict, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import ActionElement, Action, System
 from mlpro.bf.various import Log
@@ -32,6 +35,18 @@ from mlpro.bf.various import Log
 class SetPoint (Instance):
     """
     """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_setpoint_data: Element, 
+                  p_tstamp: TStampType = None, 
+                  **p_kwargs ):
+        
+        super().__init__( p_feature_data = p_setpoint_data, 
+                          p_label_data = None, 
+                          p_tstamp = p_tstamp, 
+                          **p_kwargs )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _get_values(self):
@@ -52,7 +67,7 @@ class SetPoint (Instance):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class CTRLError (Instance):
+class ControlError (Instance):
     """
     """
 
@@ -96,7 +111,7 @@ class Controller (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_ctrl_error: CTRLError) -> Action:
+    def compute_action(self, p_ctrl_error: ControlError) -> Action:
         """
         Custom method to compute and return an action based on an incoming control error.
 
@@ -116,7 +131,7 @@ class Controller (StreamTask):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_action( self, 
-                         p_ctrl_error : CTRLError, 
+                         p_ctrl_error : ControlError, 
                          p_action_element : ActionElement,
                          p_ctrl_id : int = 0,
                          p_ae_id : int = 0 ):
@@ -198,7 +213,7 @@ class ControllerFct (Controller):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_ctrl_error: CTRLError) -> Action:
+    def compute_action(self, p_ctrl_error: ControlError) -> Action:
 
         raise NotImplementedError
 
@@ -254,11 +269,98 @@ class ControlSystem (StreamTask):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlShared (StreamShared):
+class ControlPanel (Log):
+    """
+    Enables external control of a closed-loop control.
+    """
+
+    C_TYPE          = 'Control Panel'
+    C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def change_setpoint( p_setpoint : SetPoint ):
+    def start(self):
+        """
+        (Re-)starts a closed-loop control.
+        """
+        
+        self.log(Log.C_LOG_TYPE_S, 'Control process started')
+        self._start()
 
+
+## -------------------------------------------------------------------------------------------------
+    def _start(self):
+        """
+        Custom method to (re-)start a closed-loop control.
+        """
+
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def stop(self):
+        """
+        Ends a closed-loop control.
+        """
+
+        self.log(Log.C_LOG_TYPE_S, 'Control process stopped')
+        self._stop()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _stop(self):
+        """
+        Custom method to end a closed-loop control.
+        """
+
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def change_setpoint( self, p_setpoint : SetPoint ):
+        """
+        Changes the setpoint values of a closed-loop control.
+
+        Parameters
+        ----------
+        p_setpoint: SetPoint
+            New setpoint values.
+        """
+
+        self.log(Log.C_LOG_TYPE_S, 'Setpoint values changed to', p_setpoint.values)
+        self._change_setpoint( p_setpoint = p_setpoint )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _change_setpoint( self, p_setpoint : SetPoint ):
+        """
+        Custom method to change setpoint values.
+        """
+
+        raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ControlShared (StreamShared, ControlPanel):
+    
+## -------------------------------------------------------------------------------------------------
+    def _start(self):
+        
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _stop(self):
+        
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _change_setpoint(self, p_setpoint: SetPoint):
+        
         raise NotImplementedError
 
 
@@ -303,6 +405,27 @@ class ControlScenario ( StreamScenario ):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def get_control_board(self) -> ControlShared:
+    def __init__( self, 
+                  p_mode, 
+                  p_cycle_limit=0, 
+                  p_visualize:bool=False, 
+                  p_logging=Log.C_LOG_ALL ):
 
-        raise NotImplementedError
+        self._control_cycle : ControlCycle = None
+
+        super.__init__( p_mode, 
+                        p_cycle_limit=p_cycle_limit, 
+                        p_auto_setup=True, 
+                        p_visualize=p_visualize, 
+                        p_logging=p_logging )
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_control_panel(self) -> ControlPanel:
+        """
+        Returns
+        -------
+        panel : ControlPanel
+            Object that enables the external control of a closed-loop control process.
+        """
+        return self._control_cycle.get_so()
