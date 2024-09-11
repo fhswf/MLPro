@@ -48,10 +48,13 @@
 ## -- 2024-09-07  2.2.0     DA       - Class ActionElement: new property values
 ## --                                - Renamed Class Controller to SAGateway
 ## --                                - Renamed method System.add_controller to add_sagateway
+## -- 2024-09-09  2.3.0     DA       Class Action: parent TSTamp replaced by Instance
+## -- 2024-09-11  2.4.0     DA       - code review and documentation
+## --                                - new method State.get_kwargs()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2024-09-07)
+Ver. 2.4.0 (2024-09-11)
 
 This module provides models and templates for state based systems.
 """
@@ -71,6 +74,7 @@ from matplotlib.figure import Figure
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.math import *
 from mlpro.bf.mt import *
+
 
 
 
@@ -95,6 +99,8 @@ class State(Instance, Element):
         This optional flag labels the state as a final error state. Default=False.
     p_timeout : bool
         This optional flag signals that the cycle limit of an episode has been reached. Default=False.
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -181,6 +187,11 @@ class State(Instance, Element):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_kwargs(self):
+        return self._get_kwargs()
+    
+
+## -------------------------------------------------------------------------------------------------
     def copy(self):
         """
         Returns a copy of the state element
@@ -225,16 +236,16 @@ class ActionElement (Element):
     ----------
     p_action_space : Set
         Related action space.
-    p_weight : float
+    p_weight : float = 1.0
         Weight of action element. Default = 1.0.
     """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_action_space : Set, 
-                  p_weight : float = 1.0):
+                  p_weight : float = 1.0 ):
 
-        super().__init__(p_action_space)
+        Element.__init__(self, p_action_space)
         self.set_weight(p_weight)
 
 
@@ -244,7 +255,7 @@ class ActionElement (Element):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_weight(self, p_weight):
+    def set_weight(self, p_weight : float):
         self.weight = p_weight
 
 
@@ -255,17 +266,13 @@ class ActionElement (Element):
     
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Action(ElementList, TStamp):
+class Action(Instance, ElementList):
     """
-    Objects of this class represent actions of (multi-)agents. Every element
-    of the internal list is related to an agent, and its partial subsection.
-    Action values for the first agent can be added while object instantiation.
-    Action values of further agents can be added by using method self.add_elem().
+    Objects of this class represent actions of (multi-)agents. Every element of the internal list is
+    related to an agent, and its partial subsection. Action values for the first agent can be added 
+    while object instantiation. Action values of further agents can be added by using method self.add_elem().
 
     Parameters
     ----------
@@ -281,15 +288,18 @@ class Action(ElementList, TStamp):
     def __init__( self, 
                   p_agent_id = 0, 
                   p_action_space : Set = None, 
-                  p_values: np.ndarray = None ):
+                  p_values: np.ndarray = None,
+                  p_tstamp : TStampType = None ):
 
         ElementList.__init__(self)
-        TStamp.__init__(self)
+        action_elem = None
 
-        if (p_action_space is not None) and (p_values is not None):
-            e = ActionElement(p_action_space)
-            e.set_values(p_values)
-            self.add_elem(p_agent_id, e)
+        if ( p_action_space is not None ) and ( p_values is not None ):
+            action_elem = ActionElement(p_action_space)
+            action_elem.set_values(p_values)
+            self.add_elem(p_agent_id, action_elem)
+
+        Instance.__init__( self, p_feature_data=action_elem, p_tstamp = p_tstamp )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1080,11 +1090,26 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
     Parameters
     ----------
-    p_mode 
+    p_id
+        Optional external id
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
+    p_autorun : int
+        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+        On vaule C_AUTORUN_LOOP method run_loop() is called.
+        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+        actions.    
+    p_class_shared = None
+        Optional class for a shared object (class Shared or a child class of Shared)
+    p_mode = Mode.C_MODE_SIM
         Mode of the system. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.
-    p_latency : timedelta
+    p_latency : timedelta = None
         Optional latency of the system. If not provided, the internal value of constant C_LATENCY 
         is used by default.
+    p_t_step : timedelta = None
+        ...
     p_fct_strans : FctSTrans
         Optional external function for state transition. 
     p_fct_success : FctSuccess
@@ -1094,15 +1119,15 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
     p_mujoco_file
         Path to XML file for MuJoCo model.
     p_frame_skip : int
-        Frame to be skipped every step. Default = 1.
-    p_state_mapping
-        State mapping if the MLPro state and MuJoCo state have different naming.
-    p_action_mapping
-        Action mapping if the MLPro action and MuJoCo action have different naming.
+        MuJoCo only: frame to be skipped every step. Default = 1.
+    p_state_mapping = None
+        MuJoCo only: state mapping if the MLPro state and MuJoCo state have different naming.
+    p_action_mapping = None
+        MuJoCo only: action mapping if the MLPro action and MuJoCo action have different naming.
     p_use_radian : bool
-        Use radian if the action and the state based on radian unit. Default = True.
+        MuJoCo only: use radian if the action and the state based on radian unit. Default = True.
     p_camera_conf : tuple
-        Default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
+        MuJoCo only: default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging 
@@ -1163,10 +1188,10 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         self._state                 = None
         self._prev_state            = None
         self._last_action           = None
-        self._gateways           = []
+        self._gateways              = []
         self._mapping_actions       = {}
         self._mapping_states        = {}
-        self._t_step = p_t_step
+        self._t_step                = p_t_step
 
         if p_mujoco_file is not None:
             try:
@@ -1230,7 +1255,8 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
         self._registered_on_so = False
 
- ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
         """
@@ -1610,7 +1636,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         else:
             result = self._process_action(p_action)
 
-        self._prev_state = state
+        self._prev_state  = state
         self._last_action = p_action
 
         if result:
@@ -2099,6 +2125,7 @@ class MultiSystem(Workflow, System):
         for system in self._subsystems:
             system.reset(p_seed = p_seed)
 
+
 ## -------------------------------------------------------------------------------------------------
     def get_subsystem_ids(self):
         return self._subsystem_ids
@@ -2234,7 +2261,7 @@ class MultiSystem(Workflow, System):
 class DemoScenario(ScenarioBase):
 
     """
-        Demo Scenario Class to demonstrate systems, inherits from the ScenarioBase.
+        Demo Scenario Class to demonstrate systems.
         
         Parameters
         ----------
@@ -2258,9 +2285,9 @@ class DemoScenario(ScenarioBase):
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """    
 
-    C_NAME = 'Demo System Scenario'
-    C_ACTION_RANDOM = 'random'
-    C_ACTION_CONSTANT = 'constant'
+    C_NAME              = 'Demo System Scenario'
+    C_ACTION_RANDOM     = 'random'
+    C_ACTION_CONSTANT   = 'constant'
 
 ## -------------------------------------------------------------------------------------------------
     def  __init__(self,
