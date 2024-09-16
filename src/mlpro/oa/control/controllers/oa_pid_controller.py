@@ -5,8 +5,8 @@ from mlpro.oa.control.basics import OAController
 from mlpro.bf.math.basics import Log,Set,MSpace
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.systems import Action
-from mlpro.bf.control.basics import CTRLError, ControlError, Controller
-from mlpro.bf.systems.basics import ActionElement
+from mlpro.bf.control.basics import CTRLError, ControlError, Controller, SetPoint
+from mlpro.bf.systems.basics import ActionElement, State
 from mlpro.bf.various import Log
 from mlpro.bf.streams import InstDict, Instance
 
@@ -39,21 +39,42 @@ class RLPIDController(RLController):
         pass
 
 
-    def _setup_policy(self,**kwags)-> Policy:
-        return Policy()
+    def _setup_policy(self,p_param_policy:dict)-> Policy:
+        pass
 
 
 
     def _run(self, p_inst:InstDict):
-        self._adapt()
-        action = self.compute_action(p_inst.values()[0])
-        return action
+        pass 
+
 
     def compute_action(self, p_ctrl_error: ControlError) -> Action:
         return self._pid_controller.compute_action(p_ctrl_error)
     
-    def _adapt(self):
+    def _adapt(self, p_setpoint: SetPoint, p_ctrl_error: ControlError, p_state: State, p_action: Action,p_reward:float) -> bool:
+        
+        """
+        Specialized custom method for online adaptation in closed-loop control scenarios.
+
+        Parameters
+        ----------
+        p_ctrl_error : ControlError
+            Control error.
+        p_state : State
+            State of control system.
+        p_setpoint : SetPoint
+            Setpoint.        
+        p_Action : Action
+            control variable          
+        p_reward : float
+            Output valaue of the reward function
+        """
+        
         pass
+
+
+
+
         
 
         
