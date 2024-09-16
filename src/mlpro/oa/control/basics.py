@@ -6,19 +6,21 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-09-12  0.0.0     DA       Creation 
+## -- 2024-09-16  0.1.0     DA       Initial implementation of class OAController
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2024-09-12)
+Ver. 0.1.0 (2024-09-16)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
 """
 
 
-
-from mlpro.bf.control import Controller, MultiController, ControllerFct
+from mlpro.bf.systems import State, Action, ActionElement
+from mlpro.bf.control import SetPoint, ControlError, Controller, MultiController, ControllerFct
 from mlpro.bf.ml import Model
+from mlpro.bf.streams import InstDict
 
 
 
@@ -32,6 +34,69 @@ class OAController (Controller, Model):
 
     C_TYPE          = 'OA Controller'
     C_NAME          = '????'
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst: InstDict):
+        """
+        Computes the next action based on the current control error and adapts on further contextual
+        information like setpoint, state, action.
+        """
+
+        # 0 Intro
+        setpoint : SetPoint         = None
+        state : State               = None
+        ctrl_error : ControlError   = None
+
+
+        # 1 Determine the contextual data for action computation
+        for (inst_type, inst) in p_inst.values():
+            if isinstance(p_inst,SetPoint):
+                setpoint = p_inst
+            elif isinstance(p_inst,State):
+                state    = p_inst
+            elif isinstance(p_inst, ControlError):
+                ctrl_error = p_inst
+
+        if setpoint is None:
+            raise Error( 'Setpoint instance not found. Please check control cycle.')
+        if state is None:
+            raise Error( 'State instance not found. Please check control cycle.')
+        if ctrl_error is None:
+            raise Error( 'Control error instance not found. Please check control cycle.')
+
+
+        # 2 Compute the next action
+        action = self.compute_action( p_ctrl_error = ctrl_error )
+
+
+        # 3 Adapt
+        self.adapt( p_ctrl_error = ctrl_error, 
+                    p_state = state, 
+                    p_setpoint = setpoint,
+                    p_action = action )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt( self, 
+                p_setpoint: SetPoint, 
+                p_ctrl_error: ControlError, 
+                p_state: State, 
+                p_action: Action ) -> bool:
+        """
+        Specialized custom method for online adaptation in closed-loop control scenarios.
+
+        Parameters
+        ----------
+        p_ctrl_error : ControlError
+            Control error.
+        p_state : State
+            State of control system.
+        p_setpoint : SetPoint
+            Setpoint.
+        """
+        
+        raise NotImplementedError
 
 
 
