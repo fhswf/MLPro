@@ -160,7 +160,6 @@ class Controller (StreamTask):
             SISO controllers only. Id of the related source value in p_ctrl_error.
         p_ae_id : int = 0 
             SISO controller olny. Id of the related destination value in p_action_element.
-
         """
 
         raise NotImplementedError
