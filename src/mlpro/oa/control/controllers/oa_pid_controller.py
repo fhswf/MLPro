@@ -22,6 +22,26 @@ class RLController(OAController):
                  p_logging=Log.C_LOG_ALL,p_error_id:int = 0,p_cls_policy:type = None, p_param_policy = None,p_fct_reward:FctReward = None ,**p_kwargs):
         super().__init__(p_name, p_range_max, p_duplicate_data, p_visualize, p_logging, **p_kwargs)
 
+    def _adapt(self, p_setpoint: SetPoint, p_ctrl_error: ControlError, p_state: State, p_action: Action,p_reward:float) -> bool:
+        """
+        Specialized custom method for online adaptation in closed-loop control scenarios.
+
+        Parameters
+        ----------
+        p_ctrl_error : ControlError
+            Control error.
+        p_state : State
+            State of control system.
+        p_setpoint : SetPoint
+            Setpoint.        
+        p_Action : Action
+            control variable          
+        p_reward : float
+            Output valaue of the reward function
+        """
+
+        
+
 
 
 class RLPIDController(RLController):
@@ -39,6 +59,7 @@ class RLPIDController(RLController):
         pass
 
 
+
     def _setup_policy(self,p_param_policy:dict)-> Policy:
         pass
 
@@ -51,7 +72,7 @@ class RLPIDController(RLController):
     def compute_action(self, p_ctrl_error: ControlError) -> Action:
         return self._pid_controller.compute_action(p_ctrl_error)
     
-    def _adapt(self, p_setpoint: SetPoint, p_ctrl_error: ControlError, p_state: State, p_action: Action,p_reward:float) -> bool:
+    def _adapt_rl(self, p_setpoint: SetPoint, p_ctrl_error: ControlError, p_state: State, p_action: Action,p_reward:float) -> bool:
         
         """
         Specialized custom method for online adaptation in closed-loop control scenarios.
