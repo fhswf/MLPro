@@ -9,93 +9,68 @@ from mlpro.bf.control.basics import CTRLError, ControlError, Controller, SetPoin
 from mlpro.bf.systems.basics import ActionElement, State
 from mlpro.bf.various import Log
 from mlpro.bf.streams import InstDict, Instance
+from mlpro.rl.models_env_ada import SARSElement
+from mlpro_int_sb3.wrappers.basics import WrPolicySB32MLPro
+from stable_baselines3 import A2C, PPO, DQN, DDPG
 
 
 
 
+class RLPID(Policy):
 
-class RLController(OAController):
+    def __init__(self, p_observation_space: MSpace, p_action_space: MSpace,pid_controller:PIDController ,p_id=None, p_buffer_size: int = 1, p_ada: bool = True, p_visualize: bool = False, p_logging=Log.C_LOG_ALL ):
+        super().__init__(p_observation_space, p_action_space, p_id, p_buffer_size, p_ada, p_visualize, p_logging)
 
-    C_TYPE= 'RL PID-Controller'
-
-    def __init__(self, p_name: str = None, p_range_max=Task.C_RANGE_THREAD, p_duplicate_data: bool = False, p_visualize: bool = False, 
-                 p_logging=Log.C_LOG_ALL,p_error_id:int = 0,p_cls_policy:type = None, p_param_policy = None,p_fct_reward:FctReward = None ,**p_kwargs):
-        super().__init__(p_name, p_range_max, p_duplicate_data, p_visualize, p_logging, **p_kwargs)
-
-    def _adapt(self, p_setpoint: SetPoint, p_ctrl_error: ControlError, p_state: State, p_action: Action,p_reward:float) -> bool:
-        """
-        Specialized custom method for online adaptation in closed-loop control scenarios.
-
-        Parameters
-        ----------
-        p_ctrl_error : ControlError
-            Control error.
-        p_state : State
-            State of control system.
-        p_setpoint : SetPoint
-            Setpoint.        
-        p_Action : Action
-            control variable          
-        p_reward : float
-            Output valaue of the reward function
-        """
-
-        
-
-
-
-class RLPIDController(RLController):
-
-
-    def __init__(self, p_name: str = None, p_range_max=Task.C_RANGE_THREAD, p_duplicate_data: bool = False, p_visualize: bool = False,
-                  p_logging=Log.C_LOG_ALL, p_error_id: int = 0, p_cls_policy: type = None, p_param_policy=None, p_fct_reward: FctReward = None,pid_controller:PIDController = None,**p_kwargs):
-        super().__init__(p_name, p_range_max, p_duplicate_data, p_visualize, p_logging, p_error_id, p_cls_policy, p_param_policy, p_fct_reward,**p_kwargs)
-
-        self._policy = self._setup_policy(p_param_policy)
-        
         self._pid_controller = pid_controller
 
-    def _setup_policy_action_space(self) -> MSpace:
-        pass
 
-
-
-    def _setup_policy(self,p_param_policy:dict)-> Policy:
-        pass
-
-
-
-    def _run(self, p_inst:InstDict):
-        pass 
-
-
-    def compute_action(self, p_ctrl_error: ControlError) -> Action:
-        return self._pid_controller.compute_action(p_ctrl_error)
     
-    def _adapt_rl(self, p_setpoint: SetPoint, p_ctrl_error: ControlError, p_state: State, p_action: Action,p_reward:float) -> bool:
-        
-        """
-        Specialized custom method for online adaptation in closed-loop control scenarios.
+    def _adapt(self, p_sars_elem: SARSElement) -> bool:
 
-        Parameters
-        ----------
-        p_ctrl_error : ControlError
-            Control error.
-        p_state : State
-            State of control system.
-        p_setpoint : SetPoint
-            Setpoint.        
-        p_Action : Action
-            control variable          
-        p_reward : float
-            Output valaue of the reward function
         """
         
+
+        policy_sb3 = PPO(
+            policy="MlpPolicy",
+            n_steps=5,
+            env=None,
+            _init_setup_model=False,
+            device="cpu")
+
+        sb3_policy =WrPolicySB32MLPro()
+        sb3_policy._adapt_on_policy(p_sars_elem)
+        sb3_policy._compute_action_on_policy()
+        
+
+
+
+
+        p_param={}
+        self._pid_controller.set_parameter(p_param)
+
+        """
         pass
+    
+
+  
+
+    
+
+    def compute_action(self, p_obs: State) -> Action:
+
+        #create control error from p_obs
+        crtl_error = ControlError(p_obs.get_feature_data(),p_obs.get_label_data(),p_obs.get_tstamp())
+
+        #get action 
+        action=self._pid_controller.compute_action(crtl_error)
+
+        #return action
+        return action 
+        
 
 
 
-
+    
         
 
         
@@ -104,7 +79,6 @@ class RLPIDController(RLController):
 
     
 
-    
 
     
 
