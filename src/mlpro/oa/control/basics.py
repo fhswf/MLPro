@@ -7,18 +7,19 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-09-12  0.0.0     DA       Creation 
 ## -- 2024-09-16  0.1.0     DA       Initial implementation of class OAController
+## -- 2024-09-19  0.2.0     DA       Completion of classes and their parents
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-09-16)
+Ver. 0.2.0 (2024-09-19)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
 """
 
 
-from mlpro.bf.systems import State, Action, ActionElement
-from mlpro.bf.control import SetPoint, ControlError, Controller, MultiController, ControllerFct
+from mlpro.bf.systems import State, Action
+from mlpro.bf.control import *
 from mlpro.bf.ml import Model
 from mlpro.bf.streams import InstDict
 
@@ -29,11 +30,50 @@ from mlpro.bf.streams import InstDict
 ## -------------------------------------------------------------------------------------------------
 class OAController (Controller, Model):
     """
-    Template class for online-adaptive closed-loop controllers.
+    Template class for online-adaptive closed-loop controllers. Please implement methods _compute_action()
+    and _adapt() in child classes.
+
+    Parameters
+    ----------
+    p_ada : bool = True
+        Boolean switch for adaptivitiy. Default = True.
+    p_name : str = None
+        Optional name of the task. Default is None.
+    p_range_max : int = Task.C_RANGE_THREAD
+        Maximum range of asynchonicity. See class Range. Default is Task.C_RANGE_PROCESS.
+    p_duplicate_data : bool = False
+        If True, instances will be duplicated before processing. Default = False.
+    p_visualize : bool = False
+        Boolean switch for visualisation. Default = False.
+    p_logging = Log.C_LOG_ALL
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
     C_TYPE          = 'OA Controller'
     C_NAME          = '????'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_ada: bool = True,
+                  p_name: str = None, 
+                  p_range_max = Task.C_RANGE_THREAD, 
+                  p_duplicate_data : bool = False,
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL, 
+                  **p_kwargs ):
+        
+        Controller.__init__( p_name = p_name,
+                             p_range_max = p_range_max,
+                             p_duplicate_data = p_duplicate_data,
+                             p_visualize = p_visualize,
+                             p_logging = False,
+                             **p_kwargs )
+        
+        Model.__init__( p_ada = p_ada,
+                        p_visualize = p_visualize,
+                        p_logging = p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -88,12 +128,14 @@ class OAController (Controller, Model):
 
         Parameters
         ----------
+        p_setpoint : SetPoint
+            Setpoint.
         p_ctrl_error : ControlError
             Control error.
         p_state : State
             State of control system.
-        p_setpoint : SetPoint
-            Setpoint.
+        p_action : Action
+            Current action of the controller.
         """
         
         raise NotImplementedError
@@ -104,39 +146,11 @@ class OAController (Controller, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControllerFct (OAController):
-    """
-    Wrapper class for controllers based on an online-adaptive function mapping an error to an action.
-
-    Parameters
-    ----------
-    p_fct : Function
-        Function object mapping a control error to an action
-
-    See class Controller for further parameters.
-    """
-
-    C_TYPE          = 'OA Controller Fct'
-    C_NAME          = ''
-
-## -------------------------------------------------------------------------------------------------
-    def switch_adaptivity(self, p_ada: bool):
-        try:
-            self._fct.switch_adaptivity(p_ada)
-        except:
-            pass
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MultiController (Controller, StreamWorkflow):
+class OAMultiController (MultiController, Model):
     """
     """
 
-    C_TYPE          = 'Multi-Controller'
+    C_TYPE          = 'OA Multi-Controller'
     C_NAME          = ''
 
 
@@ -145,196 +159,64 @@ class MultiController (Controller, StreamWorkflow):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlSystem (StreamTask):
+class OAControlSystem (ControlSystem, Model):
     """
     Wrapper class for state-based systems.
     """
 
-    C_TYPE          = 'Control System'
+    C_TYPE          = 'OA Control System'
     C_NAME          = ''
 
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_system : System,
-                  p_name: str = None, 
-                  p_range_max=Task.C_RANGE_THREAD, 
-                  p_duplicate_data: bool = False, 
-                  p_visualize: bool = False, 
-                  p_logging = Log.C_LOG_ALL, 
-                  **p_kwargs ):
-        
-        super().__init__( p_name = p_name, 
-                          p_range_max = p_range_max, 
-                          p_duplicate_data = p_duplicate_data, 
-                          p_visualize = p_visualize, 
-                          p_logging = p_logging, 
-                          **p_kwargs )
-
-        self._system : System = p_system
-
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlPanel (Log):
+class OAControlPanel (ControlPanel):
     """
     Enables external control of a closed-loop control.
     """
 
-    C_TYPE          = 'Control Panel'
+    C_TYPE          = 'OA Control Panel'
     C_NAME          = '????'
 
-## -------------------------------------------------------------------------------------------------
-    def start(self):
-        """
-        (Re-)starts a closed-loop control.
-        """
-        
-        self.log(Log.C_LOG_TYPE_S, 'Control process started')
-        self._start()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _start(self):
-        """
-        Custom method to (re-)start a closed-loop control.
-        """
-
-        raise NotImplementedError
-    
-
-## -------------------------------------------------------------------------------------------------
-    def stop(self):
-        """
-        Ends a closed-loop control.
-        """
-
-        self.log(Log.C_LOG_TYPE_S, 'Control process stopped')
-        self._stop()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _stop(self):
-        """
-        Custom method to end a closed-loop control.
-        """
-
-        raise NotImplementedError
-    
-
-## -------------------------------------------------------------------------------------------------
-    def change_setpoint( self, p_setpoint : SetPoint ):
-        """
-        Changes the setpoint values of a closed-loop control.
-
-        Parameters
-        ----------
-        p_setpoint: SetPoint
-            New setpoint values.
-        """
-
-        self.log(Log.C_LOG_TYPE_S, 'Setpoint values changed to', p_setpoint.values)
-        self._change_setpoint( p_setpoint = p_setpoint )
-
-
-## -------------------------------------------------------------------------------------------------
-    def _change_setpoint( self, p_setpoint : SetPoint ):
-        """
-        Custom method to change setpoint values.
-        """
-
-        raise NotImplementedError
-
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlShared (StreamShared, ControlPanel):
-    
-## -------------------------------------------------------------------------------------------------
-    def _start(self):
-        
-        raise NotImplementedError
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _stop(self):
-        
-        raise NotImplementedError
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _change_setpoint(self, p_setpoint: SetPoint):
-        
-        raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ControlCycle (StreamWorkflow):
-    """
-    Container class for all tasks of a control cycle.
-    """
-
-    C_TYPE          = 'Control Cycle'
-    C_NAME          = ''
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_name: str = None, 
-                  p_range_max = Workflow.C_RANGE_THREAD, 
-                  p_class_shared = ControlShared, 
-                  p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL, 
-                  **p_kwargs ):
-
-        super().__init__( p_name=p_name, 
-                          p_range_max=p_range_max, 
-                          p_class_shared=p_class_shared, 
-                          p_visualize=p_visualize,
-                          p_logging=p_logging, 
-                          **p_kwargs )
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ControlScenario ( StreamScenario ):
+class OAControlShared (ControlShared, OAControlPanel):
     """
     ...
     """
 
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_mode, 
-                  p_cycle_limit=0, 
-                  p_visualize:bool=False, 
-                  p_logging=Log.C_LOG_ALL ):
+    pass
+    
 
-        self._control_cycle : ControlCycle = None
 
-        super.__init__( p_mode, 
-                        p_cycle_limit=p_cycle_limit, 
-                        p_auto_setup=True, 
-                        p_visualize=p_visualize, 
-                        p_logging=p_logging )
-        
+
 
 ## -------------------------------------------------------------------------------------------------
-    def get_control_panel(self) -> ControlPanel:
-        """
-        Returns
-        -------
-        panel : ControlPanel
-            Object that enables the external control of a closed-loop control process.
-        """
-        return self._control_cycle.get_so()
+## -------------------------------------------------------------------------------------------------
+class OAControlCycle (ControlCycle, Model):
+    """
+    Container class for all tasks of a control cycle.
+    """
+
+    C_TYPE          = 'OA Control Cycle'
+    C_NAME          = ''
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAControlScenario (ControlScenario, Model):
+    """
+    ...
+    """
+
+    pass
