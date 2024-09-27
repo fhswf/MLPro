@@ -8,10 +8,11 @@
 ## -- 2024-09-12  0.0.0     DA       Creation 
 ## -- 2024-09-16  0.1.0     DA       Initial implementation of class OAController
 ## -- 2024-09-19  0.2.0     DA       Completion of classes and their parents
+## -- 2024-09-27  0.3.0     DA       New method OAController hdl_setpoint_changed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-09-19)
+Ver. 0.3.0 (2024-09-27)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
@@ -138,6 +139,12 @@ class OAController (Controller, Model):
             Current action of the controller.
         """
         
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def hdl_setpoint_changed(self, p_event_id:str, p_event_object:Event):
+
         raise NotImplementedError
 
 

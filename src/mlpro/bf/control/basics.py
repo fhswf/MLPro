@@ -10,18 +10,19 @@
 ## -- 2024-09-07  0.2.0     DA       Classes CTRLError, Controller: design updates
 ## -- 2024-09-11  0.3.0     DA       - class CTRLError renamed ControlError
 ## --                                - new class ControlPanel
+## -- 2024-09-27  0.4.0     DA       Class ControlPanel: new parent EventManager
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-09-11)
+Ver. 0.4.0 (2024-09-27)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
-from mlpro.bf.math.basics import Element
 from mlpro.bf.various import Log, TStampType
 from mlpro.bf.mt import Task, Workflow
+from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function
 from mlpro.bf.streams import InstDict, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import ActionElement, Action, System
@@ -34,19 +35,29 @@ from mlpro.bf.various import Log
 ## -------------------------------------------------------------------------------------------------
 class SetPoint (Instance):
     """
+    Represents a new setpoint in a control loop.
+
+    Parameters
+    ----------
+    p_setpoint_data : Element
+        Container for new setpoint values.
+    p_tstamp : TStampType 
+        Time stamp.
+    **p_kwargs
+        Optional further keyword arguments.
     """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_setpoint_data: Element, 
-                  p_tstamp: TStampType = None, 
+                  p_tstamp: TStampType, 
                   **p_kwargs ):
         
         super().__init__( p_feature_data = p_setpoint_data, 
                           p_label_data = None, 
                           p_tstamp = p_tstamp, 
                           **p_kwargs )
-
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _get_values(self):
@@ -56,6 +67,8 @@ class SetPoint (Instance):
 ## -------------------------------------------------------------------------------------------------
     def _set_values(self, p_values):
         self.get_feature_data().set_values( p_values = p_values)
+        self._raise_event( p_event_id = self.C_EVENT_ID_SETPOINT_CHANGED, 
+                           p_event_object = Event( p_raising_object=self) )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -97,7 +110,6 @@ class Controller (StreamTask):
 
     C_TYPE          = 'Controller'
     C_NAME          = '????'
-
 
 ## -------------------------------------------------------------------------------------------------
     def set_parameter(self, **p_param):
@@ -268,13 +280,16 @@ class ControlSystem (StreamTask):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlPanel (Log):
+class ControlPanel (EventManager):
     """
     Enables external control of a closed-loop control.
     """
 
-    C_TYPE          = 'Control Panel'
-    C_NAME          = '????'
+    C_TYPE                  = 'Control Panel'
+    C_NAME                  = '????'
+
+    C_EVENT_ID_SETPOINT_CHG = 'Setpoint changed'
+
 
 ## -------------------------------------------------------------------------------------------------
     def start(self):
@@ -327,6 +342,8 @@ class ControlPanel (Log):
 
         self.log(Log.C_LOG_TYPE_S, 'Setpoint values changed to', p_setpoint.values)
         self._change_setpoint( p_setpoint = p_setpoint )
+        self._raise_event( p_event_id = self.C_EVENT_ID_SETPOINT_CHANGED,
+                           p_event_object = Event( p_raising_object = self ))
 
 
 ## -------------------------------------------------------------------------------------------------
