@@ -82,7 +82,29 @@ class SetPoint (Instance):
 ## -------------------------------------------------------------------------------------------------
 class ControlError (Instance):
     """
+    Represents a control error in a control loop.
+
+    Parameters
+    ----------
+    p_error_data : Element
+        Container for new error values.
+    p_tstamp : TStampType 
+        Time stamp.
+    **p_kwargs
+        Optional further keyword arguments.
     """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_error_data: Element, 
+                  p_tstamp : TStampType, 
+                  **p_kwargs ):
+        
+        super().__init__( p_feature_data = p_error_data, 
+                          p_label_data = None, 
+                          p_tstamp = p_tstamp, 
+                          **p_kwargs )
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _get_values(self):
@@ -253,21 +275,19 @@ class ControlSystem (StreamTask):
     """
 
     C_TYPE          = 'Control System'
-    C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_system : System,
                   p_name: str = None, 
                   p_range_max=Task.C_RANGE_THREAD, 
-                  p_duplicate_data: bool = False, 
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
         
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
-                          p_duplicate_data = p_duplicate_data, 
+                          p_duplicate_data = False, 
                           p_visualize = p_visualize, 
                           p_logging = p_logging, 
                           **p_kwargs )
