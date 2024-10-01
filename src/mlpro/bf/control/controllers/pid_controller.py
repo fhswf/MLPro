@@ -23,7 +23,7 @@ https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_c
 from mlpro.bf.math.basics import Log,Set
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.systems import Action
-from mlpro.bf.control.basics import CTRLError, Controller
+from mlpro.bf.control.basics import ControlError, Controller
 from mlpro.bf.systems.basics import ActionElement
 from mlpro.bf.various import Log
 from datetime import datetime, timedelta
@@ -76,12 +76,13 @@ class PIDController (Controller):
         self.Ti = p_param.get('Ti',self.Ti)
         #set Tv value
         p_param.get('Tv',self.Tv)     
-
-    
+## -------------------------------------------------------------------------------------------------
+    def get_parameter_values(self)-> np.ndarray:
+        return np.array([self.Kp,self.Ti,self.Tv])
 
 ## -------------------------------------------------------------------------------------------------
 
-    def _compute_action(self, p_ctrl_error: CTRLError, p_action_element: ActionElement, p_ctrl_id: int = 0, p_ae_id: int = 0):  
+    def _compute_action(self, p_ctrl_error: ControlError, p_action_element: ActionElement, p_ctrl_id: int = 0, p_ae_id: int = 0):  
 
         """
         Custom method to compute and an action based on an incoming control error. The result needs
