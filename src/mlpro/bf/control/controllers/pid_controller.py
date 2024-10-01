@@ -20,13 +20,9 @@ https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_c
 
 """
 
-from mlpro.bf.math.basics import Log,Set
 from mlpro.bf.mt import Log, Task
-from mlpro.bf.systems import Action
 from mlpro.bf.control.basics import ControlError, Controller
 from mlpro.bf.systems.basics import ActionElement
-from mlpro.bf.various import Log
-from datetime import datetime, timedelta
 import numpy as np 
 
 
