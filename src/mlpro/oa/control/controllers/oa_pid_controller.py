@@ -1,20 +1,7 @@
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.bf.ml.basics import *
-from mlpro.bf.streams import InstDict
-from mlpro.rl import Policy, FctReward
-#from mlpro.oa.control.basics import OAController
-from mlpro.bf.math.basics import Log,Set,MSpace,Dimension
-from mlpro.bf.mt import Log, Task
-from mlpro.bf.systems import Action
-from mlpro.bf.control.basics import  ControlError, Controller, SetPoint
-from mlpro.bf.systems.basics import ActionElement, State
-from mlpro.bf.various import Log
-from mlpro.bf.streams import InstDict, Instance
-from mlpro.rl.models_env_ada import SARSElement
-from mlpro_int_sb3.wrappers.basics import WrPolicySB32MLPro
-from stable_baselines3 import A2C, PPO, DQN, DDPG
-
-
+from mlpro.rl import Policy,SARSElement
+from mlpro.bf.systems import Action, State
 
 
 class RLPID(Policy):
@@ -26,12 +13,7 @@ class RLPID(Policy):
         self._policy = policy
         self._old_action = None #None
         self._action_space = p_action_space
-        """
-            policy_sb3 = WrPolicySB32MLPro( 
-            PPO(policy="MlpPolicy",n_steps=5,env=None,_init_setup_model=False,device="cpu")
-            ,p_cycle_limit=30,p_observation_space= p_observation_space
-            ,p_action_space=p_action_space,p_ada=p_ada)
-        """
+
 
     ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_par):
@@ -140,26 +122,5 @@ class RLPIDOffPolicy(Policy):
         action=self._pid_controller.compute_action(p_ctrl_error=p_obs)
 
         #return action
-        return action 
-    
-
-
-
-
-
-
-
-    
-        
-
-        
-
-
-
-    
-
-
-    
-
-    
+        return action   
 
