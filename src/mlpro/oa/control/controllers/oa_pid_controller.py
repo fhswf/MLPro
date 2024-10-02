@@ -6,7 +6,7 @@ from mlpro.bf.systems import Action, State
 
 class RLPID(Policy):
 
-    def __init__(self, p_observation_space: MSpace, p_action_space: MSpace,pid_controller:PIDController ,policy:Policy=None,p_id=None, p_buffer_size: int = 1, p_ada: bool = True, p_visualize: bool = False, p_logging=Log.C_LOG_ALL ):
+    def __init__(self, p_observation_space: MSpace, p_action_space: MSpace,pid_controller:PIDController ,policy:Policy,p_id=None, p_buffer_size: int = 1, p_ada: bool = True, p_visualize: bool = False, p_logging=Log.C_LOG_ALL ):
         super().__init__(p_observation_space, p_action_space, p_id, p_buffer_size, p_ada, p_visualize, p_logging)
 
         self._pid_controller = pid_controller
@@ -45,7 +45,12 @@ class RLPID(Policy):
             self._old_action = Action(p_action_space=self._action_space,p_values=self._pid_controller.get_parameter_values())
         
         #get SARS Elements 
-        p_state,p_action,p_reward,p_state_new=tuple(p_sars_elem.get_data().keys())
+        p_state,p_action,p_reward,p_state_new=tuple(p_sars_elem.get_data().values())
+
+
+        
+        # compute new action with new error value (second s of Sars element)
+        self._old_action=self._policy.compute_action(p_obs=p_state_new)
 
         # create a new SARS
         p_sars_elem_new = SARSElement(p_state=p_state,
@@ -54,10 +59,9 @@ class RLPID(Policy):
                                       p_state_new=p_state_new)
         
         #adapt own policy
-        is_adapted = self._policy.adapt(p_kwargs=p_sars_elem_new)
+        is_adapted = self._policy._adapt(p_sars_elem_new)
 
-        # compute new action with new error value (second s of Sars element)
-        self._old_action=self._policy.compute_action(p_obs=p_state_new)
+
 
         #get the pid paramter values 
         pid_values = self._old_action.get_feature_data().get_values()
