@@ -71,7 +71,8 @@ class PIDController (Controller):
         # set Ti value
         self.Ti = p_param.get('Ti',self.Ti)
         #set Tv value
-        p_param.get('Tv',self.Tv)     
+        self.Tv =p_param.get('Tv',self.Tv)  
+           
 ## -------------------------------------------------------------------------------------------------
     def get_parameter_values(self)-> np.ndarray:
         return np.array([self.Kp,self.Ti,self.Tv])
