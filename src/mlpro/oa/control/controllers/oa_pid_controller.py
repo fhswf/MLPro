@@ -40,34 +40,34 @@ class RLPID(Policy):
     
     def _adapt(self, p_sars_elem: SARSElement) -> bool:
 
-        if self._old_action is None:
-            #create a pid action
-            self._old_action = Action(p_action_space=self._action_space,p_values=self._pid_controller.get_parameter_values())
+        is_adapted = False
+
+        #compute new action with new error value (second s of Sars element)
+        self._old_action = self._policy.compute_action(p_obs=p_state_new) 
         
-        #get SARS Elements 
-        p_state,p_action,p_reward,p_state_new=tuple(p_sars_elem.get_data().values())
+        if self._old_action is not None:
+
+            #get SARS Elements 
+            p_state,p_action,p_reward,p_state_new=tuple(p_sars_elem.get_data().values())
 
 
-        
-        # compute new action with new error value (second s of Sars element)
-        self._old_action=self._policy.compute_action(p_obs=p_state_new)
+           # create a new SARS
+            p_sars_elem_new = SARSElement(p_state=p_state,
+                                        p_action=self._old_action,
+                                        p_reward=p_reward, 
+                                        p_state_new=p_state_new)
+            
+            #adapt own policy
+            is_adapted = self._policy._adapt(p_sars_elem_new)        
+                
+            # compute new action with new error value (second s of Sars element)
+            self._old_action=self._policy.compute_action(p_obs=p_state_new)
 
-        # create a new SARS
-        p_sars_elem_new = SARSElement(p_state=p_state,
-                                      p_action=self._old_action,
-                                      p_reward=p_reward, 
-                                      p_state_new=p_state_new)
-        
-        #adapt own policy
-        is_adapted = self._policy._adapt(p_sars_elem_new)
+            #get the pid paramter values 
+            pid_values = self._old_action.get_feature_data().get_values()
 
-
-
-        #get the pid paramter values 
-        pid_values = self._old_action.get_feature_data().get_values()
-
-        #set paramter pid
-        self._pid_controller.set_parameter(p_param={"Kp":pid_values[0],
+            #set paramter pid
+            self._pid_controller.set_parameter(p_param={"Kp":pid_values[0],
                                                     "Ti":pid_values[1],
                                                     "Tv":pid_values[2]})
         return is_adapted 
@@ -88,7 +88,7 @@ class RLPIDOffPolicy(Policy):
         super().__init__(p_observation_space, p_action_space, p_id, p_buffer_size, p_ada, p_visualize, p_logging)
 
         self._pid_controller = pid_controller 
-        self._action_space = p_action_space.get_dim(p_id=0).get
+        self._action_space = p_action_space.get_dim(p_id=0)
         
         
     def _init_hyperparam(self, **p_par):
