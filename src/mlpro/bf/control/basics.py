@@ -25,7 +25,7 @@ from mlpro.bf.mt import Task, Workflow
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function
 from mlpro.bf.streams import InstDict, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
-from mlpro.bf.systems import ActionElement, Action, System
+from mlpro.bf.systems import ActionElement, Action, State, System
 from mlpro.bf.various import Log
 
 
@@ -295,6 +295,27 @@ class ControlSystem (StreamTask):
         self._system : System = p_system
 
 
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst: InstDict ):
+
+        # 0 Intro
+        action : Action = None
+        state  : State  = None
+
+        # 1 Get action from instance dict
+        for (inst_type, inst) in p_inst.values():
+            if isinstance(p_inst,Action):
+                action = p_inst
+            elif isinstance(p_inst,State):
+                state
+
+
+        # 2 Hand over action to wrapped system
+
+        # 3 Add system state t instance dict
+        raise NotImplementedError
+
+
 
 
 
@@ -428,6 +449,11 @@ class ControlCycle (StreamWorkflow):
                           p_visualize=p_visualize,
                           p_logging=p_logging, 
                           **p_kwargs )
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_control_panel(self) -> ControlPanel:
+        return self.get_so()
 
 
 
@@ -435,26 +461,54 @@ class ControlCycle (StreamWorkflow):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlScenario ( StreamScenario ):
+class ControlScenario (StreamScenario):
     """
     ...
     """
 
+    C_TYPE      = 'Control Scenario'
+
+ ## -------------------------------------------------------------------------------------------------
+    def setup(self):
+        self._control_cycle = self._setup( p_mode=self.get_mode(), 
+                                           p_visualize=self.get_visualization(),
+                                           p_logging=self.get_log_level() )
+    
+
+ ## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlCycle:
+        """
+        Custom method to set up a control cycle. Create a new object of type ControlCycle and add
+        all control tasks of your scenario.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_visualize : bool
+            Boolean switch for visualisation.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL. 
+
+        Returns
+        -------
+        ControlCycle
+            Object of type ControlCycle.
+        """
+
+        raise NotImplementedError
+
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_mode, 
-                  p_cycle_limit=0, 
-                  p_visualize:bool=False, 
-                  p_logging=Log.C_LOG_ALL ):
+    def _set_mode(self, p_mode):
+        self._control_cycle.set_mode
 
-        self._control_cycle : ControlCycle = None
 
-        super.__init__( p_mode, 
-                        p_cycle_limit=p_cycle_limit, 
-                        p_auto_setup=True, 
-                        p_visualize=p_visualize, 
-                        p_logging=p_logging )
-        
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+        self._iterator = iter(self._stream)
+        self._iterator.set_random_seed(p_seed=p_seed)
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_control_panel(self) -> ControlPanel:
@@ -464,4 +518,5 @@ class ControlScenario ( StreamScenario ):
         panel : ControlPanel
             Object that enables the external control of a closed-loop control process.
         """
-        return self._control_cycle.get_so()
+
+        return self._control_cycle.get_control_panel()

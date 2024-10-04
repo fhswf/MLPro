@@ -25,7 +25,7 @@ You will learn:
 
 from time import sleep
 
-from mlpro.bf.control import Controller, ControlSystem, ControlCycle, ControlScenario
+from mlpro.bf.control import Controller, ControlSystem, ControlScenarioBasic
 from mlpro.bf.systems.pool import DoublePendulumSystemS4
 
 
@@ -36,23 +36,6 @@ from mlpro.bf.systems.pool import DoublePendulumSystemS4
 class MyController (Controller):
     pass
 
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MyControlScenario (ControlScenario):
-
-## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize: bool, p_logging):
-
-        # 1 Prepare control system (e.g. by wrapping)
-       ctrl_sys = ControlSystem( p_system = DoublePendulumSystemS4() )
-
-        # 2 Prepare control cycle
-
-        # ...
 
 
 
@@ -74,12 +57,24 @@ else:
 
 
 # 2 Init control scenario
-myscenario = MyControlScenario()
+
+# 2.1 Controller
+mycontroller = MyController()
+
+# 2.2 Control system
+mycontrolsystem = ControlSystem( p_system = DoublePendulumSystemS4() )
+
+# 2.3 Basic control scenario
+myscenario = ControlScenarioBasic( p_controller = mycontroller,
+                                   p_control_system = mycontrolsystem,
+                                   p_visualize = visualize,
+                                   p_logging = logging )
+
 panel      = myscenario.get_control_panel()
 
 
 
-# 3 Start the control process asynchronously
+# 3 Start the control process in background
 myscenario.run()
 panel.start()
 
