@@ -11,10 +11,11 @@
 ## -- 2024-09-11  0.3.0     DA       - class CTRLError renamed ControlError
 ## --                                - new class ControlPanel
 ## -- 2024-09-27  0.4.0     DA       Class ControlPanel: new parent EventManager
+## -- 2024-10-04  0.5.0     DA       Updates on class Controller
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-09-27)
+Ver. 0.5.0 (2024-10-04)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -24,7 +25,7 @@ from mlpro.bf.various import Log, TStampType
 from mlpro.bf.mt import Task, Workflow
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function
-from mlpro.bf.streams import InstDict, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
+from mlpro.bf.streams import InstDict, InstType, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import ActionElement, Action, State, System
 from mlpro.bf.various import Log
 
@@ -141,7 +142,18 @@ class Controller (StreamTask):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
         
-        raise NotImplementedError
+        # 1 Get control error instance
+        for inst_id, (inst_type, inst) in p_inst.items():
+            if isinstance(inst, ControlError):
+                ctrl_error = inst
+                break
+
+        # 2 Compute control action
+        action = self.compute_action( p_ctrl_error = ctrl_error )
+
+        # 3 Remove control error and add action
+        del p_inst[ctrl_error.id]
+        p_inst[action.id] = (InstTypeNew, action)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,6 +171,9 @@ class Controller (StreamTask):
         -------
 
         """
+
+        # Create new action
+        # get action id from so
 
         raise NotImplementedError
     
