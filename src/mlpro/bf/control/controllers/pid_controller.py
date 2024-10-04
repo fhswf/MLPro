@@ -67,12 +67,14 @@ class PIDController (Controller):
         """
 
         # set kp value
-        self.Kp = p_param.get('Kp',self.Kp)
+        self.Kp = p_param['p_param']['Kp']
         # set Ti value
-        self.Ti = p_param.get('Ti',self.Ti)
+        self.Ti = p_param['p_param']['Ti']
         #set Tv value
-        self.Tv =p_param.get('Tv',self.Tv)  
-           
+        self.Tv =p_param['p_param']['Tv']
+
+        print(self.Kp,self.Ti,self.Tv) #Test
+
 ## -------------------------------------------------------------------------------------------------
     def get_parameter_values(self)-> np.ndarray:
         return np.array([self.Kp,self.Ti,self.Tv])
