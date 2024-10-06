@@ -12,17 +12,18 @@
 ## --                                - new class ControlPanel
 ## -- 2024-09-27  0.4.0     DA       Class ControlPanel: new parent EventManager
 ## -- 2024-10-04  0.5.0     DA       Updates on class Controller
+## -- 2024-10-06  0.6.0     DA       New classes ControlTask, Operator
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2024-10-04)
+Ver. 0.6.0 (2024-10-06)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.mt import Task, Workflow
+from mlpro.bf.mt import Range, Task, Workflow
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function
 from mlpro.bf.streams import InstDict, InstType, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
@@ -124,15 +125,68 @@ class ControlError (Instance):
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Controller (StreamTask):
+class ControlTask (StreamTask):
+    """
+    Base class for all control tasks.
+    """
+
+    C_TYPE      = 'Control Task'
+
+## -------------------------------------------------------------------------------------------------
+    def _get_instance(self, p_inst: InstDict, p_type: type, p_remove: bool = False) -> Instance:
+        """
+        Gets and optionally removes an instance of a particular type from the p_inst dictionary.
+
+        Parameters
+        ----------
+        p_inst: InstDict
+            Dictionary of instances.
+        p_type: type
+            Type of instance to be found.
+        p_remove: bool = False
+            If true, the found instance is removed.
+        """
+
+        inst_found : Instance = None
+        
+        for (inst_type, inst) in p_inst.values():
+            if isinstance( inst, p_type):
+                inst_found = inst
+                break
+        
+        if ( p_remove ) and ( inst_found is not None ):
+            del p_inst[inst_found.id]
+
+        return inst_found
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Operator (ControlTask):
+    """
+    Base class for all operators.
+    """
+
+    C_TYPE      = 'Operator'
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Controller (ControlTask):
     """
     Template class for closed-loop controllers.
     """
 
     C_TYPE          = 'Controller'
-    C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
     def set_parameter(self, **p_param):
@@ -143,6 +197,9 @@ class Controller (StreamTask):
     def _run(self, p_inst: InstDict):
         
         # 1 Get control error instance
+
+
+        ...
         for inst_id, (inst_type, inst) in p_inst.items():
             if isinstance(inst, ControlError):
                 ctrl_error = inst
@@ -284,7 +341,7 @@ class MultiController (Controller, StreamWorkflow):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlSystem (StreamTask):
+class ControlSystem (ControlTask):
     """
     Wrapper class for state-based systems.
     """
@@ -417,6 +474,35 @@ class ControlPanel (EventManager):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class ControlShared (StreamShared, ControlPanel):
+    """
+    ...
+    """
+
+    C_TID_ADMIN     = 'adm'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+        StreamShared.__init__(self, p_range=p_range)
+        self._next_inst_id = 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_next_inst_id(self) -> int:
+        """
+        Returns the next instance id.
+
+        Returns
+        -------
+        int
+            Next instance id.
+        """
+
+        self.lock( p_tid = self.C_TID_ADMIN )
+        next_id = self._next_inst_id
+        self._next_inst_id += 1
+        self.unlock()
+        return next_id
+    
     
 ## -------------------------------------------------------------------------------------------------
     def _start(self):

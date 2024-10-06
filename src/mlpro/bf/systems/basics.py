@@ -51,23 +51,23 @@
 ## -- 2024-09-09  2.3.0     DA       Class Action: parent TSTamp replaced by Instance
 ## -- 2024-09-11  2.4.0     DA       - code review and documentation
 ## --                                - new method State.get_kwargs()
+## -- 2024-10-06  2.5.0     DA       New property attribute State.value
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-09-11)
+Ver. 2.5.0 (2024-10-06)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
-from typing import List
 
 import numpy as np
 
 from mlpro.bf.mt import Range
 from mlpro.bf.streams.basics import Instance
-from mlpro.bf.various import TStamp, ScientificObject, Persistent
+from mlpro.bf.various import ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings
 from matplotlib.figure import Figure
@@ -222,6 +222,9 @@ class State(Instance, Element):
             pass
         return copied_state
 
+
+## -------------------------------------------------------------------------------------------------
+    values = property( fget=Element.get_values, fset=Element.set_values)
 
 
 
