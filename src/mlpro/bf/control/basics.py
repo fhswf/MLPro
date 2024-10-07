@@ -13,10 +13,12 @@
 ## -- 2024-09-27  0.4.0     DA       Class ControlPanel: new parent EventManager
 ## -- 2024-10-04  0.5.0     DA       Updates on class Controller
 ## -- 2024-10-06  0.6.0     DA       New classes ControlTask, Operator
+## -- 2024-10-07  0.7.0     DA       - new method ControlShared.get_tstamp()
+## --                                - refactoring of class Controller
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2024-10-06)
+Ver. 0.7.0 (2024-10-07)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -125,7 +127,6 @@ class ControlError (Instance):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class ControlTask (StreamTask):
@@ -191,22 +192,26 @@ class Controller (ControlTask):
         Input (or error) space of the controller.
     p_output_space : MSpace 
         Output (or action) space of the controller.
+    p_id = None
+        Unique id of the controller
+    ...
     """
 
     C_TYPE          = 'Controller'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_input_space : MSpace,
-                  p_output_space : MSpace,
+                  p_error_space : MSpace,
+                  p_action_space : MSpace,
+                  p_id = None,
                   p_name: str = None, 
                   p_range_max = Task.C_RANGE_THREAD, 
                   p_visualize: bool = False, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
         
-        self._input_space : MSpace  = p_input_space
-        self._output_space : MSpace = p_output_space
+        self._error_space : MSpace  = p_error_space
+        self._action_space : MSpace = p_action_space
         
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
@@ -214,6 +219,9 @@ class Controller (ControlTask):
                           p_visualize = p_visualize, 
                           p_logging = p_logging, 
                           **p_kwargs )
+        
+        if p_id is not None:
+            self.id = p_id
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -238,7 +246,8 @@ class Controller (ControlTask):
 
 
         # 2 Compute control action
-        action = self.compute_action( p_ctrl_error = ctrl_error )
+        action = self._get_instance( p_inst = p_inst, p_type = Action )
+        action = self.compute_action( p_ctrl_error = ctrl_error, p_action = action )
 
 
         # 3 Remove control error and add action
@@ -247,15 +256,16 @@ class Controller (ControlTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_ctrl_error: ControlError) -> Action:
+    def compute_action( self, p_ctrl_error: ControlError, p_action: Action = None ) -> Action:
         """
-        Custom method to compute and return an action based on an incoming control error.
+        Computes a control action based on an incoming control error.
 
         Parameters
         ----------
         p_ctrl_error : CTRLError
-            Control error.
-
+            Control error object.
+        p_action : Action = None
+            Optional Action object to be filled.
 
         Returns
         -------
@@ -263,33 +273,37 @@ class Controller (ControlTask):
             New action object
         """
 
-        # 1 Create new action
-        new_action = Action( p_agent_id = self.id, )
-        # get action id from so
+        # 1 Create new action if not provided from outside
+        if p_action is None:
+            new_action = Action( p_agent_id = self.id, 
+                                 p_action_space = self._action_space, 
+                                 p_tstamp = self.get_so().get_tstamp() )
+        else:
+            new_action = p_action
+        
+        new_action.id = self.get_so().get_next_inst_id()
 
-        raise NotImplementedError
-    
+
+        # 2 Create new action element
+        new_action_elem = ActionElement( p_action_space = self._action_space )
+
+
+        # 3 Call custom method to fill the new action element
+        self._compute_action( p_ctrl_error = p_ctrl_error, 
+                              p_action_element = new_action_elem )
+        
+
+        # 4 Return the new action
+        return new_action
+
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_action( self, 
                          p_ctrl_error : ControlError, 
-                         p_action_element : ActionElement,
-                         p_ctrl_id : int = 0,
-                         p_ae_id : int = 0 ):
+                         p_action_element : ActionElement ):
         """
         Custom method to compute and an action based on an incoming control error. The result needs
-        to be stored in the action element handed over. I/O values can be accessed as follows:
-
-        SISO
-        ----
-        Get single error value: error_siso = p_ctrl_error.values[p_ctrl_id]
-        Set single action value: p_action_element.values[p_ae_id] = action_siso
-
-        MIMO
-        ----
-        Get multiple error values: error_mimo = p_ctrl_error.values
-        Set multiplie action values: p_action_element.values = action_mimo
-
+        to be stored in the action element handed over.
 
         Parameters
         ----------
@@ -297,10 +311,6 @@ class Controller (ControlTask):
             Control error.
         p_action_element : ActionElement
             Action element to be filled with resulting action value(s).
-        p_ctrl_id : int = 0
-            SISO controllers only. Id of the related source value in p_ctrl_error.
-        p_ae_id : int = 0 
-            SISO controller olny. Id of the related destination value in p_action_element.
         """
 
         raise NotImplementedError
@@ -405,22 +415,19 @@ class ControlSystem (ControlTask):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict ):
 
-        # 0 Intro
-        action : Action = None
-        state  : State  = None
-
-        # 1 Get action from instance dict
-        for (inst_type, inst) in p_inst.values():
-            if isinstance(p_inst,Action):
-                action = p_inst
-            elif isinstance(p_inst,State):
-                state
+        # 1 Get and remove action and state from instance dict
+        action = self._get_instance( p_inst = p_inst, p_type = Action, p_remove = True )
+        state  = self._get_instance( p_inst = p_inst, p_type = State, p_remove = True )
 
 
-        # 2 Hand over action to wrapped system
-
-        # 3 Add system state t instance dict
-        raise NotImplementedError
+        # 2 Let the wrapped system process the action
+        if self.system.process_action( p_action = action ):
+            state = self.system.get_state()
+            state.id = self.get_so().get_next_inst_id()
+            state.tstamp = self.get_so().get_tstamp()
+            p_inst[state.id] = ( InstTypeNew, state)
+        else:
+            self.log(Log.C_LOG_TYPE_E, 'Action processing failed!')
 
 
 
@@ -537,6 +544,12 @@ class ControlShared (StreamShared, ControlPanel):
         self._next_inst_id += 1
         self.unlock()
         return next_id
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_tstamp(self) -> TStampType:
+        
+        raise NotImplementedError
     
     
 ## -------------------------------------------------------------------------------------------------
