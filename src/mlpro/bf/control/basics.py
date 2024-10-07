@@ -25,7 +25,7 @@ This module provides basic classes around the topic closed-loop control.
 from mlpro.bf.various import Log, TStampType
 from mlpro.bf.mt import Range, Task, Workflow
 from mlpro.bf.events import Event, EventManager
-from mlpro.bf.math import Element, Function
+from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstType, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import ActionElement, Action, State, System
 from mlpro.bf.various import Log
@@ -184,12 +184,49 @@ class Operator (ControlTask):
 class Controller (ControlTask):
     """
     Template class for closed-loop controllers.
+
+    Parameters
+    ----------
+    p_input_space : MSpace
+        Input (or error) space of the controller.
+    p_output_space : MSpace 
+        Output (or action) space of the controller.
     """
 
     C_TYPE          = 'Controller'
 
 ## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_input_space : MSpace,
+                  p_output_space : MSpace,
+                  p_name: str = None, 
+                  p_range_max = Task.C_RANGE_THREAD, 
+                  p_visualize: bool = False, 
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+        
+        self._input_space : MSpace  = p_input_space
+        self._output_space : MSpace = p_output_space
+        
+        super().__init__( p_name = p_name, 
+                          p_range_max = p_range_max, 
+                          p_duplicate_data = False, 
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging, 
+                          **p_kwargs )
+        
+
+## -------------------------------------------------------------------------------------------------
     def set_parameter(self, **p_param):
+        """
+        Custom method to set/change the parameters of a specific controller implementation.
+
+        Parameters
+        ----------
+        **p_param
+            Parameters of the controller.
+        """
+
         pass
 
 
@@ -197,16 +234,12 @@ class Controller (ControlTask):
     def _run(self, p_inst: InstDict):
         
         # 1 Get control error instance
+        ctrl_error = self._get_instance( p_inst = p_inst, p_type = ControlError, p_remove = True )
 
-
-        ...
-        for inst_id, (inst_type, inst) in p_inst.items():
-            if isinstance(inst, ControlError):
-                ctrl_error = inst
-                break
 
         # 2 Compute control action
         action = self.compute_action( p_ctrl_error = ctrl_error )
+
 
         # 3 Remove control error and add action
         del p_inst[ctrl_error.id]
@@ -226,10 +259,12 @@ class Controller (ControlTask):
 
         Returns
         -------
-
+        Action
+            New action object
         """
 
-        # Create new action
+        # 1 Create new action
+        new_action = Action( p_agent_id = self.id, )
         # get action id from so
 
         raise NotImplementedError
