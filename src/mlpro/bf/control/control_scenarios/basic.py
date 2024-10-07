@@ -74,7 +74,8 @@ class ControlScenarioBasic (ControlScenario):
     def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlCycle:
         
         # 1 Create a new control cycle
-        control_cycle = ControlCycle( p_visualize = p_visualize,
+        control_cycle = ControlCycle( p_mode = p_mode,
+                                      p_visualize = p_visualize,
                                       p_logging = p_logging )
         
 

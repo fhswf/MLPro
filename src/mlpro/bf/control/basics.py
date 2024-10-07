@@ -24,8 +24,11 @@ This module provides basic classes around the topic closed-loop control.
 
 """
 
+from matplotlib.figure import Figure
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.mt import Range, Task, Workflow
+from mlpro.bf.mt import Figure, PlotSettings, Range, Task, Workflow
+from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstType, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
@@ -575,7 +578,7 @@ class ControlShared (StreamShared, ControlPanel):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlCycle (StreamWorkflow):
+class ControlCycle (StreamWorkflow, Mode):
     """
     Container class for all tasks of a control cycle.
     """
@@ -585,6 +588,7 @@ class ControlCycle (StreamWorkflow):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
+                  p_mode,
                   p_name: str = None, 
                   p_range_max = Workflow.C_RANGE_THREAD, 
                   p_class_shared = ControlShared, 
@@ -592,17 +596,45 @@ class ControlCycle (StreamWorkflow):
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        super().__init__( p_name=p_name, 
-                          p_range_max=p_range_max, 
-                          p_class_shared=p_class_shared, 
-                          p_visualize=p_visualize,
-                          p_logging=p_logging, 
-                          **p_kwargs )
+        StreamWorkflow.__init__( self, 
+                                 p_name = p_name, 
+                                 p_range_max = p_range_max, 
+                                 p_class_shared = p_class_shared, 
+                                 p_visualize = p_visualize,
+                                 p_logging = p_logging, 
+                                 **p_kwargs )
         
+        Mode.__init__( self, 
+                       p_mode = p_mode,
+                       p_logging = p_logging )
 
 ## -------------------------------------------------------------------------------------------------
     def get_control_panel(self) -> ControlPanel:
         return self.get_so()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def set_mode(self, p_mode):
+
+        if p_mode == self._mode: return
+
+        Mode.set_mode( self, p_mode = p_mode )
+
+        for task in self.tasks:
+            try:
+                task.set_mode( p_mode = p_mode )
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_task(self, p_task: Task, p_pred_tasks: list = None):
+        StreamWorkflow.add_task( self, p_task = p_task, p_pred_tasks = p_pred_tasks)
+        
+        try:
+            p_task.set_mode( p_mode = self._mode )
+        except:
+            pass
 
 
 
@@ -650,13 +682,12 @@ class ControlScenario (StreamScenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _set_mode(self, p_mode):
-        self._control_cycle.set_mode
+        self._control_cycle.set_mode( p_mode = p_mode)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
-        self._iterator = iter(self._stream)
-        self._iterator.set_random_seed(p_seed=p_seed)
+        self._control_cycle.reset( p_seed = p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -669,3 +700,16 @@ class ControlScenario (StreamScenario):
         """
 
         return self._control_cycle.get_control_panel()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self):
+        self._control_cycle.run()
+        return False, False, False, False
+    
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+        self._control_cycle.init_plot( p_figure = p_figure,
+                                       p_plot_settings = p_plot_settings )
+        
