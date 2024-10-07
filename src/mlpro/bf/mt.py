@@ -36,10 +36,11 @@
 ## -- 2024-05-31  1.9.2     DA       Class Task: new exception rule for MacOs in meth. init_plot()
 ## -- 2024-06-17  2.0.0     DA       Class Workflow: new method get_tasks()
 ## -- 2024-06-18  2.1.0     DA       Class Task: new parent class KWArgs
+## -- 2024-10-07  2.2.0     DA       Classes Task, Workflow: new method reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2024-06-18)
+Ver. 2.2.0 (2024-10-07)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -559,6 +560,11 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
         """
 
         return self.get_id()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, **p_kwargs):
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -908,6 +914,12 @@ class Workflow (Task):
 ## -------------------------------------------------------------------------------------------------
     def get_tasks(self) -> list:
         return self._tasks
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, **p_kwargs):
+        for task in self._tasks:
+            task.reset(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------

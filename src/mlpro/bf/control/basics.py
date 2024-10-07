@@ -364,7 +364,7 @@ class ControlSystem (ControlTask):
                           p_logging = p_logging, 
                           **p_kwargs )
 
-        self._system : System = p_system
+        self.system : System = p_system
 
 
 ## -------------------------------------------------------------------------------------------------

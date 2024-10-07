@@ -22,7 +22,7 @@ This module provides basic classes around the topic online-adaptive closed-loop 
 
 from mlpro.bf.systems import State, Action
 from mlpro.bf.control import *
-from mlpro.bf.ml import Model
+from mlpro.bf.ml import Model, Training, TrainingResults
 from mlpro.bf.streams import InstDict
 
 
@@ -156,7 +156,7 @@ class OAController (Controller, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAMultiController (MultiController, Model):
+class OAMultiController: # (MultiController, Model):
     """
     """
 
@@ -169,7 +169,7 @@ class OAMultiController (MultiController, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlSystem (ControlSystem, Model):
+class OAControlSystem: # (ControlSystem, Model):
     """
     Wrapper class for state-based systems.
     """
@@ -183,7 +183,7 @@ class OAControlSystem (ControlSystem, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlPanel (ControlPanel):
+class OAControlPanel: # (ControlPanel):
     """
     Enables external control of a closed-loop control.
     """
@@ -197,7 +197,7 @@ class OAControlPanel (ControlPanel):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlShared (ControlShared, OAControlPanel):
+class OAControlShared: # (ControlShared, OAControlPanel):
     """
     ...
     """
@@ -210,7 +210,7 @@ class OAControlShared (ControlShared, OAControlPanel):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlCycle (ControlCycle, Model):
+class OAControlCycle: # (ControlCycle, Model):
     """
     Container class for all tasks of a control cycle.
     """
@@ -224,7 +224,33 @@ class OAControlCycle (ControlCycle, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlScenario (ControlScenario, Model):
+class OAControlScenario: # (ControlScenario, Model):
+    """
+    ...
+    """
+
+    pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAControlTrainingResults (TrainingResults):
+    """
+    ...
+    """
+
+    pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAControlTraining (Training):
     """
     ...
     """

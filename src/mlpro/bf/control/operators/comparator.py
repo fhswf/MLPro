@@ -56,23 +56,23 @@ class Comparator (Operator):
 
 ## -------------------------------------------------------------------------------------------------
     def get_control_error(self, p_setpoint: SetPoint, p_state: State) -> ControlError:
-            """
-            Returns a new control error as the difference betweeen a specified setpoint and state.
+        """
+        Returns a new control error as the difference betweeen a specified setpoint and state.
 
-            Parameters
-            ----------
-            p_setpoint : SetPoint
-                Setpoint object.
-            p_state : State
-                State object.
+        Parameters
+        ----------
+        p_setpoint : SetPoint
+            Setpoint object.
+        p_state : State
+            State object.
 
-            Returns
-            -------
-            ControlError
-                New control error object.
-            """
+        Returns
+        -------
+        ControlError
+            New control error object.
+        """
 
-            error_data   = Element( p_set=p_state.get_feature_data().get_related_set() )
-            error_values = np.subtract( np.array(p_state.values), np.array(p_setpoint.values) )
-            error_data.set_values( p_values = error_values )
-            return ControlError( p_error_data = error_data, p_tstamp = p_state.tstamp )
+        error_data   = Element( p_set=p_state.get_feature_data().get_related_set() )
+        error_values = np.subtract( np.array(p_state.values), np.array(p_setpoint.values) )
+        error_data.set_values( p_values = error_values )
+        return ControlError( p_error_data = error_data, p_tstamp = p_state.tstamp )

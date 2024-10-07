@@ -15,7 +15,7 @@ This module provides a simplified container class for a basic synchronous contro
 
 - a controller
 - a control system
-- an optional action incrementer
+- an optional action cumulator
 
 """
 
@@ -88,6 +88,7 @@ class ControlScenarioBasic (ControlScenario):
         # 3 Add the controller
         control_cycle.add_task( p_task = self._controller, p_pred_tasks = [comparator] )
 
+
         # 4 Optionally add a cumulator
         if self._cumulated_actions:
             cumulator = Cumulator( p_visualize = p_visualize,
@@ -98,7 +99,12 @@ class ControlScenarioBasic (ControlScenario):
 
         else:
             pred_sys = self._controller
-        
-        
-        
 
+
+        # 5 Finally add the control system
+        control_cycle.add_task( p_task = self._control_system, p_pred_tasks = [pred_sys] )
+        self._control_system.system.set_mode( p_mode = p_mode )
+
+
+        # 6 Return the prepared control cycle
+        return control_cycle
