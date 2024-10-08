@@ -36,7 +36,7 @@ jobs:
 
       - name: Step 4.1 - Break if no changes were made
         if: ${{ steps.step4.outcome == 'failure' }}
-        run: exit 1       
+        run: exit 0       
 
       - name: Step 5 - Create Pull Request
         env:
