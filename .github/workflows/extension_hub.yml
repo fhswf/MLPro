@@ -13,11 +13,12 @@ jobs:
 
     steps:
       - name: Step 1 - Disable branch protection
-        uses: rlespinasse/github-branch-source-protector-action@v1.0.0
+        uses: lyubick/action-branch-protection@v1
         with:
-          github-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
-          branch: main
-          protection-action: disable
+          access-token: ${secrets.EXTENSION_HUB_UPDATES}
+          repository-name: fhswf/mlpro
+          branch-name: main
+          lock: false
         
       - name: Step 2 - Checkout branch main
         uses: actions/checkout@v4
@@ -40,9 +41,11 @@ jobs:
         continue-on-error: true
       - run: git push
 
-      - name: Step 5 - Restore branch protection
-        uses: rlespinasse/github-branch-source-protector-action@v1.0.0
+      - name: Step 6 - Restore branch protection
+        uses: lyubick/action-branch-protection@v1
         with:
-          github-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
-          branch: main
+          access-token: ${secrets.EXTENSION_HUB_UPDATES}
+          repository-name: fhswf/mlpro
+          branch-name: main
+          lock: true
           protection-action: enable
