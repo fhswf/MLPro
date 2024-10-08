@@ -32,7 +32,7 @@ jobs:
           git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
           git commit --message 'MLPro extension hub updated'
           git push origin temp-branch
-          continue-on-error: true
+        continue-on-error: true
 
       - name: Step 4.1 - Break if no changes were made
         if: ${{ steps.step4.outcome == 'failure' }}
