@@ -46,7 +46,7 @@ jobs:
         if: ${{ steps.step5.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
-        run: gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
+        run: gh pr create --title "Update Extension Hub" --body "This PR was created automatically." --head temp-branch --base main
 
       - name: Step 7 - Auto-Review Pull Request
         id: step7
