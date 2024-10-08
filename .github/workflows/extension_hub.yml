@@ -15,7 +15,7 @@ jobs:
       - name: Step 1 - Disable branch protection
         uses: lyubick/action-branch-protection@v1
         with:
-          access-token: ${secrets.EXTENSION_HUB_UPDATES}
+          access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
           repository-name: fhswf/mlpro
           branch-name: main
           lock: false
@@ -44,7 +44,7 @@ jobs:
       - name: Step 6 - Restore branch protection
         uses: lyubick/action-branch-protection@v1
         with:
-          access-token: ${secrets.EXTENSION_HUB_UPDATES}
+          access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
           repository-name: fhswf/mlpro
           branch-name: main
           lock: true
