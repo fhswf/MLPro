@@ -39,9 +39,9 @@ jobs:
 
       - name: Step 5 - Pull/push changes
         id: step5
-        run: |
+        run: git push origin temp-branch
 #          git pull origin temp-branch
-          git push origin temp-branch
+#          git push origin temp-branch
         continue-on-error: true
 
       - name: Step 6 - Create Pull Request
@@ -53,7 +53,7 @@ jobs:
 
       - name: Step 7 - Merge Pull Request
         id: step7
-        if: ${{ steps.step5.outcome == 'success' }}
+        if: ${{ steps.step6.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr merge --auto --delete-branch --merge
