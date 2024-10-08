@@ -18,7 +18,7 @@ jobs:
           access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
           repository-name: fhswf/mlpro
           branch-name: main
-          lock: false
+          lock: true
         
       - name: Step 2 - Checkout branch main
         uses: actions/checkout@v4
@@ -47,5 +47,4 @@ jobs:
           access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
           repository-name: fhswf/mlpro
           branch-name: main
-          lock: true
-          protection-action: enable
+          lock: false
