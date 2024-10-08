@@ -35,13 +35,15 @@ jobs:
         continue-on-error: true
 
       - name: Step 5 - Create Pull Request
-        if: ${{ steps.step4.outcome != 'failure' }}
+        id: step5
+        if: ${{ steps.step4.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
 
       - name: Step 6 - Merge Pull Request
-        if: ${{ steps.step4.outcome != 'failure' }}
+        id: step6
+        if: ${{ steps.step5.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr merge --auto --delete-branch
