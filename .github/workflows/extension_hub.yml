@@ -46,8 +46,10 @@ jobs:
         if: ${{ steps.step5.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
-        run: gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
-
+        run: |
+          gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
+          gh pr review --approve temp-branch
+          
       - name: Step 7 - Merge Pull Request
         id: step7
         if: ${{ steps.step6.outcome == 'success' }}
