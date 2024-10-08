@@ -40,7 +40,7 @@ jobs:
       - name: Step 5 - Pull/push changes
         id: step5
         run: |
-          git pull origin temp-branch
+#          git pull origin temp-branch
           git push origin temp-branch
         continue-on-error: true
 
