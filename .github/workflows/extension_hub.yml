@@ -34,16 +34,14 @@ jobs:
           git push origin temp-branch
         continue-on-error: true
 
-      - name: Step 4.1 - Break if no changes were made
-        if: ${{ steps.step4.outcome == 'failure' }}
-        run: exit 0       
-
       - name: Step 5 - Create Pull Request
+        if: ${{ steps.step4.outcome != 'failure' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
 
       - name: Step 6 - Merge Pull Request
+        if: ${{ steps.step4.outcome != 'failure' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr merge --auto --delete-branch
