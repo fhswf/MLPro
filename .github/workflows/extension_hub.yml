@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Step 1 - Disable branch protection
-        uses: lyubick/action-branch-protection@v1
-        with:
-          access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
-          repository-name: ${{ github.repository }}
-          branch-name: main
-          lock: false
+#      - name: Step 1 - Disable branch protection
+#        uses: lyubick/action-branch-protection@v1
+#        with:
+#          access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
+#          repository-name: ${{ github.repository }}
+#          branch-name: main
+#          lock: false
         
       - name: Step 2 - Checkout branch main
         uses: actions/checkout@v4
@@ -41,10 +41,10 @@ jobs:
         continue-on-error: true
       - run: git push
 
-      - name: Step 6 - Restore branch protection
-        uses: lyubick/action-branch-protection@v1
-        with:
-          access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
-          repository-name: ${{ github.repository }}
-          branch-name: main
-          lock: true
+#      - name: Step 6 - Restore branch protection
+#        uses: lyubick/action-branch-protection@v1
+#        with:
+#          access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
+#          repository-name: ${{ github.repository }}
+#          branch-name: main
+#          lock: true
