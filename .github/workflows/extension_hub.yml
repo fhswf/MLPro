@@ -12,38 +12,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Step 1 - Checkout branch main
-        uses: actions/checkout@v4
-
-      - name: Step 2 - Preparation 
+      - name: Step 1 - Preparation 
         run: |
           git config --global user.name mlpro-admin
           git config --global user.email "mlpro@listen.fh-swf.de"
+          git checkout -b temp-branch
           pip3 install dill
           pip3 install mlpro
           pip3 install PyGithub
 
-      - name: Step 3 - Updates on the extension hub
+      - name: Step 2 - Updates on the extension hub
         run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/sub/
        
-      - name: Step 4 - Commit and push changes
-        id: step4
+      - name: Step 3 - Commit and push changes
+        id: step3
         run: |
           git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
           git commit --message 'MLPro extension hub updated'
           git push origin temp-branch
         continue-on-error: true
 
-      - name: Step 5 - Create Pull Request
-        id: step5
-        if: ${{ steps.step4.outcome == 'success' }}
+      - name: Step 4 - Create Pull Request
+        id: step4
+        if: ${{ steps.step3.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
 
-      - name: Step 6 - Merge Pull Request
-        id: step6
-        if: ${{ steps.step5.outcome == 'success' }}
+      - name: Step 5 - Merge Pull Request
+        id: step5
+        if: ${{ steps.step4.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr merge --auto --delete-branch
