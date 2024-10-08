@@ -47,5 +47,5 @@ jobs:
         if: ${{ steps.step4.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
-        run: gh pr merge --auto --delete-branch
+        run: gh pr merge --auto --delete-branch --merge
         
