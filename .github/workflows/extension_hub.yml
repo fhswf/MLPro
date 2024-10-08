@@ -35,19 +35,19 @@ jobs:
           branch-name: main
           lock: false
         
-      - name: Step 5 - Commit changes
-        run: |
-          git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
-          git commit --message 'MLPro extension hub updated'
-          git push
-        continue-on-error: true
+#      - name: Step 5 - Commit changes
+#        run: |
+#          git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
+#          git commit --message 'MLPro extension hub updated'
+#          git push
+#        continue-on-error: true
 #      - run: git push
 
-      - name: Step 6 - Restore branch protection
-        uses: lyubick/action-branch-protection@v1
-        with:
-          access-token: ${{ secrets.DA_TEST }}
+#      - name: Step 6 - Restore branch protection
+#        uses: lyubick/action-branch-protection@v1
+#        with:
+#          access-token: ${{ secrets.DA_TEST }}
 # EXTENSION_HUB_UPDATES }}
-          repository-name: ${{ github.repository }}
-          branch-name: main
+#          repository-name: ${{ github.repository }}
+#          branch-name: main
           lock: true
