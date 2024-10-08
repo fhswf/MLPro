@@ -13,13 +13,18 @@ jobs:
 
     steps:
       - name: Step 1 - Disable branch protection
-        uses: lyubick/action-branch-protection@v1
-        with:
-          access-token: ${{ secrets.DA_TEST }}
-# EXTENSION_HUB_UPDATES }}
-          repository-name: ${{ github.repository }}
-          branch-name: main
-          lock: true
+#        uses: lyubick/action-branch-protection@v1
+#        with:
+#          access-token: ${{ secrets.DA_TEST }}
+## EXTENSION_HUB_UPDATES }}
+#          repository-name: ${{ github.repository }}
+#          branch-name: main
+#          lock: false
+        run: |
+          curl -X DELETE -H "Authorization: token ${{ secrets.DA_TEST }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/fhswf/mlpro/branches/main/protection
+
           
       - name: Step 2 - Checkout branch main
         uses: actions/checkout@v4
