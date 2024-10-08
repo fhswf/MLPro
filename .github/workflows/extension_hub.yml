@@ -12,24 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Step 1 - Disable branch protection
-#        uses: lyubick/action-branch-protection@v1
-#        with:
-#          access-token: ${{ secrets.DA_TEST }}
-## EXTENSION_HUB_UPDATES }}
-#          repository-name: ${{ github.repository }}
-#          branch-name: main
-#          lock: false
-        run: |
-          curl -X DELETE -H "Authorization: token ${{ secrets.DA_TEST }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/fhswf/mlpro/branches/main/protection
-
-          
-      - name: Step 2 - Checkout branch main
+      - name: Step 1 - Checkout branch main
         uses: actions/checkout@v4
 
-      - name: Step 3 - Preparation 
+      - name: Step 2 - Preparation 
         run: |
           git config --global user.name mlpro-admin
           git config --global user.email "mlpro@listen.fh-swf.de"
@@ -37,23 +23,23 @@ jobs:
           pip3 install mlpro
           pip3 install PyGithub
 
-      - name: Step 4 - Updates on the extension hub
+      - name: Step 3 - Updates on the extension hub
         run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/sub/
        
-      - name: Step 5 - Commit changes
+      - name: Step 4 - Commit and push changes
         run: |
           git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
           git commit --message 'MLPro extension hub updated'
-        continue-on-error: true
+          git push origin temp-branch
+#        continue-on-error: true
 
-      - name: Step 6 - Push changes
-        run: git push
+      - name: Step 5 - Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
+        run: gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
 
-#      - name: Step 7 - Restore branch protection
-#        uses: lyubick/action-branch-protection@v1
-#        with:
-#          access-token: ${{ secrets.DA_TEST }}
-# EXTENSION_HUB_UPDATES }}
-#          repository-name: ${{ github.repository }}
-#          branch-name: main
-#          lock: false
+      - name: Step 6 - Merge Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
+        run: gh pr merge --auto --delete-branch
+        
