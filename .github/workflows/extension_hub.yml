@@ -16,9 +16,9 @@ jobs:
         uses: lyubick/action-branch-protection@v1
         with:
           access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
-          repository-name: fhswf/mlpro
+          repository-name: ${{ github.repository }}
           branch-name: main
-          lock: true
+          lock: false
         
       - name: Step 2 - Checkout branch main
         uses: actions/checkout@v4
@@ -45,6 +45,6 @@ jobs:
         uses: lyubick/action-branch-protection@v1
         with:
           access-token: ${{ secrets.EXTENSION_HUB_UPDATES }}
-          repository-name: fhswf/mlpro
+          repository-name: ${{ github.repository }}
           branch-name: main
-          lock: false
+          lock: true
