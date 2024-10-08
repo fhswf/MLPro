@@ -30,23 +30,28 @@ jobs:
         id: step3
         run: python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/sub/
        
-      - name: Step 4 - Commit and push changes
+      - name: Step 4 - Commit changes
         id: step4
         run: |
           git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
-          git commit --message 'MLPro extension hub updated'
+          git commit -m 'MLPro extension hub updated'
+
+      - name: Step 5 - Pull/push changes
+        id: step5
+        run: |
+          git pull origin temp-branch
           git push origin temp-branch
         continue-on-error: true
 
-      - name: Step 5 - Create Pull Request
-        id: step5
-        if: ${{ steps.step4.outcome == 'success' }}
+      - name: Step 6 - Create Pull Request
+        id: step6
+        if: ${{ steps.step5.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
         run: gh pr create --title "Automated PR" --body "This PR was created automatically." --head temp-branch --base main
 
-      - name: Step 6 - Merge Pull Request
-        id: step6
+      - name: Step 7 - Merge Pull Request
+        id: step7
         if: ${{ steps.step5.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
