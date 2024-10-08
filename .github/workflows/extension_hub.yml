@@ -34,11 +34,12 @@ jobs:
         run: |
           git add ${GITHUB_WORKSPACE}/doc/rtd/content/04_extensions/
           git commit -m 'MLPro extension hub updated'
+        continue-on-error: true
 
       - name: Step 5 - Pull/push changes
         id: step5
+        if: ${{ steps.step4.outcome == 'success' }}
         run: git push origin temp-branch
-        continue-on-error: true
 
       - name: Step 6 - Create Pull Request
         id: step6
