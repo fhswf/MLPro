@@ -19,8 +19,8 @@ jobs:
       - name: Step 2 - Preparation 
         id: step2
         run: |
-          git config --global user.name mlpro-admin
-          git config --global user.email "mlpro@listen.fh-swf.de"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b temp-branch
 
       - name: Step 3 - Updates on the extension hub
@@ -40,8 +40,6 @@ jobs:
       - name: Step 5 - Pull/push changes
         id: step5
         run: git push origin temp-branch
-#          git pull origin temp-branch
-#          git push origin temp-branch
         continue-on-error: true
 
       - name: Step 6 - Create Pull Request
