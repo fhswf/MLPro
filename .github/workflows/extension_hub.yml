@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Step 0 - Checkout code
+        uses: actions/checkout@v3
+        
       - name: Step 1 - Preparation 
         run: |
           git config --global user.name mlpro-admin
