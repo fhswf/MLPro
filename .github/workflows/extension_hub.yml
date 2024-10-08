@@ -19,7 +19,7 @@ jobs:
 # EXTENSION_HUB_UPDATES }}
           repository-name: ${{ github.repository }}
           branch-name: main
-          lock: false
+          lock: true
           
       - name: Step 2 - Checkout branch main
         uses: actions/checkout@v4
@@ -51,4 +51,4 @@ jobs:
 # EXTENSION_HUB_UPDATES }}
 #          repository-name: ${{ github.repository }}
 #          branch-name: main
-#          lock: true
+#          lock: false
