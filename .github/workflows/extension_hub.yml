@@ -20,7 +20,6 @@ jobs:
           repository-name: ${{ github.repository }}
           branch-name: main
           lock: false
-        exit 1
           
       - name: Step 2 - Checkout branch main
         uses: actions/checkout@v4
