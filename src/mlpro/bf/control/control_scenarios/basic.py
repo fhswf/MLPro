@@ -102,10 +102,12 @@ class ControlScenarioBasic (ControlScenario):
             pred_sys = self._controller
 
 
-        # 5 Finally add the control system
+        # 5 Add the control system
         control_cycle.add_task( p_task = self._control_system, p_pred_tasks = [pred_sys] )
         self._control_system.system.set_mode( p_mode = p_mode )
 
 
-        # 6 Return the prepared control cycle
+        # 6 Initialize and return the prepared control cycle
+        control_cycle.get_so().init( p_state_space = self._control_system.system.get_state_space(),
+                                     p_action_space = self._control_system.system.get_action_space() )
         return control_cycle

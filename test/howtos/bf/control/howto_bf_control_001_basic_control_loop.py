@@ -25,6 +25,8 @@ You will learn:
 
 from time import sleep
 
+from mlpro.bf.control.basics import ControlError
+from mlpro.bf.systems.basics import ActionElement
 from mlpro.bf.various import Log
 from mlpro.bf.ops import Mode
 from mlpro.bf.control import Controller, ControlSystem, ControlScenarioBasic
@@ -36,8 +38,9 @@ from mlpro.bf.systems.pool import DoublePendulumSystemS4
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MyController (Controller):
-    pass
-
+    
+    def _compute_action(self, p_ctrl_error: ControlError, p_action_element: ActionElement):
+        pass
 
 
 
@@ -57,7 +60,6 @@ else:
     visualize   = False
 
 
-
 # 2 Init control scenario
 
 # 2.1 Control system
@@ -75,26 +77,14 @@ mycontroller = MyController( p_error_space = mycontrolsystem.system.get_state_sp
 myscenario = ControlScenarioBasic( p_mode = Mode.C_MODE_SIM,
                                    p_controller = mycontroller,
                                    p_control_system = mycontrolsystem,
+                                   p_cycle_limit = cycle_limit,
                                    p_visualize = visualize,
                                    p_logging = logging )
 
-panel      = myscenario.get_control_panel()
+
+# 3 Set initial setpoint values
+myscenario.get_control_panel().set_setpoint( p_values = [0,0,0,0])
 
 
-
-# 3 Start the control process in background
+# 4 Start the control process
 myscenario.run()
-panel.start()
-
-
-
-# 4 Change setpoint value in a loop
-for i in range(10):
-    sleep(1)
-    panel.change_setpoint()
-
-
-
-# 5 Stop control process
-panel.stop()
-    

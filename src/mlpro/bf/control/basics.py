@@ -15,15 +15,17 @@
 ## -- 2024-10-06  0.6.0     DA       New classes ControlTask, Operator
 ## -- 2024-10-07  0.7.0     DA       - new method ControlShared.get_tstamp()
 ## --                                - refactoring of class Controller
+## -- 2024-10-08  0.8.0     DA       Classes ControlPanel, ControlShared: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2024-10-07)
+Ver. 0.8.0 (2024-10-08)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
+from typing import Iterable
 from matplotlib.figure import Figure
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import Log, TStampType
@@ -208,7 +210,7 @@ class Controller (ControlTask):
                   p_action_space : MSpace,
                   p_id = None,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_THREAD, 
+                  p_range_max = Task.C_RANGE_NONE, 
                   p_visualize: bool = False, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -246,15 +248,13 @@ class Controller (ControlTask):
         
         # 1 Get control error instance
         ctrl_error = self._get_instance( p_inst = p_inst, p_type = ControlError, p_remove = True )
+        if ctrl_error is None:
+            self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
+            return
 
-
-        # 2 Compute control action
+        # 2 Compute and add control action
         action = self._get_instance( p_inst = p_inst, p_type = Action )
         action = self.compute_action( p_ctrl_error = ctrl_error, p_action = action )
-
-
-        # 3 Remove control error and add action
-        del p_inst[ctrl_error.id]
         p_inst[action.id] = (InstTypeNew, action)
 
 
@@ -343,7 +343,7 @@ class ControllerFct (Controller):
     def __init__( self, 
                   p_fct : Function,
                   p_name: str = None, 
-                  p_range_max=Task.C_RANGE_THREAD, 
+                  p_range_max=Task.C_RANGE_NONE, 
                   p_duplicate_data: bool = False, 
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
@@ -400,7 +400,7 @@ class ControlSystem (ControlTask):
     def __init__( self, 
                   p_system : System,
                   p_name: str = None, 
-                  p_range_max=Task.C_RANGE_THREAD, 
+                  p_range_max=Task.C_RANGE_NONE, 
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -446,7 +446,7 @@ class ControlPanel (EventManager):
     C_TYPE                  = 'Control Panel'
     C_NAME                  = '????'
 
-    C_EVENT_ID_SETPOINT_CHG = 'Setpoint changed'
+    C_EVENT_ID_SETPOINT_CHG = 'SETPOINT_CHG'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -488,26 +488,31 @@ class ControlPanel (EventManager):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def change_setpoint( self, p_setpoint : SetPoint ):
+    def set_setpoint( self, p_values: Iterable ):
         """
         Changes the setpoint values of a closed-loop control.
 
         Parameters
         ----------
-        p_setpoint: SetPoint
+        p_values : Iterable
             New setpoint values.
         """
 
-        self.log(Log.C_LOG_TYPE_S, 'Setpoint values changed to', p_setpoint.values)
-        self._change_setpoint( p_setpoint = p_setpoint )
-        self._raise_event( p_event_id = self.C_EVENT_ID_SETPOINT_CHANGED,
-                           p_event_object = Event( p_raising_object = self ))
+        self.log(Log.C_LOG_TYPE_S, 'Setpoint values changed to', p_values)
+        self._set_setpoint( p_values = p_values )
+        self._raise_event( p_event_id = self.C_EVENT_ID_SETPOINT_CHG,
+                           p_event_object = Event( p_raising_object = self ) )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _change_setpoint( self, p_setpoint : SetPoint ):
+    def _set_setpoint( self, p_values: Iterable ):
         """
         Custom method to change setpoint values.
+
+        Parameters
+        ----------
+        p_values : Iterable
+            New setpoint values.
         """
 
         raise NotImplementedError
@@ -518,17 +523,40 @@ class ControlPanel (EventManager):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlShared (StreamShared, ControlPanel):
+class ControlShared (StreamShared, ControlPanel, Log):
     """
     ...
     """
 
-    C_TID_ADMIN     = 'adm'
+    C_TID_ADMIN     = 'wf'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
         StreamShared.__init__(self, p_range=p_range)
+        Log.__init__(self, p_logging = Log.C_LOG_NOTHING)
         self._next_inst_id = 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def init(self, p_state_space: MSpace, p_action_space: MSpace):
+        """
+        Initializes the shared object with contextual information.
+
+        Parameters
+        ----------
+        p_state_space : MSpace
+            State space.
+        p_action_space : MSpace
+            Action space.
+        """
+
+        self._state_space = p_state_space
+        self._action_space = p_action_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_inst: InstDict):
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -552,7 +580,8 @@ class ControlShared (StreamShared, ControlPanel):
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> TStampType:
         
-        raise NotImplementedError
+        return None
+        #raise NotImplementedError
     
     
 ## -------------------------------------------------------------------------------------------------
@@ -568,9 +597,41 @@ class ControlShared (StreamShared, ControlPanel):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _change_setpoint(self, p_setpoint: SetPoint):
+    def _set_setpoint(self, p_values: Iterable):
         
-        raise NotImplementedError
+        # 0 Intro
+        setpoint : SetPoint = None
+        self.lock( p_tid = self.C_TID_ADMIN )
+
+
+        # 1 Locate the instance dictionary for the first control task
+        try:
+            inst_admin = self._instances[self.C_TID_ADMIN]
+        except:
+            inst_admin = {}
+            self._instances[self.C_TID_ADMIN] = inst_admin
+
+
+        # 2 Get or create a setpoint instance
+        for (inst_type, inst) in inst_admin.values():
+            if isinstance(inst, SetPoint):
+                setpoint = inst
+                break
+
+        if setpoint is None:
+            setpoint_data = Element( p_set = self._state_space )
+            setpoint_data.set_values( p_values = p_values )
+            setpoint = SetPoint( p_setpoint_data = setpoint_data, 
+                                 p_tstamp = self.get_tstamp() )
+            setpoint.id = self.get_next_inst_id()
+            inst_admin[setpoint.id] = (InstTypeNew, setpoint)
+        else:
+            setpoint.values = p_values
+            setpoint.tstamp = self.get_tstamp()
+
+
+        # 3 Outro
+        self.unlock()
 
 
 
@@ -590,7 +651,7 @@ class ControlCycle (StreamWorkflow, Mode):
     def __init__( self, 
                   p_mode,
                   p_name: str = None, 
-                  p_range_max = Workflow.C_RANGE_THREAD, 
+                  p_range_max = Task.C_RANGE_NONE, 
                   p_class_shared = ControlShared, 
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
@@ -607,6 +668,9 @@ class ControlCycle (StreamWorkflow, Mode):
         Mode.__init__( self, 
                        p_mode = p_mode,
                        p_logging = p_logging )
+        
+        self.get_so().switch_logging( p_logging = p_logging )
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_control_panel(self) -> ControlPanel:
@@ -649,11 +713,15 @@ class ControlScenario (StreamScenario):
 
     C_TYPE      = 'Control Scenario'
 
- ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def setup(self):
+
+        # 1 Setup control cycle
         self._control_cycle = self._setup( p_mode=self.get_mode(), 
                                            p_visualize=self.get_visualization(),
                                            p_logging=self.get_log_level() )
+        
+         # 2 Induce initial setpoints
     
 
  ## -------------------------------------------------------------------------------------------------
@@ -704,8 +772,19 @@ class ControlScenario (StreamScenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
-        self._control_cycle.run()
-        return False, False, False, False
+        
+        error = False
+
+        try:
+            self._control_cycle.run()
+        except KeyError as Argument:
+            error = True
+            if Argument.args[0] == ControlShared.C_TID_ADMIN:
+                self.log(Log.C_LOG_TYPE_E, 'Setpoint missing')
+            else:
+                self.log(Log.C_LOG_TYPE_E, 'Control instance missing for task', Argument.args[0])
+
+        return False, error, False, False
     
 
 ## -------------------------------------------------------------------------------------------------

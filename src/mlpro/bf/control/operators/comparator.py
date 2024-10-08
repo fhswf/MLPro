@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-06  0.1.0     DA       Creation and initial implementation
+## -- 2024-10-08  0.2.0     DA       Validation and various changes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-10-06)
+Ver. 0.2.0 (2024-10-08)
 
 This module provides an implementation of a comparator that determins the control error based on 
 setpoint and controlled variable (system state).
@@ -41,17 +42,23 @@ class Comparator (Operator):
         
         # 1 Get setpoint
         setpoint : SetPoint = self._get_instance( p_inst = p_inst, p_type = SetPoint )
+        if setpoint is None:
+            self.log(Log.C_LOG_TYPE_E, 'Setpoint missing!')
+            return
 
 
         # 2 Get and remove current system state
         state : State = self._get_instance( p_inst = p_inst, p_type = State, p_remove = True)
+        if state is None:
+            self.log(Log.C_LOG_TYPE_W, 'Control system state missing!')
+            state = setpoint
 
-        if ( setpoint is not None ) and ( state is not None ):
-             control_error = self.get_control_error( p_setpoint = setpoint, p_state = state )
-             control_error.id = self.get_so().get_next_inst_id()
-             p_inst[control_error.id] = (InstTypeNew, control_error)
-        else:
-            self.log( Log.C_LOG_TYPE_W, 'Neither found a setpoint nor a state...')
+
+        # 3 Compute control error
+        control_error = self.get_control_error( p_setpoint = setpoint, p_state = state )
+        control_error.id = self.get_so().get_next_inst_id()
+        control_error.tstamp = self.get_so().get_tstamp()
+        p_inst[control_error.id] = (InstTypeNew, control_error)
 
 
 ## -------------------------------------------------------------------------------------------------
