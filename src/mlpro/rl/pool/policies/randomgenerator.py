@@ -38,7 +38,7 @@ class RandomGenerator (Policy):
     C_NAME      = 'RandomGenerator'
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: State) -> Action:
+    def compute_action(self, p_state: ControlledVariable) -> ControlVariable:
         # 1 Create an empty numpy array
         my_action_values = np.zeros(self._action_space.get_num_dim())
 
@@ -65,7 +65,7 @@ class RandomGenerator (Policy):
                 raise ParamError('Mandatory boundaries are not defined.')
 
         # 3 Return an action object with the generated random values
-        return Action(self._id, self._action_space, my_action_values)
+        return ControlVariable(self._id, self._action_space, my_action_values)
 
 
 ## -------------------------------------------------------------------------------------------------

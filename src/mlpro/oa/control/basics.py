@@ -10,17 +10,18 @@
 ## -- 2024-09-19  0.2.0     DA       Completion of classes and their parents
 ## -- 2024-09-27  0.3.0     DA       New method OAController hdl_setpoint_changed
 ## -- 2024-10-04  0.3.1     DA       Bugfix in OAController.__init__()
+## -- 2024-10-09  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.1 (2024-10-04)
+Ver. 0.4.0 (2024-10-09)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
 """
 
 
-from mlpro.bf.systems import State, Action
+from mlpro.bf.systems import ControlledVariable, ControlVariable
 from mlpro.bf.control import *
 from mlpro.bf.ml import Model, Training, TrainingResults
 from mlpro.bf.streams import InstDict
@@ -43,8 +44,6 @@ class OAController (Controller, Model):
         Optional name of the task. Default is None.
     p_range_max : int = Task.C_RANGE_THREAD
         Maximum range of asynchonicity. See class Range. Default is Task.C_RANGE_PROCESS.
-    p_duplicate_data : bool = False
-        If True, instances will be duplicated before processing. Default = False.
     p_visualize : bool = False
         Boolean switch for visualisation. Default = False.
     p_logging = Log.C_LOG_ALL
@@ -61,7 +60,6 @@ class OAController (Controller, Model):
                   p_ada: bool = True,
                   p_name: str = None, 
                   p_range_max = Task.C_RANGE_THREAD, 
-                  p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -69,7 +67,6 @@ class OAController (Controller, Model):
         Controller.__init__( self,
                              p_name = p_name,
                              p_range_max = p_range_max,
-                             p_duplicate_data = p_duplicate_data,
                              p_visualize = p_visualize,
                              p_logging = False,
                              **p_kwargs )
@@ -88,58 +85,40 @@ class OAController (Controller, Model):
         """
 
         # 0 Intro
-        setpoint : SetPoint         = None
-        state : State               = None
-        ctrl_error : ControlError   = None
+        setpoint : SetPoint              = None
+        ctrlled_var : ControlledVariable = None
+        ctrl_error : ControlError        = None
 
 
         # 1 Determine the contextual data for action computation
-        for (inst_type, inst) in p_inst.values():
-            if isinstance(p_inst,SetPoint):
-                setpoint = p_inst
-            elif isinstance(p_inst,State):
-                state    = p_inst
-            elif isinstance(p_inst, ControlError):
-                ctrl_error = p_inst
+        ctrl_error = self._get_instance( p_inst = p_inst, p_type = ControlError )
 
-        if setpoint is None:
-            raise Error( 'Setpoint instance not found. Please check control cycle.')
-        if state is None:
-            raise Error( 'State instance not found. Please check control cycle.')
         if ctrl_error is None:
-            raise Error( 'Control error instance not found. Please check control cycle.')
+            raise Error( 'Control error not found. Please check control workflow.')
 
 
         # 2 Compute the next action
-        action = self.compute_action( p_ctrl_error = ctrl_error )
+        ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
 
 
         # 3 Adapt
         self.adapt( p_ctrl_error = ctrl_error, 
-                    p_state = state, 
-                    p_setpoint = setpoint,
-                    p_action = action )
+                    p_ctrl_var = ctrl_var )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt( self, 
-                p_setpoint: SetPoint, 
                 p_ctrl_error: ControlError, 
-                p_state: State, 
-                p_action: Action ) -> bool:
+                p_ctrl_var: ControlVariable ) -> bool:
         """
-        Specialized custom method for online adaptation in closed-loop control scenarios.
+        Specialized custom method for online adaptation in closed-loop control systems.
 
         Parameters
         ----------
-        p_setpoint : SetPoint
-            Setpoint.
         p_ctrl_error : ControlError
             Control error.
-        p_state : State
-            State of control system.
-        p_action : Action
-            Current action of the controller.
+        p_ctrl_var : ControlVariable
+            Control variable.
         """
         
         raise NotImplementedError
@@ -147,6 +126,10 @@ class OAController (Controller, Model):
 
 ## -------------------------------------------------------------------------------------------------
     def hdl_setpoint_changed(self, p_event_id:str, p_event_object:Event):
+        """
+        Handler method to be registered for event ControlPanel.C_EVNET_ID_SETPOINT_CHG. Turns off
+        the adaptation for one cycle.
+        """
 
         raise NotImplementedError
 
@@ -169,12 +152,12 @@ class OAMultiController: # (MultiController, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlSystem: # (ControlSystem, Model):
+class OAControlledSystem: # (ControlledSystem, Model):
     """
-    Wrapper class for state-based systems.
+    Wrapper class for online-adaptive state-based systems.
     """
 
-    C_TYPE          = 'OA Control System'
+    C_TYPE          = 'OA Controlled System'
     C_NAME          = ''
 
 
@@ -210,12 +193,12 @@ class OAControlShared: # (ControlShared, OAControlPanel):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlCycle: # (ControlCycle, Model):
+class OAControlWorkflow: # (ControlWorkflow, Model):
     """
-    Container class for all tasks of a control cycle.
+    Container class for all tasks of a control workflow.
     """
 
-    C_TYPE          = 'OA Control Cycle'
+    C_TYPE          = 'OA Control Workflow'
     C_NAME          = ''
 
 
@@ -224,7 +207,7 @@ class OAControlCycle: # (ControlCycle, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlScenario: # (ControlScenario, Model):
+class OAControlSystem: # (ControlSystem, Model):
     """
     ...
     """

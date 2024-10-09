@@ -48,7 +48,7 @@ class AFctReward (AFctBase, FctReward):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+    def _compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None) -> Reward:
         if (p_state_old is None) or (p_state_new is None):
             raise ParamError('Both parameters p_state and p_state_new are needed to compute the reward')
 
@@ -68,7 +68,7 @@ class AFctReward (AFctBase, FctReward):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:State, p_state_new:State, p_reward:Reward) -> bool:
+    def _adapt(self, p_state:ControlledVariable, p_state_new:ControlledVariable, p_reward:Reward) -> bool:
         """
         Triggers adaptation of the embedded adaptive function.
 
@@ -115,7 +115,7 @@ class SARSElement(BufferElement):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state: State, p_action: Action, p_reward: Reward, p_state_new: State):
+    def __init__(self, p_state: ControlledVariable, p_action: ControlVariable, p_reward: Reward, p_state_new: ControlledVariable):
         """
         Parameters:
             p_state         State of an environment
@@ -188,7 +188,7 @@ class EnvModel (EnvBase, Model):
                  p_afct_success : AFctSuccess = None,
                  p_afct_broken : AFctBroken = None,
                  p_ada : bool = True,
-                 p_init_states : State = None,
+                 p_init_states : ControlledVariable = None,
                  p_visualize : bool = False,
                  p_logging = Log.C_LOG_ALL ):
 
@@ -341,7 +341,7 @@ class EnvModel (EnvBase, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _process_action(self, p_action: Action) -> bool:
+    def _process_action(self, p_action: ControlVariable) -> bool:
 
         # 1 State transition
         self._set_state(self.simulate_reaction(self.get_state(), p_action))

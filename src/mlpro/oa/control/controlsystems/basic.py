@@ -21,16 +21,16 @@ This module provides a simplified container class for a basic synchronous oa con
 
 
 from mlpro.bf.various import Log
-from mlpro.bf.control import ControlPanel, ControlCycle, ControlScenarioBasic
-from mlpro.oa.control import OAControlScenario
+from mlpro.bf.control import ControlPanel, ControlWorkflow, ControlSystemBasic
+from mlpro.oa.control import OAControlSystem
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAControlScenarioBasic: # (OAControlScenario, ControlScenarioBasic):
+class OAControlSystemBasic: # (OAControlSystem, ControlSystemBasic):
     """
-    Simplified container class for a basic synchronous control scenario containing
+    Simplified container class for a basic synchronous control system containing
 
     - a controller
     - an oa control system
@@ -41,14 +41,14 @@ class OAControlScenarioBasic: # (OAControlScenario, ControlScenarioBasic):
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlCycle:
+    def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlWorkflow:
 
-        control_cycle = ControlScenarioBasic._setup(self, p_mode, p_visualize, p_logging)
+        control_workflow = ControlSystemBasic._setup(self, p_mode, p_visualize, p_logging)
 
         try:
-            control_cycle.get_control_panel().register_event_handler( p_event_id = ControlPanel.C_EVENT_ID_SETPOINT_CHG,
+            control_workflow.get_control_panel().register_event_handler( p_event_id = ControlPanel.C_EVENT_ID_SETPOINT_CHG,
                                                                       p_event_handler = self._controller.hdl_setpoint_changed )
         except:
             self.log(Log.C_LOG_TYPE_W, 'Controller is not online adaptive')
 
-        return control_cycle
+        return control_workflow

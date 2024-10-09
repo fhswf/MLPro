@@ -201,8 +201,8 @@ class DoublePendulumSystemRoot (System):
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
 
-        self._state = State(self._state_space)
-        self._target_state = State(self._state_space)
+        self._state = ControlledVariable(self._state_space)
+        self._target_state = ControlledVariable(self._state_space)
         self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
 
         self.reset()
@@ -346,7 +346,7 @@ class DoublePendulumSystemRoot (System):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:State, p_action:Action):
+    def _simulate_reaction(self, p_state:ControlledVariable, p_action:ControlVariable):
         """
         This method is used to calculate the next states of the system after a set of actions.
 
@@ -401,7 +401,7 @@ class DoublePendulumSystemRoot (System):
             sign = 1 if state[i] > 0 else -1
             state[i] = sign * (abs(state[i]) - 180)
 
-        current_state = State(self._state_space)
+        current_state = ControlledVariable(self._state_space)
         for i in range(len(state)):
             current_state.set_value(state_ids[i], state[i])
 
@@ -409,7 +409,7 @@ class DoublePendulumSystemRoot (System):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
+    def _compute_broken(self, p_state: ControlledVariable) -> bool:
         """
         Custom method to compute broken state. In this case always returns false as the environment doesn't break
         """
@@ -429,7 +429,7 @@ class DoublePendulumSystemRoot (System):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state:State):
+    def _compute_success(self, p_state:ControlledVariable):
         """
         Custom method to return the success state of the environment based on the distance between current state,
         goal state and the goal threshold parameter
@@ -659,7 +659,7 @@ class DoublePendulumSystemS4 (DoublePendulumSystemRoot):
     def _obs_to_mujoco(self, p_state):
         state = p_state.get_values().copy()
         state[2] = state[2] + state[0]
-        mujoco_state = State(self.get_state_space())
+        mujoco_state = ControlledVariable(self.get_state_space())
         mujoco_state.set_values(state)
         return mujoco_state
 
@@ -771,7 +771,7 @@ class DoublePendulumSystemS7 (DoublePendulumSystemS4):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:State, p_action:Action):
+    def _simulate_reaction(self, p_state:ControlledVariable, p_action:ControlVariable):
         """
         This method is used to calculate the next states of the system after a set of actions.
 
@@ -828,7 +828,7 @@ class DoublePendulumSystemS7 (DoublePendulumSystemS4):
             state[i] = sign * (abs(state[i]) - 180)
         state[-1] = torque
         state_ids = self._state_space.get_dim_ids()
-        current_state = State(self._state_space)
+        current_state = ControlledVariable(self._state_space)
         for i in range(len(state)):
             current_state.set_value(state_ids[i], state[i])
 

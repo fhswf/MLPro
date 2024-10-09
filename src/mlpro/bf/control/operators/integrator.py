@@ -1,17 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.control.operators
-## -- Module  : cumulator.py
+## -- Module  : integrator.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-07  0.1.0     DA       Creation and initial implementation
+## -- 2024-10-09  0.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-10-07)
+Ver. 0.2.0 (2024-10-09)
 
-This module provides an implementation of a cumulator that determins the next control action by
+This module provides an implementation of an integrator that determins the next control variable by
 buffering and cumulating it.
 
 """
@@ -21,7 +22,7 @@ import numpy as np
 from mlpro.bf.math.basics import Log
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.streams import InstDict, InstTypeNew
-from mlpro.bf.systems import Action
+from mlpro.bf.systems import ControlVariable
 from mlpro.bf.control import Operator
 
 
@@ -29,7 +30,7 @@ from mlpro.bf.control import Operator
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Cumulator (Operator):
+class Integrator (Operator):
     """
     Operator that determins the next control action by buffering and cumulating it. The origin action
     provided by a controller is replaced.
@@ -46,7 +47,7 @@ class Cumulator (Operator):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
         
-        self._action : Action = None
+        self._ctrl_var : ControlVariable = None
 
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
@@ -58,32 +59,32 @@ class Cumulator (Operator):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
-        next_action = self.cumulate( p_action = self._get_instance( p_inst = p_inst, p_type = Action, p_remove = True ) )
-        p_inst[next_action.id] = (InstTypeNew, next_action )
+        ctrl_var = self.integrate( p_ctrl_var = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True ) )
+        p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def cumulate(self, p_action : Action) -> Action:
+    def integrate(self, p_ctrl_var : ControlVariable) -> ControlVariable:
         """
-        Returns a new control error as the difference betweeen a specified setpoint and state.
+        Numerically integrates the incoming control variable.
 
         Parameters
         ----------
-        p_action : Action
-            Action to be cumulated.
+        p_ctrl_var : ControlVariable
+            Control variable to be cumulated.
 
         Returns
         -------
-        Action
-           Cumulated action.
+        ControlVariable
+           Integrated control variable.
         """
 
-        if self._action is None:
-            self._action = p_action.copy()
+        if self._ctrl_var is None:
+            self._ctrl_var = p_ctrl_var.copy()
         else:
-            for controller_id in p_action.get_agent_ids():
-                controller_src = p_action.get_elem( p_id = controller_id )
-                controller_dst = self._action.get_elem( p_id = controller_id )
+            for controller_id in p_ctrl_var.get_agent_ids():
+                controller_src = p_ctrl_var.get_elem( p_id = controller_id )
+                controller_dst = self._ctrl_var.get_elem( p_id = controller_id )
                 controller_dst.values = np.add( np.array(controller_dst.values), np.array(controller_src.values) )
 
-        return self._action
+        return self._ctrl_var

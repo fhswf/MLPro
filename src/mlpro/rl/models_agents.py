@@ -146,7 +146,7 @@ class Policy (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_obs: State) -> Action:
+    def compute_action(self, p_obs: ControlledVariable) -> ControlVariable:
         """
         Specific action computation method to be redefined. 
 
@@ -269,10 +269,10 @@ class ActionPlanner (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self,
-                       p_obs: State,
+                       p_obs: ControlledVariable,
                        p_prediction_horizon=0,
                        p_control_horizon=0,
-                       p_width_limit=0) -> Action:
+                       p_width_limit=0) -> ControlVariable:
         """
         Computes a path of actions with defined length that maximizes the reward of the given 
         environment model. The planning algorithm itself is to be implemented in the custom method
@@ -346,7 +346,7 @@ class ActionPlanner (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _plan_action(self, p_obs: State) -> SARSBuffer:
+    def _plan_action(self, p_obs: ControlledVariable) -> SARSBuffer:
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
         and depth are restricted by the attributes self._width_limit and self._prediction_horizon.
@@ -571,13 +571,13 @@ class Agent (Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _extract_observation(self, p_state: State) -> State:
+    def _extract_observation(self, p_state: ControlledVariable) -> ControlledVariable:
         if p_state.get_related_set() == self.get_observation_space():
             return p_state
 
         obs_space = self.get_observation_space()
         obs_dim_ids = obs_space.get_dim_ids()
-        observation = State(obs_space)
+        observation = ControlledVariable(obs_space)
 
         for dim_id in obs_dim_ids:
             p_state_ids = p_state.get_dim_ids()
@@ -598,7 +598,7 @@ class Agent (Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: State) -> Action:
+    def compute_action(self, p_state: ControlledVariable) -> ControlVariable:
         """
         Default implementation of a single agent.
 
@@ -638,7 +638,7 @@ class Agent (Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:State, p_reward:Reward) -> bool:
+    def _adapt(self, p_state:ControlledVariable, p_reward:Reward) -> bool:
         """
         Default adaptation implementation of a single agent.
 
@@ -843,10 +843,10 @@ class MultiAgent (Agent):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: State) -> Action:
+    def compute_action(self, p_state: ControlledVariable) -> ControlVariable:
         self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')
 
-        action = Action()
+        action = ControlVariable()
 
         for agent, weight in self._agents:
             action_agent = agent.compute_action(p_state)
@@ -859,7 +859,7 @@ class MultiAgent (Agent):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:State, p_reward:Reward) -> bool:
+    def _adapt(self, p_state:ControlledVariable, p_reward:Reward) -> bool:
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
 
         adapted = False
