@@ -33,7 +33,7 @@ import statistics as st
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTStrategy (Action):
+class GTStrategy (ControlVariable):
     """
     A class representing a strategy for a player in game theory.
     Objects of this class representations of (multi-)players. Every element

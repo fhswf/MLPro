@@ -44,7 +44,7 @@ class GameBoard (Environment):
     C_REWARD_TYPE   = Reward.C_TYPE_EVERY_AGENT
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
+    def _compute_reward(self, p_state_old: ControlledVariable, p_state_new: ControlledVariable) -> Reward:
         reward = Reward(self.get_reward_type())
 
         for player_id in self._last_action.get_agent_ids():
@@ -54,7 +54,7 @@ class GameBoard (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _utility_fct(self, p_state: State, p_player_id):
+    def _utility_fct(self, p_state: ControlledVariable, p_player_id):
         """
         Computes utility of given player. To be redefined.
         """

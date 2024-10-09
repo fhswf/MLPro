@@ -51,23 +51,23 @@
 ## -- 2024-09-09  2.3.0     DA       Class Action: parent TSTamp replaced by Instance
 ## -- 2024-09-11  2.4.0     DA       - code review and documentation
 ## --                                - new method State.get_kwargs()
+## -- 2024-10-06  2.5.0     DA       New property attribute State.value
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-09-11)
+Ver. 2.5.0 (2024-10-06)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
-from typing import List
 
 import numpy as np
 
 from mlpro.bf.mt import Range
 from mlpro.bf.streams.basics import Instance
-from mlpro.bf.various import TStamp, ScientificObject, Persistent
+from mlpro.bf.various import ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings
 from matplotlib.figure import Figure
@@ -80,7 +80,7 @@ from mlpro.bf.mt import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class State(Instance, Element):
+class ControlledVariable(Instance, Element):
     """
     State of a system as an element of a given state space. Additionally, the state can be
     labeled with various properties.
@@ -223,6 +223,9 @@ class State(Instance, Element):
         return copied_state
 
 
+## -------------------------------------------------------------------------------------------------
+    values = property( fget=Element.get_values, fset=Element.set_values)
+
 
 
 
@@ -268,7 +271,7 @@ class ActionElement (Element):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Action(Instance, ElementList):
+class ControlVariable(Instance, ElementList):
     """
     Objects of this class represent actions of (multi-)agents. Every element of the internal list is
     related to an agent, and its partial subsection. Action values for the first agent can be added 
@@ -352,7 +355,7 @@ class FctSTrans (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
+    def simulate_reaction(self, p_state: ControlledVariable, p_action: ControlVariable, p_t_step : timedelta = None) -> ControlledVariable:
         """
         Simulates a state transition based on a state and action. Custom method _simulate_reaction()
         is called.
@@ -382,7 +385,7 @@ class FctSTrans (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action, p_t_step: timedelta = None) -> State:
+    def _simulate_reaction(self, p_state: ControlledVariable, p_action: ControlVariable, p_t_step: timedelta = None) -> ControlledVariable:
         """
         Custom method for a simulated state transition. See method simulate_reaction() for further
         details.
@@ -414,7 +417,7 @@ class FctSuccess (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state: State) -> bool:
+    def compute_success(self, p_state: ControlledVariable) -> bool:
         """
         Assesses the given state regarding success criteria. Custom method _compute_success() is called.
 
@@ -434,7 +437,7 @@ class FctSuccess (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: State) -> bool:
+    def _compute_success(self, p_state: ControlledVariable) -> bool:
         """
         Custom method for assessment for success. See method compute_success() for further details.
         """
@@ -465,7 +468,7 @@ class FctBroken (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+    def compute_broken(self, p_state: ControlledVariable) -> bool:
         """
         Assesses the given state regarding breakdown criteria. Custom method _compute_success() is called.
 
@@ -485,7 +488,7 @@ class FctBroken (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
+    def _compute_broken(self, p_state: ControlledVariable) -> bool:
         """
         Custom method for assessment for breakdown. See method compute_broken() for further details.
         """
@@ -847,12 +850,12 @@ class SystemShared(Shared):
         self._actions.clear()
 
         for system in self._spaces.keys():
-            self._states[system] = State(p_state_space=self._spaces[system][0])
+            self._states[system] = ControlledVariable(p_state_space=self._spaces[system][0])
             self._actions[system] = np.zeros(len(self._spaces[system][1].get_dims()))
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_state(self, p_sys_id, p_state: State) -> bool:
+    def update_state(self, p_sys_id, p_state: ControlledVariable) -> bool:
         """
         Updates the states in the Shared Object.
 
@@ -873,7 +876,7 @@ class SystemShared(Shared):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _map_values(self, p_state: State = None, p_action:Action = None):
+    def _map_values(self, p_state: ControlledVariable = None, p_action:ControlVariable = None):
         """
         Updates the action values based on a new state, in a MultiSystem Context.
 
@@ -940,7 +943,7 @@ class SystemShared(Shared):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_action(self, p_sys_id) -> Action:
+    def get_action(self, p_sys_id) -> ControlVariable:
         """
         Fetches the corresponding action for a particular system.
 
@@ -955,7 +958,7 @@ class SystemShared(Shared):
             The corresponding action for the system.
         """
 
-        action = Action(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
+        action = ControlVariable(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
         return action
 
 
@@ -974,7 +977,7 @@ class SystemShared(Shared):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state(self, p_sys_id) -> State:
+    def get_state(self, p_sys_id) -> ControlledVariable:
         """
         Fetches the state of a particular system from the Shared Object.
 
@@ -1052,7 +1055,7 @@ class SystemShared(Shared):
             # Register the state and action spaces of the system
             self._spaces[system_id] = (state_space.copy(p_new_dim_ids=False), action_space.copy(p_new_dim_ids=False))
             # Create an initial dummy state of the system in the shared object
-            self._states[system_id] = State(self._spaces[system_id][0])
+            self._states[system_id] = ControlledVariable(self._spaces[system_id][0])
 
             # Not needed
             # self._action_dimensions.update(*action_space.get_dim_ids())
@@ -1440,7 +1443,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
                 self._reset(p_seed)
             except NotImplementedError:
                 ob = self._mujoco_handler._reset_simulation()
-                self._state = State(self.get_state_space())
+                self._state = ControlledVariable(self.get_state_space())
                 self._state.set_values(ob)
 
         else:
@@ -1557,7 +1560,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state(self) -> State:
+    def get_state(self) -> ControlledVariable:
         """
         Returns current state of the system.
         """
@@ -1566,7 +1569,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_state(self, p_state: State):
+    def _set_state(self, p_state: ControlledVariable):
         """
         Explicitly sets the current state of the system. Internal use only.
         """
@@ -1581,7 +1584,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_action:Action, p_t_step : timedelta = None):
+    def _run(self, p_action:ControlVariable, p_t_step : timedelta = None):
         """
         Run method that runs the system as a task. It runs the process_action() method of the system with
         action as a parameter.
@@ -1599,7 +1602,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def process_action(self, p_action: Action, p_t_step: timedelta = None) -> bool:
+    def process_action(self, p_action: ControlVariable, p_t_step: timedelta = None) -> bool:
         """
         Processes a state transition based on the current state and a given action. The state
         transition itself is implemented in child classes in the custom method _process_action().
@@ -1648,7 +1651,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _process_action(self, p_action: Action, p_t_step : timedelta = None) -> bool:
+    def _process_action(self, p_action: ControlVariable, p_t_step : timedelta = None) -> bool:
         """
         Internal custom method for state transition with default implementation. To be redefined in 
         a child class on demand. See method process_action() for further details.
@@ -1698,7 +1701,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step:timedelta = None) -> State:
+    def simulate_reaction(self, p_state: ControlledVariable = None, p_action: ControlVariable = None, p_t_step:timedelta = None) -> ControlledVariable:
         """
         Simulates a state transition based on a state and an action. The simulation step itself is
         carried out either by an internal custom implementation in method _simulate_reaction() or
@@ -1755,7 +1758,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action, p_step:timedelta = None) -> State:
+    def _simulate_reaction(self, p_state: ControlledVariable, p_action: ControlVariable, p_step:timedelta = None) -> ControlledVariable:
         """
         Custom method for a simulated state transition. Implement this method if no external state
         transition function is used. See method simulate_reaction() for further
@@ -1801,7 +1804,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         """
 
         mujoco_state = self._state_from_mujoco(p_mujoco_state)
-        mlpro_state = State(self.get_state_space())
+        mlpro_state = ControlledVariable(self.get_state_space())
         mlpro_state.set_values(mujoco_state)
         return mlpro_state
 
@@ -1830,7 +1833,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
     def _import_state(self) -> bool:
 
         # 1 Initialization
-        new_state  = State( p_state_space=self._state_space )
+        new_state  = ControlledVariable( p_state_space=self._state_space )
         successful = True
         self.log(Log.C_LOG_TYPE_I, 'Start importing state...')
 
@@ -1865,7 +1868,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _export_action(self, p_action: Action) -> bool:
+    def _export_action(self, p_action: ControlVariable) -> bool:
 
         # 1 Initialization
         successful = True
@@ -1890,7 +1893,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state: State) -> bool:
+    def compute_success(self, p_state: ControlledVariable) -> bool:
         """
         Assesses the given state whether it is a 'success' state. Assessment is carried out either by
         a custom implementation in method _compute_success() or by an embedded external function.
@@ -1913,7 +1916,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: State) -> bool:
+    def _compute_success(self, p_state: ControlledVariable) -> bool:
         """
         Custom method for assessment for success. Implement this method if no external function is 
         used. See method compute_success() for further details.
@@ -1929,7 +1932,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+    def compute_broken(self, p_state: ControlledVariable) -> bool:
         """
         Assesses the given state whether it is a 'broken' state. Assessment is carried out either by
         a custom implementation in method _compute_broken() or by an embedded external function.
@@ -1952,7 +1955,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
+    def _compute_broken(self, p_state: ControlledVariable) -> bool:
         """
         Custom method for assessment for breakdown. Implement this method if no external function is 
         used. See method compute_broken() for further details.
@@ -2172,7 +2175,7 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step : timedelta = None) -> State:
+    def simulate_reaction(self, p_state: ControlledVariable = None, p_action: ControlVariable = None, p_t_step : timedelta = None) -> ControlledVariable:
         """
         Simulates the multisystem, based on the action and time step.
 
@@ -2226,7 +2229,7 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+    def compute_broken(self, p_state: ControlledVariable) -> bool:
         """
         Returns true if the system is broken
         """
@@ -2236,7 +2239,7 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state: State) -> bool:
+    def compute_success(self, p_state: ControlledVariable) -> bool:
         """
         Returns true if the system has reached success.
         
@@ -2390,7 +2393,7 @@ class DemoScenario(ScenarioBase):
         action_space = self._system.get_action_space()
 
         if self._action_pattern == self.C_ACTION_CONSTANT:
-            return Action(p_action_space = action_space, p_values = self._action)
+            return ControlVariable(p_action_space = action_space, p_values = self._action)
 
         action = []
 
@@ -2401,7 +2404,7 @@ class DemoScenario(ScenarioBase):
             elif dim.get_base_set() == Dimension.C_BASE_SET_Z:
                 action.append(random.randint(*dim.get_boundaries()))
 
-        return Action(p_action_space=action_space, p_values=action)
+        return ControlVariable(p_action_space=action_space, p_values=action)
  
  
 ## -------------------------------------------------------------------------------------------------

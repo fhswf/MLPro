@@ -22,10 +22,11 @@
 ## -- 2022-10-08  2.0.2     SY       Bug fixing
 ## -- 2022-11-29  2.0.3     DA       Bug fixing
 ## -- 2023-04-12  2.0.4     SY       Refactoring 
+## -- 2024-10-09  2.0.5     SY       Updating _reset() due to seeding errors
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2023-04-12)
+Ver. 2.0.5 (2024-10-09)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -139,7 +140,7 @@ class GridWorld(Environment):
         """
         To reset environment
         """
-        random.seed(p_seed)
+        np.random.seed(p_seed)
         
         if self.random_start_position:
             self.agent_pos = np.array([np.random.randint(0,border-1) 
@@ -173,13 +174,13 @@ class GridWorld(Environment):
         else:
             obs[tuple(self.agent_pos)] = 1
             obs[tuple(self.goal_pos)] = 2
-        state = State(self._state_space)
+        state = ControlledVariable(self._state_space)
         state.set_values(obs.flatten())
         return state
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
+    def _simulate_reaction(self, p_state:ControlledVariable, p_action:ControlVariable) -> ControlledVariable:
         if self.action_type == self.C_ACTION_TYPE_CONT:
             self.agent_pos += np.array(p_action.get_sorted_values()).astype(int)
             self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
@@ -202,7 +203,7 @@ class GridWorld(Environment):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+    def _compute_reward(self, p_state_old:ControlledVariable, p_state_new:ControlledVariable) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos).item()
         if euclidean_distance > 0:
@@ -215,7 +216,7 @@ class GridWorld(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state:State) -> bool:
+    def _compute_success(self, p_state:ControlledVariable) -> bool:
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
         if euclidean_distance <= 0:
             self._state.set_success(True)
@@ -227,7 +228,7 @@ class GridWorld(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state:State) -> bool:
+    def _compute_broken(self, p_state:ControlledVariable) -> bool:
         if self.num_step >= self.max_step:
             self._state.set_broken(True)
             self._state.set_terminal(True)

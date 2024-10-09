@@ -51,13 +51,13 @@ def test_environment(env_cls):
     
     state = env.get_state()
     
-    assert isinstance(state, State)
+    assert isinstance(state, ControlledVariable)
         
     my_action_values = np.zeros(env.get_action_space().get_num_dim())
     for d in range(env.get_action_space().get_num_dim()):
         my_action_values[d] = random.random() 
 
-    my_action_values = Action(0, env.get_action_space(), my_action_values)
+    my_action_values = ControlVariable(0, env.get_action_space(), my_action_values)
 
     env.process_action(my_action_values)
 

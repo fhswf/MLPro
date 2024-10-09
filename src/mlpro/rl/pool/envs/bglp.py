@@ -904,7 +904,7 @@ class BGLP (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def collect_substates(self) -> State:
+    def collect_substates(self) -> ControlledVariable:
         """
         This method is called during resetting the environment.
 
@@ -914,7 +914,7 @@ class BGLP (Environment):
             current states.
 
         """
-        state = State(self._state_space)
+        state = ControlledVariable(self._state_space)
         sub_state_val = self.calc_state()
         for i in range(len(sub_state_val)):
             state.set_value(state.get_dim_ids()[i], sub_state_val[i])
@@ -950,7 +950,7 @@ class BGLP (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
+    def _simulate_reaction(self, p_state:ControlledVariable, p_action:ControlVariable) -> ControlledVariable:
         """
         This method is used to calculate the next states of the system after a set of actions.
 
@@ -1009,7 +1009,7 @@ class BGLP (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state:State) -> bool:
+    def _compute_success(self, p_state:ControlledVariable) -> bool:
         """
         This method computes the success flag. This method can be redefined.
 
@@ -1035,7 +1035,7 @@ class BGLP (Environment):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state:State) -> bool:
+    def _compute_broken(self, p_state:ControlledVariable) -> bool:
         """
         This method computes the broken flag. This method can be redefined.
 
@@ -1054,7 +1054,7 @@ class BGLP (Environment):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+    def _compute_reward(self, p_state_old:ControlledVariable, p_state_new:ControlledVariable) -> Reward:
         """
         This method calculates the reward for different reward types.
 

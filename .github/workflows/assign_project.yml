@@ -1,3 +1,12 @@
+## -------------------------------------------------------------------------------------------------
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Workflow: assign_project.yml
+## -------------------------------------------------------------------------------------------------
+## -- History :
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2022        1.0.0     DA       Creation 
+## -------------------------------------------------------------------------------------------------
+
 name: Assign project MLPro to new issue
 
 on:

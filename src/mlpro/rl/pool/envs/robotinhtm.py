@@ -384,7 +384,7 @@ class RobotHTM (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self, p_state: ControlledVariable, p_action: ControlVariable) -> ControlledVariable:
         action = p_action.get_sorted_values()
         if not isinstance(action, torch.Tensor):
             action = torch.Tensor(action)
@@ -401,14 +401,14 @@ class RobotHTM (Environment):
             dim=1,
         )
         obs = obs.cpu().flatten().tolist()
-        state = State(self._state_space)
+        state = ControlledVariable(self._state_space)
         state.set_values(obs)
 
         return state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: State = None) -> bool:
+    def _compute_success(self, p_state: ControlledVariable = None) -> bool:
         disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
 
         if disterror <= 0.1:
@@ -419,12 +419,12 @@ class RobotHTM (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
+    def _compute_broken(self, p_state: ControlledVariable) -> bool:
         return False
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
+    def _compute_reward(self, p_state_old: ControlledVariable, p_state_new: ControlledVariable) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
         disterror = np.linalg.norm(np.array(p_state_new.get_values())[:3] - np.array(p_state_new.get_values())[3:6])
 
@@ -482,5 +482,5 @@ class RobotHTM (Environment):
             dim=1,
         )
         obs = obs.cpu().flatten().tolist()
-        self._state = State(self._state_space)
+        self._state = ControlledVariable(self._state_space)
         self._state.set_values(obs)

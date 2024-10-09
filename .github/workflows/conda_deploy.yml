@@ -1,3 +1,13 @@
+## -------------------------------------------------------------------------------------------------
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Workflow: conda_deploy.yml
+## -------------------------------------------------------------------------------------------------
+## -- History :
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2021        1.0.0     MRD      Creation 
+## -- 2024-10-09  1.1.0     DA       Updated Python version to 3.10
+## -------------------------------------------------------------------------------------------------
+
 name: Deployment Conda
 
 on:
