@@ -1,7 +1,7 @@
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.bf.ml.basics import *
 from mlpro.rl import Policy,SARSElement
-from mlpro.bf.systems import Action, State
+from mlpro.bf.systems import ControlVariable, ControlledVariable
 
 
 class RLPID(Policy):
@@ -74,7 +74,7 @@ class RLPID(Policy):
     
     ## -------------------------------------------------------------------------------------------------
 
-    def compute_action(self, p_obs: State) -> Action:  
+    def compute_action(self, p_obs: ControlledVariable) -> ControlVariable:  
 
         #get action 
         action=self._pid_controller.compute_action(p_ctrl_error=p_obs)
@@ -120,7 +120,7 @@ class RLPIDOffPolicy(Policy):
     ## -------------------------------------------------------------------------------------------------
 
 
-    def compute_action(self, p_obs: State) -> Action:  
+    def compute_action(self, p_obs: ControlledVariable) -> ControlVariable:  
 
         #get action 
         action=self._pid_controller.compute_action(p_ctrl_error=p_obs)
