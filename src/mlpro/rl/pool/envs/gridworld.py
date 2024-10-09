@@ -22,10 +22,11 @@
 ## -- 2022-10-08  2.0.2     SY       Bug fixing
 ## -- 2022-11-29  2.0.3     DA       Bug fixing
 ## -- 2023-04-12  2.0.4     SY       Refactoring 
+## -- 2024-10-09  2.0.5     SY       Updating _reset() due to seeding errors
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2023-04-12)
+Ver. 2.0.5 (2024-10-09)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -139,7 +140,7 @@ class GridWorld(Environment):
         """
         To reset environment
         """
-        random.seed(p_seed)
+        np.random.seed(p_seed)
         
         if self.random_start_position:
             self.agent_pos = np.array([np.random.randint(0,border-1) 

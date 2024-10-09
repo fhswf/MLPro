@@ -10,9 +10,9 @@ MLPro: Integration StableBaselines3
     * - **Topics**
       - machine-learning, mlpro-extension, reinforcement-learning, stable-baselines3, wrapper
     * - **Version**
-      - v1.0.1  - Resolving Unit Testing for MacOS
+      - v1.0.2  - Refactoring
     * - **Last update**
-      - Wed, 12 Jun 2024 12:01:27 GMT
+      - Tue, 13 Aug 2024 09:46:32 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-SB3
     * - **URL**
