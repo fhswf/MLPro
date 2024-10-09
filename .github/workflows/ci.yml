@@ -1,5 +1,12 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+## -------------------------------------------------------------------------------------------------
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Workflow: ci.yml
+## -------------------------------------------------------------------------------------------------
+## -- History :
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2021        1.0.0     MRD      Creation 
+## -- 2024-10-09  1.1.0     DA       Update version range for Python to 3.10 - 3.13
+## -------------------------------------------------------------------------------------------------
 
 name: Unit Tests
 
@@ -29,7 +36,6 @@ jobs:
       - name: Generate dependecies list
         run: |
           awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg | tr -d "<" | tr -d ">" | tr -s "==" "," > doc/rtd/content/01_welcome/sub/deps.txt
-#          awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg > requirements.txt
 
       - name: Commit files
         id: auto-commit-action
@@ -51,7 +57,7 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
 
     steps:
     - name: Checkout Codes

@@ -1,3 +1,13 @@
+## -------------------------------------------------------------------------------------------------
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Workflow: extension_hub.yml
+## -------------------------------------------------------------------------------------------------
+## -- History :
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2023-10     1.0.0     DA       Creation 
+## -- 2024-10-09  2.0.0     DA       Restructuring and introduction of PR-based processing
+## -------------------------------------------------------------------------------------------------
+
 name: Update Extension Hub
 
 on:
