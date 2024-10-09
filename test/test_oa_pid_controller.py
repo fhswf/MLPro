@@ -7,6 +7,7 @@ from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from mlpro.rl.models import *
 from mlpro.rl.models_env import Reward
+import datetime
 
 import math
 matplotlib.use('TkAgg')
@@ -79,12 +80,7 @@ class MyReward(FctReward):
             reward += 10  # Zusätzliche Belohnung, wenn der Fehler konstant klein bleibt
             # Optional: Zähler zurücksetzen, wenn der maximale Bonus erreicht ist
             # self.error_streak_counter = 0
-        reward =min(reward,30)      
-        
-        
-
-
-        
+        reward =min(reward,30)         
 
         self._reward.set_overall_reward(reward)
         
@@ -124,13 +120,13 @@ rl_pid_policy = RLPID(p_observation_space=observation_space,
 
 setpoint_space = Set()
 setpoint_space.add_dim(p_dim=setpoint_dim)
-setpoint = SetPoint(p_setpoint_data=Element(p_set=setpoint_space))
+setpoint = SetPoint(p_setpoint_data=Element(p_set=setpoint_space),p_tstamp=datetime.datetime.now())
 setpoint.get_feature_data().set_value(setpoint_space.get_dim_ids()[0],0)
 
 
 error_space = Set()
 error_space.add_dim(p_dim=error_dim)
-control_error = ControlError(p_feature_data=Element(error_space))
+control_error = ControlError(p_error_data=Element(error_space),p_tstamp=datetime.datetime.now())
 oa_controller=wrapper_rl.OAControllerRL(p_rl_policy=rl_pid_policy,p_rl_fct_reward=MyReward())
 
 
@@ -161,7 +157,7 @@ for k in range(30):
         actual_angle = radians_to_degrees(pole_angle)
         #calculate error     
         control_error.get_feature_data().set_value(error_space.get_dim_ids()[0],actual_angle-setpoint.get_feature_data().get_values()[0])
-        control_error.set_tstamp(datetime.now())
+        control_error.set_tstamp(datetime.datetime.now())
 
     
         oa_controller._adapt(p_setpoint=setpoint
