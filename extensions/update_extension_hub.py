@@ -20,10 +20,11 @@
 ## -- 2023-09-21  1.1.2     DA       Method ExtensionHub._get_extensions:
 ## --                                - bugfix in repo extraction from white/blacklist
 ## -- 2023-10-30  1.1.3     DA       Bugfix
+## -- 2024-10-08  1.2.0     Da       Removed dependency from MLPro to avoid installations from PyPI
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2023-10-30)
+Ver. 1.2.0 (2024-10-08)
 
 This standalone module collects meta data of all public GitHub repositories that are labelled as
 MLPro extensions (repo topic "mlpro-extension). It updates the RTD subsection "Extension Hub"
@@ -41,8 +42,125 @@ See also:
 
 import sys, os.path
 import shutil
-from mlpro.bf.various import Log
+from datetime import datetime
+#from mlpro.bf.various import Log
 from github import Auth, Github
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Log:
+    """
+    Taken over from MLPro to avoid installing mlpro from the PyPI whenever this script is executed...
+
+    Parameters
+    ----------
+    p_logging
+        Log level (see constants C_LOG_*). Default: Log.C_LOG_ALL
+
+    """
+
+    C_TYPE              = '????'
+    C_NAME              = '????'
+
+    # Types of log lines
+    C_LOG_TYPE_I        = 'I'  # Information
+    C_LOG_TYPE_W        = 'W'  # Warning
+    C_LOG_TYPE_E        = 'E'  # Error
+    C_LOG_TYPE_S        = 'S'  # Success / Milestone
+
+    C_LOG_TYPES         = [C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E, C_LOG_TYPE_S]
+
+    C_COL_WARNING       = '\033[93m'  # Yellow
+    C_COL_ERROR         = '\033[91m'  # Red
+    C_COL_SUCCESS       = '\033[32m'  # Green
+    C_COL_RESET         = '\033[0m'  # Reset color
+
+    # Log levels
+    C_LOG_ALL           = True
+    C_LOG_NOTHING       = False
+    C_LOG_WE            = C_LOG_TYPE_W
+    C_LOG_E             = C_LOG_TYPE_E
+
+    C_LOG_LEVELS        = [C_LOG_ALL, C_LOG_NOTHING, C_LOG_WE, C_LOG_E]
+
+    # Internals
+    C_INST_MSG          = True
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=C_LOG_ALL):
+        self._level = p_logging
+
+        if self.C_INST_MSG:
+            self.log(self.C_LOG_TYPE_I, 'Instantiated')
+            self.C_INST_MSG = False
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_name(self) -> str:
+        return self.C_NAME
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_name(self, p_name:str):
+        self.C_NAME = p_name
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        """
+        Sets new log level. 
+
+        Parameters
+        ----------
+        p_logging     
+            Log level (constant C_LOG_LEVELS contains valid values)
+
+        """
+
+        self._level = p_logging
+
+
+ ## -------------------------------------------------------------------------------------------------
+    def get_log_level(self):
+        return self._level
+
+ 
+ ## -------------------------------------------------------------------------------------------------
+    def log(self, p_type, *p_args):
+        """
+        Writes log line to standard output in format:
+        yyyy-mm-dd  hh:mm:ss.mmmmmm  [p_type  C_TYPE C_NAME]: [p_args] 
+
+        Parameters:
+            p_type      type of log entry
+            p_args      log informations
+
+        Returns: 
+            Nothing
+        """
+
+        if not self._level: return
+
+        if self._level == self.C_LOG_WE:
+            if (p_type == self.C_LOG_TYPE_I) or (p_type == self.C_LOG_TYPE_S): return
+        elif self._level == self.C_LOG_E:
+            if (p_type == self.C_LOG_TYPE_I) or (p_type == self.C_LOG_TYPE_S) or (p_type == self.C_LOG_TYPE_W): return
+
+        now = datetime.now()
+
+        if p_type == self.C_LOG_TYPE_W:
+            col = self.C_COL_WARNING
+        elif p_type == self.C_LOG_TYPE_E:
+            col = self.C_COL_ERROR
+        elif p_type == self.C_LOG_TYPE_S:
+            col = self.C_COL_SUCCESS
+        else:
+            col = self.C_COL_RESET
+
+        print(col + '%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (
+        now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond),
+              p_type + '  ' + self.C_TYPE + ' "' + self.C_NAME + '":', *p_args, self.C_COL_RESET)
 
 
 
