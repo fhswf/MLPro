@@ -21,7 +21,7 @@ Reusing RL Environments
 
     Alternatively, if your environment follows Gym or PettingZoo interface, you can apply our
     relevant useful wrappers for the integration between third-party packages and MLPro.
-    For more information about the available third-party packages, please click :ref:`here<target-package-third>`.
+    For more information about the available third-party packages, please click :ref:`here<target_extension_hub>`.
     Then, you need to transfer the wrapped RL environment to a GT Game Board.
 
 

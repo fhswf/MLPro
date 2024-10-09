@@ -12,22 +12,25 @@
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-04-11  1.3.0     DA       Methods AnomalyDetector.init/update_plot: determination and
 ## --                                forwarding of changes on ax limits
-## -- 2024-05-22  1.2.1     SK       Refactoring
+## -- 2024-05-22  1.4.0     SK       Refactoring
+## -- 2024-08-12  1.4.1     DA       Correction in AnomalyDetector.update_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-04-11)
+Ver. 1.4.1 (2024-08-12)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
 from typing import List
 from matplotlib.figure import Figure
+from mlpro.bf.math.properties import *
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.various import Log
-from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.streams import Instance, InstDict
+from mlpro.bf.various import *
+from mlpro.bf.plot import *
 from mlpro.oa.streams.tasks import OATask
+from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 
 
@@ -36,12 +39,31 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetector(OATask):
     """
-    This is the base class for online anomaly detectors. It raises an event when an
+    Base class for online anomaly detectors. It raises an event when an
     anomaly is detected.
 
+    Parameters
+    ----------
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
-    C_TYPE          = 'Anomaly Detector'
+    C_TYPE                  = 'Anomaly Detector'
+
+    C_EVENT_ANOMALY_ADDED   = 'ANOMALY_ADDED'
+    C_EVENT_ANOMALY_REMOVED = 'ANOMALY_REMOVED'
 
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
@@ -76,6 +98,14 @@ class AnomalyDetector(OATask):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_next_anomaly_id(self):
+        """
+        Methd that returns the id of the next anomaly. 
+
+        Returns
+        -------
+        _ano_id : int
+        """
+
         self._ano_id +=1
         return self._ano_id
 
@@ -83,7 +113,7 @@ class AnomalyDetector(OATask):
 ## -------------------------------------------------------------------------------------------------
     def get_anomalies(self):
         """
-        This method returns the current list of anomalies. 
+        Method to return the current list of anomalies. 
 
         Returns
         -------
@@ -127,6 +157,14 @@ class AnomalyDetector(OATask):
 
 ## -------------------------------------------------------------------------------------------------
     def _raise_anomaly_event(self, p_anomaly : Anomaly ):
+        """
+        Method to raise an anomaly event.
+
+        Parameters
+        ----------
+        p_anomaly : Anomaly
+            Anomaly object to be raised.
+        """
 
         p_anomaly = self._buffer_anomaly(p_anomaly=p_anomaly)
 
@@ -156,7 +194,7 @@ class AnomalyDetector(OATask):
     
         if not self.get_visualization(): return
 
-        super().update_plot(p_inst, **p_kwargs)
+        # super().update_plot(p_inst, **p_kwargs)
 
         axes = self._plot_settings.axes
 

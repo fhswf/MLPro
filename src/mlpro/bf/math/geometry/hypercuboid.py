@@ -10,10 +10,12 @@
 ## -- 2024-06-05  1.0.1     DA       Stabilization of Hypercuboid.set()
 ## -- 2024-06-26  1.1.0     DA       Refactoring of attribute color
 ## -- 2024-06-30  1.2.0     DA       Refactoring of method Hypercuboid.set()
+## -- 2024-07-13  1.3.0     DA       Refactoring
+## -- 2024-08-20  1.4.0     DA       New method Hypercuboid.check_collision()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-06-30)
+Ver. 1.4.0 (2024-08-20)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -73,13 +75,15 @@ class Hypercuboid (MultiProperty):
                   p_derivative_order_max: int = 0, 
                   p_value_prev : ValuePrev = False,
                   p_properties : PropertyDefinitions = [],
-                  p_visualize: bool = False ):
+                  p_visualize: bool = False,
+                  **p_kwargs ):
         
         super().__init__( p_name = p_name,
                           p_derivative_order_max = p_derivative_order_max,
                           p_value_prev = p_value_prev,
                           p_properties = p_properties,
-                          p_visualize = p_visualize )
+                          p_visualize = p_visualize,
+                          **p_kwargs )
 
         self.alpha      = self.C_PLOT_ALPHA
         self.fill       = self.C_PLOT_FILL
@@ -352,9 +356,26 @@ class Hypercuboid (MultiProperty):
         self._value = p_normalizer.renormalize( p_data=np.array(self.value) )
 
 
+## -------------------------------------------------------------------------------------------------
+    def check_collision(self, p_hypercuboid ) -> bool:
+        bdr_other  = p_hypercuboid.value
+        collision  = True
+
+        for dim, (bdr_left,bdr_right) in enumerate(self._value):
+            if ( bdr_other[dim][0] > bdr_right ) or ( bdr_other[dim][1] < bdr_left ):
+                collision = False
+                break
+
+        return collision
+
+
+## -------------------------------------------------------------------------------------------------
     value       = property( fget = _get, fset = set)
 
 
 
 
-cprop_hypercuboid : PropertyDefinition = ( 'hypercuboid', 0, False, Hypercuboid )
+
+
+cprop_hypercuboid      : PropertyDefinition = ( 'hypercuboid', 0, False, Hypercuboid )
+cprop_hypercuboid_prev : PropertyDefinition = ( 'hypercuboid', 0, True, Hypercuboid )

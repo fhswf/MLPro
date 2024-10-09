@@ -11,10 +11,11 @@
 ## -- 2024-05-31  0.4.0     DA       Improved the stability of the plot methods
 ## -- 2024-06-13  0.5.0     DA       New property definitions cprop_centroid_prev*
 ## -- 2024-06-26  0.6.0     DA       Refactoring
+## -- 2024-07-13  0.7.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2024-06-26)
+Ver. 0.7.0 (2024-07-13)
 
 This module provides ...
 
@@ -53,8 +54,12 @@ class Centroid (Point, Id):
         Name of the property
     p_derivative_order_max : DerivativeOrderMax
         Maximum order of auto-generated derivatives (numeric properties only).
+    p_value_prev : bool
+        If True, the previous value is stored in value_prev whenever value is updated.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_kwargs : dict
+        Keyword parameters.
     """
 
     C_PLOT_ACTIVE           = True
@@ -69,13 +74,15 @@ class Centroid (Point, Id):
                   p_name : str,
                   p_derivative_order_max : DerivativeOrderMax = 0, 
                   p_value_prev : ValuePrev = False,
-                  p_visualize : bool = False ):
+                  p_visualize : bool = False,
+                  **p_kwargs ):
 
         Point.__init__( self, 
                         p_name = p_name, 
                         p_derivative_order_max = p_derivative_order_max,
                         p_value_prev = p_value_prev, 
-                        p_visualize = p_visualize )
+                        p_visualize = p_visualize,
+                        **p_kwargs )
         
         Id.__init__( self, p_id = 0 )
 
@@ -302,15 +309,15 @@ class Centroid (Point, Id):
 
 
 # Centroid with 0,1,2 order derivatives and plot functionality with/without storing previous values
-cprop_centroid          : PropertyDefinition = ( 'centroid', 0, False, Centroid )
-cprop_centroid1         : PropertyDefinition = ( 'centroid', 1, False, Centroid )
-cprop_centroid2         : PropertyDefinition = ( 'centroid', 2, False, Centroid )
+cprop_centroid       : PropertyDefinition = ( 'centroid', 0, False, Centroid )
+cprop_centroid1      : PropertyDefinition = ( 'centroid', 1, False, Centroid )
+cprop_centroid2      : PropertyDefinition = ( 'centroid', 2, False, Centroid )
 
-cprop_centroid_prev     : PropertyDefinition = ( 'centroid', 0, True, Centroid )
-cprop_centroid_prev1    : PropertyDefinition = ( 'centroid', 1, True, Centroid )
-cprop_centroid_prev2    : PropertyDefinition = ( 'centroid', 2, True, Centroid )
+cprop_centroid_prev  : PropertyDefinition = ( 'centroid', 0, True, Centroid )
+cprop_centroid_prev1 : PropertyDefinition = ( 'centroid', 1, True, Centroid )
+cprop_centroid_prev2 : PropertyDefinition = ( 'centroid', 2, True, Centroid )
 
 # Geometric center with 0,1,2 order derivatives and plot functionality
-cprop_center_geo        : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
-cprop_center_geo1       : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
-cprop_center_geo2       : PropertyDefinition = ( 'center_geo', 2, False, Centroid )
+cprop_center_geo     : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
+cprop_center_geo1    : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
+cprop_center_geo2    : PropertyDefinition = ( 'center_geo', 2, False, Centroid )

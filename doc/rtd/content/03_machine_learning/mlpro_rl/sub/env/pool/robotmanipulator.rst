@@ -88,8 +88,8 @@ By default, the reward structures are shown in the following equation:
 
     
 **Cross Reference**
-  + :ref:`Howto RL-ENV-002: SB3 Policy on RobotHTM Environment <Howto Env RL 002>`
-  + :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+  + `Howto RL-ENV-002: SB3 Policy on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/02_howtos_env/howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment.html>`_
+  + `Howto RL-MB-001: MBRL on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
   + :ref:`API Reference <target_pool_rl_env_robot_manipulator>`
 
   
