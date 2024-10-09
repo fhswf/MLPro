@@ -10,9 +10,9 @@ MLPro: Integration Gymnasium
     * - **Topics**
       - gymnasium, machine-learning, mlpro-extension, reinforcement-learning, wrapper
     * - **Version**
-      - v1.0.2  - Resolving Unit Testing for MacOS and Seeding Issue
+      - v1.0.3  - Bug Fixing: Errors on other enviroments than classic control
     * - **Last update**
-      - Wed, 12 Jun 2024 11:09:26 GMT
+      - Tue, 01 Oct 2024 09:44:58 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-Gymnasium
     * - **URL**
