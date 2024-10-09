@@ -5,7 +5,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021        1.0.0     MRD      Creation 
-## -- 2024-10-09  1.1.0     DA       Update version range for Python to 3.10 - 3.13
+## -- 2024-10-09  1.1.0     DA       Updated the version range for Python to 3.10 - 3.12
 ## -------------------------------------------------------------------------------------------------
 
 name: Unit Tests
@@ -57,7 +57,7 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.11', '3.12']
 
     steps:
     - name: Checkout Codes
