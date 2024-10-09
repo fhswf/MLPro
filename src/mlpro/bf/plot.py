@@ -935,6 +935,41 @@ class DataPlotting(Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def plots_type_ep_sum(self):
+        """
+        A function to plot data per frame according to its sum value.
+        """
+
+        for name in self.data.names:
+            maxval = 0
+            try:
+                if self.printing[name][0]:
+                    fig = plt.figure(figsize=self.figsize)
+                    lines = []
+                    data = []
+                    plt.title(name)
+                    plt.grid(True, which="both", axis="both")
+                    for fr in range(len(self.data.memory_dict[name])):
+                        fr_id = self.data.frame_id[name][fr]
+                        data.extend([sum(self.data.get_values(name, fr_id))])
+                    if self.printing[name][2] == -1:
+                        maxval = max(max(data[:]), maxval)
+                    else:
+                        maxval = self.printing[name][2]
+                    lines += plt.plot(self.moving_mean(data[:], self.window), color=self.color)
+                    plt.ylim(self.printing[name][1], maxval)
+                    plt.xlabel("episodes")
+                    self.plots[0].append(name)
+                    self.plots[1].append(fig)
+                    if self.showing:
+                        plt.show()
+                    else:
+                        plt.close(fig)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
     def moving_mean(self, p_inputs, p_window):
         """
         This method creates a series of averages of different subsets of the full data set.
