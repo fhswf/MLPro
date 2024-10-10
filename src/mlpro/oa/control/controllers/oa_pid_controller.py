@@ -11,7 +11,7 @@ class RLPID(Policy):
 
         self._pid_controller = pid_controller
         self._policy = policy
-        self._old_action = None #None
+        self._old_crtl_variable = None #None
         self._action_space = p_action_space
 
 
@@ -41,19 +41,15 @@ class RLPID(Policy):
     def _adapt(self, p_sars_elem: SARSElement) -> bool:
 
         is_adapted = False
+        #get SARS Elements 
+        p_state,p_crtl_variable,p_reward,p_state_new=tuple(p_sars_elem.get_data().values())
 
-        #compute new action with new error value (second s of Sars element)
-        self._old_action = self._policy.compute_action(p_obs=p_state_new) 
         
-        if self._old_action is not None:
-
-            #get SARS Elements 
-            p_state,p_action,p_reward,p_state_new=tuple(p_sars_elem.get_data().values())
-
+        if self._old_crtl_variable is not None:
 
            # create a new SARS
             p_sars_elem_new = SARSElement(p_state=p_state,
-                                        p_action=self._old_action,
+                                        p_action=self._old_crtl_variable,
                                         p_reward=p_reward, 
                                         p_state_new=p_state_new)
             
@@ -61,15 +57,19 @@ class RLPID(Policy):
             is_adapted = self._policy._adapt(p_sars_elem_new)        
                 
             # compute new action with new error value (second s of Sars element)
-            self._old_action=self._policy.compute_action(p_obs=p_state_new)
+            self._old_crtl_variable=self._policy.compute_action(p_obs=p_state_new)
 
             #get the pid paramter values 
-            pid_values = self._old_action.get_feature_data().get_values()
+            pid_values = self._old_crtl_variable.get_feature_data().get_values()
 
             #set paramter pid
             self._pid_controller.set_parameter(p_param={"Kp":pid_values[0],
                                                     "Ti":pid_values[1],
                                                     "Tv":pid_values[2]})
+        else:
+            #compute new action with new error value (second s of Sars element)
+            self._old_crtl_variable = self._policy.compute_action(p_obs=p_state_new) 
+
         return is_adapted 
     
     ## -------------------------------------------------------------------------------------------------
@@ -77,10 +77,10 @@ class RLPID(Policy):
     def compute_action(self, p_obs: ControlledVariable) -> ControlVariable:  
 
         #get action 
-        action=self._pid_controller.compute_action(p_ctrl_error=p_obs)
+        control_variable=self._pid_controller.compute_output(p_ctrl_error=p_obs)
 
         #return action
-        return action 
+        return control_variable 
     
 class RLPIDOffPolicy(Policy):
 
