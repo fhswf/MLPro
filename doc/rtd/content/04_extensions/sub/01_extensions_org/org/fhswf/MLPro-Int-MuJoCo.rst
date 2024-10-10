@@ -10,9 +10,9 @@ MLPro: Integration Multi-Joint dynamics with Contact (MuJoCo)
     * - **Topics**
       - machine-learning, mlpro-extension, mujoco, physics-simulation, wrapper
     * - **Version**
-      - v1.0.1  - Licensing
+      - v1.0.2  - Minor Refactoring
     * - **Last update**
-      - Thu, 16 May 2024 09:31:45 GMT
+      - Tue, 13 Aug 2024 08:37:47 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-MuJoCo
     * - **URL**
