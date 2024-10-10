@@ -98,7 +98,7 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
         Returns
         -------
         """
-        pass
+        #try ecxept
 
 
 ## -------------------------------------------------------------------------------------------------

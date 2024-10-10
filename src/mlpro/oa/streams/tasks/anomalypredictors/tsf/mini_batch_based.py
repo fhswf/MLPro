@@ -19,7 +19,7 @@ This module provides template for managing mini-batches for time series forcasti
 
 
 from mlpro.oa.streams.tasks.anomalypredictors.tsf.basics import OATimeSeriesForcaster
-from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
+from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector, Anomaly
 from mlpro.bf.streams import Instance
 
 
@@ -38,7 +38,7 @@ class MiniBatchManager():
 
     """
 ## --------------------------------------------------------------------------------------------------    
-    def __init__(self, p_batchno, p_batch_size : int) :
+    def __init__(self, p_batchno, p_batch_size: int) :
 
         self.batchno = p_batchno
         self.batch_size = p_batch_size
@@ -51,9 +51,9 @@ class MiniBatchManager():
 
 
 ## --------------------------------------------------------------------------------------------------    
-    def _add_data(self, **p_kwargs) :
+    def _add_data(self, p_anomaly: Anomaly) :
         
-        self.data.append(**p_kwargs)
+        self.data.append(p_anomaly)
 
 ## --------------------------------------------------------------------------------------------------
     def create_mini_batches(self):
