@@ -18,9 +18,10 @@ This module provides basic templates for online anomaly prediction in MLPro.
 """
 
 
-from mlpro.bf.ml import Log
+from mlpro.bf.ml import Log, Event
 from mlpro.bf.streams import Log, StreamTask
 from mlpro.bf.various import Log
+from mlpro.bf.streams import Instance, InstDict
 from mlpro.oa.streams.tasks.anomalypredictors.tsf.basics import AnomalyPredictorTSF
 from mlpro.oa.streams.tasks.anomalydetectors.basics import Anomaly
 
@@ -56,6 +57,7 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
 ## -------------------------------------------------------------------------------------------------
 
     def __init__(self, 
+                 p_cls_tsf,
                  p_name: str = None, 
                  p_range_max=StreamTask.C_RANGE_THREAD, 
                  p_ada: bool = True, 
@@ -74,7 +76,29 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
                          p_logging, 
                          **p_kwargs)
         
+        self.p_cls_tsf = p_cls_tsf
         self.capture_anomalies = {}
+
+## -------------------------------------------------------------------------------------------------
+
+    def _run( p_inst : InstDict ):
+        pass    
+
+## -------------------------------------------------------------------------------------------------
+
+    def _adapt_on_event(self, p_event_id: str, p_event_object: Event) -> bool:
+    
+        """
+
+        Parameters
+        ----------
+        p_event_id
+        p_event_object
+
+        Returns
+        -------
+        """
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
