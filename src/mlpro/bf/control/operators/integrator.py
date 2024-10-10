@@ -22,8 +22,7 @@ import numpy as np
 from mlpro.bf.math.basics import Log
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.streams import InstDict, InstTypeNew
-from mlpro.bf.systems import ControlVariable
-from mlpro.bf.control import Operator
+from mlpro.bf.control import ControlVariable, Operator
 
 
 

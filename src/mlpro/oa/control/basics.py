@@ -21,7 +21,7 @@ This module provides basic classes around the topic online-adaptive closed-loop 
 """
 
 
-from mlpro.bf.systems import ControlledVariable, ControlVariable
+from mlpro.bf.systems import State, Action
 from mlpro.bf.control import *
 from mlpro.bf.ml import Model, Training, TrainingResults
 from mlpro.bf.streams import InstDict
@@ -86,7 +86,7 @@ class OAController (Controller, Model):
 
         # 0 Intro
         setpoint : SetPoint              = None
-        ctrlled_var : ControlledVariable = None
+        ctrlled_var : State = None
         ctrl_error : ControlError        = None
 
 
@@ -109,7 +109,7 @@ class OAController (Controller, Model):
 ## -------------------------------------------------------------------------------------------------
     def _adapt( self, 
                 p_ctrl_error: ControlError, 
-                p_ctrl_var: ControlVariable ) -> bool:
+                p_ctrl_var: Action ) -> bool:
         """
         Specialized custom method for online adaptation in closed-loop control systems.
 

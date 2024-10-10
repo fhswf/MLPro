@@ -257,7 +257,7 @@ class AFctSTrans (AFctBase, FctSTrans):
                   p_action_space: MSpace,
                   p_input_space_cls=ESpace,
                   p_output_space_cls=ESpace,
-                  p_output_elem_cls=ControlledVariable,  # Specific output element type
+                  p_output_elem_cls=State,  # Specific output element type
                   p_threshold=0,
                   p_buffer_size=0,
                   p_ada:bool=True,
@@ -306,9 +306,9 @@ class AFctSTrans (AFctBase, FctSTrans):
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self,
-                           p_state: ControlledVariable,
-                           p_action: ControlVariable,
-                           p_t_step = None) -> ControlledVariable:
+                           p_state: State,
+                           p_action: Action,
+                           p_t_step = None) -> State:
         """
 
         Parameters
@@ -336,7 +336,7 @@ class AFctSTrans (AFctBase, FctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:ControlledVariable, p_action:ControlVariable, p_state_new:ControlledVariable) -> bool:
+    def _adapt(self, p_state:State, p_action:Action, p_state_new:State) -> bool:
         """
         Triggers adaptation of the embedded adaptive function.
 
@@ -405,7 +405,7 @@ class AFctSuccess (AFctBase, FctSuccess):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: ControlledVariable) -> bool:
+    def _compute_success(self, p_state: State) -> bool:
         """
 
         Parameters
@@ -424,7 +424,7 @@ class AFctSuccess (AFctBase, FctSuccess):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:ControlledVariable) -> bool:
+    def _adapt(self, p_state:State) -> bool:
         """
 
         Parameters
@@ -484,7 +484,7 @@ class AFctBroken (AFctBase, FctBroken):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state:ControlledVariable) -> bool:
+    def _compute_broken(self, p_state:State) -> bool:
         """
 
         Parameters
@@ -503,7 +503,7 @@ class AFctBroken (AFctBase, FctBroken):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:ControlledVariable) -> bool:
+    def _adapt(self, p_state:State) -> bool:
         """
 
         Parameters

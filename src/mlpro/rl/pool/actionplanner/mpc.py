@@ -69,7 +69,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _plan_action(self, p_obs: ControlledVariable) -> SARSBuffer:
+    def _plan_action(self, p_obs: State) -> SARSBuffer:
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
         and depth are restricted by the attributes self._width_limit and self._prediction_horizon.
@@ -120,7 +120,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
                                 action_values[d] = random.uniform(lower_boundaries, upper_boundaries)
                         except:
                             raise ParamError('Mandatory boundaries are not defined.')
-                    action = ControlVariable(pred, self._envmodel._action_space, action_values)
+                    action = Action(pred, self._envmodel._action_space, action_values)
                     
                     # compute next states and reward according to current state
                     next_state = self._envmodel.simulate_reaction(state, action)
@@ -161,7 +161,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _async_subtask(self, p_tid:int, p_obs:ControlledVariable):
+    def _async_subtask(self, p_tid:int, p_obs:State):
         self._so.checkin(p_id=p_tid)
         
         state = p_obs
@@ -191,7 +191,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
                         action_values[d] = random.uniform(lower_boundaries, upper_boundaries)
                 except:
                     raise ParamError('Mandatory boundaries are not defined.')
-            action = ControlVariable(pred, self._envmodel._action_space, action_values)
+            action = Action(pred, self._envmodel._action_space, action_values)
             
             # compute next states and reward according to current state
             next_state = self._envmodel.simulate_reaction(state, action)

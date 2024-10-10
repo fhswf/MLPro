@@ -174,13 +174,13 @@ class GridWorld(Environment):
         else:
             obs[tuple(self.agent_pos)] = 1
             obs[tuple(self.goal_pos)] = 2
-        state = ControlledVariable(self._state_space)
+        state = State(self._state_space)
         state.set_values(obs.flatten())
         return state
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:ControlledVariable, p_action:ControlVariable) -> ControlledVariable:
+    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
         if self.action_type == self.C_ACTION_TYPE_CONT:
             self.agent_pos += np.array(p_action.get_sorted_values()).astype(int)
             self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
@@ -203,7 +203,7 @@ class GridWorld(Environment):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old:ControlledVariable, p_state_new:ControlledVariable) -> Reward:
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos).item()
         if euclidean_distance > 0:
@@ -216,7 +216,7 @@ class GridWorld(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state:ControlledVariable) -> bool:
+    def _compute_success(self, p_state:State) -> bool:
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
         if euclidean_distance <= 0:
             self._state.set_success(True)
@@ -228,7 +228,7 @@ class GridWorld(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state:ControlledVariable) -> bool:
+    def _compute_broken(self, p_state:State) -> bool:
         if self.num_step >= self.max_step:
             self._state.set_broken(True)
             self._state.set_terminal(True)

@@ -62,7 +62,7 @@ class Flipflop(System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: ControlledVariable, p_action: ControlVariable, p_step:timedelta = None) -> ControlledVariable:
+    def _simulate_reaction(self, p_state: State, p_action: Action, p_step:timedelta = None) -> State:
         """
 
         Parameters
@@ -91,7 +91,7 @@ class Flipflop(System):
                     state = self.C_STATE_ONE
 
         # print('state:',state)
-        current_state = ControlledVariable(p_state_space=self.get_state_space())
+        current_state = State(p_state_space=self.get_state_space())
 
         current_state.set_values([state])
 
@@ -111,7 +111,7 @@ class Flipflop(System):
 
         """
         state_values = random.randint(0,1)
-        state = ControlledVariable(self.get_state_space())
+        state = State(self.get_state_space())
         state.set_values([state_values])
         self._set_state(state)
 

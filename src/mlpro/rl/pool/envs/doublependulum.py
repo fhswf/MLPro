@@ -280,8 +280,8 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 
         self._t_step = self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
-        self._state = ControlledVariable(self._state_space)
-        self._target_state = ControlledVariable(self._state_space)
+        self._state = State(self._state_space)
+        self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
 
         self._rst_balancing = p_rst_balancing
@@ -304,7 +304,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None) -> Reward:
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
         worst possible distance between two states and the best possible minimum distance between current and
@@ -325,12 +325,12 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
         state_new = p_state_new.get_values().copy()
         p_state_new_normalized = self._normalize(state_new)
-        norm_state_new = ControlledVariable(self.get_state_space())
+        norm_state_new = State(self.get_state_space())
         norm_state_new.set_values(p_state_new_normalized)
 
         state_old = p_state_old.get_values().copy()
         p_state_old_normalized = self._normalize(state_old)
-        norm_state_old = ControlledVariable(self.get_state_space())
+        norm_state_old = State(self.get_state_space())
         norm_state_old.set_values(p_state_old_normalized)
 
         if (abs(p_state_new_normalized[0]) <= 0.2 and abs(p_state_new_normalized[2] <= 0.2)):
@@ -359,7 +359,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def compute_reward_001(self, p_state_old:ControlledVariable=None, p_state_new:ControlledVariable=None):
+    def compute_reward_001(self, p_state_old:State=None, p_state_new:State=None):
         """
         Reward strategy with only new normalized state
 
@@ -387,10 +387,10 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
             min_values.append(boundaries[0])
 
         max_values = self._normalize(max_values)
-        max_state = ControlledVariable(self.get_state_space())
+        max_state = State(self.get_state_space())
         max_state.set_values(max_values)
         min_values = self._normalize(min_values)
-        min_state = ControlledVariable(self.get_state_space())
+        min_state = State(self.get_state_space())
         min_state.set_values(min_values)
 
 
@@ -406,7 +406,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def compute_reward_002(self, p_state_old:ControlledVariable=None, p_state_new:ControlledVariable=None):
+    def compute_reward_002(self, p_state_old:State=None, p_state_new:State=None):
         """
         Reward strategy with both new and old normalized state based on euclidean distance from the goal state.
         Designed the balancing zone.
@@ -437,7 +437,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def compute_reward_003(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None):
+    def compute_reward_003(self, p_state_old: State = None, p_state_new: State = None):
         """
         Reward strategy with both new and old normalized state based on euclidean distance from the goal state,
         designed for the swinging of outer pole. Both angles and velocity and acceleration of the outer pole are
@@ -459,13 +459,13 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
         state_new = p_state_new.get_values().copy()
         state_new[1] = 0
         state_new[4] = 0
-        norm_state_new = ControlledVariable(self.get_state_space())
+        norm_state_new = State(self.get_state_space())
         norm_state_new.set_values(state_new)
 
         state_old = p_state_old.get_values().copy()
         state_old[1] = 0
         state_old[4] = 0
-        norm_state_old = ControlledVariable(self.get_state_space())
+        norm_state_old = State(self.get_state_space())
         norm_state_old.set_values(state_old)
         goal_state = self._target_state
 
@@ -478,7 +478,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
         return current_reward
 
 ## ------------------------------------------------------------------------------------------------------
-    def compute_reward_004(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None):
+    def compute_reward_004(self, p_state_old: State = None, p_state_new: State = None):
         """
         Reward strategy with both new and old normalized state based on euclidean distance from the goal state,
         designed for the swinging up region. Both angles and velocity and acceleration of the outer pole are
@@ -701,7 +701,7 @@ class DoublePendulumS4 (DoublePendulumRoot, DoublePendulumSystemS4):
     def _obs_to_mujoco(self, p_state):
         state = p_state.get_values().copy()
         state[2] = state[2] + state[0]
-        mujoco_state = ControlledVariable(self.get_state_space())
+        mujoco_state = State(self.get_state_space())
         mujoco_state.set_values(state)
         return mujoco_state
 
@@ -938,8 +938,8 @@ class DoublePendulumOA4(OAEnvironment, DoublePendulumS4, oadp.DoublePendulumOA4)
 
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
-        self._state = ControlledVariable(self._state_space)
-        self._target_state = ControlledVariable(self._state_space)
+        self._state = State(self._state_space)
+        self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
 
 

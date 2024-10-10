@@ -20,7 +20,7 @@ This module provides a wrapper class for MLPro's RL policies.
 from mlpro.bf.control.basics import ControlError, SetPoint
 from mlpro.bf.math.basics import Log
 from mlpro.bf.mt import Log, Task
-from mlpro.bf.systems.basics import ControlVariable, ControlledVariable
+from mlpro.bf.systems.basics import Action, State
 from mlpro.oa.control import OAController
 from mlpro.rl import SARSElement, FctReward, Policy
 
@@ -71,7 +71,7 @@ class OAControllerRL (OAController):
         self._rl_policy : Policy             = p_rl_policy
         self._rl_fct_reward : FctReward      = p_rl_fct_reward
         self._error_old : ControlError       = None
-        self._ctrl_var_old : ControlVariable = None
+        self._ctrl_var_old : Action = None
 
         super().__init__( p_ada = p_ada,
                           p_name = p_name, 
@@ -88,14 +88,14 @@ class OAControllerRL (OAController):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_output(self, p_ctrl_error: ControlError, p_ctrl_var : ControlVariable = None ) -> ControlVariable:
+    def compute_output(self, p_ctrl_error: ControlError, p_ctrl_var : Action = None ) -> Action:
         return self._rl_policy.compute_action( p_obs = p_ctrl_error )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt( self, 
                 p_ctrl_error: ControlError, 
-                p_ctrl_var: ControlVariable ) -> bool:
+                p_ctrl_var: Action ) -> bool:
         
         # 0 Intro
         adapted = False

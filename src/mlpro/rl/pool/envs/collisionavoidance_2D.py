@@ -343,7 +343,7 @@ class DynamicTrajectoryPlanner(Environment):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old:ControlledVariable, p_state_new:ControlledVariable) -> Reward:
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         
         number_of_collide_points = 0
         number_of_collide_lines = 0
@@ -361,7 +361,7 @@ class DynamicTrajectoryPlanner(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state:ControlledVariable) -> bool:
+    def _compute_success(self, p_state:State) -> bool:
         
         collide_point = self._collide_check_point_list()
         collide_line = self._collide_check_line()
@@ -376,7 +376,7 @@ class DynamicTrajectoryPlanner(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state:ControlledVariable) -> bool:
+    def _compute_broken(self, p_state:State) -> bool:
         
         for pt in self.traject:
             if (pt[0]<self.x_limit[0]) or (pt[0]>self.x_limit[1]):
@@ -409,7 +409,7 @@ class DynamicTrajectoryPlanner(Environment):
             self.update_plot()
         
         obs = self._get_obs()
-        self._state = ControlledVariable(self._state_space)
+        self._state = State(self._state_space)
         for i in range(len(obs)):
             self._state.set_value(self._state.get_dim_ids()[i], obs[i])
         
@@ -443,7 +443,7 @@ class DynamicTrajectoryPlanner(Environment):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:ControlledVariable, p_action:ControlVariable) -> ControlledVariable:
+    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
         
         action = p_action.get_sorted_values()
         self.traject = self.traject+action.reshape((self.num_traject_point-2),2)
@@ -452,7 +452,7 @@ class DynamicTrajectoryPlanner(Environment):
             self.update_plot()
         
         obs = self._get_obs()
-        self._state = ControlledVariable(self._state_space)
+        self._state = State(self._state_space)
         for i in range(len(obs)):
             self._state.set_value(self._state.get_dim_ids()[i], obs[i])
         

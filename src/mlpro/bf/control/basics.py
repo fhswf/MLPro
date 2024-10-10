@@ -34,7 +34,7 @@ from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstType, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
-from mlpro.bf.systems import ActionElement, ControlVariable, ControlledVariable, System
+from mlpro.bf.systems import ActionElement, Action, State, System
 from mlpro.bf.various import Log
 
 
@@ -138,7 +138,7 @@ class ControlError (Instance):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlVariable (ControlVariable):
+class ControlVariable (Action):
     """
     Output of a controller/input of a controlled system.
     """
@@ -152,7 +152,7 @@ class ControlVariable (ControlVariable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlledVariable (ControlledVariable):
+class ControlledVariable (State):
     """
     Output of a controlled system.
     """
@@ -284,7 +284,7 @@ class Controller (ControlTask):
             self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
             return
 
-        # 2 Compute and add control action
+        # 2 Compute and add control variable
         ctrl_var = self._get_instance( p_inst = p_inst, p_type = ControlVariable )
         ctrl_var = self.compute_output( p_ctrl_error = ctrl_error, p_ctrl_var = ctrl_var )
         p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var)
