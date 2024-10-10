@@ -304,6 +304,7 @@ class ScenarioBase (Mode, Persistent, Plottable):
 
 
         # 3 Update visualization
+
         if self._visualize:
             self.update_plot()
 
