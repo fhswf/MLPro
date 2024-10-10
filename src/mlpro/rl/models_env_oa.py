@@ -71,7 +71,7 @@ class OAFctReward(FctReward, Model):
                  p_action_space: MSpace = None,
                  p_input_space_cls=ESpace,
                  p_output_space_cls=ESpace,
-                 p_output_elem_cls=ControlledVariable,  # Specific output element type
+                 p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
                  p_wf_reward: OAWorkflow = None,
@@ -119,14 +119,14 @@ class OAFctReward(FctReward, Model):
             self._wf_reward = p_wf_reward
 
 
-        self._state_obj_old:ControlledVariable = None
-        self._state_obj_new:ControlledVariable = None
+        self._state_obj_old:State = None
+        self._state_obj_new:State = None
         self._setup_wf_reward = False
-        self._inst_old:ControlledVariable = None
+        self._inst_old:State = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None) -> Reward:
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
 
         Parameters
@@ -406,7 +406,7 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None) -> Reward:
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         Simulates a state transition based on a state and action. Custom method _simulate_reaction()
         is called.

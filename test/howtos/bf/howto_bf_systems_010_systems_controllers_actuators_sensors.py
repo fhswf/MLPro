@@ -132,7 +132,7 @@ sys.reset()
 
 
 # 6 Process an action
-sys.process_action( p_action= ControlVariable( p_agent_id=0, 
+sys.process_action( p_action= Action( p_agent_id=0, 
                                       p_action_space=sys.get_action_space(),
                                       p_values=np.array([1,2]) ) )
 

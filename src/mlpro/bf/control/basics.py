@@ -16,10 +16,12 @@
 ## -- 2024-10-07  0.7.0     DA       - new method ControlShared.get_tstamp()
 ## --                                - refactoring of class Controller
 ## -- 2024-10-08  0.8.0     DA       Classes ControlPanel, ControlShared: refactoring
+## -- 2024-10-10  0.9.0     DA       - class Controller: bugfix in method compute_output()
+## --                                - class ControlWorkflow: method run() redefined
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2024-10-08)
+Ver. 0.9.0 (2024-10-10)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -34,7 +36,7 @@ from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstType, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
-from mlpro.bf.systems import ActionElement, ControlVariable, ControlledVariable, System
+from mlpro.bf.systems import ActionElement, Action, State, System
 from mlpro.bf.various import Log
 
 
@@ -138,7 +140,7 @@ class ControlError (Instance):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlVariable (ControlVariable):
+class ControlVariable (Action):
     """
     Output of a controller/input of a controlled system.
     """
@@ -152,7 +154,7 @@ class ControlVariable (ControlVariable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlledVariable (ControlledVariable):
+class ControlledVariable (State):
     """
     Output of a controlled system.
     """
@@ -284,7 +286,7 @@ class Controller (ControlTask):
             self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
             return
 
-        # 2 Compute and add control action
+        # 2 Compute and add control variable
         ctrl_var = self._get_instance( p_inst = p_inst, p_type = ControlVariable )
         ctrl_var = self.compute_output( p_ctrl_error = ctrl_error, p_ctrl_var = ctrl_var )
         p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var)
@@ -323,7 +325,8 @@ class Controller (ControlTask):
 
         # 2 Create new control variable element
         new_ctrl_var_elem = ActionElement( p_action_space = self._output_space )
-
+        new_ctrl_var.add_elem( p_id=self.id, p_elem=new_ctrl_var_elem )
+ 
 
         # 3 Call custom method to fill the new action element
         self._compute_output( p_ctrl_error = p_ctrl_error, 
@@ -410,7 +413,7 @@ class ControllerFct (Controller):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiController (Controller, StreamWorkflow):
+class MultiController: # (Controller, StreamWorkflow):
     """
     """
 
@@ -459,9 +462,11 @@ class ControlledSystem (ControlTask):
 
         # 2 Let the wrapped system process the action
         if self.system.process_action( p_action = ctrl_var ):
-            ctrlled_var = self.system.get_state()
-            ctrlled_var.id = self.get_so().get_next_inst_id()
-            ctrlled_var.tstamp = self.get_so().get_tstamp()
+            state                  = self.system.get_state()
+            ctrlled_var            = ControlledVariable( p_state_space = state.get_related_set() )
+            ctrlled_var.values     = state.values
+            ctrlled_var.id         = self.get_so().get_next_inst_id()
+            ctrlled_var.tstamp     = self.get_so().get_tstamp()
             p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
         else:
             self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
@@ -735,6 +740,21 @@ class ControlWorkflow (StreamWorkflow, Mode):
             pass
 
 
+## -------------------------------------------------------------------------------------------------
+    def run( self, 
+             p_range : int = None, 
+             p_wait: bool = False, 
+             p_inst : InstDict = None ):
+
+        # 1 Execute all tasks
+        StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = p_inst)
+
+        # 2 Add the outcomes of the final task(s) to the instance dict of the initial task
+        so = self.get_so()
+        so.lock( p_tid = self.id )
+        for task in self._final_tasks:
+            so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
+        so.unlock()
 
 
 

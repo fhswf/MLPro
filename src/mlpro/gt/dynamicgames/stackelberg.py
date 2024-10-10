@@ -128,7 +128,7 @@ class GTPlayer_SG (Player):
     
     
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: ControlledVariable, p_action_leaders=False) -> ControlVariable:
+    def compute_action(self, p_state: State, p_action_leaders=False) -> Action:
 
         # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Action computation started')
@@ -204,11 +204,11 @@ class GTMultiPlayer_SG (MultiPlayer):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: ControlledVariable) -> ControlVariable:
+    def compute_action(self, p_state: State) -> Action:
 
         self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')
 
-        action = ControlVariable()
+        action = Action()
 
         ## leaders makes initial moves ##
         for agent, weight in self._agents:

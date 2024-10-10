@@ -208,7 +208,7 @@ class FctReward (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None) -> Reward:
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         Computes a reward based on a predecessor and successor state. Custom method _compute_reward()
         is called.
@@ -232,7 +232,7 @@ class FctReward (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None) -> Reward:
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         Custom reward method. See method compute_reward() for further details.
         """
@@ -374,7 +374,7 @@ class EnvBase (FctReward, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _process_action(self, p_action: ControlVariable) -> bool:
+    def _process_action(self, p_action: Action) -> bool:
         """
         Custom method for state transition. To be implemented in a child class. See method 
         process_action() for further details.
@@ -394,7 +394,7 @@ class EnvBase (FctReward, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable = None) -> Reward:
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         Computes a reward for the state transition, given by two successive states. The reward
         computation itself is carried out either by a custom implementation in method

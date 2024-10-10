@@ -46,7 +46,7 @@ class MyPolicy(Policy):
 
     C_NAME      = 'MyPolicy'
 
-    def compute_action(self, p_state: ControlledVariable) -> ControlVariable:
+    def compute_action(self, p_state: State) -> Action:
         # 1 Create a numpy array for your action values 
         my_action_values = np.zeros(self._action_space.get_num_dim())
 
@@ -55,7 +55,7 @@ class MyPolicy(Policy):
             my_action_values[d] = random.random() 
 
         # 3 Return an action object with your values
-        return ControlVariable(self._id, self._action_space, my_action_values)
+        return Action(self._id, self._action_space, my_action_values)
 
 
     def _adapt(self, p_sars_elem:SARSElement) -> bool:

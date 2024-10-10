@@ -126,7 +126,7 @@ class OAFctSTrans(FctSTrans, Model):
                  p_action_space: MSpace = None,
                  p_input_space_cls=ESpace,
                  p_output_space_cls=ESpace,
-                 p_output_elem_cls=ControlledVariable,  # Specific output element type
+                 p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
                  p_wf_strans: OAWorkflow = None,
@@ -173,13 +173,13 @@ class OAFctSTrans(FctSTrans, Model):
         else:
             self._wf_strans = p_wf_strans
 
-        self._action_obj:ControlVariable = None
+        self._action_obj:Action = None
         self._setup_wf_strans = False
         self._state_id = 0
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: ControlledVariable, p_action: ControlVariable, p_t_step : timedelta = None) -> ControlledVariable:
+    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
         Simulates a state transition based on a state and action. Custom method _simulate_reaction()
         is called.
@@ -379,7 +379,7 @@ class OAFctSuccess(FctSuccess, Model):
                  p_action_space: MSpace = None,
                  p_input_space_cls=ESpace,
                  p_output_space_cls=ESpace,
-                 p_output_elem_cls=ControlledVariable,  # Specific output element type
+                 p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
                  p_wf_success: OAWorkflow = None,
@@ -430,7 +430,7 @@ class OAFctSuccess(FctSuccess, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state: ControlledVariable) -> bool:
+    def compute_success(self, p_state: State) -> bool:
         """
         Assesses the given state regarding success criteria. Custom method _compute_success() is called.
 
@@ -611,7 +611,7 @@ class OAFctBroken(FctBroken, Model):
                  p_action_space: MSpace = None,
                  p_input_space_cls=ESpace,
                  p_output_space_cls=ESpace,
-                 p_output_elem_cls=ControlledVariable,  # Specific output element type
+                 p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
                  p_wf_broken: OAWorkflow = None,
@@ -664,7 +664,7 @@ class OAFctBroken(FctBroken, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: ControlledVariable) -> bool:
+    def compute_broken(self, p_state: State) -> bool:
         """
         Assesses the given state regarding breakdown criteria. Custom method _compute_success() is called.
 
@@ -998,7 +998,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: ControlledVariable, p_action: ControlVariable, p_t_step : timedelta = None) -> ControlledVariable:
+    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
         Simulates a state transition based on a state and action. Custom method _simulate_reaction()
         is called.
@@ -1041,7 +1041,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         return state
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state: ControlledVariable) -> bool:
+    def compute_success(self, p_state: State) -> bool:
         """
         Assesses the given state regarding success criteria. Custom method _compute_success() is called.
 
@@ -1064,7 +1064,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: ControlledVariable) -> bool:
+    def compute_broken(self, p_state: State) -> bool:
         """
         Assesses the given state regarding breakdown criteria. Custom method _compute_success() is called.
 

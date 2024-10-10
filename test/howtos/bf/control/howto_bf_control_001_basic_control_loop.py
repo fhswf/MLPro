@@ -12,7 +12,7 @@
 """
 Ver. 0.1.0 (2024-10-09)
 
-This module demonstrates ...
+Let's play fox and hunter!
 
 You will learn:
 
@@ -24,24 +24,17 @@ You will learn:
 
 """
 
-from time import sleep
+#from time import sleep
 
-from mlpro.bf.control.basics import ControlError
-from mlpro.bf.systems.basics import ActionElement
+#from mlpro.bf.systems.basics import ActionElement
 from mlpro.bf.various import Log
 from mlpro.bf.ops import Mode
-from mlpro.bf.control import Controller, ControlledSystem, ControlSystemBasic
-from mlpro.bf.systems.pool import DoublePendulumSystemS4
 
+from mlpro.bf.control import ControlledSystem
+from mlpro.bf.control.controlsystems import ControlSystemBasic
+from mlpro.bf.systems.pool import Fox
+from mlpro.bf.control.controllers import Hunter
 
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MyController (Controller):
-    
-    def _compute_output(self, p_ctrl_error: ControlError, p_ctrl_var_elem: ActionElement):
-        pass
 
 
 
@@ -50,7 +43,7 @@ class MyController (Controller):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 1
+    cycle_limit = 10
     logging     = Log.C_LOG_ALL
     visualize   = False
   
@@ -64,26 +57,25 @@ else:
 # 2 Init control scenario
 
 # 2.1 Control system
-mycontrolledsystem = ControlledSystem( p_system = DoublePendulumSystemS4() )
+mycontrolledsystem = ControlledSystem( p_system = Fox() )
 
 # 2.2 Controller
-mycontroller = MyController( p_input_space = mycontrolledsystem.system.get_state_space(),
-                             p_output_space = mycontrolledsystem.system.get_action_space(),
-                             p_id = 0,
-                             p_visualize = visualize,
-                             p_logging = logging )
+mycontroller = Hunter( p_input_space = mycontrolledsystem.system.get_state_space(),
+                       p_output_space = mycontrolledsystem.system.get_action_space() )
 
 # 2.3 Basic control system
 mycontrolsystem = ControlSystemBasic( p_mode = Mode.C_MODE_SIM,
                                       p_controller = mycontroller,
                                       p_controlled_system = mycontrolledsystem,
+                                      p_ctrl_var_integration = False,
                                       p_cycle_limit = cycle_limit,
                                       p_visualize = visualize,
                                       p_logging = logging )
 
 
-# 3 Set initial setpoint values
-mycontrolsystem.get_control_panel().set_setpoint( p_values = [0,0,0,0])
+# 3 Set initial setpoint values and reset the controlled system
+mycontrolsystem.get_control_panel().set_setpoint( p_values = [0])
+mycontrolledsystem.system.reset( p_seed = 1 )
 
 
 # 4 Start the control process
