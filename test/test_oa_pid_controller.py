@@ -8,6 +8,7 @@ from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from mlpro.rl.models import *
 from mlpro.rl.models_env import Reward
 import datetime
+from mlpro.bf.systems import ControlVariable, ControlledVariable
 
 import math
 matplotlib.use('TkAgg')
@@ -30,7 +31,7 @@ class MyReward(FctReward):
 
 
     
-    def _compute_reward(self, p_state_old: wrapper_rl.State = None, p_state_new: wrapper_rl.State = None) -> Reward:
+    def _compute_reward(self, p_state_old: wrapper_rl.ControlledVariable = None, p_state_new: wrapper_rl.ControlledVariable = None) -> Reward:
 
         #get old error
         error_old = p_state_old.get_feature_data().get_values()[0]
@@ -98,7 +99,7 @@ observation_space = MSpace()
 error_dim = Dimension('error',p_boundaries=[-100,100])
 setpoint_dim = Dimension('setpoint',p_boundaries=[-100,100])
 observation_space.add_dim(dim1)
-pid = PIDController(13,23,34)
+pid = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=MSpace(),Ti=23,Tv=34)
 # PPO
 policy_sb3 = PPO(
     policy="MlpPolicy",
@@ -127,7 +128,7 @@ setpoint.get_feature_data().set_value(setpoint_space.get_dim_ids()[0],0)
 error_space = Set()
 error_space.add_dim(p_dim=error_dim)
 control_error = ControlError(p_error_data=Element(error_space),p_tstamp=datetime.datetime.now())
-oa_controller=wrapper_rl.OAControllerRL(p_rl_policy=rl_pid_policy,p_rl_fct_reward=MyReward())
+oa_controller=wrapper_rl.OAControllerRL(p_input_space=MSpace(),p_output_space=MSpace(),p_rl_policy=rl_pid_policy,p_rl_fct_reward=MyReward())
 
 
 
@@ -159,14 +160,11 @@ for k in range(30):
         control_error.get_feature_data().set_value(error_space.get_dim_ids()[0],actual_angle-setpoint.get_feature_data().get_values()[0])
         control_error.set_tstamp(datetime.datetime.now())
 
-    
-        oa_controller._adapt(p_setpoint=setpoint
-                            ,p_ctrl_error=control_error
-                            ,p_state=State(p_state_space=MSpace())
-                            ,p_action=Action())
+        oa_controller._adapt(p_ctrl_error=control_error,p_ctrl_var=ControlVariable())
+     
         
-        action=oa_controller.compute_action(control_error)
-        output= action.get_elem(0).get_values()[0]
+        control_variable=oa_controller.compute_output(control_error)
+        output= control_variable.get_elem(0).get_values()[0]
 
         # Aktion umsetzen (nach links oder rechts)
         if output > 0:
@@ -203,9 +201,9 @@ plt.ylabel('Angle (radians)')
 plt.legend()
 
 plt.subplot(3, 1, 2)
-plt.plot(time_steps, actions, label='Action')
+plt.plot(time_steps, actions, label='ControlVariable')
 plt.xlabel('Time Step')
-plt.ylabel('Action (0=left, 1=right)')
+plt.ylabel('ControlVariable (0=left, 1=right)')
 plt.legend()
 
 plt.subplot(3, 1, 3)
