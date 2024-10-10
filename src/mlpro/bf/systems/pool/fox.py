@@ -1,25 +1,29 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.systems.pool
-## -- Module  : followme.py
+## -- Module  : fox.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-10-10  0.0.0     DA       Initial implementation
+## -- 2024-10-10  0.1.0     DA       Initial implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2024-10-10)
+Ver. 0.1.0 (2024-10-10)
 
 This module provides a simple demo system that just cumulates a percentage part of the incoming
 action to the inner state.
 """
 
 
+import random
+
+import numpy as np
+
 from mlpro.bf.various import Log
 from mlpro.bf.ops import Mode
 from mlpro.bf.mt import Task
-from mlpro.bf.math import MSpace
+from mlpro.bf.math import Dimension, MSpace, ESpace
 from mlpro.bf.systems import State, Action, System
 
 
@@ -27,11 +31,13 @@ from mlpro.bf.systems import State, Action, System
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class FollowMe (System):
+class Fox (System):
     """
+    ...
     """
 
-    C_NAME      = 'Follow me'
+    C_NAME          = 'Fox'
+    C_BOUNDARIES    = [-10,10]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -58,19 +64,29 @@ class FollowMe (System):
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_num_dim: int):
 
-        state_space : MSpace = MSpace()
-        action_space : MSpace = MSpace()
+        state_action_space : MSpace = ESpace()
+
+        for i in range(p_num_dim):
+            state_action_space.add_dim( p_dim = Dimension( p_name_short = 'var ' + str(i),
+                                                           p_base_set = Dimension.C_BASE_SET_R,
+                                                           p_boundaries = self.C_BOUNDARIES ) )
         
-        return state_space, action_space
+        return state_action_space, state_action_space
     
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
-        
-        raise NotImplementedError
+
+        random.seed( p_seed )
+        state = State( p_state_space = self.get_state_space(), p_initial = True )
+        state.values = [random.uniform( self.C_BOUNDARIES[0], self.C_BOUNDARIES[1] ) for _ in range(self.get_state_space().get_num_dim())]
+        self._set_state(p_state = state)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action, p_step = None):
         
-        raise NotImplementedError
+        agent_id  = p_action.get_agent_ids()[0]
+        new_state = State( p_state_space = self.get_state_space())
+        new_state.values = np.array(p_state.values) + np.array(p_action.get_elem(p_id=agent_id).get_values()) * self._action_factor
+        return new_state

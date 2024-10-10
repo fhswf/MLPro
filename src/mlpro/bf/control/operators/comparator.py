@@ -51,7 +51,10 @@ class Comparator (Operator):
         ctrlled_var : ControlledVariable = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True)
         if ctrlled_var is None:
             self.log(Log.C_LOG_TYPE_W, 'Controlled variable missing!')
-            ctrlled_var = setpoint
+            ctrlled_var = ControlledVariable( p_state_space = setpoint.get_feature_data().get_related_set() )
+            ctrlled_var.values = setpoint.values.copy()
+            ctrlled_var.id = self.get_so().get_next_inst_id()
+            ctrlled_var.tstamp = self.get_so().get_tstamp()
 
 
         # 3 Compute control error
