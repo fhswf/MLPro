@@ -20,6 +20,7 @@ https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_c
 
 """
 
+from mlpro.bf.math.basics import MSpace
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.control.basics import ControlError, Controller
 from mlpro.bf.systems.basics import ActionElement
@@ -36,8 +37,16 @@ class PIDController (Controller):
     """
 
 
-    def __init__(self,Kp: float, Ti: float = 0.0 ,Tv: float= 0.0,disable_integral:bool = False,disable_derivitave:bool = False,enable_windup: bool = False,windup_limit:float =0,output_limits: tuple = (0,100) ,p_name: str = None, p_range_max=Task.C_RANGE_THREAD, p_duplicate_data: bool = False, p_visualize: bool = False, p_logging=Log.C_LOG_ALL, **p_kwargs):
-        super().__init__(p_name, p_range_max, p_duplicate_data, p_visualize, p_logging, **p_kwargs)
+    def __init__(self,Kp: float,  
+                 p_input_space: MSpace, p_output_space: MSpace, Ti: float = 0.0 ,Tv: float= 0.0,disable_integral:bool = False,
+                 disable_derivitave:bool = False,enable_windup: bool = False,windup_limit:float =0,output_limits: tuple = (0,100),
+                 p_id=None, p_name: str = None, p_range_max=Task.C_RANGE_NONE, p_visualize: bool = False, p_logging=Log.C_LOG_ALL, **p_kwargs):
+        
+        
+        super().__init__(p_input_space, p_output_space, p_id, p_name, p_range_max, p_visualize, p_logging, **p_kwargs)
+
+
+
 
         self.Kp = Kp
         self.Ti = Ti  # [s] 
@@ -80,8 +89,9 @@ class PIDController (Controller):
         return np.array([self.Kp,self.Ti,self.Tv])
 
 ## -------------------------------------------------------------------------------------------------
-
-    def _compute_action(self, p_ctrl_error: ControlError, p_action_element: ActionElement, p_ctrl_id: int = 0, p_ae_id: int = 0):  
+ 
+        
+    def _compute_output(self, p_ctrl_error: ControlError, p_ctrl_var_elem: ActionElement):
 
         """
         Custom method to compute and an action based on an incoming control error. The result needs
@@ -89,7 +99,7 @@ class PIDController (Controller):
 
         SISO
         ----
-        Get single error value: error_siso = p_ctrl_error.values[p_ctrl_id]
+        Get single error value: error_siso = p_ctrl_error.values[0]
         Set single action value: p_action_element.values[p_ae_id] = action_siso
 
         MIMO
@@ -102,17 +112,13 @@ class PIDController (Controller):
         ----------
         p_ctrl_error : CTRLError
             Control error.
-        p_action_element : ActionElement
-            Action element to be filled with resulting action value(s).
-        p_ctrl_id : int = 0
-            SISO controllers only. Id of the related source value in p_ctrl_error.
-        p_ae_id : int = 0 
-            SISO controller olny. Id of the related destination value in p_action_element.
+        p_ctrl_var_elem : ActionElement
+            Control element to be filled with resulting control value(s).
         """
 
 
         #get control error
-        error_siso = p_ctrl_error.get_feature_data().get_values()[p_ctrl_id]
+        error_siso = p_ctrl_error.get_values()[0]
 
         delta_time = 0
 
@@ -164,7 +170,7 @@ class PIDController (Controller):
         self.previous_time = current_time        
 
         #set action value
-        p_action_element.set_values([action_siso])
+        p_ctrl_var_elem.set_values([action_siso])
         
 
 
