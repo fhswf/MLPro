@@ -53,18 +53,23 @@ class OAController (Controller, Model):
     """
 
     C_TYPE          = 'OA Controller'
-    C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
+                  p_input_space : MSpace,
+                  p_output_space : MSpace,
                   p_ada: bool = True,
+                  p_id = None,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_THREAD, 
-                  p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL, 
+                  p_range_max = Task.C_RANGE_NONE, 
+                  p_visualize: bool = False, 
+                  p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
         
         Controller.__init__( self,
+                             p_input_space = p_input_space,
+                             p_output_space = p_output_space,
+                             p_id = p_id,
                              p_name = p_name,
                              p_range_max = p_range_max,
                              p_visualize = p_visualize,
@@ -109,7 +114,7 @@ class OAController (Controller, Model):
 ## -------------------------------------------------------------------------------------------------
     def _adapt( self, 
                 p_ctrl_error: ControlError, 
-                p_ctrl_var: Action ) -> bool:
+                p_ctrl_var: ControlVariable ) -> bool:
         """
         Specialized custom method for online adaptation in closed-loop control systems.
 

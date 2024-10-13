@@ -8,10 +8,11 @@
 ## -- 2024-10-06  0.1.0     DA       Creation and initial implementation
 ## -- 2024-10-08  0.2.0     DA       Validation and various changes
 ## -- 2024-10-09  0.3.0     DA       Refactoring
+## -- 2024-10-13  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-10-09)
+Ver. 0.4.0 (2024-10-13)
 
 This module provides an implementation of a comparator that determins the control error based on 
 setpoint and controlled variable (system state).
@@ -41,26 +42,21 @@ class Comparator (Operator):
     def _run(self, p_inst: InstDict):
         
         # 1 Get setpoint
-        setpoint : SetPoint = self._get_instance( p_inst = p_inst, p_type = SetPoint )
+        setpoint : SetPoint = self._get_instance( p_inst = p_inst, p_type = SetPoint, p_remove = True )
         if setpoint is None:
             self.log(Log.C_LOG_TYPE_E, 'Setpoint missing!')
             return
 
 
         # 2 Get and remove current controlled variable
-        ctrlled_var : ControlledVariable = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True)
+        ctrlled_var : ControlledVariable = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
         if ctrlled_var is None:
             self.log(Log.C_LOG_TYPE_W, 'Controlled variable missing!')
-            ctrlled_var = ControlledVariable( p_state_space = setpoint.get_feature_data().get_related_set() )
-            ctrlled_var.values = setpoint.values.copy()
-            ctrlled_var.id = self.get_so().get_next_inst_id()
-            ctrlled_var.tstamp = self.get_so().get_tstamp()
+            ctrlled_var = setpoint
 
 
         # 3 Compute control error
         control_error = self.get_control_error( p_setpoint = setpoint, p_ctrlled_var = ctrlled_var )
-        control_error.id = self.get_so().get_next_inst_id()
-        control_error.tstamp = self.get_so().get_tstamp()
         p_inst[control_error.id] = (InstTypeNew, control_error)
 
 
@@ -83,7 +79,7 @@ class Comparator (Operator):
             New control error object.
         """
 
-        error_data   = Element( p_set=p_ctrlled_var.get_feature_data().get_related_set() )
-        error_values = np.subtract( np.array(p_ctrlled_var.values), np.array(p_setpoint.values) )
-        error_data.set_values( p_values = error_values )
-        return ControlError( p_error_data = error_data, p_tstamp = p_ctrlled_var.tstamp )
+        return ControlError( p_id = self.get_so().get_next_inst_id(),
+                             p_value_space = p_ctrlled_var.value_space, 
+                             p_values = np.subtract( np.array(p_ctrlled_var.values), np.array(p_setpoint.values) ), 
+                             p_tstamp = self.get_so().get_tstamp() )

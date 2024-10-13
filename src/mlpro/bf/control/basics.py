@@ -18,129 +18,136 @@
 ## -- 2024-10-08  0.8.0     DA       Classes ControlPanel, ControlShared: refactoring
 ## -- 2024-10-10  0.9.0     DA       - class Controller: bugfix in method compute_output()
 ## --                                - class ControlWorkflow: method run() redefined
+## -- 2024-10-13  0.10.0    DA       Refactoring: changed parent of class Action to Instance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2024-10-10)
+Ver. 0.10.0 (2024-10-13)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
 from typing import Iterable
+from datetime import datetime
+
 from matplotlib.figure import Figure
+
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.mt import Figure, PlotSettings, Range, Task, Workflow
+from mlpro.bf.mt import Range, Task
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function, MSpace
-from mlpro.bf.streams import InstDict, InstType, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
-from mlpro.bf.systems import ActionElement, Action, State, System
-from mlpro.bf.various import Log
+from mlpro.bf.streams import InstDict, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
+from mlpro.bf.systems import Action, System
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SetPoint (Instance):
+class ControlData (Instance):
     """
-    Setpoint.
+    Root class for all types of control data.
 
     Parameters
     ----------
-    p_setpoint_data : Element
-        Container for new setpoint values.
-    p_tstamp : TStampType 
-        Time stamp.
+    p_id : int,
+        Instance id.
+    p_value_space : MSpace
+        Metric space of the values.
+    p_values : Iterable
+        Values.
+    p_tstamp : TStampType = None
+        Optional time stamp.
     **p_kwargs
         Optional further keyword arguments.
+    """
+
+    C_TYPE          = 'Control Data'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_id : int,
+                  p_value_space : MSpace,
+                  p_values : Iterable = None, 
+                  p_tstamp: TStampType = None, 
+                  **p_kwargs ):
+        
+        feature_element = Element( p_set = p_value_space )
+        feature_element.set_values( p_values = p_values )
+
+        super().__init__( p_feature_data = feature_element, 
+                          p_label_data = None, 
+                          p_tstamp = p_tstamp, 
+                          **p_kwargs )
+        
+        self.set_id( p_id = p_id )
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def _get_value_space(self):
+        return self.get_feature_data().get_related_set()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _get_values(self):
+        return self.get_feature_data().get_values()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_values(self, p_values):
+        self.get_feature_data().set_values( p_values = p_values)
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy(self):
+        duplicate = self.__class__( p_id = self.get_id(),
+                                    p_value_space = self.value_space,
+                                    p_values = self.values,
+                                    p_tstamp=self.get_tstamp(),
+                                    p_kwargs=self._get_kwargs() )
+        return duplicate
+
+
+## -------------------------------------------------------------------------------------------------
+    value_space = property( fget=_get_value_space )
+    values = property( fget=_get_values, fset=_set_values )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SetPoint (ControlData):
+    """
+    Setpoint.
     """
 
     C_NAME      = 'Setpoint' 
 
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_setpoint_data: Element, 
-                  p_tstamp: TStampType, 
-                  **p_kwargs ):
-        
-        super().__init__( p_feature_data = p_setpoint_data, 
-                          p_label_data = None, 
-                          p_tstamp = p_tstamp, 
-                          **p_kwargs )
-        
-
-## -------------------------------------------------------------------------------------------------
-    def _get_values(self):
-        return self.get_feature_data().get_values()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_values(self, p_values):
-        self.get_feature_data().set_values( p_values = p_values)
-        self._raise_event( p_event_id = self.C_EVENT_ID_SETPOINT_CHANGED, 
-                           p_event_object = Event( p_raising_object=self) )
-
-
-## -------------------------------------------------------------------------------------------------
-    values = property( fget=_get_values, fset=_set_values )
-
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlError (Instance):
+class ControlError (ControlData):
     """
     Control error.
-
-    Parameters
-    ----------
-    p_error_data : Element
-        Container for new error values.
-    p_tstamp : TStampType 
-        Time stamp.
-    **p_kwargs
-        Optional further keyword arguments.
     """
 
     C_NAME      = 'Control Error' 
 
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_error_data: Element, 
-                  p_tstamp : TStampType, 
-                  **p_kwargs ):
-        
-        super().__init__( p_feature_data = p_error_data, 
-                          p_label_data = None, 
-                          p_tstamp = p_tstamp, 
-                          **p_kwargs )
-        
-
-## -------------------------------------------------------------------------------------------------
-    def _get_values(self):
-        return self.get_feature_data().get_values()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_values(self, p_values):
-        self.get_feature_data().set_values( p_values = p_values)
-
-
-## -------------------------------------------------------------------------------------------------
-    values = property( fget=_get_values, fset=_set_values )
-
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlVariable (Action):
+class ControlVariable (ControlData):
     """
     Output of a controller/input of a controlled system.
     """
@@ -151,16 +158,14 @@ class ControlVariable (Action):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ControlledVariable (State):
+class ControlledVariable (ControlData):
     """
     Output of a controlled system.
     """
     
     C_NAME      = 'Controlled Variable' 
-
 
 
 
@@ -201,6 +206,16 @@ class ControlTask (StreamTask):
             del p_inst[inst_found.id]
 
         return inst_found
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed = None, **p_kwargs):
+        self._reset( p_seed = p_seed, **p_kwargs )
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed = None, **p_kwargs):
+        pass
 
 
 
@@ -214,6 +229,20 @@ class Operator (ControlTask):
     """
 
     C_TYPE      = 'Operator'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_range_max=Task.C_RANGE_THREAD, 
+                  p_visualize = False, 
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+        
+        super().__init__( p_name = self.C_NAME, 
+                          p_range_max = p_range_max, 
+                          p_duplicate_data = False, 
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging, 
+                          **p_kwargs )
 
 
 
@@ -286,61 +315,47 @@ class Controller (ControlTask):
             self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
             return
 
-        # 2 Compute and add control variable
-        ctrl_var = self._get_instance( p_inst = p_inst, p_type = ControlVariable )
-        ctrl_var = self.compute_output( p_ctrl_error = ctrl_error, p_ctrl_var = ctrl_var )
+        # 2 Remove existing control variable from inst dictionary
+        self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+
+        # 3 Compute control output
+        ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
+
+        # 4 Complete and store new control variable
         p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_output( self, 
-                        p_ctrl_error: ControlError, 
-                        p_ctrl_var: ControlVariable = None ) -> ControlVariable:
+    def compute_output( self, p_ctrl_error: ControlError ) -> ControlVariable:
         """
-        Computes a control variable based on an incoming control error.
+        Computes a control variable based on an incoming control error. It creates a new control
+        variable and call the custom method _compute_output() to fill it with values.
 
         Parameters
         ----------
         p_ctrl_error : ControlError
-            Control error object.
-        p_ctrl_var : ControlVariable = None
-            Optional ControlVariable object to be filled.
+            Control error.
 
         Returns
         -------
         ControlVariable
-            New control variable
+            ControlVariable.
         """
 
-        # 1 Create new control variable if not provided from outside
-        if p_ctrl_var is None:
-            new_ctrl_var = ControlVariable( p_agent_id = self.id, 
-                                            p_action_space = self._output_space, 
-                                            p_tstamp = self.get_so().get_tstamp() )
-        else:
-            new_ctrl_var = p_ctrl_var
-        
-        new_ctrl_var.id = self.get_so().get_next_inst_id()
+        # 1 Create new control variable 
+        ctrl_var    = ControlVariable( p_id = self.get_so().get_next_inst_id(),
+                                       p_value_space = self._output_space )
 
+        # 2 Call custom method to fill the new action element
+        self._compute_output( p_ctrl_error = p_ctrl_error, p_ctrl_var = ctrl_var )
 
-        # 2 Create new control variable element
-        new_ctrl_var_elem = ActionElement( p_action_space = self._output_space )
-        new_ctrl_var.add_elem( p_id=self.id, p_elem=new_ctrl_var_elem )
- 
-
-        # 3 Call custom method to fill the new action element
-        self._compute_output( p_ctrl_error = p_ctrl_error, 
-                              p_ctrl_var_elem = new_ctrl_var_elem )
-        
-
-        # 4 Return the new control variable
-        return new_ctrl_var
+        # 3 Complete and return the new control variable
+        ctrl_var.tstamp = self.get_so().get_tstamp()
+        return ctrl_var
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_output( self, 
-                         p_ctrl_error : ControlError, 
-                         p_ctrl_var_elem : ActionElement ):
+    def _compute_output( self, p_ctrl_error : ControlError, p_ctrl_var : ControlVariable ):
         """
         Custom method to compute a control output based on an incoming control error. The result needs
         to be stored in the control variable element handed over.
@@ -349,8 +364,8 @@ class Controller (ControlTask):
         ----------
         p_ctrl_error : CTRLError
             Control error.
-        p_ctrl_var_elem : ActionElement
-            Control variable element to be filled with resulting value(s).
+        p_ctrl_var : ControlVariable
+            Control variable to be filled with resulting value(s).
         """
 
         raise NotImplementedError
@@ -403,7 +418,7 @@ class ControllerFct (Controller):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_output(self, p_ctrl_error: ControlError, p_ctrl_var_elem: ActionElement):
+    def _compute_outsput(self, p_ctrl_error: ControlError, p_ctrl_var: ControlVariable):
 
         raise NotImplementedError
 
@@ -459,14 +474,19 @@ class ControlledSystem (ControlTask):
         ctrl_var     = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
         ctrlled_var  = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
 
+        action       = Action( p_agent_id = 0,
+                               p_action_space = ctrl_var.get_feature_data().get_related_set(),
+                               p_values = ctrl_var.values,
+                               p_tstamp = ctrl_var.tstamp )
+
 
         # 2 Let the wrapped system process the action
-        if self.system.process_action( p_action = ctrl_var ):
+        if self.system.process_action( p_action = action ):
             state                  = self.system.get_state()
-            ctrlled_var            = ControlledVariable( p_state_space = state.get_related_set() )
-            ctrlled_var.values     = state.values
-            ctrlled_var.id         = self.get_so().get_next_inst_id()
-            ctrlled_var.tstamp     = self.get_so().get_tstamp()
+            ctrlled_var            = ControlledVariable( p_id = self.get_so().get_next_inst_id(),
+                                                         p_value_space = self.system.get_state_space(),
+                                                         p_values = state.values,
+                                                         p_tstamp = self.get_so().get_tstamp() )
             p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
         else:
             self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
@@ -619,7 +639,11 @@ class ControlShared (StreamShared, ControlPanel, Log):
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> TStampType:
         
-        return None
+        #
+        # pseudo-implementation
+        #
+
+        return datetime.now()
         #raise NotImplementedError
     
     
@@ -658,11 +682,10 @@ class ControlShared (StreamShared, ControlPanel, Log):
                 break
 
         if setpoint is None:
-            setpoint_data = Element( p_set = self._ctrlled_var_space )
-            setpoint_data.set_values( p_values = p_values )
-            setpoint = SetPoint( p_setpoint_data = setpoint_data, 
+            setpoint = SetPoint( p_id = self.get_next_inst_id(),
+                                 p_value_space = self._ctrlled_var_space,
+                                 p_values = p_values,
                                  p_tstamp = self.get_tstamp() )
-            setpoint.id = self.get_next_inst_id()
             inst_admin[setpoint.id] = (InstTypeNew, setpoint)
         else:
             setpoint.values = p_values
@@ -745,16 +768,32 @@ class ControlWorkflow (StreamWorkflow, Mode):
              p_range : int = None, 
              p_wait: bool = False, 
              p_inst : InstDict = None ):
-
+        
         # 1 Execute all tasks
         StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = p_inst)
 
+
         # 2 Add the outcomes of the final task(s) to the instance dict of the initial task
         so = self.get_so()
-        so.lock( p_tid = self.id )
+        so.lock( p_tid = ControlShared.C_TID_ADMIN )
+
+        for inst_id, (inst_type, inst) in so._instances[ControlShared.C_TID_ADMIN].items():
+            if isinstance(inst, SetPoint):
+                setpoint = inst
+                break
+        
+        del so._instances[ControlShared.C_TID_ADMIN]
+        new_setpoint = setpoint.copy()
+        new_setpoint.id = so.get_next_inst_id()
+        new_setpoint.tstamp = so.get_tstamp()
+        so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (inst_type, new_setpoint) }
+
         for task in self._final_tasks:
             so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
+
         so.unlock()
+
+
 
 
 
