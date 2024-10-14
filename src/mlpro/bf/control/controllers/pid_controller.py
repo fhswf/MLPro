@@ -91,7 +91,7 @@ class PIDController (Controller):
 ## -------------------------------------------------------------------------------------------------
  
         
-    def _compute_output(self, p_ctrl_error: ControlError, p_ctrl_var_elem: ActionElement):
+    def _compute_output(self, p_ctrl_error: ControlError, p_ctrl_var: ActionElement):
 
         """
         Custom method to compute and an action based on an incoming control error. The result needs
@@ -112,7 +112,7 @@ class PIDController (Controller):
         ----------
         p_ctrl_error : CTRLError
             Control error.
-        p_ctrl_var_elem : ActionElement
+        p_ctrl_var : ActionElement
             Control element to be filled with resulting control value(s).
         """
 
@@ -170,7 +170,7 @@ class PIDController (Controller):
         self.previous_time = current_time        
 
         #set action value
-        p_ctrl_var_elem.set_values([action_siso])
+        p_ctrl_var._set_values([action_siso])
         
 
 
