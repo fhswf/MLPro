@@ -21,7 +21,8 @@ This module provides a simplified container class for a basic synchronous oa con
 
 
 from mlpro.bf.various import Log
-from mlpro.bf.control import ControlPanel, ControlWorkflow, ControlSystemBasic
+from mlpro.bf.control import ControlPanel, ControlWorkflow
+from mlpro.bf.control.controlsystems import ControlSystemBasic
 from mlpro.oa.control import OAControlSystem
 
 

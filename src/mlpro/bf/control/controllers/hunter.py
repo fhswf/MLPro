@@ -18,9 +18,7 @@ action to the inner state.
 
 import numpy as np
 
-from mlpro.bf.systems import ActionElement
-from mlpro.bf.systems.pool import Fox
-from mlpro.bf.control import Controller, ControlError
+from mlpro.bf.control import Controller, ControlError, ControlVariable
 
 
 
@@ -34,5 +32,5 @@ class Hunter (Controller):
     C_NAME              = 'Hunter'
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_output(self, p_ctrl_error : ControlError, p_ctrl_var_elem : ActionElement):
-        p_ctrl_var_elem.values = np.array(p_ctrl_error.values) * (-1)
+    def _compute_output(self, p_ctrl_error : ControlError, p_ctrl_var : ControlVariable ):
+        p_ctrl_var.values = np.array(p_ctrl_error.values) * (-1)

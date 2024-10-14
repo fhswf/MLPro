@@ -19,7 +19,7 @@ Unit test classes for policies.
 """
 
 
-#import pytest
+import pytest
 from mlpro.rl import *
 from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy

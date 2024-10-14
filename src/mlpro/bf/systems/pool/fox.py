@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-10  0.1.0     DA       Initial implementation
+## -- 2024-10-13  0.2.0     DA       Random state jump
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-10-10)
+Ver. 0.2.0 (2024-10-13)
 
 This module provides a simple demo system that just cumulates a percentage part of the incoming
 action to the inner state.
@@ -44,20 +45,22 @@ class Fox (System):
                   p_id=None, 
                   p_name = None, 
                   p_num_dim: int = 1,
-                  p_delay: float = 0.5,
+                  p_delay: float = 0.8,
+                  p_thr_jump: float = 0.1,
                   p_range_max = Task.C_RANGE_NONE, 
                   p_visualize = False, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
         
         super().__init__( p_id = p_id, 
-                          p_name = p_name, 
+                          p_name = p_name,
                           p_range_max = p_range_max, 
                           p_mode = Mode.C_MODE_SIM, 
                           p_visualize = p_visualize, 
                           p_logging = p_logging )
         
         self._action_factor: float = min(1, max(0, 1 - p_delay))
+        self._thr_jump: float = p_thr_jump
         self._state_space, self._action_space = self._setup_spaces(p_num_dim=p_num_dim)
         
 
@@ -75,12 +78,17 @@ class Fox (System):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
+    def _jump_away(self, p_state: State):
+        p_state.set_initial( p_initial=True )
+        p_state.values = [random.uniform( self.C_BOUNDARIES[0], self.C_BOUNDARIES[1] ) for _ in range(self.get_state_space().get_num_dim())]
+    
 
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None):
         random.seed( p_seed )
-        state = State( p_state_space = self.get_state_space(), p_initial = True )
-        state.values = [random.uniform( self.C_BOUNDARIES[0], self.C_BOUNDARIES[1] ) for _ in range(self.get_state_space().get_num_dim())]
-        self._set_state(p_state = state)
+        new_state = State( p_state_space = self.get_state_space(), p_initial = True )
+        self._jump_away( p_state = new_state )
+        self._set_state( p_state = new_state )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -89,4 +97,7 @@ class Fox (System):
         agent_id  = p_action.get_agent_ids()[0]
         new_state = State( p_state_space = self.get_state_space())
         new_state.values = np.array(p_state.values) + np.array(p_action.get_elem(p_id=agent_id).get_values()) * self._action_factor
+
+        if np.linalg.norm( new_state.values ) <= self._thr_jump: self._jump_away( p_state=new_state)
+
         return new_state
