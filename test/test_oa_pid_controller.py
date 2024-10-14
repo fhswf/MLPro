@@ -107,7 +107,7 @@ policy_sb3 = PPO(
     env=None,
     _init_setup_model=False,
     device="cpu",learning_rate=0.003,seed=42)
-cycle_limit=20000
+cycle_limit=200
 poliy_wrapper = WrPolicySB32MLPro(p_sb3_policy=policy_sb3,
                                   p_cycle_limit=cycle_limit,
                                   p_observation_space=observation_space,
@@ -146,7 +146,7 @@ total_reward = 0
 
 
 #training loop
-for k in range(30):
+for k in range(5):
     env = gym.make('CartPole-v1', render_mode="human")
     observation = env.reset()[0]
     for t in range(cycle_limit):
@@ -161,11 +161,11 @@ for k in range(30):
         control_error.set_tstamp(datetime.datetime.now())
 
        
-        oa_controller._adapt(p_ctrl_error=control_error,p_ctrl_var=ControlVariable())
+        oa_controller._adapt(p_ctrl_error=control_error,p_ctrl_var=ControlVariable(p_id=0,p_value_space=MSpace()))
      
         
         control_variable=oa_controller.compute_output(control_error)
-        output= control_variable.get_elem(0).get_values()[0]
+        output= control_variable._get_values()[0]
 
         # Aktion umsetzen (nach links oder rechts)
         if output > 0:
@@ -184,7 +184,7 @@ for k in range(30):
         gain_values.append(gain)
         integral_values.append(integral)
         deritave_values.append(deritave)
-        errors.append(oa_controller._error_old.get_feature_data().get_values()[0])
+        errors.append(control_error._get_values()[0])
         if done:
              break
 
