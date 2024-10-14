@@ -1,7 +1,7 @@
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.bf.ml.basics import *
 from mlpro.rl import Policy,SARSElement
-from mlpro.bf.systems import ControlVariable, ControlledVariable
+from mlpro.bf.control import ControlVariable, ControlledVariable
 
 
 class RLPID(Policy):

@@ -107,6 +107,7 @@ class OAControllerRL (OAController):
 
 
 ## -------------------------------------------------------------------------------------------------
+
     def _adapt(self, p_ctrl_error: ControlError, p_ctrl_var: ControlVariable) -> bool:
        
         # 0 Intro

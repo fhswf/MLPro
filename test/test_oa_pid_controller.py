@@ -8,7 +8,7 @@ from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from mlpro.rl.models import *
 from mlpro.rl.models_env import Reward
 import datetime
-from mlpro.bf.systems import ControlVariable, ControlledVariable
+from mlpro.bf.control import ControlVariable, ControlledVariable
 
 import math
 matplotlib.use('TkAgg')
@@ -31,7 +31,7 @@ class MyReward(FctReward):
 
 
     
-    def _compute_reward(self, p_state_old: wrapper_rl.ControlledVariable = None, p_state_new: wrapper_rl.ControlledVariable = None) -> Reward:
+    def _compute_reward(self, p_state_old: ControlledVariable = None, p_state_new: ControlledVariable= None) -> Reward:
 
         #get old error
         error_old = p_state_old.get_feature_data().get_values()[0]
@@ -121,13 +121,13 @@ rl_pid_policy = RLPID(p_observation_space=observation_space,
 
 setpoint_space = Set()
 setpoint_space.add_dim(p_dim=setpoint_dim)
-setpoint = SetPoint(p_setpoint_data=Element(p_set=setpoint_space),p_tstamp=datetime.datetime.now())
-setpoint.get_feature_data().set_value(setpoint_space.get_dim_ids()[0],0)
+setpoint = SetPoint(p_id=0,p_value_space=setpoint_space,p_values=[0],p_tstamp=datetime.datetime.now())
+
 
 
 error_space = Set()
 error_space.add_dim(p_dim=error_dim)
-control_error = ControlError(p_error_data=Element(error_space),p_tstamp=datetime.datetime.now())
+control_error = ControlError(p_id=0,p_value_space=error_space,p_values=[0],p_tstamp=datetime.datetime.now())
 oa_controller=wrapper_rl.OAControllerRL(p_input_space=MSpace(),p_output_space=MSpace(),p_rl_policy=rl_pid_policy,p_rl_fct_reward=MyReward())
 
 
@@ -160,6 +160,7 @@ for k in range(30):
         control_error.get_feature_data().set_value(error_space.get_dim_ids()[0],actual_angle-setpoint.get_feature_data().get_values()[0])
         control_error.set_tstamp(datetime.datetime.now())
 
+       
         oa_controller._adapt(p_ctrl_error=control_error,p_ctrl_var=ControlVariable())
      
         
