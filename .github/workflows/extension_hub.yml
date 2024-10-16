@@ -6,6 +6,8 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-10     1.0.0     DA       Creation 
 ## -- 2024-10-09  2.0.0     DA       Restructuring and introduction of PR-based processing
+## -- 2024-10-16  2.1.0     DA       Step 3: creation of virtual environment due to new security
+## --                                restrictions in Python 3.12
 ## -------------------------------------------------------------------------------------------------
 
 name: Update Extension Hub
@@ -36,6 +38,8 @@ jobs:
       - name: Step 3 - Updates on the extension hub
         id: step3
         run: |
+          python3 -m venv venv
+          source venv/bin/activate
           pip3 install PyGithub
           python3 ${GITHUB_WORKSPACE}/extensions/update_extension_hub.py ${{ secrets.EXTENSION_HUB_UPDATES }} ../doc/rtd/content/04_extensions/sub/
 
