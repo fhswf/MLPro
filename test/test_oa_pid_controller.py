@@ -185,6 +185,7 @@ for k in range(5):
         integral_values.append(integral)
         deritave_values.append(deritave)
         errors.append(control_error._get_values()[0])
+        
         if done:
              break
 
