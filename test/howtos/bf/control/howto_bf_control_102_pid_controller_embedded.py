@@ -45,7 +45,7 @@ if __name__ == '__main__':
     cycle_limit = 500
     num_dim     = 1
     logging     = Log.C_LOG_ALL
-    visualize   = True
+    visualize   = False
     step_rate   = 1
   
 else:
