@@ -47,7 +47,7 @@ class MyTask (StreamTask):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
-        pass
+        print('Hello World')
 
 
 
@@ -111,6 +111,7 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot()
+    myscenario.run()
     input('Press ENTER to start stream processing...')
 
 myscenario.run()
