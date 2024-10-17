@@ -74,7 +74,7 @@ if __name__ == '__main__':
     # create an instance of a  PID-Controller without anti wind up mechanism
     pid_controller = PIDController(Kp=True, Ti=10,Tv=Tv)
     # create an instance of a  PID-Controller with anti wind up mechanism
-    pid_controller_antiWindUp = PIDController(Kp=True, Ti=10,Tv=Tv,enable_windup=True,windup_limit=100,output_limits=(0,100))
+    pid_controller_antiWindUp = PIDController(Kp=True, Ti=10,Tv=Tv,enable_anti_windup=True,windup_limit=100,output_limits=(0,100))
 
 
     # 3. run compute action 
