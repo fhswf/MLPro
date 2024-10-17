@@ -87,7 +87,7 @@ class PIDController (Controller):
         self.previous_tstamp = None 
         self.enable_windup = enable_anti_windup
         self.windup_limit = windup_limit
-        self.output_limits = p_output_space.get_dim(p_id=p_id).get_boundaries()
+        self.output_limits = p_output_space.get_dims()[0].get_boundaries()
 
 
 ## -------------------------------------------------------------------------------------------------
