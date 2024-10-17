@@ -8,10 +8,11 @@
 ## -- 2024-09-19  0.1.0     DA       Initial implementation of class OAControllerRL
 ## -- 2024-10-09  0.2.0     DA       Refactoring
 ## -- 2024-10-13  0.3.0     DA       Refactoring
+## -- 2024-10-16  0.3.1     DA/ASP   Bugfix in method OAControllerRL._adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-10-13)
+Ver. 0.3.1 (2024-10-16)
 
 This module provides a wrapper class for MLPro's RL policies.
 
@@ -113,14 +114,16 @@ class OAControllerRL (OAController):
         # 0 Intro
         adapted = False
 
-        # 1 Adaptation from the second cycle on
-        if self._state_old is None: return False
-
-        # 2 Convert control error to RL state
+        # 1 Convert control error to RL state
         state_new        = State( p_state_space = p_ctrl_error.value_space )
         state_new.id     = p_ctrl_error.id
         state_new.tstamp = p_ctrl_error.tstamp
         state_new.values = p_ctrl_error.values
+
+        # 2 Adaptation from the second cycle on
+        if self._state_old is None: 
+            self._state_old = state_new
+            return False
 
         # 3 Call reward function
         reward = self._rl_fct_reward.compute_reward( p_state_old = self._state_old, p_state_new = state_new )
