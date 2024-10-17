@@ -99,7 +99,11 @@ observation_space = MSpace()
 error_dim = Dimension('error',p_boundaries=[-100,100])
 setpoint_dim = Dimension('setpoint',p_boundaries=[-100,100])
 observation_space.add_dim(dim1)
-pid = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=MSpace(),Ti=23,Tv=34)
+output_dim =Dimension(p_name_short='output_dim',p_boundaries=[0,100])
+output_space=MSpace()
+output_space.add_dim(p_dim=output_dim)
+pid = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=output_space,Ti=23,Tv=34)
+
 # PPO
 policy_sb3 = PPO(
     policy="MlpPolicy",
@@ -115,8 +119,8 @@ poliy_wrapper = WrPolicySB32MLPro(p_sb3_policy=policy_sb3,
 
 rl_pid_policy = RLPID(p_observation_space=observation_space,
                       p_action_space=action_space,
-                      pid_controller = pid,
-                      policy=poliy_wrapper)
+                      p_pid_controller = pid,
+                      p_policy=poliy_wrapper)
 
 
 setpoint_space = Set()
