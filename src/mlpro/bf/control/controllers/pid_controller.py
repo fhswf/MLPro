@@ -56,9 +56,10 @@ class PIDController (Controller):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,Kp: float,  
+    def __init__(self,
                  p_input_space: MSpace, 
                  p_output_space: MSpace, 
+                 Kp: float,
                  Ti: float = 0.0 ,
                  Tv: float= 0.0,
                  disable_integral:bool = False,
@@ -140,7 +141,7 @@ class PIDController (Controller):
         """
 
         #get control error
-        control_error_siso = p_ctrl_error.get_values()[0]
+        control_error_siso = p_ctrl_error._get_values()[0]
 
         #time delta
         dt = 0
