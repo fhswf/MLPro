@@ -19,6 +19,7 @@ This module provides basic templates for online anomaly prediction in MLPro.
 
 
 from mlpro.bf.ml import Log, Event
+from mlpro.bf.math import Function
 from mlpro.bf.streams import Log, StreamTask
 from mlpro.bf.various import Log
 from mlpro.bf.streams import Instance, InstDict
@@ -78,12 +79,24 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
         
         self.p_cls_tsf = p_cls_tsf
         self.capture_anomalies = {}
+        _findings:dict = {},
+        
+
 
 ## -------------------------------------------------------------------------------------------------
 
-    def _run( p_inst : InstDict ):
-        pass    
+    def _run(self, p_inst : InstDict):
+        
+        for inst_id,(inst_type, inst) in p_inst.entries():
+                 if inst_type == InstTypeNew:
+                      for ano_type, fl in self._findings.entries():
+                           for finding in fl:
+                                if inst in finding:
+                                     self.adapt(p_inst=inst, p_ano_type = ano_type)
+                                else:
+                                      self.adapt(p_inst=inst, p_ano_type = None)
 
+        #self.add_tsf(p_ano_type=p_inst.type, p_tsf=timeseriesforcaster)
 ## -------------------------------------------------------------------------------------------------
 
     def _adapt_on_event(self, p_event_id: str, p_event_object: Event) -> bool:
@@ -98,12 +111,17 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
         Returns
         -------
         """
-        #try ecxept
+        t = type(p_event_object)
+
+        try:
+             self._findings[t].append(p_event_object.get_instances())
+        except:
+             self._findings[t] = (p_event_object.get_instances())
 
 
 ## -------------------------------------------------------------------------------------------------
 
-    def get_anomaly(self, ad_anomaly):
+    def get_anomaly(self, p_anomaly):
         """ 
         Process incoming anomaly data from the anomaly detector.
 
@@ -114,6 +132,11 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
 
         """
 
-        self.ad_anomaly = ad_anomaly
-        self.captured_anomalies.append(ad_anomaly)
+        self.p_anomaly = p_anomaly
+        self.captured_anomalies.append(p_anomaly)
         
+
+    def is_posiitive_event(self):
+         pass
+    
+
