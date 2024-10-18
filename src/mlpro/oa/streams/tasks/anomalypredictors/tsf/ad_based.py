@@ -53,6 +53,7 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
        
     """
     C_TYPE = 'Anomaly Predictor AD'
+    
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -88,7 +89,7 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
     def _run(self, p_inst : InstDict):
         
         for inst_id,(inst_type, inst) in p_inst.entries():
-                 if inst_type == InstTypeNew:
+                 if inst_type == self.InstTypeNew:
                       for ano_type, fl in self._findings.entries():
                            for finding in fl:
                                 if inst in finding:

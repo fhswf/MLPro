@@ -134,5 +134,5 @@ class AnomalyPredictorTSF (AnomalyPredictor):
 
 ## -------------------------------------------------------------------------------------------------
     
-    def add_tsf(self, p_ano_type, p_tsf:TimeStamp):
+    def add_tsf(self, p_ano_type, p_tsf):
         pass
