@@ -22,6 +22,7 @@ from mlpro.bf.ops import Mode
 from mlpro.bf.mt import Task
 from mlpro.bf.math import Dimension, MSpace, ESpace
 from mlpro.bf.systems import State, Action, System
+from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
 import gymnasium as gym
 import math
 
@@ -56,10 +57,16 @@ class CartPole (System):
                           p_logging = p_logging )
         
         
-        self._env = gym.make('CartPole-v1', render_mode="human")
+        if p_visualize:
+            gym_env = gym.make('CartPole-v1', render_mode="human")
+        else:
+            gym_env = gym.make('CartPole-v1')
+
+            
+        self._env   = WrEnvGYM2MLPro( p_gym_env=gym_env, p_visualize=p_visualize, p_logging=p_logging) 
         self._observation=None
         self._state_space, self._action_space = self._setup_spaces(p_num_dim=p_num_dim)
-        
+ 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_num_dim: int):
@@ -84,7 +91,7 @@ class CartPole (System):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
-        self._observation = self._env.reset()[0]
+        self._observation = self._env._reset(p_seed=12)
 
 
 
@@ -92,23 +99,22 @@ class CartPole (System):
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action, p_step = None):
 
-        self._env.render() 
-
-        p_action_value = p_action.get_feature_data().get_values()[0]
-
+     
+        # get current action value
+        p_action_value = p_action.get_feature_data().get_values()[0]        
         
         if p_action_value > 0:
             p_action_value = 1  # move right
         else:
             p_action_value = 0  # move left
 
+        p_action.get_feature_data().set_values(p_values=[p_action_value])
 
-        # Führe die Aktion in der Umgebung aus
-        self._observation,*_ = self._env.step(p_action_value)        
-       
-        #create new state 
-        new_state = State( p_state_space = self.get_state_space())
-        #calculate angle of the pendelum 
-        new_state.values = self._radians_to_degrees(self._observation[2])      
+        new_state=self._env.simulate_reaction(p_state=State(p_state_space=MSpace()),p_action=p_action)     
+
+
+        #get new state  and calculate angle of the pendelum 
+        state_value = self._radians_to_degrees(new_state.get_feature_data().get_values()[2])
+        new_state.set_values([state_value])      
 
         return new_state

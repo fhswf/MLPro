@@ -45,7 +45,7 @@ if __name__ == '__main__':
     cycle_limit = 500
     num_dim     = 1
     logging     = Log.C_LOG_ALL
-    visualize   = False
+    visualize   = True
     step_rate   = 1
   
 else:
@@ -60,7 +60,7 @@ else:
 # 2 Init control scenario
 
 # 2.1 Control system
-mycontrolledsystem = ControlledSystem( p_system = CartPole(p_id=num_dim),
+mycontrolledsystem = ControlledSystem( p_system = CartPole(p_id=num_dim,p_visualize=visualize),
                                        p_name = 'Cart Pole',
                                        p_visualize = visualize,
                                        p_logging = logging )
