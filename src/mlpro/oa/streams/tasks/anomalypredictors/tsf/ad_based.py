@@ -97,7 +97,7 @@ class AnomalyPredictorAD (AnomalyPredictorTSF, Anomaly):
                                 else:
                                       self.adapt(p_inst=inst, p_ano_type = None)
 
-        #self.add_tsf(p_ano_type=p_inst.type, p_tsf=timeseriesforcaster)
+        #self.add_tsf(p_ano_type=p_inst.type, p_tsf= timeseriesforcaster)
 ## -------------------------------------------------------------------------------------------------
 
     def _adapt_on_event(self, p_event_id: str, p_event_object: Event) -> bool:
