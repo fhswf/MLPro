@@ -99,7 +99,52 @@ observation_space = MSpace()
 error_dim = Dimension('error',p_boundaries=[-100,100])
 setpoint_dim = Dimension('setpoint',p_boundaries=[-100,100])
 observation_space.add_dim(dim1)
-output_dim =Dimension(p_name_short='output_dim',p_boundaries=[0,100])
+
+
+
+
+
+# outer PID Circuit
+output_dim_2 =Dimension(p_name_short='output_dim',p_boundaries=[-3,3])
+output_space_2=MSpace()
+output_space_2.add_dim(p_dim=output_dim_2)
+pid_outer = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=output_space_2,Ti=23,Tv=34)
+
+# PPO
+policy_sb3_outer = PPO(
+    policy="MlpPolicy",
+    n_steps=1,
+    env=None,
+    _init_setup_model=False,
+    device="cpu",learning_rate=0.003,seed=42)
+
+cycle_limit=200
+poliy_wrapper_outer = WrPolicySB32MLPro(p_sb3_policy=policy_sb3_outer,
+                                  p_cycle_limit=cycle_limit,
+                                  p_observation_space=observation_space,
+                                  p_action_space=action_space)
+
+rl_pid_policy = RLPID(p_observation_space=observation_space,
+                      p_action_space=action_space,
+                      p_pid_controller = pid_outer,
+                      p_policy=poliy_wrapper_outer)
+
+setpoint_space = Set()
+setpoint_space.add_dim(p_dim=setpoint_dim)
+setpoint_outer = SetPoint(p_id=0,p_value_space=setpoint_space,p_values=[0],p_tstamp=datetime.datetime.now())
+
+
+
+error_space = Set()
+error_space.add_dim(p_dim=error_dim)
+control_error_outer = ControlError(p_id=0,p_value_space=error_space,p_values=[0],p_tstamp=datetime.datetime.now())
+oa_controller_outer=wrapper_rl.OAControllerRL(p_input_space=MSpace(),p_output_space=MSpace(),p_rl_policy=rl_pid_policy,p_rl_fct_reward=MyReward())
+
+#Ende Outer PID Circuit
+
+
+# inner PD Circuit
+output_dim =Dimension(p_name_short='output_dim',p_boundaries=[-3,3])
 output_space=MSpace()
 output_space.add_dim(p_dim=output_dim)
 pid = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=output_space,Ti=23,Tv=34)
@@ -107,11 +152,12 @@ pid = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=output_space,Ti=
 # PPO
 policy_sb3 = PPO(
     policy="MlpPolicy",
-    n_steps=100,
+    n_steps=1,
     env=None,
     _init_setup_model=False,
     device="cpu",learning_rate=0.003,seed=42)
-cycle_limit=200
+
+cycle_limit=2000
 poliy_wrapper = WrPolicySB32MLPro(p_sb3_policy=policy_sb3,
                                   p_cycle_limit=cycle_limit,
                                   p_observation_space=observation_space,
@@ -121,7 +167,6 @@ rl_pid_policy = RLPID(p_observation_space=observation_space,
                       p_action_space=action_space,
                       p_pid_controller = pid,
                       p_policy=poliy_wrapper)
-
 
 setpoint_space = Set()
 setpoint_space.add_dim(p_dim=setpoint_dim)
@@ -133,6 +178,8 @@ error_space = Set()
 error_space.add_dim(p_dim=error_dim)
 control_error = ControlError(p_id=0,p_value_space=error_space,p_values=[0],p_tstamp=datetime.datetime.now())
 oa_controller=wrapper_rl.OAControllerRL(p_input_space=MSpace(),p_output_space=MSpace(),p_rl_policy=rl_pid_policy,p_rl_fct_reward=MyReward())
+
+#Ende inner PID Circuit
 
 
 
@@ -150,18 +197,29 @@ total_reward = 0
 
 
 #training loop
-for k in range(5):
-    env = gym.make('CartPole-v1', render_mode="human")
+for k in range(500):
+    #env = gym.make('CartPole-v1', render_mode="human")
+    env = gym.make('InvertedPendulum-v4',render_mode="human") # MujoCO
     observation = env.reset()[0]
     for t in range(cycle_limit):
 
         env.render()
         # get obs values
-        cart_position, cart_velocity, pole_angle, pole_velocity = observation
+        #cart_position, cart_velocity, pole_angle, pole_velocity = observation
+        cart_position, pole_angle,cart_velocity, pole_velocity = observation
+
+        if t%300==0:
+            control_error_outer.get_feature_data().set_value(error_space.get_dim_ids()[0],cart_position)
+            control_error_outer.set_tstamp(datetime.datetime.now())
+            oa_controller_outer._adapt(p_ctrl_error=control_error_outer,p_ctrl_var=ControlVariable(p_id=0,p_value_space=MSpace()))
+            control_variable_outer=oa_controller_outer.compute_output(control_error_outer)
+            
+            
         #convert rad in °
         actual_angle = radians_to_degrees(pole_angle)
+        sp_angle = radians_to_degrees(control_variable_outer._get_values()[0])
         #calculate error     
-        control_error.get_feature_data().set_value(error_space.get_dim_ids()[0],actual_angle-setpoint.get_feature_data().get_values()[0])
+        control_error.get_feature_data().set_value(error_space.get_dim_ids()[0],actual_angle-sp_angle)#setpoint.get_feature_data().get_values()[0])
         control_error.set_tstamp(datetime.datetime.now())
 
        
@@ -172,13 +230,13 @@ for k in range(5):
         output= control_variable._get_values()[0]
 
         # Aktion umsetzen (nach links oder rechts)
-        if output > 0:
-            output = 1  # Bewegung nach rechts
-        else:
-            output = 0  # Bewegung nach links
+        #if output > 0:
+        #    output = 1  # Bewegung nach rechts
+       # else:
+        #    output = 0  # Bewegung nach links
 
         # Führe die Aktion in der Umgebung aus
-        observation, reward, done, *_ = env.step(output)
+        observation, reward, done, *_ = env.step([output])
         total_reward += oa_controller._rl_fct_reward._reward.get_overall_reward()
         # Daten sammeln
         angles.append(actual_angle)
