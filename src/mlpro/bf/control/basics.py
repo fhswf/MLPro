@@ -19,10 +19,12 @@
 ## -- 2024-10-10  0.9.0     DA       - class Controller: bugfix in method compute_output()
 ## --                                - class ControlWorkflow: method run() redefined
 ## -- 2024-10-13  0.10.0    DA       Refactoring: changed parent of class Action to Instance
+## -- 2024-10-24  0.11.0    DA       Class ControlledSystem: redefinition of method init_plot(),
+## --                                update_plot(), remove_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.10.0 (2024-10-13)
+Ver. 0.11.0 (2024-10-24)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -490,6 +492,24 @@ class ControlledSystem (ControlTask):
             p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
         else:
             self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure = None, p_plot_settings = None):
+        super().init_plot(p_figure = p_figure, p_plot_settings = p_plot_settings)
+        self.system.init_plot(p_figure = p_figure, p_plot_settings = p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, p_inst : InstDict = None, **p_kwargs):
+        super().update_plot(p_inst = p_inst, **p_kwargs)
+        self.system.update_plot( **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh : bool = True):
+        super().remove_plot(p_refresh = p_refresh)
+        self.system.remove_plot(p_refresh = p_refresh)
 
 
 
