@@ -1,12 +1,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.systems.pool
-## -- Module  : fox.py
+## -- Module  : cartPole.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-10-10  0.1.0     DA       Initial implementation
-## -- 2024-10-13  0.2.0     DA       Random state jump
+## -- 2024-10-10  0.1.0     ASP       Initial implementation
+## -- 2024-10-13  0.2.0     ASP       Random state jump
 ## -------------------------------------------------------------------------------------------------
 
 """

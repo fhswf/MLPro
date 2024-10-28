@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-09-01  0.0.0     DA       Creation
+## -- 2024-10-28  0.1.0     DA       Implementation PID CartPole Control
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -33,6 +34,8 @@ from mlpro.bf.control import ControlledSystem
 from mlpro.bf.control.controlsystems import ControlSystemBasic
 from mlpro.bf.systems.pool.cartPole import CartPole
 from mlpro.bf.control.controllers.pid_controller import PIDController
+import gymnasium as gym
+from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
 
 
 
@@ -57,10 +60,13 @@ else:
     step_rate   = 1
 
 
-# 2 Init control scenario
+if visualize:
+    gym_env = gym.make('CartPole-v1', render_mode="human")
+else:
+    gym_env = gym.make('CartPole-v1')
 
 # 2.1 Control system
-mycontrolledsystem = ControlledSystem( p_system = CartPole(p_id=num_dim,p_visualize=visualize),
+mycontrolledsystem = ControlledSystem( p_system =  WrEnvGYM2MLPro( p_gym_env=gym_env, p_visualize=visualize, p_logging=logging),
                                        p_name = 'Cart Pole',
                                        p_visualize = visualize,
                                        p_logging = logging )
