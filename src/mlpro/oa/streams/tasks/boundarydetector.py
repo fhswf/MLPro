@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.boundarydetectors
-## -- Module  : boundarydetectors.py
+## -- Package : mlpro.oa.tasks
+## -- Module  : boundarydetector.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -32,26 +32,30 @@
 ## -- 2023-11-19  1.2.4     DA       Bugfix in method BoundaryDetector._adapt(): scaler management
 ## -- 2024-05-12  1.3.0     DA       Removed the scaler functionality from BoundaryDetector
 ## -- 2024-05-22  1.4.0     DA       Refactoring and correction in BoundaryDetector._adapt()
+## -- 2024-10-29  1.4.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-22)
+Ver. 1.4.1 (2024-10-29)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 
 """
 
-import matplotlib.colors
+from itertools import repeat
 
+import matplotlib.colors
+from matplotlib.figure import Figure
+
+from mlpro.bf.various import Log
+from mlpro.bf.exceptions import ImplementationError
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance
-from mlpro.bf.streams.basics import InstDict
-from mlpro.bf.various import *
-from mlpro.bf.plot import *
-from mlpro.bf.math import *
-from mlpro.bf.mt import PlotSettings, Task as MLTask
-from mlpro.oa.streams.basics import *
-from typing import List
+from mlpro.bf.mt import Task
+from mlpro.bf.events import Event
+from mlpro.bf.math import Set
+from mlpro.bf.streams import Instance, InstDict
+from mlpro.oa.streams.basics import OATask
+
 
 
 
@@ -91,7 +95,7 @@ class BoundaryDetector (OATask):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_name:str = None,
-                  p_range_max = MLTask.C_RANGE_THREAD,
+                  p_range_max = Task.C_RANGE_THREAD,
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
