@@ -33,9 +33,16 @@ You will learn:
 """
 
 
-from mlpro.bf.streams.streams import *
+from datetime import datetime
+
+from mlpro.bf.various import Log
+from mlpro.bf.plot import PlotSettings
+from mlpro.bf.mt import Task
+from mlpro.bf.ops import Mode
+from mlpro.bf.streams.streams import StreamProviderMLPro, StreamMLProRnd10D
 from mlpro.bf.streams.tasks import RingBuffer, Rearranger
-from mlpro.oa.streams import *
+from mlpro.oa.streams import OAWorkflow, OAScenario
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 
 
 
@@ -137,7 +144,7 @@ else:
     cycle_limit = 60
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    step_rate   = 5
+    step_rate   = 1
 
 
 
