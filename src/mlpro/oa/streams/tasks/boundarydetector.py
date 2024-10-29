@@ -48,6 +48,7 @@ import matplotlib.colors
 from matplotlib.figure import Figure
 
 from mlpro.bf.various import Log
+from mlpro.bf.exceptions import ImplementationError
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.mt import Task
 from mlpro.bf.events import Event
