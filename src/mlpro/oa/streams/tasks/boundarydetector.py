@@ -32,11 +32,12 @@
 ## -- 2023-11-19  1.2.4     DA       Bugfix in method BoundaryDetector._adapt(): scaler management
 ## -- 2024-05-12  1.3.0     DA       Removed the scaler functionality from BoundaryDetector
 ## -- 2024-05-22  1.4.0     DA       Refactoring and correction in BoundaryDetector._adapt()
-## -- 2024-10-29  1.4.1     DA       Refactoring
+## -- 2024-10-29  1.5.0     DA       - Refactoring
+## --                                - Pseudo-implementation of BoundaryDetector._adapt_reverse()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2024-10-29)
+Ver. 1.5.0 (2024-10-29)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 
@@ -153,6 +154,14 @@ class BoundaryDetector (OATask):
                 adapted = True
 
         return adapted
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _adapt_reverse(self, p_inst_del: Instance):
+        """
+        Pseudo-implementation
+        """
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
