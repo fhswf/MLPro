@@ -69,10 +69,11 @@
 ## -- 2024-07-19  2.0.3     DA       Class StreamTask: excluded non-numeric feature data from default
 ## --                                visualization 2D,3D,ND
 ## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
+## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2024-09-11)
+Ver. 2.2.0 (2024-10-29)
 
 This module provides classes for standardized data stream processing. 
 
@@ -190,9 +191,9 @@ class Instance (Id, TStamp, KWArgs):
 
 
 # Type aliases for instance handling
-InstType    = int
-InstTypeNew = 0
-InstTypeDel = 1
+InstType    = str
+InstTypeNew = '+'
+InstTypeDel = '-'
 InstDict    = Dict[InstId, Tuple[InstType, Instance]]
 
 

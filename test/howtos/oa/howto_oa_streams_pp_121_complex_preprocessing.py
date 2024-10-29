@@ -43,7 +43,7 @@ from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.tasks import *
 
 from mlpro.oa.streams import *
-from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax, NormalizerZTransform
 
 
 
