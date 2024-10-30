@@ -57,6 +57,7 @@
 ## --                                - Class PlotSettings: new methods register(), unregister(),
 ## --                                  is_last_registered()
 ## --                                - Class Plottable: extensions on init_plot(), update_plot() 
+## --                                Refactoring: removed par p_force from Plottable.refresh()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -160,19 +161,20 @@ class PlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view            = p_view
-        self.axes            = p_axes
-        self.pos_x           = p_pos_x
-        self.pos_y           = p_pos_y
-        self.size_x          = p_size_x
-        self.size_y          = p_size_y
-        self.step_rate       = p_step_rate
-        self.detail_level    = p_detail_level
-        self.force_fg        = p_force_fg
-        self.id              = p_id
-        self.view_autoselect = p_view_autoselect
-        self.kwargs          = p_kwargs.copy()
-        self._registered_obj = []
+        self.view               = p_view
+        self.axes               = p_axes
+        self.pos_x              = p_pos_x
+        self.pos_y              = p_pos_y
+        self.size_x             = p_size_x
+        self.size_y             = p_size_y
+        self.step_rate          = p_step_rate
+        self.detail_level       = p_detail_level
+        self.force_fg           = p_force_fg
+        self.id                 = p_id
+        self.view_autoselect    = p_view_autoselect
+        self.kwargs             = p_kwargs.copy()
+        self._registered_obj    = []
+        self._plot_step_counter = 0
 
         if ( p_plot_horizon > 0 ) and ( p_data_horizon > 0 ):
             self.plot_horizon = min(p_plot_horizon, p_data_horizon)
@@ -238,7 +240,12 @@ class PlotSettings:
 
 ## -------------------------------------------------------------------------------------------------
     def copy(self):
-        duplicate = self.__class__( p_view = self.view,
+        """
+        Creates a copy of ifself. The values of following attributes are NOT taken over:
+        self._registered_obj, self.plot_step_counter.
+        """
+
+        return self.__class__( p_view = self.view,
                                     p_axes = self.axes,
                                     p_pos_x = self.pos_x,
                                     p_pos_y = self.pos_y,
@@ -253,8 +260,6 @@ class PlotSettings:
                                     p_view_autoselect = self.view_autoselect,
                                     p_kwargs = self.kwargs )
 
-        #duplicate._registered_obj = self._registered_obj.copy()
-        return duplicate
     
 
 
@@ -516,14 +521,9 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def refresh_plot(self, p_force:bool=False):
+    def refresh_plot(self):
         """
         Refreshes the plot.
-
-        Parameters
-        ----------
-        p_force : bool = False
-            On True the plot is updated even if it is embedded in a foreign host figure.
         """
     
         # 1 Plot functionality turned on?
@@ -533,15 +533,12 @@ class Plottable:
             return
         
 
-         # 1 Object has own figure or refresh is forced by caller?
-#        if not self._plot_own_figure and not p_force: return
-            
-#        if self._plot_own_figure:
-        self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
+         # 2 Update the plot step counter
+        self._plot_settings._plot_step_counter = mod(self._plot_settings._plot_step_counter + 1, self._plot_settings.step_rate)
         
 
-        # 2 Refresh plot
-        if ( self._plot_step_counter==0 ) or p_force: self._refresh_plot()
+        # 3 Refresh plot
+        if self._plot_settings._plot_step_counter == 0: self._refresh_plot()
             
 
 ## -------------------------------------------------------------------------------------------------
@@ -654,7 +651,7 @@ class Plottable:
         
         # 4 The last plotting object for the figure refreshs the plot
         if self._plot_settings.is_last_registered( p_plot_obj = self ):
-            self.refresh_plot(p_force=True)
+            self.refresh_plot()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -727,7 +724,7 @@ class Plottable:
         self._plot_methods[view][2]()
 
         # 3 Optionally refresh
-        if p_refresh: self.refresh_plot(p_force=False)
+        if p_refresh: self.refresh_plot()
 
         # 4 Clear internal plot parameters
         self._plot_settings.unregister( p_plot_obj = self )
