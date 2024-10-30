@@ -124,7 +124,7 @@ class RingBuffer (Window):
 
 
         # 1 Main processing loop
-        for inst_id, (inst_type, inst)  in sorted(inst.items()):
+        for inst_id, (inst_type, inst) in sorted(inst.items()):
 
             if inst_type != InstTypeNew: 
                 # Obsolete instances need to be removed from the buffer (not yet implemented)

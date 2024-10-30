@@ -71,10 +71,11 @@
 ## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
 ## -- 2024-10-01  2.1.1     DA       Method StreamScenario.__init__(): simplification
 ## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
+## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2024-10-29)
+Ver. 2.3.0 (2024-10-30)
 
 This module provides classes for standardized data stream processing. 
 
@@ -1099,21 +1100,18 @@ class StreamTask (Task):
         else:
             inst = p_inst
 
-        if len(inst) == 0: return
-
         try:
             self._plot_view_finalized
         except:
-            if self._plot_settings.view_autoselect:
+            if self._plot_settings.view_autoselect and ( len(inst) > 0 ):
                 self._finalize_plot_view(p_inst_ref=next(iter(inst.values()))[1])
-
-            self._plot_view_finalized = True
+                self._plot_view_finalized = True
 
         Task.update_plot(self, p_inst=inst, **p_kwargs)
 
         self._plot_num_inst += len(inst)
 
-
+            
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d( self, 
                          p_settings : PlotSettings, 
