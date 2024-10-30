@@ -53,11 +53,10 @@
 ## --                                - New property Plottable.color
 ## --                                - Class PlotSettings: removed parameter p_plot_depth
 ## -- 2024-07-08  2.16.1    SY       Add MinVal for undefined range in DataPlotting
-## -- 2024-10-30  2.17.0    DA       Extensions on classes PlotSettings, Plottable:
-## --                                - Class PlotSettings: new methods register(), unregister(),
+## -- 2024-10-30  2.17.0    DA       - Class PlotSettings: new methods register(), unregister(),
 ## --                                  is_last_registered()
 ## --                                - Class Plottable: extensions on init_plot(), update_plot() 
-## --                                Refactoring: removed par p_force from Plottable.refresh()
+## --                                - Refactoring: removed par p_force from Plottable.refresh()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -719,7 +718,7 @@ class Plottable:
         except:
             return
             
-         # 2 Call _remove_plot method of current view
+        # 2 Call _remove_plot method of current view
         view = self._plot_settings.view
         self._plot_methods[view][2]()
 
