@@ -25,10 +25,11 @@
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
 ## -- 2024-05-22  1.2.0     DA       Refactoring, splitting, and renaming to RingBuffer
 ## -- 2024-05-23  1.2.1     DA       Bugfixes on plotting
+## -- 2024-10-31  1.2.2     DA       Bugfix in RingBuffer.get_boundaries()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-23)
+Ver. 1.2.2 (2024-10-31)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -205,8 +206,13 @@ class RingBuffer (Window):
             Current window boundaries in the form of a Numpy array.
         """
 
-        boundaries = np.stack(([np.min(self._numeric_buffer, axis=0),
-                      np.max(self._numeric_buffer, axis=0)]), axis=1)
+        if not self._buffer_full:
+            boundaries = np.stack( ( [ np.min(self._numeric_buffer[0:self._buffer_pos], axis=0),
+                                       np.max(self._numeric_buffer[0:self._buffer_pos], axis=0) ] ), axis=1)
+        else:
+            boundaries = np.stack( ( [ np.min(self._numeric_buffer, axis=0),
+                                       np.max(self._numeric_buffer, axis=0) ] ), axis=1)
+            
         return boundaries
 
 
