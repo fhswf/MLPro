@@ -8,10 +8,11 @@
 ## -- 2022-12-05  1.0.0     DA       Creation
 ## -- 2022-12-09  1.1.0     DA       Simplification
 ## -- 2023-04-19  1.1.1     LSB      Renamed the module
+## -- 2024-09-09  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-04-19)
+Ver. 1.2.0 (2024-09-09)
 
 This module demonstrates the principles of using classes System, Controller, Actuator and Sensor. To
 this regard we assume a custom system with two state and action components and a custom controller
@@ -36,12 +37,12 @@ import random
 
 
 
-class MyController (Controller):
+class MySAGateway (SAGateway):
 
     C_NAME      = 'Dummy'
 
     def _reset(self) -> bool:
-        self.log(Log.C_LOG_TYPE_S, 'Pseudo-reset of the controller')
+        self.log(Log.C_LOG_TYPE_S, 'Pseudo-reset of the sa-gateway')
         return True
 
 
@@ -100,26 +101,26 @@ else:
 sys = MySystem( p_latency=latency, p_logging=logging )
 
 
-# 2 Instantiate and configure own controller
-con = MyController( p_id=0, p_name='2x2', p_logging=logging )
+# 2 Instantiate and configure own sensor/actuator gateway
+sagw = MySAGateway( p_id=0, p_name='2x2', p_logging=logging )
 
 s1 = Sensor(p_name_short='Sensor 1')
 s2 = Sensor(p_name_short='Sensor 2')
 a1 = Actuator(p_name_short='Actuator 1')
 a2 = Actuator(p_name_short='Actuator 2')
 
-con.add_sensor( p_sensor=s1 )
-con.add_sensor( p_sensor=s2 )
-con.add_actuator( p_actuator=a1 )
-con.add_actuator( p_actuator=a2 )
+sagw.add_sensor( p_sensor=s1 )
+sagw.add_sensor( p_sensor=s2 )
+sagw.add_actuator( p_actuator=a1 )
+sagw.add_actuator( p_actuator=a2 )
 
 
-# 3 Add controller to system and assign sensors to states and actuators to actions
-sys.add_controller( p_controller=con, 
-                    p_mapping=[ ( 'S', 'State 1', 'Sensor 1' ), 
-                                ( 'S', 'State 2', 'Sensor 2' ), 
-                                ( 'A', 'Action 1', 'Actuator 1' ), 
-                                ( 'A', 'Action 2', 'Actuator 2') ] )
+# 3 Add gateway to system and assign sensors to states and actuators to actions
+sys.add_gateway(  p_gateway=sagw, 
+                  p_mapping=[ ( 'S', 'State 1', 'Sensor 1' ), 
+                              ( 'S', 'State 2', 'Sensor 2' ), 
+                              ( 'A', 'Action 1', 'Actuator 1' ), 
+                              ( 'A', 'Action 2', 'Actuator 2') ] )
 
 
 # 4 Switch system to real mode
