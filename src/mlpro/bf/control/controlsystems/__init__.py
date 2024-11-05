@@ -1,1 +1,1 @@
-from mlpro.bf.control.controlsystems.basic import ControlSystemBasic
+from mlpro.bf.control.controlsystems.basic import ControlSystemBasic, CascadeControlSystem
