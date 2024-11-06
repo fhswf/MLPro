@@ -29,7 +29,7 @@ from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
-from mlpro.oa.streams.tasks import OATask
+from mlpro.oa.streams import OATask
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 

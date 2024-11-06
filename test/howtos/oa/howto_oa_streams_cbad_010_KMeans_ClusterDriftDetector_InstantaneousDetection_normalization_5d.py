@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-08-04  1.0.0     SK       Creation
+## -- 2024-10-29  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-08-04)
+Ver. 1.0.1 (2024-10-29)
 
 This module is done as a part of the Master's Thesis named Online Adaptive Cluster-based Anomaly
 Detection, authored by Syamraj Purushamparambil Satheesh, as a part of the course
@@ -42,9 +43,7 @@ from mlpro.bf.streams.streams import *
 from mlpro.bf.various import Log
 from mlpro.oa.streams import *
 from mlpro_int_river.wrappers.clusteranalyzers.kmeans import WrRiverKMeans2MLPro
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.drift_detector import ClusterDriftDetector
-from mlpro.oa.streams.tasks.normalizers import NormalizerMinMax
-from mlpro.oa.streams.tasks.boundarydetectors import BoundaryDetector
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax, ClusterDriftDetector
 
 
 

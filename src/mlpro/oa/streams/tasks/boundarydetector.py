@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.boundarydetectors
-## -- Module  : boundarydetectors.py
+## -- Package : mlpro.oa.streams.tasks
+## -- Module  : boundarydetector.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -32,26 +32,32 @@
 ## -- 2023-11-19  1.2.4     DA       Bugfix in method BoundaryDetector._adapt(): scaler management
 ## -- 2024-05-12  1.3.0     DA       Removed the scaler functionality from BoundaryDetector
 ## -- 2024-05-22  1.4.0     DA       Refactoring and correction in BoundaryDetector._adapt()
+## -- 2024-10-29  1.5.0     DA       - Refactoring
+## --                                - Pseudo-implementation of BoundaryDetector._adapt_reverse()
+## -- 2024-11-05  1.5.1     DA       Bugfix in method BoundaryDetector._upate_plot_nd()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-22)
+Ver. 1.5.1 (2024-11-05)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 
 """
 
-import matplotlib.colors
+from itertools import repeat
 
+import matplotlib.colors
+from matplotlib.figure import Figure
+
+from mlpro.bf.various import Log
+from mlpro.bf.exceptions import ImplementationError
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance
-from mlpro.bf.streams.basics import InstDict
-from mlpro.bf.various import *
-from mlpro.bf.plot import *
-from mlpro.bf.math import *
-from mlpro.bf.mt import PlotSettings, Task as MLTask
-from mlpro.oa.streams.basics import *
-from typing import List
+from mlpro.bf.mt import Task
+from mlpro.bf.events import Event
+from mlpro.bf.math import Set
+from mlpro.bf.streams import Instance, InstDict
+from mlpro.oa.streams.basics import OATask
+
 
 
 
@@ -91,7 +97,7 @@ class BoundaryDetector (OATask):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_name:str = None,
-                  p_range_max = MLTask.C_RANGE_THREAD,
+                  p_range_max = Task.C_RANGE_THREAD,
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
@@ -149,6 +155,14 @@ class BoundaryDetector (OATask):
                 adapted = True
 
         return adapted
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _adapt_reverse(self, p_inst_del: Instance):
+        """
+        Pseudo-implementation
+        """
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -223,15 +237,11 @@ class BoundaryDetector (OATask):
 
         """
 
-        if not p_settings.axes:
-            self.axes = p_figure.add_axes([0.1,0.1,0.7,0.8])
-            self.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
-            self.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
-            self.axes.grid(visible=True)
-            p_settings.axes = self.axes
-
-        else:
-            self.axes = p_settings.axes
+        if p_settings.axes is None:
+            p_settings.axes = p_figure.add_axes([0.1,0.1,0.7,0.8])
+            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
+            p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
+            p_settings.axes.grid(visible=True)
 
         self._plot_nd_plots = None
 
@@ -255,24 +265,30 @@ class BoundaryDetector (OATask):
             Further optional plot parameters.
         """
 
+        # 0 Intro
         if len(p_inst) == 0: return
 
         dims = self.get_related_set().get_dims()
 
+
+        # 1 Set up plotting 
         if self._plot_nd_plots is None:
 
             self._plot_nd_plots = {}
             heights = list(repeat(0, len(dims)))
             bottoms = list(repeat(0, len(dims)))
             labels = [i.get_name_long() for i in self.get_related_set().get_dims()]
-            bars = self.axes.bar(range(len(dims)), height=heights, bottom=bottoms,
+            bars = p_settings.axes.bar(range(len(dims)), height=heights, bottom=bottoms,
                 color = matplotlib.colors.XKCD_COLORS)
             for i,(dim,bar) in enumerate(zip(dims, bars)):
                 self._plot_nd_plots[dim] = bar
                 self._plot_nd_plots[dim].set_label(str(i)+'. '+dim.get_name_long())
-            self.axes.set_xticks(range(len(labels)))
-            self.axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            p_settings.axes.set_xticks(range(len(labels)))
+            p_settings.axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
+
+        # 2 Update boundary bars and ax limits
+        plot_boundary = [None,None]
 
         for dim in self._plot_nd_plots.keys():
             upper_boundary = dim.get_boundaries()[1]
@@ -280,14 +296,11 @@ class BoundaryDetector (OATask):
             self._plot_nd_plots[dim].set_y(lower_boundary)
             self._plot_nd_plots[dim].set_height(upper_boundary-lower_boundary)
 
+            if ( plot_boundary[0] is None ) or ( plot_boundary[0] > lower_boundary):
+                plot_boundary[0] = lower_boundary
 
-            # Setting the plot limits
-            ylim = self.axes.get_ylim()
+            if ( plot_boundary[1] is None ) or ( plot_boundary[1] < upper_boundary):
+                plot_boundary[1] = upper_boundary
 
-            if (ylim[0] > lower_boundary) or (ylim[1] < upper_boundary):
-                if lower_boundary >= 0:
-                    plot_boundary = [0, upper_boundary]
-                else:
-                    plot_boundary = [-max(upper_boundary, -(lower_boundary)), max(upper_boundary, -(lower_boundary))]
-                self.axes.set_ylim(plot_boundary)
+        p_settings.axes.set_ylim(plot_boundary)
 

@@ -33,8 +33,7 @@ You will learn:
 
 from mlpro.oa.streams import *
 from mlpro.bf.streams.streams import *
-from mlpro.oa.streams.tasks.normalizers import NormalizerMinMax
-from mlpro.oa.streams.tasks.boundarydetectors import BoundaryDetector
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 
 
 

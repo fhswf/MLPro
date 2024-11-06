@@ -53,10 +53,14 @@
 ## --                                - New property Plottable.color
 ## --                                - Class PlotSettings: removed parameter p_plot_depth
 ## -- 2024-07-08  2.16.1    SY       Add MinVal for undefined range in DataPlotting
+## -- 2024-10-30  2.17.0    DA       - Class PlotSettings: new methods register(), unregister(),
+## --                                  is_last_registered()
+## --                                - Class Plottable: extensions on init_plot(), update_plot() 
+## --                                - Refactoring: removed par p_force from Plottable.refresh()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.16.1 (2024-07-08)
+Ver. 2.17.0 (2024-10-30)
 
 This module provides various classes related to data plotting.
 
@@ -156,18 +160,20 @@ class PlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view            = p_view
-        self.axes            = p_axes
-        self.pos_x           = p_pos_x
-        self.pos_y           = p_pos_y
-        self.size_x          = p_size_x
-        self.size_y          = p_size_y
-        self.step_rate       = p_step_rate
-        self.detail_level    = p_detail_level
-        self.force_fg        = p_force_fg
-        self.id              = p_id
-        self.view_autoselect = p_view_autoselect
-        self.kwargs          = p_kwargs.copy()
+        self.view               = p_view
+        self.axes               = p_axes
+        self.pos_x              = p_pos_x
+        self.pos_y              = p_pos_y
+        self.size_x             = p_size_x
+        self.size_y             = p_size_y
+        self.step_rate          = p_step_rate
+        self.detail_level       = p_detail_level
+        self.force_fg           = p_force_fg
+        self.id                 = p_id
+        self.view_autoselect    = p_view_autoselect
+        self.kwargs             = p_kwargs.copy()
+        self._registered_obj    = []
+        self._plot_step_counter = 0
 
         if ( p_plot_horizon > 0 ) and ( p_data_horizon > 0 ):
             self.plot_horizon = min(p_plot_horizon, p_data_horizon)
@@ -176,23 +182,83 @@ class PlotSettings:
             self.plot_horizon    = p_plot_horizon
             self.data_horizon    = p_data_horizon
 
+        
+## -------------------------------------------------------------------------------------------------
+    def register( self, p_plot_obj : type):
+        """
+        Registers the specified plotting object. Internally used in class Plottable.
+
+        Parameters
+        ----------
+        p_plot_obj : type
+            Plotting object to be registered
+        """
+
+        self._registered_obj.append(p_plot_obj)
+
+
+## -------------------------------------------------------------------------------------------------
+    def unregister( self, p_plot_obj : type):
+        """
+        Unregisters the specified plotting object. Internally used in class Plottable.
+
+        Parameters
+        ----------
+        p_plot_obj : type
+            Plotting object to be registered
+        """
+
+        try:
+            self._registered_obj.remove(p_plot_obj)
+        except:
+            pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def is_last_registered( self, p_plot_obj : type ) -> bool:
+        """
+        Checks whether the specified plot object was the last one registered. Internally used in
+        class Plottable.
+
+        Parameters
+        ----------
+        p_plot_obj : type
+            Plotting object to be registered
+
+        Returns
+        -------
+        bool
+            True, if the specified plotting object was the last one registering. False otherwise.     
+        """
+        
+        try:
+            return p_plot_obj == self._registered_obj[-1]
+        except:
+            return False
+
 
 ## -------------------------------------------------------------------------------------------------
     def copy(self):
+        """
+        Creates a copy of ifself. The values of following attributes are NOT taken over:
+        self._registered_obj, self.plot_step_counter.
+        """
+
         return self.__class__( p_view = self.view,
-                               p_axes = self.axes,
-                               p_pos_x = self.pos_x,
-                               p_pos_y = self.pos_y,
-                               p_size_x = self.size_x,
-                               p_size_y = self.size_y,
-                               p_step_rate = self.step_rate,
-                               p_plot_horizon = self.plot_horizon,
-                               p_data_horizon = self.data_horizon,
-                               p_detail_level = self.detail_level,
-                               p_force_fg = self.force_fg,
-                               p_id = self.id,
-                               p_view_autoselect = self.view_autoselect,
-                               p_kwargs = self.kwargs )
+                                    p_axes = self.axes,
+                                    p_pos_x = self.pos_x,
+                                    p_pos_y = self.pos_y,
+                                    p_size_x = self.size_x,
+                                    p_size_y = self.size_y,
+                                    p_step_rate = self.step_rate,
+                                    p_plot_horizon = self.plot_horizon,
+                                    p_data_horizon = self.data_horizon,
+                                    p_detail_level = self.detail_level,
+                                    p_force_fg = self.force_fg,
+                                    p_id = self.id,
+                                    p_view_autoselect = self.view_autoselect,
+                                    p_kwargs = self.kwargs )
+
     
 
 
@@ -322,26 +388,27 @@ class Plottable:
         plt.ioff()
 
 
-         # 2 Prepare internal data structures
+        # 2 Prepare internal data structures
 
-        # 2.1 Plot settings per view
+        # 2.1 Dictionary with methods for initialization and update of a plot per view 
+        self._plot_methods = { PlotSettings.C_VIEW_2D : ( self._init_plot_2d, self._update_plot_2d, self._remove_plot_2d ), 
+                               PlotSettings.C_VIEW_3D : ( self._init_plot_3d, self._update_plot_3d, self._remove_plot_3d ), 
+                               PlotSettings.C_VIEW_ND : ( self._init_plot_nd, self._update_plot_nd, self._remove_plot_nd ) }
+
+        # 2.2 Plot settings per view
         self.set_plot_settings( p_plot_settings=p_plot_settings )
-
-        # 2.2 Dictionary with methods for initialization and update of a plot per view 
-        self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d, self._remove_plot_2d ], 
-                               PlotSettings.C_VIEW_3D : [ self._init_plot_3d, self._update_plot_3d, self._remove_plot_3d ], 
-                               PlotSettings.C_VIEW_ND : [ self._init_plot_nd, self._update_plot_nd, self._remove_plot_nd ] }
-
-
-        # 3 Setup the Matplotlib host figure if no one is provided as parameter
+        
+        # 2.3 Setup the Matplotlib host figure if no one is provided as parameter
         if p_figure is None:
             self._figure : Figure   = self._init_figure()
             self._plot_own_figure   = True
         else:
             self._figure : Figure   = p_figure
+            
+        self._plot_settings.register( p_plot_obj = self )
 
             
-        # 4 Call of all initialization methods of the required views
+        # 3 Call of all initialization methods of the required views
         view = self._plot_settings.view
         try:
             plot_method = self._plot_methods[view][0]
@@ -354,13 +421,13 @@ class Plottable:
             raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
                 
 
-        # # 5 In standalone mode: refresh figure
+        # 4 In standalone mode: refresh figure
         if self._plot_own_figure:
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
 
 
-        # 6 Marker to ensure that initialization runs only once
+        # 5 Marker to ensure that initialization runs only once
         self._plot_initialized = True
         self._plot_first_time  = True
 
@@ -453,14 +520,9 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def refresh_plot(self, p_force:bool=False):
+    def refresh_plot(self):
         """
         Refreshes the plot.
-
-        Parameters
-        ----------
-        p_force : bool = False
-            On True the plot is updated even if it is embedded in a foreign host figure.
         """
     
         # 1 Plot functionality turned on?
@@ -470,15 +532,12 @@ class Plottable:
             return
         
 
-         # 1 Object has own figure or refresh is forced by caller?
-        if not self._plot_own_figure and not p_force: return
-            
-        if self._plot_own_figure:
-            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
+         # 2 Update the plot step counter
+        self._plot_settings._plot_step_counter = mod(self._plot_settings._plot_step_counter + 1, self._plot_settings.step_rate)
         
 
-        # 2 Refresh plot
-        if ( self._plot_step_counter==0 ) or p_force: self._refresh_plot()
+        # 3 Refresh plot
+        if self._plot_settings._plot_step_counter == 0: self._refresh_plot()
             
 
 ## -------------------------------------------------------------------------------------------------
@@ -589,8 +648,9 @@ class Plottable:
         self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
 
         
-        # 4 Update content of own(!) figure after self._plot_step_rate calls
-        self.refresh_plot(p_force=False)
+        # 4 The last plotting object for the figure refreshs the plot
+        if self._plot_settings.is_last_registered( p_plot_obj = self ):
+            self.refresh_plot()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -658,13 +718,15 @@ class Plottable:
         except:
             return
             
-         # 2 Call _remove_plot method of current view
+        # 2 Call _remove_plot method of current view
         view = self._plot_settings.view
         self._plot_methods[view][2]()
 
         # 3 Optionally refresh
-        if p_refresh: self.refresh_plot(p_force=False)
+        if p_refresh: self.refresh_plot()
 
+        # 4 Clear internal plot parameters
+        self._plot_settings.unregister( p_plot_obj = self )
         self._plot_first_time = True
    
 
@@ -695,6 +757,7 @@ class Plottable:
         pass
 
 
+## -------------------------------------------------------------------------------------------------
     color             = property( fget = get_plot_color, fset = set_plot_color )
     plot_detail_level = property( fget = get_plot_detail_level, fset = assign_plot_detail_level )
 

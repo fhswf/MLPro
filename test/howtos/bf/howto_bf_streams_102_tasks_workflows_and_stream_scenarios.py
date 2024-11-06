@@ -8,10 +8,11 @@
 ## -- 2022-10-27  0.0.0     DA       Creation
 ## -- 2022-11-22  1.0.0     DA       First implementation
 ## -- 2024-05-21  1.1.0     DA       Refactoring
+## -- 2024-10-29  1.1.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-05-21)
+Ver. 1.1.1 (2024-10-29)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, stream tasks
 are added to a stream workflow. This in turn is combined with a stream of a stream provider to a
@@ -29,8 +30,10 @@ You will learn:
 
 """
 
-
-from mlpro.bf.streams import *
+from mlpro.bf.various import Log
+from mlpro.bf.ops import Mode
+from mlpro.bf.streams import InstDict, StreamTask, StreamWorkflow, StreamScenario
+from mlpro.bf.streams.streams import StreamProviderMLPro
 
 
 
