@@ -1,6 +1,6 @@
 .. _target_oa_control:
-Online Adaptive Control
-=======================
+Online Adaptive Closed-loop Control
+===================================
 
 Further descriptions coming soon...
 

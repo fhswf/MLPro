@@ -1,3 +1,4 @@
+.. _target_howto_bf_control:
 Closed-loop Control
 ===================
 
@@ -6,3 +7,5 @@ Closed-loop Control
    :glob:
 
    control/*      
+
+
