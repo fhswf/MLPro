@@ -42,15 +42,13 @@ class Integrator (Operator):
     def __init__( self, 
                   p_range_max=Task.C_RANGE_THREAD, 
                   p_visualize: bool = False, 
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging=Log.C_LOG_ALL ):
         
         self._ctrl_var : ControlVariable = None
 
         super().__init__( p_range_max = p_range_max, 
                           p_visualize = p_visualize, 
-                          p_logging = p_logging, 
-                          **p_kwargs )
+                          p_logging = p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------

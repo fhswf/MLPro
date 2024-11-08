@@ -61,21 +61,20 @@ class Converter (Operator):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
 
-        p_remove = True if self._src_type != ControlledVariable else False
-        
         # 1 Get source instance 
-        src_instance : ControlData = self._get_instance( p_inst = p_inst, p_type = self._src_type, p_remove = p_remove )
+        src_instance : ControlData = self._get_instance( p_inst = p_inst, p_type = self._src_type, p_remove = True ) 
 
         if src_instance is None:       
   
             self.log(Log.C_LOG_TYPE_E, f'{self._src_type} missing!')
             return
         
+
         # 2 Create destination instance 
-        dst_instance =self._dst_type(p_id = self.get_so().get_next_inst_id(),
-                             p_value_space = src_instance.value_space, 
-                             p_values = src_instance.values,
-                             p_tstamp = self.get_so().get_tstamp() )
+        dst_instance =self._dst_type( p_id = self.get_so().get_next_inst_id(),
+                                      p_value_space = src_instance.value_space, 
+                                      p_values = src_instance.values,
+                                      p_tstamp = self.get_so().get_tstamp() )
 
 
         # 3 Store destination instance      

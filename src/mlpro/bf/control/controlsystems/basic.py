@@ -21,10 +21,11 @@ This module provides a simplified container class for a basic synchronous contro
 """
 
 
-from mlpro.bf.control.basics import ControlWorkflow
 from mlpro.bf.various import Log
-from mlpro.bf.control import Controller, ControlledSystem, ControlSystem
+
+from mlpro.bf.control import ControlSystem, Controller, ControlledSystem, ControlWorkflow
 from mlpro.bf.control.operators import Comparator, Integrator
+
 
 
 

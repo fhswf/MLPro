@@ -21,10 +21,11 @@
 ## -- 2024-10-13  0.10.0    DA       Refactoring: changed parent of class Action to Instance
 ## -- 2024-10-24  0.11.0    DA       Class ControlledSystem: redefinition of method init_plot(),
 ## --                                update_plot(), remove_plot()
+## -- 2024-11-08  0.12.0    DA       Litte refactoring of class Operator
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.11.0 (2024-10-24)
+Ver. 0.12.0 (2024-11-08)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -228,23 +229,30 @@ class ControlTask (StreamTask):
 class Operator (ControlTask):
     """
     Base class for all operators.
+
+    Parameters
+    ----------
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
     """
 
     C_TYPE      = 'Operator'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_range_max=Task.C_RANGE_THREAD, 
+                  p_range_max=Range.C_RANGE_NONE, 
                   p_visualize = False, 
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging=Log.C_LOG_ALL ):
         
         super().__init__( p_name = self.C_NAME, 
                           p_range_max = p_range_max, 
                           p_duplicate_data = False, 
                           p_visualize = p_visualize, 
-                          p_logging = p_logging, 
-                          **p_kwargs )
+                          p_logging = p_logging )
 
 
 
@@ -275,7 +283,7 @@ class Controller (ControlTask):
                   p_output_space : MSpace,
                   p_id = None,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_visualize: bool = False, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -397,7 +405,7 @@ class ControllerFct (Controller):
     def __init__( self, 
                   p_fct: Function,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_duplicate_data: bool = False, 
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
@@ -430,19 +438,6 @@ class ControllerFct (Controller):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiController: # (Controller, StreamWorkflow):
-    """
-    """
-
-    C_TYPE          = 'Multi-Controller'
-    C_NAME          = ''
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 class ControlledSystem (ControlTask):
     """
     Wrapper class for state-based systems.
@@ -454,7 +449,7 @@ class ControlledSystem (ControlTask):
     def __init__( self, 
                   p_system : System,
                   p_name: str = None, 
-                  p_range_max=Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -733,7 +728,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
     def __init__( self, 
                   p_mode,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_class_shared = ControlShared, 
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
@@ -831,8 +826,8 @@ class ControlSystem (StreamScenario):
 
         # 1 Setup control workflow
         self._control_workflow = self._setup( p_mode=self.get_mode(), 
-                                           p_visualize=self.get_visualization(),
-                                           p_logging=self.get_log_level() )
+                                              p_visualize=self.get_visualization(),
+                                              p_logging=self.get_log_level() )
           
 
  ## -------------------------------------------------------------------------------------------------
