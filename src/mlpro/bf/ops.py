@@ -153,7 +153,7 @@ class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
         self._timer         = None
 
         # 2 Optional automatic custom setup
-        if p_auto_setup: self.setup( self._get_kwargs() )
+        if p_auto_setup: self.setup( **self._get_kwargs() )
         
 
 ## -------------------------------------------------------------------------------------------------
