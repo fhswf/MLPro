@@ -14,10 +14,11 @@
 ## -- 2022-11-12  1.2.1     DA       Class ScenarioBase: minor changes on logging
 ## -- 2022-11-21  1.2.2     DA       Eliminated all uses of super()
 ## -- 2023-03-25  1.2.3     DA       Class ScenarioBase: new parent class Persistent
+## -- 2024-11-09  1.3.0     DA       Class ScenarioBase: new parent class KWArgs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2023-03-25)
+Ver. 1.3.0 (2024-11-09)
 
 This module provides classes for operation.
 """
@@ -25,7 +26,7 @@ This module provides classes for operation.
 
 import sys
 from datetime import timedelta
-from mlpro.bf.various import Log, Persistent, Timer
+from mlpro.bf.various import Log, Persistent, Timer, KWArgs
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
 
@@ -99,7 +100,7 @@ class Mode (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ScenarioBase (Mode, Persistent, Plottable):
+class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
     """
     Base class for executable scenarios in MLPro. To be inherited and specialized in higher layers.
     
@@ -123,6 +124,8 @@ class ScenarioBase (Mode, Persistent, Plottable):
         Boolean switch for visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    p_kwargs : dict
+        Custom keyword parameters handed over to custom method setup().
     """
 
     C_TYPE          = 'Scenario Base'
@@ -135,12 +138,14 @@ class ScenarioBase (Mode, Persistent, Plottable):
                  p_cycle_limit=0,  
                  p_auto_setup:bool = True,
                  p_visualize:bool=True,              
-                 p_logging=Log.C_LOG_ALL ):    
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs ):    
 
         # 1 Initialization
-        Persistent.__init__(self, p_id = p_id, p_logging=p_logging )
-        Mode.__init__(self, p_mode, p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
+        KWArgs.__init__( self, **p_kwargs )
+        Persistent.__init__( self, p_id = p_id, p_logging = p_logging )
+        Mode.__init__( self, p_mode, p_logging )
+        Plottable.__init__( self, p_visualize = p_visualize )
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize
@@ -148,7 +153,7 @@ class ScenarioBase (Mode, Persistent, Plottable):
         self._timer         = None
 
         # 2 Optional automatic custom setup
-        if p_auto_setup: self.setup()
+        if p_auto_setup: self.setup( self._get_kwargs() )
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -162,9 +167,14 @@ class ScenarioBase (Mode, Persistent, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self):
+    def setup(self, **p_kwargs):
         """
         Custom method to set up all components of the scenario.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Custom keyword parameters.
         """
 
         raise NotImplementedError
