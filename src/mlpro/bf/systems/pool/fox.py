@@ -39,11 +39,12 @@ class Fox (System):
 
     C_NAME          = 'Fox'
     C_BOUNDARIES    = [-10,10]
+    C_PLOT_ACTIVE   = False
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id=None, 
-                  p_name = None, 
+                  p_name = C_NAME, 
                   p_num_dim: int = 1,
                   p_delay: float = 0.8,
                   p_thr_jump: float = 0.1,

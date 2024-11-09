@@ -777,6 +777,10 @@ class ControlWorkflow (StreamWorkflow, Mode):
         except:
             pass
 
+        if isinstance( p_task, ControlledSystem ):
+            self.get_so().init( p_ctrlled_var_space = p_task.system.get_state_space(),
+                                p_ctrl_var_space = p_task.system.get_action_space() )
+
 
 ## -------------------------------------------------------------------------------------------------
     def run( self, 
@@ -816,10 +820,15 @@ class ControlWorkflow (StreamWorkflow, Mode):
 ## -------------------------------------------------------------------------------------------------
 class ControlSystem (StreamScenario):
     """
-    ...
+    Template class for custom control systems. Please implement
     """
 
     C_TYPE      = 'Control System'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_mode, p_cycle_limit=0, p_visualize = False, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_mode, p_cycle_limit, p_visualize, p_logging)
+
 
 ## -------------------------------------------------------------------------------------------------
     def setup(self):

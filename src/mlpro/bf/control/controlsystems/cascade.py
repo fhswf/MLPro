@@ -5,11 +5,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-11-08  1.0.0     DA       Initial implementation
+## -- 2024-11-08  0.1.0     DA       Initial implementation
+## -- 2024-11-09  1.0.0     DA       Extended ControlledSystemList by type System
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-11-08)
+Ver. 1.0.0 (2024-11-089)
 
 This module provides a container class for cascade control systems.
 
@@ -19,12 +20,16 @@ from typing import List, Union
 
 from mlpro.bf.various import Log
 from mlpro.bf.exceptions import *
+from mlpro.bf.systems import System
 from mlpro.bf.control import *
 from mlpro.bf.control.operators import Comparator, Converter
 
 
-ControllerList = List[ Union[ Controller, List[ControlTask] ] ]
-ControlledSystemList = List[ Union[ ControlledSystem, List[ControlTask] ] ]
+
+ControllerList       = List[ Union[ Controller, List[ControlTask] ] ]
+ControlledSystemList = List[ Union[ System, ControlledSystem, List[ControlTask] ] ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -77,6 +82,14 @@ class CascadeControlSystem (ControlSystem):
         pred_tasks = p_pred_tasks
 
         for task in tasks:
+            if isinstance( task, System ):
+                # Native systems need to be wrapped
+                task = ControlledSystem( p_system = task,
+                                         p_name = task.get_name(),
+                                         p_range_max = task.get_range(),
+                                         p_visualize = self.get_visualization(),
+                                         p_logging = self.get_log_level() )
+
             p_workflow.add_task( p_task = task, p_pred_tasks = pred_tasks )
             pred_tasks = [ task ]
 
@@ -86,9 +99,15 @@ class CascadeControlSystem (ControlSystem):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlWorkflow:
 
+        # 0 Intro
         workflow_prev : ControlWorkflow = None
 
-        for i, t_ctrl, t_ctrl_sys in enumerate(list(zip(self._controllers, self._controlled_systems)).reverse()):
+
+        # 1 Create cascaded workflows from config data
+        workflow_list = list(zip(self._controllers, self._controlled_systems))
+        workflow_list.reverse()
+
+        for i, (t_ctrl, t_ctrl_sys) in enumerate(workflow_list):
 
             workflow = ControlWorkflow( p_mode = p_mode,
                                         p_name = str(i),
@@ -122,5 +141,7 @@ class CascadeControlSystem (ControlSystem):
             
             workflow_prev = workflow
 
+
+        # 2 Return the outer control workflow
         return workflow
         

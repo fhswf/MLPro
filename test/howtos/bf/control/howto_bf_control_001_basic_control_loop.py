@@ -8,16 +8,17 @@
 ## -- 2024-09-11  0.0.0     DA       Creation
 ## -- 2024-10-09  0.1.0     DA       Refactoring
 ## -- 2024-10-13  0.2.0     DA       Refactoring
+## -- 2024-11-09  0.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-10-13)
+Ver. 0.3.0 (2024-11-09)
 
 Let's play fox and hunter!
 
 You will learn:
 
-1) How to ...
+1) How to set up a basic control system with a controller and a controlled system
 
 2) How to ...
 
@@ -32,7 +33,7 @@ from mlpro.bf.plot import PlotSettings
 from mlpro.bf.ops import Mode
 
 from mlpro.bf.control import ControlledSystem
-from mlpro.bf.control.controlsystems import ControlSystemBasic
+from mlpro.bf.control.controlsystems import BasicControlSystem
 from mlpro.bf.systems.pool import Fox
 from mlpro.bf.control.controllers import Hunter
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
     num_dim     = 2
     logging     = Log.C_LOG_ALL
     visualize   = True
-    step_rate   = 1
+    step_rate   = 2
   
 else:
     # 1.2 Parameters for internal unit test
@@ -61,21 +62,20 @@ else:
 
 # 2 Init control scenario
 
-# 2.1 Control system
-mycontrolledsystem = ControlledSystem( p_system = Fox( p_num_dim = num_dim ),
-                                       p_name = 'Fox',
-                                       p_visualize = visualize,
-                                       p_logging = logging )
+# 2.1 Controlled system
+mycontrolledsystem = Fox( p_num_dim = num_dim,
+                          p_visualize = visualize,
+                          p_logging = logging )
 
 # 2.2 Controller
-mycontroller = Hunter( p_input_space = mycontrolledsystem.system.get_state_space(),
-                       p_output_space = mycontrolledsystem.system.get_action_space(),
+mycontroller = Hunter( p_input_space = mycontrolledsystem.get_state_space(),
+                       p_output_space = mycontrolledsystem.get_action_space(),
                        p_name = 'Hunter',
                        p_visualize = visualize,
                        p_logging = logging )
 
 # 2.3 Basic control system
-mycontrolsystem = ControlSystemBasic( p_mode = Mode.C_MODE_SIM,
+mycontrolsystem = BasicControlSystem( p_mode = Mode.C_MODE_SIM,
                                       p_controller = mycontroller,
                                       p_controlled_system = mycontrolledsystem,
                                       p_ctrl_var_integration = False,
@@ -86,7 +86,7 @@ mycontrolsystem = ControlSystemBasic( p_mode = Mode.C_MODE_SIM,
 
 # 3 Set initial setpoint values and reset the controlled system
 mycontrolsystem.get_control_panel().set_setpoint( p_values = np.zeros(shape=(num_dim)) )
-mycontrolledsystem.system.reset( p_seed = 1 )
+mycontrolledsystem.reset( p_seed = 1 )
 
 
 # 4 Run some control cycles
