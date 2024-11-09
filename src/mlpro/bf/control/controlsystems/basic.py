@@ -78,12 +78,14 @@ class BasicControlSystem (CascadeControlSystem):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        controllers = [ p_controller ]
-
         if p_ctrl_var_integration:
-            controllers.append( Integrator( p_range_max = p_controller.get_range(),
-                                            p_visualize = p_visualize,
-                                            p_logging = p_logging ) )
+            controllers= [ [ p_controller, 
+                             Integrator( p_range_max = p_controller.get_range(),
+                                         p_visualize = p_visualize,
+                                         p_logging = p_logging ) ] ]
+        else:
+            controllers = [ p_controller ]
+
         
         super().__init__( p_mode = p_mode,
                           p_controllers = controllers,

@@ -120,11 +120,14 @@ class CascadeControlSystem (ControlSystem):
         # 1 Create cascaded workflows from config data
         workflow_list = list(zip(self._controllers, self._controlled_systems))
         workflow_list.reverse()
+        num_workflows = len( workflow_list )
 
         for i, (t_ctrl, t_ctrl_sys) in enumerate(workflow_list):
 
+            workflow_id = num_workflows - i - 1
+
             workflow = ControlWorkflow( p_mode = p_mode,
-                                        p_name = str(i),
+                                        p_name = str(workflow_id),
                                         p_visualize = p_visualize,
                                         p_logging = p_logging )
             

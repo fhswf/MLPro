@@ -21,24 +21,25 @@
 ## -- 2024-10-13  0.10.0    DA       Refactoring: changed parent of class Action to Instance
 ## -- 2024-10-24  0.11.0    DA       Class ControlledSystem: redefinition of method init_plot(),
 ## --                                update_plot(), remove_plot()
-## -- 2024-11-08  0.12.0    DA       Litte refactoring of class Operator
+## -- 2024-11-08  0.12.0    DA       Little refactoring of class Operator
+## -- 2024-11-09  0.13.0    DA       Various changes and improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.12.0 (2024-11-08)
+Ver. 0.13.0 (2024-11-09)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
-from typing import Iterable
+from typing import Iterable, Tuple, List
 from datetime import datetime
 
 from matplotlib.figure import Figure
 
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.mt import Range, Task
+from mlpro.bf.mt import Range, Task, Workflow
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function, MSpace
@@ -451,15 +452,13 @@ class ControlledSystem (ControlTask):
                   p_name: str = None, 
                   p_range_max = Range.C_RANGE_NONE, 
                   p_visualize: bool = False, 
-                  p_logging = Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging = Log.C_LOG_ALL ):
         
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
                           p_duplicate_data = False, 
                           p_visualize = p_visualize, 
-                          p_logging = p_logging, 
-                          **p_kwargs )
+                          p_logging = p_logging )
 
         self.system : System = p_system
 
@@ -712,6 +711,8 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 
 
+ControlPanelEntry = Tuple[ControlPanel, Workflow]
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -748,10 +749,17 @@ class ControlWorkflow (StreamWorkflow, Mode):
         
         self.get_so().switch_logging( p_logging = p_logging )
 
+        self._workflows = []
+
 
 ## -------------------------------------------------------------------------------------------------
-    def get_control_panel(self) -> ControlPanel:
-        return self.get_so()
+    def get_control_panels(self) -> List[ControlPanelEntry]:
+        result = [ (self.get_so(), self) ]
+
+        for workflow in self._workflows:
+            result.extend( workflow.get_control_panels() )
+
+        return result
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -769,7 +777,22 @@ class ControlWorkflow (StreamWorkflow, Mode):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def assign_so(self, p_so):
+        """
+        External assignment of shared objects is disabled for control workflows.
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
     def add_task(self, p_task: Task, p_pred_tasks: list = None):
+
+        if not isinstance( p_task, Workflow ):
+            p_task.set_name( 'Workflow ' + self.get_name() + ', ' + p_task.get_name() )
+
+        if isinstance( p_task, ControlWorkflow ):
+            self._workflows.append(p_task)
+        
         StreamWorkflow.add_task( self, p_task = p_task, p_pred_tasks = p_pred_tasks)
         
         try:
@@ -870,15 +893,15 @@ class ControlSystem (StreamScenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_control_panel(self) -> ControlPanel:
+    def get_control_panels(self) -> List[ControlPanelEntry]:
         """
         Returns
         -------
-        panel : ControlPanel
+        panel : List[ControlPanelEntry]
             Object that enables the external control of a closed-loop control process.
         """
 
-        return self._control_workflow.get_control_panel()
+        return self._control_workflow.get_control_panels()
     
 
 ## -------------------------------------------------------------------------------------------------

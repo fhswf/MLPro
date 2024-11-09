@@ -8,10 +8,11 @@
 ## -- 2024-10-07  0.1.0     DA       Creation and initial implementation
 ## -- 2024-10-09  0.2.0     DA       Refactoring
 ## -- 2024-10-13  0.3.0     DA       Refactoring
+## -- 2024-11-09  0.3.1     DA       Class Integrator: correction of C_NAME
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-10-13)
+Ver. 0.3.1 (2024-11-09)
 
 This module provides an implementation of an integrator that determins the next control variable by
 buffering and cumulating it.
@@ -36,7 +37,7 @@ class Integrator (Operator):
     provided by a controller is replaced.
     """
 
-    C_NAME      = 'Cumulator'
+    C_NAME      = 'Integrator'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -88,5 +89,6 @@ class Integrator (Operator):
             
         ctrl_var_int = self._ctrl_var.copy()
         ctrl_var_int.id = self.get_so().get_next_inst_id()
+        ctrl_var_int.tstamp = self.get_so().get_tstamp()
 
         return ctrl_var_int

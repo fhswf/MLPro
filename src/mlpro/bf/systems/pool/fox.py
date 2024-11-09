@@ -18,6 +18,7 @@ action to the inner state.
 
 
 import random
+from datetime import timedelta
 
 import numpy as np
 
@@ -34,12 +35,14 @@ from mlpro.bf.systems import State, Action, System
 ## -------------------------------------------------------------------------------------------------
 class Fox (System):
     """
-    ...
+    Dummy system mirroring the input with a delay. Just made for validation and basic demonstration.
     """
 
     C_NAME          = 'Fox'
     C_BOUNDARIES    = [-10,10]
     C_PLOT_ACTIVE   = False
+
+    C_LATENCY       = timedelta( seconds = 1 )
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -48,16 +51,17 @@ class Fox (System):
                   p_num_dim: int = 1,
                   p_delay: float = 0.8,
                   p_thr_jump: float = 0.1,
+                  p_latency : timedelta = None,
                   p_range_max = Task.C_RANGE_NONE, 
                   p_visualize = False, 
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging=Log.C_LOG_ALL ):
         
         super().__init__( p_id = p_id, 
                           p_name = p_name,
                           p_range_max = p_range_max, 
                           p_mode = Mode.C_MODE_SIM, 
-                          p_visualize = p_visualize, 
+                          p_latency = p_latency,
+                          p_visualize = False, 
                           p_logging = p_logging )
         
         self._action_factor: float = min(1, max(0, 1 - p_delay))
