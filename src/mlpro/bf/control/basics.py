@@ -826,21 +826,15 @@ class ControlSystem (StreamScenario):
     C_TYPE      = 'Control System'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode, p_cycle_limit=0, p_visualize = False, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_mode, p_cycle_limit, p_visualize, p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def setup(self):
-
-        # 1 Setup control workflow
-        self._control_workflow = self._setup( p_mode=self.get_mode(), 
-                                              p_visualize=self.get_visualization(),
-                                              p_logging=self.get_log_level() )
+    def setup(self, **p_kwargs):
+        self._control_workflow = self._setup( p_mode = self.get_mode(), 
+                                              p_visualize = self.get_visualization(),
+                                              p_logging = self.get_log_level(),
+                                              **p_kwargs )
           
 
  ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlWorkflow:
+    def _setup(self, p_mode, p_visualize: bool, p_logging, **p_kwargs) -> ControlWorkflow:
         """
         Custom method to set up a control workflow. Create a new object of type ControlWorkflow and
         add all control tasks of your scenario.
@@ -853,6 +847,8 @@ class ControlSystem (StreamScenario):
             Boolean switch for visualisation.
         p_logging
             Log level (see constants of class Log). Default: Log.C_LOG_ALL. 
+        p_kwargs : dict
+            Custom keyword parameters.
 
         Returns
         -------

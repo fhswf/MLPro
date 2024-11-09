@@ -40,35 +40,49 @@ class CascadeControlSystem (ControlSystem):
 
     Parameters
     ----------
+    p_mode
+        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
     p_controllers : ControllerList
         List of controllers to be cascaded in order to outer to inner controller.
     p_controlled_systems : ControlledSystemLists
         List of controlled systems to be cascaded in order to outer to inner controlled system.
-    p_ctrl_var_integration : bool = False
-        If True, an optional intrator is added to control workflow
+    p_name : str = ''
+        Name of the control system
+    p_cycle_limit : int
+        Maximum number of cycles. Default = 0 (no limit).
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    p_kwargs : dict
+        Custom keyword parameters handed over to custom method setup().
     """
 
     C_TYPE          = 'Cascade Control System'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
+                  p_mode, 
                   p_controllers : ControllerList,
                   p_controlled_systems : ControlledSystemList,
-                  p_mode, 
+                  p_name : str = '',
                   p_cycle_limit = 0, 
                   p_visualize : bool = False, 
-                  p_logging = Log.C_LOG_ALL ):
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
                 
         if ( len(p_controllers) == 0) or ( len(p_controllers) != len(p_controlled_systems) ):
             raise ParamError( 'Please provide an equal number of controllers and related controlled systems')
         
         self._controllers           = p_controllers.copy()
         self._controlled_systems    = p_controlled_systems.copy()
+        self.set_name( p_name = p_name )
 
         super().__init__( p_mode = p_mode,
                           p_cycle_limit = p_cycle_limit,
                           p_visualize = p_visualize,
-                          p_logging = p_logging )
+                          p_logging = p_logging,
+                          **p_kwargs )
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -97,7 +111,7 @@ class CascadeControlSystem (ControlSystem):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlWorkflow:
+    def _setup(self, p_mode, p_visualize: bool, p_logging, **p_kwargs) -> ControlWorkflow:
 
         # 0 Intro
         workflow_prev : ControlWorkflow = None
