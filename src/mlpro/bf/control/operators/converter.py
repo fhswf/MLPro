@@ -74,7 +74,7 @@ class Converter (Operator):
         dst_instance =self._dst_type( p_id = self.get_so().get_next_inst_id(),
                                       p_value_space = src_instance.value_space, 
                                       p_values = src_instance.values,
-                                      p_tstamp = self.get_so().get_tstamp() )
+                                      p_tstamp = src_instance.get_tstamp() )
 
 
         # 3 Store destination instance      
