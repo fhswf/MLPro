@@ -21,6 +21,7 @@ Simulation approximated with the Runge-Kutta algorithm.
 
 
 import random
+from datetime import timedelta
 import numpy as np
 from mlpro.bf.various import Log
 from mlpro.bf.ops import Mode
@@ -40,6 +41,9 @@ class PT2 (System):
 
     C_NAME          = 'PT2'
     C_BOUNDARIES    = [-1000,1000]
+    C_PLOT_ACTIVE   = False
+
+    C_LATENCY       = timedelta( seconds = 1 )
     
     
 
@@ -50,12 +54,12 @@ class PT2 (System):
                   p_omega_0:float,
                   p_sys_num:int,
                   p_max_cycle:int,
-                  p_id=None, 
-                  p_name = None, 
+                  p_id=None,
+                  p_name = C_NAME,
+                  p_latency : timedelta = None,
                   p_range_max = Task.C_RANGE_NONE, 
                   p_visualize = False, 
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging=Log.C_LOG_ALL ):
         
         """
         Initialsize second-order-system.
@@ -86,8 +90,9 @@ class PT2 (System):
                           p_name = p_name,
                           p_range_max = p_range_max, 
                           p_mode = Mode.C_MODE_SIM, 
-                          p_visualize = p_visualize, 
-                          p_logging = p_logging )       
+                          p_latency = p_latency,
+                          p_visualize = False, 
+                          p_logging = p_logging )     
 
         self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
         
