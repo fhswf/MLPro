@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-11-05  0.1.0     AP       Creation and initial implementation
+## -- 2024-11-10  0.2.0     DA       Turned off visualization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-11-05)
+Ver. 0.2.0 (2024-11-10)
 
 This module provides an implementation of a converter that convertsdetermins the next control variable by
 buffering and cumulating it.
@@ -40,7 +41,8 @@ class Converter (Operator):
     ...
     """
 
-    C_NAME      = 'Converter'
+    C_NAME          = 'Converter'
+    C_PLOT_ACTIVE   = False
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
