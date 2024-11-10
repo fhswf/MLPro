@@ -725,6 +725,8 @@ class ControlWorkflow (StreamWorkflow, Mode):
     C_TYPE          = 'Control Workflow'
     C_NAME          = ''
 
+    C_PLOT_ACTIVE   = False
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_mode,
