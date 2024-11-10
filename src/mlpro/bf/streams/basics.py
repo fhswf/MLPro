@@ -71,7 +71,8 @@
 ## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
 ## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
-## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
+## -- 2024-11-10  2.4.0     DA       - refactoring of StreamWorkflow.init_plot()
+## --                                - new public function get_instance()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -192,12 +193,47 @@ class Instance (Id, TStamp, KWArgs):
 
 
 
-# Type aliases for instance handling
+## -------------------------------------------------------------------------------------------------
+## -- Type aliases for instance handling
+## -------------------------------------------------------------------------------------------------
 InstType    = str
 InstTypeNew = '+'
 InstTypeDel = '-'
 InstDict    = Dict[InstId, Tuple[InstType, Instance]]
 
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -- Helper functions
+## -------------------------------------------------------------------------------------------------
+def get_instance( p_inst: InstDict, p_type: type, p_remove: bool = False) -> Instance:
+    """
+    Gets and optionally removes an instance of a particular type from the p_inst dictionary.
+
+    Parameters
+    ----------
+    p_inst: InstDict
+        Dictionary of instances.
+    p_type: type
+        Type of instance to be found.
+    p_remove: bool = False
+        If true, the found instance is removed.
+    """
+
+    inst_found : Instance = None
+       
+    for (inst_type, inst) in p_inst.values():
+        if isinstance( inst, p_type):
+            inst_found = inst
+            break
+        
+    if ( p_remove ) and ( inst_found is not None ):
+        del p_inst[inst_found.id]
+
+    return inst_found
+    
 
 
 
