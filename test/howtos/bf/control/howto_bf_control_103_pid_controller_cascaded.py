@@ -11,7 +11,8 @@
 ##                                      - Added HowTo description 
 ##                                      - Added PT2 Controlled System
 ##                                      - Changed paramters for the controlled system PT1
-##                                      - Removed CasscadedSystem                      
+##                                      - Removed CasscadedSystem 
+##                                      - adjust values of controlled systems properties and PID properties                     
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -74,7 +75,10 @@ my_ctrl_sys_1.reset( p_seed = 1 )
 
 # 2.2 Controller
 my_ctrl_1 = PIDController( p_input_space = my_ctrl_sys_1.get_state_space(),
-                       p_output_space = my_ctrl_sys_1.get_action_space(),Kp=1.33,Ti=1.33,Tv=1.99,
+                       p_output_space = my_ctrl_sys_1.get_action_space(),
+                       p_Kp=9.43,
+                       p_Tn=228,
+                       p_Tv=50,
                        p_name = 'PID Controller',
                        p_visualize = visualize,
                        p_logging = logging )
@@ -82,8 +86,8 @@ my_ctrl_1 = PIDController( p_input_space = my_ctrl_sys_1.get_state_space(),
 
 # 2.2 Controller and controlled system of the inner cascade
 my_ctrl_sys_2 = PT2(K=1,
-                    p_D=1,
-                    p_omega_0=3,
+                    p_D=1.6165,
+                    p_omega_0=0.00577,
                     p_sys_num=1,
                     p_max_cycle=cycle_limit,
                     p_latency = timedelta( seconds = 5 ),
@@ -92,9 +96,14 @@ my_ctrl_sys_2 = PT2(K=1,
 
 my_ctrl_sys_2.reset( p_seed = 2 )
 
-# 2.2 Controller
+# 2.2 P-Controller
 my_ctrl_2 = PIDController( p_input_space = my_ctrl_sys_2.get_state_space(),
-                       p_output_space = my_ctrl_sys_2.get_action_space(),Kp=1.33,Ti=1.33,Tv=1.99,
+                       p_output_space = my_ctrl_sys_2.get_action_space(),
+                       p_Kp=0.36,
+                       p_Tn=0,
+                       p_Tv=0,
+                       p_integral_off=True,
+                       p_derivitave_off=True,
                        p_name = 'PID Controller2',
                        p_visualize = visualize,
                        p_logging = logging )

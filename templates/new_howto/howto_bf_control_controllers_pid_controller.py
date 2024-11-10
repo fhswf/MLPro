@@ -68,13 +68,13 @@ if __name__ == '__main__':
 
     # 2. create diffrent instances of the class pid_controller
     # create an instance of a  P-Controller
-    p_controller = PIDController(Kp=Kp,disable_integral=True, disable_derivitave=True)
+    p_controller = PIDController(p_Kp=Kp,p_integral_off=True, p_derivitave_off=True)
     # create an instance of a PI-Controller
-    pi_controller = PIDController(Kp=True, Ti=10,disable_derivitave=True)
+    pi_controller = PIDController(p_Kp=True, p_Tn=10,p_derivitave_off=True)
     # create an instance of a  PID-Controller without anti wind up mechanism
-    pid_controller = PIDController(Kp=True, Ti=10,Tv=Tv)
+    pid_controller = PIDController(p_Kp=True, p_Tn=10,p_Tv=Tv)
     # create an instance of a  PID-Controller with anti wind up mechanism
-    pid_controller_antiWindUp = PIDController(Kp=True, Ti=10,Tv=Tv,enable_anti_windup=True,windup_limit=100,output_limits=(0,100))
+    pid_controller_antiWindUp = PIDController(p_Kp=True, p_Tn=10,p_Tv=Tv,p_anti_windup_on=True,p_windup_limit=100,output_limits=(0,100))
 
 
     # 3. run compute action 
