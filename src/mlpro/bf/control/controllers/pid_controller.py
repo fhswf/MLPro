@@ -6,12 +6,13 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-09-01  0.0.0     DA       Creation 
-## -- 2024-09-19  0.0.0     ASP      Implementation PIDController 
-## -- 2024-10-17  0.0.0     ASP      Refactor PIDController 
+## -- 2024-09-19  0.1.0     AS       Implementation PIDController 
+## -- 2024-10-17  0.2.0     AS       Refactor PIDController 
+## -- 2024-11-10  0.3.0     AS       Refactor class PIDController: signature methode __init__() 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2024-09-01)
+Ver. 0.3.0 (2024-11-10)
 
 This module provides an implementation of a PID controller.
 
@@ -59,13 +60,13 @@ class PIDController (Controller):
     def __init__(self,
                  p_input_space: MSpace, 
                  p_output_space: MSpace, 
-                 Kp: float,
-                 Ti: float = 0.0 ,
-                 Tv: float= 0.0,
-                 disable_integral:bool = False,
-                 disable_derivitave:bool = False,
-                 enable_anti_windup: bool = False,
-                 windup_limit:float =0,
+                 p_Kp: float,
+                 p_Tn: float = 0.0 ,
+                 p_Tv: float= 0.0,
+                 p_integral_off:bool = False,
+                 p_derivitave_off:bool = False,
+                 p_anti_windup_on: bool = False,
+                 p_windup_limit:float =0,
                  p_id=None, p_name: str = None,
                  p_range_max=Task.C_RANGE_NONE,
                  p_visualize: bool = False, 
@@ -78,17 +79,17 @@ class PIDController (Controller):
                          p_visualize, p_logging, 
                          **p_kwargs)
 
-        self.Kp = Kp
-        self.Ti = Ti  
-        self.Tv = Tv  
-        self.disable_integral = disable_integral
-        self.disable_derivitave = disable_derivitave
-        self.integral = 0.0
+        self._Kp = p_Kp
+        self._Tn = p_Tn  
+        self._Tv = p_Tv  
+        self._integral_off = p_integral_off
+        self._derivitave_off = p_derivitave_off
+        self._integral_val = 0.0
         self.prev_error = 0.0      
-        self.previous_tstamp = None 
-        self.enable_windup = enable_anti_windup
-        self.windup_limit = windup_limit
-        self.output_limits = p_output_space.get_dims()[0].get_boundaries()
+        self._previous_tstamp = None 
+        self._windup_on = p_anti_windup_on
+        self._windup_limit = p_windup_limit
+        self._output_limits = p_output_space.get_dims()[0].get_boundaries()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -100,23 +101,23 @@ class PIDController (Controller):
         ----------
         Kp : float
             gain factor 
-        Ti : float
+        Tn : float
             settling time 
         Tv : float
             dead time
         """
 
         # set kp value
-        self.Kp = p_param['p_param']['Kp']
+        self._Kp = p_param['p_param']['Kp']
         # set Ti value
-        self.Ti = p_param['p_param']['Ti']
+        self._Tn = p_param['p_param']['Tn']
         #set Tv value
-        self.Tv =p_param['p_param']['Tv']
+        self._Tv =p_param['p_param']['Tv']
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_parameter_values(self)-> np.ndarray:
-        return np.array([self.Kp,self.Ti,self.Tv])
+        return np.array([self._Kp,self._Tn,self._Tv])
     
 
 ## -------------------------------------------------------------------------------------------------        
@@ -150,48 +151,48 @@ class PIDController (Controller):
         tstamp = p_ctrl_error.get_tstamp()
 
         #calculate time difference
-        if self.previous_tstamp is not None:
-            dt = tstamp- self.previous_tstamp
+        if self._previous_tstamp is not None:
+            dt = tstamp- self._previous_tstamp
             dt = dt.total_seconds()
 
         #propertional term 
-        p_term = self.Kp * control_error_siso
+        p_term = self._Kp * control_error_siso
 
         #integral term
         i_term = 0
 
         #ignore i term , if it is disabled
-        if not self.disable_integral:
+        if not self._integral_off:
 
             #calculat integral term
-            self.integral += control_error_siso*dt
+            self._integral_val += control_error_siso*dt
 
             # anti - windup 
-            if self.enable_windup and self.windup_limit is not None:
-                self.integral = max(min(self.integral, self.windup_limit), -self.windup_limit)
+            if self._windup_on and self._windup_limit is not None:
+                self._integral_val = max(min(self._integral_val, self._windup_limit), -self._windup_limit)
 
             #calculate i term , if Ti not zero
-            if self.Ti != 0:
-                 i_term = (self.Kp/self.Ti)* self.integral 
+            if self._Tn != 0:
+                 i_term = (self._Kp/self._Tn)* self._integral_val 
 
         # derivitave term 
         d_term =0
 
         #ignore i term , if it is disabled or delta is equal zero 
-        if dt> 0 and not self.disable_derivitave:
-            d_term = self.Kp*self.Tv*(control_error_siso- self.prev_error)/dt
+        if dt> 0 and not self._derivitave_off:
+            d_term = self._Kp*self._Tv*(control_error_siso- self.prev_error)/dt
         
         #compute control variable value 
         control_variable_siso = p_term+i_term+d_term
 
         #apply control variable limits
-        lower_bound, upper_bound = tuple(self.output_limits)
+        lower_bound, upper_bound = tuple(self._output_limits)
 
         control_variable_siso = min(max(control_variable_siso,lower_bound), upper_bound)
 
         # safe the current values for the next iteration
         self.prev_error = control_error_siso
-        self.previous_tstamp = tstamp        
+        self._previous_tstamp = tstamp        
 
         #set control value
         p_ctrl_var._set_values([control_variable_siso])
