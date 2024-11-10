@@ -23,10 +23,11 @@
 ## --                                update_plot(), remove_plot()
 ## -- 2024-11-08  0.12.0    DA       Little refactoring of class Operator
 ## -- 2024-11-09  0.13.0    DA       Various changes and improvements
+## -- 2024-11-10  0.14.0    DA       Class ControlWorkflow: master plot disabled
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.13.0 (2024-11-09)
+Ver. 0.14.0 (2024-11-10)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -725,7 +726,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
     C_TYPE          = 'Control Workflow'
     C_NAME          = ''
 
-    C_PLOT_ACTIVE   = False
+    C_PLOT_ACTIVE   = False         # Currently no master plot window here...
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
