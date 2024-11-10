@@ -6,13 +6,14 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-09-01  0.0.0     DA       Creation 
-## -- 2024-09-26  0.0.0     ASP      Implementation RLPID, RLPIDOffPolicy 
-## -- 2024-10-17  0.0.0     ASP      -Refactoring class RLPID
+## -- 2024-09-26  0.1.0     ASP      Implementation RLPID, RLPIDOffPolicy 
+## -- 2024-10-17  0.2.0     ASP      -Refactoring class RLPID
 ## --                                -change class name RLPIDOffPolicy to OffPolicyRLPID
+## -- 2024-11-10  0.3.0     ASP      -Removed class OffPolicyRLPID
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2024-09-01)
+Ver. 0.3.0 (2024-11-10)
 
 This module provides an implementation of a OA PID controller.
 
@@ -133,67 +134,3 @@ class RLPID(Policy):
 
         #return action
         return control_variable 
-    
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class OffPolicyRLPID(Policy):
-    """
-    OFF Policy class for closed loop control
-
-    Parameters
-    ----------
-    p_pid_controller : PIDController,
-        Instance of PIDController
-    """
-
-    def __init__(self, p_observation_space: MSpace, 
-                 p_action_space: MSpace,
-                 pid_controller:PIDController 
-                 ,p_id=None, 
-                 p_buffer_size: int = 1, 
-                 p_ada: bool = True, 
-                 p_visualize: bool = False, 
-                 p_logging=Log.C_LOG_ALL ):
-        
-        super().__init__(p_observation_space, 
-                         p_action_space, 
-                         p_id, 
-                         p_buffer_size, 
-                         p_ada, p_visualize, p_logging)
-
-        self._pid_controller = pid_controller 
-        self._action_space = p_action_space.get_dim(p_id=0)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_hyperparam(self, **p_par):
-
-        # 1 add dim (Kp,Tn,Tv) in hp space 
-        self._hyperparam_space.add_dim( self._action_space.get_dim(p_id=0))
-        self._hyperparam_space.add_dim(self._action_space.get_dim(p_id=1))
-        self._hyperparam_space.add_dim(self._action_space.get_dim(p_id=2))
-
-        # # 2- create hp tuple from hp space 
-        self._hyperparam_tuple = HyperParamTuple( p_set=self._hyperparam_space )
-
-        # 3- set hp tuple values
-        self._hyperparam_tuple.set_values(self._pid_controller.get_parameter_values())
-
-    
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_sars_elem: SARSElement) -> bool:
-       return False
-    
-       
-## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_obs: ControlledVariable) -> ControlVariable:  
-
-        #compute control variable 
-        control_variable=self._pid_controller.compute_output(p_ctrl_error=p_obs)
-
-        return control_variable   
-
