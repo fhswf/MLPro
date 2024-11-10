@@ -21,15 +21,10 @@
 ## -- 2024-10-13  0.10.0    DA       Refactoring: changed parent of class Action to Instance
 ## -- 2024-10-24  0.11.0    DA       Class ControlledSystem: redefinition of method init_plot(),
 ## --                                update_plot(), remove_plot()
-<<<<<<< HEAD
-## -- 2024-11-05  0.12.0    ASP      Class ControlTask: methode _get_instance: removed break-statement, after a inst was found
-## --                                Implementation new class CasscadedSysem
-=======
 ## -- 2024-11-08  0.12.0    DA       Little refactoring of class Operator
 ## -- 2024-11-09  0.13.0    DA       Various changes and improvements
 ## -- 2024-11-10  0.14.0    DA       - class ControlWorkflow: master plot disabled
 ## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
->>>>>>> origin/bf/oa/control
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -254,37 +249,6 @@ class ControlTask (StreamTask):
     C_TYPE      = 'Control Task'
 
 ## -------------------------------------------------------------------------------------------------
-<<<<<<< HEAD
-    def _get_instance(self, p_inst: InstDict, p_type: type, p_remove: bool = False) -> Instance:
-        """
-        Gets and optionally removes an instance of a particular type from the p_inst dictionary.
-
-        Parameters
-        ----------
-        p_inst: InstDict
-            Dictionary of instances.
-        p_type: type
-            Type of instance to be found.
-        p_remove: bool = False
-            If true, the found instance is removed.
-        """
-
-        inst_found : Instance = None
-        
-        for (inst_type, inst) in p_inst.values():
-            if isinstance( inst, p_type):
-                inst_found = inst
-              
-        
-        if ( p_remove ) and ( inst_found is not None ):
-            del p_inst[inst_found.id]
-
-        return inst_found
-    
-
-## -------------------------------------------------------------------------------------------------
-=======
->>>>>>> origin/bf/oa/control
     def reset(self, p_seed = None, **p_kwargs):
         self._reset( p_seed = p_seed, **p_kwargs )
     
@@ -530,15 +494,8 @@ class ControlledSystem (ControlTask):
                           p_range_max = p_range_max, 
                           p_duplicate_data = False, 
                           p_visualize = p_visualize, 
-<<<<<<< HEAD
-                          p_logging = p_logging, 
-                          **p_kwargs )
-        
-       
-=======
                           p_logging = p_logging )
 
->>>>>>> origin/bf/oa/control
         self.system : System = p_system
         
 
@@ -546,17 +503,10 @@ class ControlledSystem (ControlTask):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict ):
 
-<<<<<<< HEAD
-
-        # 1 Get and remove control variable and controlled variable from instance dict
-        ctrl_var     = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
-        ctrlled_var  = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
-=======
         # 1 Get and remove control variable
         ctrl_var     = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
         if ctrl_var is None:
             raise Error( 'ControlVariable missing!')
->>>>>>> origin/bf/oa/control
 
 
         # 2 Remove an already existing controlled variable
@@ -580,97 +530,6 @@ class ControlledSystem (ControlTask):
             p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
         else:
             self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
-
-
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure = None, p_plot_settings = None):
-        super().init_plot(p_figure = p_figure, p_plot_settings = p_plot_settings)
-        self.system.init_plot(p_figure = p_figure, p_plot_settings = p_plot_settings)
-
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst : InstDict = None, **p_kwargs):
-        super().update_plot(p_inst = p_inst, **p_kwargs)
-        self.system.update_plot( **p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
-    def remove_plot(self, p_refresh : bool = True):
-        super().remove_plot(p_refresh = p_refresh)
-        self.system.remove_plot(p_refresh = p_refresh)
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class CascadedSystem (ControlledSystem):
-    """
-    Wrapper class for state-based systems.
-    """
-
-    C_TYPE          = 'Cascaded System'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_system:System, 
-                 p_name:str = None, 
-                 p_last_system=True,
-                 p_range_max=Task.C_RANGE_NONE, 
-                 p_visualize:bool = False, 
-                 p_logging=Log.C_LOG_ALL, **p_kwargs):
-
-
-        super().__init__(p_system, 
-                         p_name, p_range_max, 
-                         p_visualize, p_logging, 
-                         **p_kwargs)
-        
-
-        self.system : System = p_system
-        self._is_last_system = p_last_system
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict ):        
-
-        # 1 Get and remove control variable and controlled variable from instance dict
-        ctrl_var     = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
-        #ctrlled_var  = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
-
-        action       = Action( p_agent_id = 0,
-                               p_action_space = ctrl_var.get_feature_data().get_related_set(),
-                               p_values = ctrl_var.values,
-                               p_tstamp = ctrl_var.tstamp )
-
-
-        # 2 Let the wrapped system process the action
-        if self.system.process_action( p_action = action ):
-
-            state = self.system.get_state()
-            ctrlled_var = ControlledVariable( p_id = self.get_so().get_next_inst_id(),
-                                               p_value_space = self.system.get_state_space(),
-                                               p_values = state.values,
-                                               p_tstamp = self.get_so().get_tstamp() ) 
-            p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)   
-            
-            #create an additional controlVariable fpr the next System
-            #if not self._is_last_system:    
-
-             #   ctrl_var = ControlVariable( p_id = self.get_so().get_next_inst_id(),
-             #                               p_value_space = self.system.get_state_space(),
-             #                               p_values = state.values,
-             #                               p_tstamp = self.get_so().get_tstamp())
-             #   p_inst[ctrl_var.id] = ( InstTypeNew, ctrl_var)         
-
-
-        else:
-            self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
-        
-
 
 
 ## -------------------------------------------------------------------------------------------------
