@@ -21,27 +21,35 @@
 ## -- 2024-10-13  0.10.0    DA       Refactoring: changed parent of class Action to Instance
 ## -- 2024-10-24  0.11.0    DA       Class ControlledSystem: redefinition of method init_plot(),
 ## --                                update_plot(), remove_plot()
+<<<<<<< HEAD
 ## -- 2024-11-05  0.12.0    ASP      Class ControlTask: methode _get_instance: removed break-statement, after a inst was found
 ## --                                Implementation new class CasscadedSysem
+=======
+## -- 2024-11-08  0.12.0    DA       Little refactoring of class Operator
+## -- 2024-11-09  0.13.0    DA       Various changes and improvements
+## -- 2024-11-10  0.14.0    DA       - class ControlWorkflow: master plot disabled
+## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
+>>>>>>> origin/bf/oa/control
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.11.0 (2024-10-24)
+Ver. 0.14.0 (2024-11-10)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
-from typing import Iterable
+from typing import Iterable, Tuple, List
 from datetime import datetime
 
 from matplotlib.figure import Figure
 
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.mt import Range, Task
+from mlpro.bf.mt import Range, Task, Workflow
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
+from mlpro.bf.exceptions import *
 from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import Action, System
@@ -125,6 +133,67 @@ class ControlData (Instance):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+def get_ctrl_data( p_inst: InstDict, p_type: type, p_remove: bool = False) -> ControlData:
+    """
+    Gets and optionally removes a control data instance of a particular type from the p_inst dictionary.
+
+    Parameters
+    ----------
+    p_inst: InstDict
+        Dictionary of instances.
+    p_type: type
+        Type of instance to be found.
+    p_remove: bool = False
+        If true, the found instance is removed.
+    """
+
+    ctrl_data_found : ControlData = None
+        
+    for (inst_type, inst) in p_inst.values():
+        if isinstance( inst, p_type):
+            ctrl_data_found = inst
+            break
+        
+    if ( p_remove ) and ( ctrl_data_found is not None ):
+        del p_inst[ctrl_data_found.id]
+
+    return ctrl_data_found
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+def replace_ctrl_data( p_inst: InstDict, p_ctrl_data: ControlData ):
+    """
+    Adds the specified control data instance to the p_inst dictionary and removes an already existing
+    control data instance of the same type before that.
+
+    Parameters
+    ----------
+    p_inst: InstDict
+        Dictionary of instances.
+    p_ctrl_data : ControlData
+        Control data instance to be added.
+        
+    Returns
+    -------
+    bool
+        True, if control data of the same type were actually removed. False otherwise.
+    """
+
+    result = ( get_ctrl_data( p_inst = p_inst, p_type = type(p_ctrl_data), p_remove =  True ) != None )
+    p_inst[p_ctrl_data.id] = (InstTypeNew, p_ctrl_data)
+
+    return result
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class SetPoint (ControlData):
     """
     Setpoint.
@@ -185,6 +254,7 @@ class ControlTask (StreamTask):
     C_TYPE      = 'Control Task'
 
 ## -------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
     def _get_instance(self, p_inst: InstDict, p_type: type, p_remove: bool = False) -> Instance:
         """
         Gets and optionally removes an instance of a particular type from the p_inst dictionary.
@@ -213,6 +283,8 @@ class ControlTask (StreamTask):
     
 
 ## -------------------------------------------------------------------------------------------------
+=======
+>>>>>>> origin/bf/oa/control
     def reset(self, p_seed = None, **p_kwargs):
         self._reset( p_seed = p_seed, **p_kwargs )
     
@@ -230,23 +302,30 @@ class ControlTask (StreamTask):
 class Operator (ControlTask):
     """
     Base class for all operators.
+
+    Parameters
+    ----------
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
     """
 
     C_TYPE      = 'Operator'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_range_max=Task.C_RANGE_THREAD, 
+                  p_range_max=Range.C_RANGE_NONE, 
                   p_visualize = False, 
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging=Log.C_LOG_ALL ):
         
         super().__init__( p_name = self.C_NAME, 
                           p_range_max = p_range_max, 
                           p_duplicate_data = False, 
                           p_visualize = p_visualize, 
-                          p_logging = p_logging, 
-                          **p_kwargs )
+                          p_logging = p_logging )
 
 
 
@@ -277,7 +356,7 @@ class Controller (ControlTask):
                   p_output_space : MSpace,
                   p_id = None,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_visualize: bool = False, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -314,13 +393,13 @@ class Controller (ControlTask):
     def _run(self, p_inst: InstDict):
         
         # 1 Get control error instance
-        ctrl_error = self._get_instance( p_inst = p_inst, p_type = ControlError, p_remove = True )
+        ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
             self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
             return
 
         # 2 Remove existing control variable from inst dictionary
-        self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
 
         # 3 Compute control output
         ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
@@ -399,7 +478,7 @@ class ControllerFct (Controller):
     def __init__( self, 
                   p_fct: Function,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_duplicate_data: bool = False, 
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
@@ -432,19 +511,6 @@ class ControllerFct (Controller):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiController: # (Controller, StreamWorkflow):
-    """
-    """
-
-    C_TYPE          = 'Multi-Controller'
-    C_NAME          = ''
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 class ControlledSystem (ControlTask):
     """
     Wrapper class for state-based systems.
@@ -456,19 +522,23 @@ class ControlledSystem (ControlTask):
     def __init__( self, 
                   p_system : System,
                   p_name: str = None, 
-                  p_range_max=Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_visualize: bool = False, 
-                  p_logging = Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging = Log.C_LOG_ALL ):
         
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
                           p_duplicate_data = False, 
                           p_visualize = p_visualize, 
+<<<<<<< HEAD
                           p_logging = p_logging, 
                           **p_kwargs )
         
        
+=======
+                          p_logging = p_logging )
+
+>>>>>>> origin/bf/oa/control
         self.system : System = p_system
         
 
@@ -476,18 +546,31 @@ class ControlledSystem (ControlTask):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict ):
 
+<<<<<<< HEAD
 
         # 1 Get and remove control variable and controlled variable from instance dict
         ctrl_var     = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
         ctrlled_var  = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
+=======
+        # 1 Get and remove control variable
+        ctrl_var     = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        if ctrl_var is None:
+            raise Error( 'ControlVariable missing!')
+>>>>>>> origin/bf/oa/control
 
+
+        # 2 Remove an already existing controlled variable
+        ctrlled_var  = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
+
+
+        # 3 Create a new action instance for the wrapped system
         action       = Action( p_agent_id = 0,
                                p_action_space = ctrl_var.get_feature_data().get_related_set(),
                                p_values = ctrl_var.values,
                                p_tstamp = ctrl_var.tstamp )
 
 
-        # 2 Let the wrapped system process the action
+        # 4 Let the wrapped system process the action
         if self.system.process_action( p_action = action ):
             state                  = self.system.get_state()
             ctrlled_var            = ControlledVariable( p_id = self.get_so().get_next_inst_id(),
@@ -730,7 +813,9 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_inst: InstDict):
-        pass
+        setpoint = get_ctrl_data( p_inst = p_inst, p_type = SetPoint, p_remove = False)
+        if setpoint != None:
+            replace_ctrl_data( p_inst = self._instances[self.C_TID_ADMIN], p_ctrl_data = setpoint )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -812,6 +897,8 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 
 
+ControlPanelEntry = Tuple[ControlPanel, Workflow]
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -824,11 +911,13 @@ class ControlWorkflow (StreamWorkflow, Mode):
     C_TYPE          = 'Control Workflow'
     C_NAME          = ''
 
+    C_PLOT_ACTIVE   = False         # Currently no master plot window here...
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_mode,
                   p_name: str = None, 
-                  p_range_max = Task.C_RANGE_NONE, 
+                  p_range_max = Range.C_RANGE_NONE, 
                   p_class_shared = ControlShared, 
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
@@ -848,10 +937,18 @@ class ControlWorkflow (StreamWorkflow, Mode):
         
         self.get_so().switch_logging( p_logging = p_logging )
 
+        self._workflows = []
+        self._superior_so : ControlShared = None
+
 
 ## -------------------------------------------------------------------------------------------------
-    def get_control_panel(self) -> ControlPanel:
-        return self.get_so()
+    def get_control_panels(self) -> List[ControlPanelEntry]:
+        result = [ (self.get_so(), self) ]
+
+        for workflow in self._workflows:
+            result.extend( workflow.get_control_panels() )
+
+        return result
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -869,13 +966,33 @@ class ControlWorkflow (StreamWorkflow, Mode):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def assign_so(self, p_so):
+        """
+        External assignment of shared objects is disabled for control workflows.
+        """
+        
+        self._superior_so = p_so
+
+
+## -------------------------------------------------------------------------------------------------
     def add_task(self, p_task: Task, p_pred_tasks: list = None):
+
+        if not isinstance( p_task, Workflow ):
+            p_task.set_name( 'Workflow ' + self.get_name() + ', ' + p_task.get_name() )
+
+        if isinstance( p_task, ControlWorkflow ):
+            self._workflows.append(p_task)
+        
         StreamWorkflow.add_task( self, p_task = p_task, p_pred_tasks = p_pred_tasks)
         
         try:
             p_task.set_mode( p_mode = self._mode )
         except:
             pass
+
+        if isinstance( p_task, ControlledSystem ):
+            self.get_so().init( p_ctrlled_var_space = p_task.system.get_state_space(),
+                                p_ctrl_var_space = p_task.system.get_action_space() )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -884,8 +1001,30 @@ class ControlWorkflow (StreamWorkflow, Mode):
              p_wait: bool = False, 
              p_inst : InstDict = None ):
         
+        # 0 Take over a setpoint instances from the predecessor task of a superior workflow
+        try:
+            inst_dict = p_inst.copy()
+        except:
+            superior_setpoint : bool = False
+            inst_dict = None
+
+            if self._superior_so is not None:
+                self._superior_so.lock( p_tid = self.get_tid() )
+
+                for pred_task in self.get_predecessors():
+                    for inst_type, inst in self._superior_so._instances[pred_task.get_tid()].values():
+                        if isinstance( inst, SetPoint):
+                            inst_dict = { inst.id : (InstTypeNew, inst) }
+                            superior_setpoint = True
+                            break
+
+                    if superior_setpoint: break
+
+                self._superior_so.unlock()
+
+        
         # 1 Execute all tasks
-        StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = p_inst)
+        StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = inst_dict)
 
 
         # 2 Add the outcomes of the final task(s) to the instance dict of the initial task
@@ -916,22 +1055,21 @@ class ControlWorkflow (StreamWorkflow, Mode):
 ## -------------------------------------------------------------------------------------------------
 class ControlSystem (StreamScenario):
     """
-    ...
+    Template class for custom control systems. Please implement
     """
 
     C_TYPE      = 'Control System'
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self):
-
-        # 1 Setup control workflow
-        self._control_workflow = self._setup( p_mode=self.get_mode(), 
-                                           p_visualize=self.get_visualization(),
-                                           p_logging=self.get_log_level() )
+    def setup(self, **p_kwargs):
+        self._control_workflow = self._setup( p_mode = self.get_mode(), 
+                                              p_visualize = self.get_visualization(),
+                                              p_logging = self.get_log_level(),
+                                              **p_kwargs )
           
 
  ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize: bool, p_logging) -> ControlWorkflow:
+    def _setup(self, p_mode, p_visualize: bool, p_logging, **p_kwargs) -> ControlWorkflow:
         """
         Custom method to set up a control workflow. Create a new object of type ControlWorkflow and
         add all control tasks of your scenario.
@@ -944,6 +1082,8 @@ class ControlSystem (StreamScenario):
             Boolean switch for visualisation.
         p_logging
             Log level (see constants of class Log). Default: Log.C_LOG_ALL. 
+        p_kwargs : dict
+            Custom keyword parameters.
 
         Returns
         -------
@@ -965,15 +1105,15 @@ class ControlSystem (StreamScenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_control_panel(self) -> ControlPanel:
+    def get_control_panels(self) -> List[ControlPanelEntry]:
         """
         Returns
         -------
-        panel : ControlPanel
+        panel : List[ControlPanelEntry]
             Object that enables the external control of a closed-loop control process.
         """
 
-        return self._control_workflow.get_control_panel()
+        return self._control_workflow.get_control_panels()
     
 
 ## -------------------------------------------------------------------------------------------------
