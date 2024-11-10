@@ -108,7 +108,7 @@ observation_space.add_dim(dim1)
 output_dim_2 =Dimension(p_name_short='output_dim',p_boundaries=[-3,3])
 output_space_2=MSpace()
 output_space_2.add_dim(p_dim=output_dim_2)
-pid_outer = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=output_space_2,Ti=23,Tv=34)
+pid_outer = PIDController(p_Kp=13,p_input_space=MSpace(),p_output_space=output_space_2,p_Tn=23,p_Tv=34)
 
 # PPO
 policy_sb3_outer = PPO(
@@ -147,7 +147,7 @@ oa_controller_outer=wrapper_rl.OAControllerRL(p_input_space=MSpace(),p_output_sp
 output_dim =Dimension(p_name_short='output_dim',p_boundaries=[-3,3])
 output_space=MSpace()
 output_space.add_dim(p_dim=output_dim)
-pid = PIDController(Kp=13,p_input_space=MSpace(),p_output_space=output_space,Ti=23,Tv=34)
+pid = PIDController(p_Kp=13,p_input_space=MSpace(),p_output_space=output_space,p_Tn=23,p_Tv=34)
 
 # PPO
 policy_sb3 = PPO(
