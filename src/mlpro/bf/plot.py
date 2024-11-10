@@ -57,10 +57,11 @@
 ## --                                  is_last_registered()
 ## --                                - Class Plottable: extensions on init_plot(), update_plot() 
 ## --                                - Refactoring: removed par p_force from Plottable.refresh()
+## -- 2024-11-10  2.18.0    DA       Bugfix in method Plottable.force_fg()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.17.0 (2024-10-30)
+Ver. 2.18.0 (2024-11-10)
 
 This module provides various classes related to data plotting.
 
@@ -502,6 +503,14 @@ class Plottable:
         """
         Internal use.
         """
+
+        # 1 Plot functionality turned on?
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+        
+        # 2 Call internal custom method
         self._force_fg(p_fig = self._figure)
 
 
