@@ -949,9 +949,7 @@ class Workflow (Task):
       
         # 2 Init plot output on task level
         for task in self._tasks:
-            if not task.get_visualization(): continue
-
-            task_plot_settings = []
+            task_plot_settings = None
 
             if not task.C_PLOT_STANDALONE:
                 plot_host = self._get_plot_host_task(p_task=task)
@@ -959,19 +957,22 @@ class Workflow (Task):
                 plot_host = self
 
             ps = plot_host.get_plot_settings()
+            if ps is None: ps = p_plot_settings
 
             if task.C_PLOT_STANDALONE:
                 # Task plots in a separate figure (=window)
                 task_figure = None
-                task_axes   = None
-                task_pos_x  = 1
-                task_pos_y  = 1
-                task_ax_id  = 1
-                task_plot_settings       = ps.copy()
-                task_plot_settings.axes  = task_axes
-                task_plot_settings.pos_x = task_pos_x
-                task_plot_settings.pos_y = task_pos_y
-                task_plot_settings.id    = task_ax_id
+
+                if ps is not None:
+                    task_plot_settings = ps.copy()
+                else:
+                    task_plot_settings = PlotSettings( p_view = self.C_PLOT_DEFAULT_VIEW )
+
+                task_plot_settings.axes  = None
+                task_plot_settings.pos_x = 1
+                task_plot_settings.pos_y = 1
+                task_plot_settings.id    = 1
+
             else:
                 # Task plots embedded in the predecessor/workflow figure/subplot
                 task_figure = plot_host._figure
