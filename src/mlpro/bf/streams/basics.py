@@ -72,10 +72,11 @@
 ## -- 2024-10-01  2.1.1     DA       Method StreamScenario.__init__(): simplification
 ## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
+## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2024-10-30)
+Ver. 2.4.0 (2024-11-10)
 
 This module provides classes for standardized data stream processing. 
 
@@ -1570,11 +1571,6 @@ class StreamWorkflow (StreamTask, Workflow):
     def init_plot( self, 
                    p_figure: Figure = None, 
                    p_plot_settings : PlotSettings = None ):
-
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
 
         self._plot_num_inst = 0
 
