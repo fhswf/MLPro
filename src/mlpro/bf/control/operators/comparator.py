@@ -9,10 +9,11 @@
 ## -- 2024-10-08  0.2.0     DA       Validation and various changes
 ## -- 2024-10-09  0.3.0     DA       Refactoring
 ## -- 2024-10-13  0.4.0     DA       Refactoring
+## -- 2024-11-10  0.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-10-13)
+Ver. 0.5.0 (2024-11-10)
 
 This module provides an implementation of a comparator that determins the control error based on 
 setpoint and controlled variable (system state).
@@ -24,7 +25,7 @@ import numpy as np
 from mlpro.bf.various import Log
 from mlpro.bf.math import Element
 from mlpro.bf.streams import InstDict, InstTypeNew
-from mlpro.bf.control import SetPoint, ControlledVariable, ControlError, Operator
+from mlpro.bf.control import SetPoint, ControlledVariable, ControlError, Operator, get_ctrl_data
 
 
 
@@ -42,14 +43,14 @@ class Comparator (Operator):
     def _run(self, p_inst: InstDict):
         
         # 1 Get setpoint
-        setpoint : SetPoint = self._get_instance( p_inst = p_inst, p_type = SetPoint, p_remove = True )
+        setpoint : SetPoint = get_ctrl_data( p_inst = p_inst, p_type = SetPoint, p_remove = True )
         if setpoint is None:
             self.log(Log.C_LOG_TYPE_E, 'Setpoint missing!')
             return
 
 
         # 2 Get and remove current controlled variable
-        ctrlled_var : ControlledVariable = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
+        ctrlled_var : ControlledVariable = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
         if ctrlled_var is None:
             self.log(Log.C_LOG_TYPE_W, 'Controlled variable missing!')
             ctrlled_var = setpoint

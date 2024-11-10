@@ -23,7 +23,8 @@
 ## --                                update_plot(), remove_plot()
 ## -- 2024-11-08  0.12.0    DA       Little refactoring of class Operator
 ## -- 2024-11-09  0.13.0    DA       Various changes and improvements
-## -- 2024-11-10  0.14.0    DA       Class ControlWorkflow: master plot disabled
+## -- 2024-11-10  0.14.0    DA       - class ControlWorkflow: master plot disabled
+## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -127,6 +128,67 @@ class ControlData (Instance):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+def get_ctrl_data( p_inst: InstDict, p_type: type, p_remove: bool = False) -> ControlData:
+    """
+    Gets and optionally removes a control data instance of a particular type from the p_inst dictionary.
+
+    Parameters
+    ----------
+    p_inst: InstDict
+        Dictionary of instances.
+    p_type: type
+        Type of instance to be found.
+    p_remove: bool = False
+        If true, the found instance is removed.
+    """
+
+    ctrl_data_found : ControlData = None
+        
+    for (inst_type, inst) in p_inst.values():
+        if isinstance( inst, p_type):
+            ctrl_data_found = inst
+            break
+        
+    if ( p_remove ) and ( ctrl_data_found is not None ):
+        del p_inst[ctrl_data_found.id]
+
+    return ctrl_data_found
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+def replace_ctrl_data( p_inst: InstDict, p_ctrl_data: ControlData ):
+    """
+    Adds the specified control data instance to the p_inst dictionary and removes an already existing
+    control data instance of the same type before that.
+
+    Parameters
+    ----------
+    p_inst: InstDict
+        Dictionary of instances.
+    p_ctrl_data : ControlData
+        Control data instance to be added.
+        
+    Returns
+    -------
+    bool
+        True, if control data of the same type were actually removed. False otherwise.
+    """
+
+    result = ( get_ctrl_data( p_inst = p_inst, p_type = type(p_ctrl_data), p_remove =  True ) != None )
+    p_inst[p_ctrl_data.id] = (InstTypeNew, p_ctrl_data)
+
+    return result
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class SetPoint (ControlData):
     """
     Setpoint.
@@ -185,34 +247,6 @@ class ControlTask (StreamTask):
     """
 
     C_TYPE      = 'Control Task'
-
-## -------------------------------------------------------------------------------------------------
-    def _get_instance(p_inst: InstDict, p_type: type, p_remove: bool = False) -> Instance:
-        """
-        Gets and optionally removes an instance of a particular type from the p_inst dictionary.
-
-        Parameters
-        ----------
-        p_inst: InstDict
-            Dictionary of instances.
-        p_type: type
-            Type of instance to be found.
-        p_remove: bool = False
-            If true, the found instance is removed.
-        """
-
-        inst_found : Instance = None
-        
-        for (inst_type, inst) in p_inst.values():
-            if isinstance( inst, p_type):
-                inst_found = inst
-                break
-        
-        if ( p_remove ) and ( inst_found is not None ):
-            del p_inst[inst_found.id]
-
-        return inst_found
-    
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed = None, **p_kwargs):
@@ -323,13 +357,13 @@ class Controller (ControlTask):
     def _run(self, p_inst: InstDict):
         
         # 1 Get control error instance
-        ctrl_error = self._get_instance( p_inst = p_inst, p_type = ControlError, p_remove = True )
+        ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
             self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
             return
 
         # 2 Remove existing control variable from inst dictionary
-        self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
 
         # 3 Compute control output
         ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
@@ -469,13 +503,13 @@ class ControlledSystem (ControlTask):
     def _run(self, p_inst: InstDict ):
 
         # 1 Get and remove control variable
-        ctrl_var     = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        ctrl_var     = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
         if ctrl_var is None:
             raise Error( 'ControlVariable missing!')
 
 
         # 2 Remove an already existing controlled variable
-        ctrlled_var  = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
+        ctrlled_var  = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
 
 
         # 3 Create a new action instance for the wrapped system
@@ -638,7 +672,9 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_inst: InstDict):
-        self._instances[self.C_TID_ADMIN] = p_inst
+        setpoint = get_ctrl_data( p_inst = p_inst, p_type = SetPoint, p_remove = False)
+        if setpoint != None:
+            replace_ctrl_data( p_inst = self._instances[self.C_TID_ADMIN], p_ctrl_data = setpoint )
 
 
 ## -------------------------------------------------------------------------------------------------

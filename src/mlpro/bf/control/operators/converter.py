@@ -22,7 +22,7 @@ import numpy as np
 from mlpro.bf.math.basics import Log
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.streams import InstDict, InstTypeNew
-from mlpro.bf.control import ControlData, Operator
+from mlpro.bf.control import ControlData, Operator, get_ctrl_data
 
 
 
@@ -64,7 +64,7 @@ class Converter (Operator):
     def _run(self, p_inst: InstDict):
 
         # 1 Get source instance 
-        src_instance : ControlData = self._get_instance( p_inst = p_inst, p_type = self._src_type, p_remove = True ) 
+        src_instance : ControlData = get_ctrl_data( p_inst = p_inst, p_type = self._src_type, p_remove = True ) 
 
         if src_instance is None:       
   

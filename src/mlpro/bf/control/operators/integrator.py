@@ -9,10 +9,11 @@
 ## -- 2024-10-09  0.2.0     DA       Refactoring
 ## -- 2024-10-13  0.3.0     DA       Refactoring
 ## -- 2024-11-09  0.3.1     DA       Class Integrator: correction of C_NAME
+## -- 2024-11-10  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.1 (2024-11-09)
+Ver. 0.4.0 (2024-11-010)
 
 This module provides an implementation of an integrator that determins the next control variable by
 buffering and cumulating it.
@@ -24,7 +25,7 @@ import numpy as np
 from mlpro.bf.math.basics import Log
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.streams import InstDict, InstTypeNew
-from mlpro.bf.control import ControlVariable, Operator
+from mlpro.bf.control import ControlVariable, Operator, get_ctrl_data
 
 
 
@@ -55,7 +56,7 @@ class Integrator (Operator):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
 
-        ctrl_var = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        ctrl_var = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
         
         if ctrl_var is None:
             self.log(Log.C_LOG_TYPE_E, 'Control variable not found')
