@@ -8,6 +8,7 @@
 ## -- 2024-11-05  0.1.0     ASP      Initial implementation class PT1
 ## -- 2024-11-05  0.2.0     ASP      class PT1: update methods __init__(), _setup_spaces()
 ## -- 2024-11-10  0.3.0     ASP      class PT1: update methods __init__(), _setup_spaces()
+#                                      - update singature of __init___()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -17,6 +18,7 @@ This module provides a simple demo system that represent a first-order-system
 """
 
 import random
+from datetime import timedelta
 from mlpro.bf.various import Log
 from mlpro.bf.ops import Mode
 from mlpro.bf.mt import Task
@@ -35,21 +37,23 @@ class PT1 (System):
 
     C_NAME          = 'PT1'
     C_BOUNDARIES    = [-1000,1000]
-    
-    
+    C_PLOT_ACTIVE   = False
 
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
+    C_LATENCY       = timedelta( seconds = 1 )
+
+    ## -------------------------------------------------------------------------------------------------
+    def __init__( self,                  
                   p_K:float,
                   p_T: float,
                   p_sys_num:int,
-                  p_id=None, 
-                  p_name = None, 
+                  p_id=None,
+                  p_name = C_NAME,
+                  p_latency : timedelta = None,
                   p_range_max = Task.C_RANGE_NONE, 
                   p_visualize = False, 
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
+                  p_logging=Log.C_LOG_ALL ):
         
+
         """
         Initialsize first-order-system.
 
@@ -62,20 +66,21 @@ class PT1 (System):
         p_sys_num : float
             Num id of the system
         """
-
-        self.K = p_K          
-        self.T = p_T
-        self._sys_num = p_sys_num
-
+        
         super().__init__( p_id = p_id, 
                           p_name = p_name,
                           p_range_max = p_range_max, 
                           p_mode = Mode.C_MODE_SIM, 
-                          p_visualize = p_visualize, 
-                          p_logging = p_logging )       
-
-        self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
+                          p_latency = p_latency,
+                          p_visualize = False, 
+                          p_logging = p_logging )
         
+        self.K = p_K          
+        self.T = p_T
+        self._sys_num = p_sys_num
+        
+        self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
+
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_sys_num: int):
