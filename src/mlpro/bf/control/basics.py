@@ -187,7 +187,7 @@ class ControlTask (StreamTask):
     C_TYPE      = 'Control Task'
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_instance(self, p_inst: InstDict, p_type: type, p_remove: bool = False) -> Instance:
+    def _get_instance(p_inst: InstDict, p_type: type, p_remove: bool = False) -> Instance:
         """
         Gets and optionally removes an instance of a particular type from the p_inst dictionary.
 
@@ -638,7 +638,7 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_inst: InstDict):
-        pass
+        self._instances[self.C_TID_ADMIN] = p_inst
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -761,6 +761,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
         self.get_so().switch_logging( p_logging = p_logging )
 
         self._workflows = []
+        self._superior_so : ControlShared = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -792,7 +793,8 @@ class ControlWorkflow (StreamWorkflow, Mode):
         """
         External assignment of shared objects is disabled for control workflows.
         """
-        pass
+        
+        self._superior_so = p_so
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -822,8 +824,30 @@ class ControlWorkflow (StreamWorkflow, Mode):
              p_wait: bool = False, 
              p_inst : InstDict = None ):
         
+        # 0 Take over a setpoint instances from the predecessor task of a superior workflow
+        try:
+            inst_dict = p_inst.copy()
+        except:
+            superior_setpoint : bool = False
+            inst_dict = None
+
+            if self._superior_so is not None:
+                self._superior_so.lock( p_tid = self.get_tid() )
+
+                for pred_task in self.get_predecessors():
+                    for inst_type, inst in self._superior_so._instances[pred_task.get_tid()].values():
+                        if isinstance( inst, SetPoint):
+                            inst_dict = { inst.id : (InstTypeNew, inst) }
+                            superior_setpoint = True
+                            break
+
+                    if superior_setpoint: break
+
+                self._superior_so.unlock()
+
+        
         # 1 Execute all tasks
-        StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = p_inst)
+        StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = inst_dict)
 
 
         # 2 Add the outcomes of the final task(s) to the instance dict of the initial task
