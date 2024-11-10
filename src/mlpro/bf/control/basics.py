@@ -43,6 +43,7 @@ from mlpro.bf.various import Log, TStampType
 from mlpro.bf.mt import Range, Task, Workflow
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
+from mlpro.bf.exceptions import *
 from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import Action, System
@@ -467,17 +468,24 @@ class ControlledSystem (ControlTask):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict ):
 
-        # 1 Get and remove control variable and controlled variable from instance dict
+        # 1 Get and remove control variable
         ctrl_var     = self._get_instance( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        if ctrl_var is None:
+            raise Error( 'ControlVariable missing!')
+
+
+        # 2 Remove an already existing controlled variable
         ctrlled_var  = self._get_instance( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
 
+
+        # 3 Create a new action instance for the wrapped system
         action       = Action( p_agent_id = 0,
                                p_action_space = ctrl_var.get_feature_data().get_related_set(),
                                p_values = ctrl_var.values,
                                p_tstamp = ctrl_var.tstamp )
 
 
-        # 2 Let the wrapped system process the action
+        # 4 Let the wrapped system process the action
         if self.system.process_action( p_action = action ):
             state                  = self.system.get_state()
             ctrlled_var            = ControlledVariable( p_id = self.get_so().get_next_inst_id(),
