@@ -653,6 +653,7 @@ class ControlShared (StreamShared, ControlPanel, Log):
         Log.__init__(self, p_logging = Log.C_LOG_NOTHING)
         self._next_inst_id = 0
         self._superior_so : ControlShared = None
+        self._top_so : ControlShared = self
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -680,6 +681,11 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_superior_so(self) -> Shared:
+        return self._superior_so
+    
+
+## -------------------------------------------------------------------------------------------------
     def set_superior_so(self, p_so : Shared ):
         """
         Sets the superior shared object. This is relevant for cascade control systems, where the
@@ -692,7 +698,13 @@ class ControlShared (StreamShared, ControlPanel, Log):
         """
 
         self._superior_so = p_so
+        self._top_so      = p_so.get_top_so()
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_top_so(self) -> Shared:
+        return self._top_so
+    
 
 ## -------------------------------------------------------------------------------------------------
     def get_next_inst_id(self) -> int:
@@ -705,14 +717,15 @@ class ControlShared (StreamShared, ControlPanel, Log):
             Next instance id.
         """
 
-        try:
-            return self._superior_so.get_next_inst_id()
-        except:
+        if self.top_so == self:
             self.lock( p_tid = self.C_TID_ADMIN )
             next_id = self._next_inst_id
             self._next_inst_id += 1
             self.unlock()
             return next_id
+        
+        else:
+            return self.top_so.get_next_inst_id()
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -721,14 +734,15 @@ class ControlShared (StreamShared, ControlPanel, Log):
         Returns the current process time stamp.
         """
 
-        try:
-            return self._superior_so.get_tstamp()
-        except:
+        if self.top_so == self:
             #
             # pseudo-implementation
             #
 
             return datetime.now()
+        
+        else:
+            return self.top_so.get_tstamp()
     
     
 ## -------------------------------------------------------------------------------------------------
@@ -774,6 +788,12 @@ class ControlShared (StreamShared, ControlPanel, Log):
         self.unlock()
 
 
+## -------------------------------------------------------------------------------------------------
+    superior_so = property( fget = get_superior_so, fset = set_superior_so )
+    top_so      = property( fget = get_top_so )
+
+
+
 
 ControlPanelEntry = Tuple[ControlPanel, Workflow]
 
@@ -816,7 +836,6 @@ class ControlWorkflow (StreamWorkflow, Mode):
         self.get_so().switch_logging( p_logging = p_logging )
 
         self._workflows = []
-        self._superior_so : ControlShared = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -849,8 +868,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
         External assignment of shared objects is disabled for control workflows.
         """
         
-        self._superior_so = p_so
-        self.get_so().set_superior_so( p_so = p_so )
+        self.get_so().superior_so = p_so
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -887,15 +905,17 @@ class ControlWorkflow (StreamWorkflow, Mode):
             superior_setpoint : SetPoint = None
             inst_dict = None
 
-            if self._superior_so is not None:
-                self._superior_so.lock( p_tid = self.get_tid() )
+            superior_so = self.get_so().superior_so
+
+            if superior_so is not None:
+                superior_so.lock( p_tid = self.get_tid() )
 
                 for pred_task in self.get_predecessors():
-                    superior_setpoint = get_ctrl_data( p_inst = self._superior_so._instances[pred_task.get_tid()], 
+                    superior_setpoint = get_ctrl_data( p_inst = superior_so._instances[pred_task.get_tid()], 
                                                        p_type = SetPoint,
                                                        p_remove = True )
                 
-                self._superior_so.unlock()
+                superior_so.unlock()
 
                 if superior_setpoint is not None:
                     self.get_so().set_setpoint( p_values = superior_setpoint.values )
@@ -925,15 +945,17 @@ class ControlWorkflow (StreamWorkflow, Mode):
         so.unlock()
 
         # 2 Add the outcomes of the final task to the instance dict of a superior shared object
-        if self._superior_so is not None:
-            self._superior_so.lock( p_tid = self.get_tid() )
+        superior_so = so.superior_so
 
-            self._superior_so._instances[self.get_tid()] = {}
+        if superior_so is not None:
+            superior_so.lock( p_tid = self.get_tid() )
+
+            superior_so._instances[self.get_tid()] = {}
 
             for task in self._final_tasks:
-                self._superior_so._instances[self.get_tid()].update( so._instances[task.id] )
+                superior_so._instances[self.get_tid()].update( so._instances[task.id] )
 
-            self._superior_so.unlock()
+            superior_so.unlock()
 
 
 
