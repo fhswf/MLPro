@@ -25,10 +25,11 @@
 ## -- 2024-11-09  0.13.0    DA       Various changes and improvements
 ## -- 2024-11-10  0.14.0    DA       - class ControlWorkflow: master plot disabled
 ## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
+## -- 2024-11-11  0.15.0    DA       Implementation of custom method ControlWorkflow._on_event()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.14.0 (2024-11-10)
+Ver. 0.15.0 (2024-11-11)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -907,34 +908,32 @@ class ControlWorkflow (StreamWorkflow, Mode):
 ## -------------------------------------------------------------------------------------------------
     def _on_finished(self):
 
-        if isinstance(self, Workflow):
+        # 1 Add/replace the outcomes of the final task to the instance dict of the initial task
+        so = self.get_so()
+        so.lock( p_tid = ControlShared.C_TID_ADMIN )
+        setpoint = get_ctrl_data( p_inst = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
 
-            # 1 Add/replace the outcomes of the final task to the instance dict of the initial task
-            so = self.get_so()
-            so.lock( p_tid = ControlShared.C_TID_ADMIN )
-            setpoint = get_ctrl_data( p_inst = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
+        del so._instances[ControlShared.C_TID_ADMIN]
+        new_setpoint = setpoint.copy()
+        new_setpoint.id = so.get_next_inst_id()
+        new_setpoint.tstamp = so.get_tstamp()
+        so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (InstTypeNew, new_setpoint) }
 
-            del so._instances[ControlShared.C_TID_ADMIN]
-            new_setpoint = setpoint.copy()
-            new_setpoint.id = so.get_next_inst_id()
-            new_setpoint.tstamp = so.get_tstamp()
-            so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (InstTypeNew, new_setpoint) }
+        for task in self._final_tasks:
+            so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
+
+        so.unlock()
+
+        # 2 Add the outcomes of the final task to the instance dict of a superior shared object
+        if self._superior_so is not None:
+            self._superior_so.lock( p_tid = self.get_tid() )
+
+            self._superior_so._instances[self.get_tid()] = {}
 
             for task in self._final_tasks:
-                so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
+                self._superior_so._instances[self.get_tid()].update( so._instances[task.id] )
 
-            so.unlock()
-
-            # 2 Add the outcomes of the final task to the instance dict of a superior shared object
-            if self._superior_so is not None:
-                self._superior_so.lock( p_tid = self.get_tid() )
-
-                self._superior_so._instances[self.get_tid()] = {}
-
-                for task in self._final_tasks:
-                    self._superior_so._instances[self.get_tid()].update( so._instances[task.id] )
-
-                self._superior_so.unlock()
+            self._superior_so.unlock()
 
 
 
