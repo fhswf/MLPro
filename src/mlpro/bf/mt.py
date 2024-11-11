@@ -710,7 +710,7 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
 ## -------------------------------------------------------------------------------------------------
     def _raise_event(self, p_event_id: str, p_event_object: Event):
         if p_event_id == self.C_EVENT_FINISHED: self._on_finished()
-        EventManager()._raise_event(self, p_event_id, p_event_object)
+        EventManager._raise_event(self, p_event_id, p_event_object)
 
 
 ## -------------------------------------------------------------------------------------------------
