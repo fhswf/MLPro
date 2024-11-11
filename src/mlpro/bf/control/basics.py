@@ -41,7 +41,7 @@ from matplotlib.figure import Figure
 
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.mt import Range, Task, Workflow
+from mlpro.bf.mt import Range, Task, Workflow, Shared
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.exceptions import *
@@ -651,6 +651,7 @@ class ControlShared (StreamShared, ControlPanel, Log):
         StreamShared.__init__(self, p_range=p_range)
         Log.__init__(self, p_logging = Log.C_LOG_NOTHING)
         self._next_inst_id = 0
+        self._superior_so : ControlShared = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -678,6 +679,21 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_superior_so(self, p_so : Shared ):
+        """
+        Sets the superior shared object. This is relevant for cascade control systems, where the
+        top level shared object is responsible for system-wide unique instance ids etc.
+
+        Parameters
+        ----------
+        p_so : Shared
+            Superior shared object.
+        """
+
+        self._superior_so = p_so
+
+
+## -------------------------------------------------------------------------------------------------
     def get_next_inst_id(self) -> int:
         """
         Returns the next instance id.
@@ -688,22 +704,30 @@ class ControlShared (StreamShared, ControlPanel, Log):
             Next instance id.
         """
 
-        self.lock( p_tid = self.C_TID_ADMIN )
-        next_id = self._next_inst_id
-        self._next_inst_id += 1
-        self.unlock()
-        return next_id
+        try:
+            return self._superior_so.get_next_inst_id()
+        except:
+            self.lock( p_tid = self.C_TID_ADMIN )
+            next_id = self._next_inst_id
+            self._next_inst_id += 1
+            self.unlock()
+            return next_id
     
 
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> TStampType:
-        
-        #
-        # pseudo-implementation
-        #
+        """
+        Returns the current process time stamp.
+        """
 
-        return datetime.now()
-        #raise NotImplementedError
+        try:
+            return self._superior_so.get_tstamp()
+        except:
+            #
+            # pseudo-implementation
+            #
+
+            return datetime.now()
     
     
 ## -------------------------------------------------------------------------------------------------
@@ -734,21 +758,15 @@ class ControlShared (StreamShared, ControlPanel, Log):
             self._instances[self.C_TID_ADMIN] = inst_admin
 
 
-        # 2 Get or create a setpoint instance
-        for (inst_type, inst) in inst_admin.values():
-            if isinstance(inst, SetPoint):
-                setpoint = inst
-                break
+        # 2 Replace setpoint instance
+        get_ctrl_data( p_inst = inst_admin, p_type = SetPoint, p_remove = True)
 
-        if setpoint is None:
-            setpoint = SetPoint( p_id = self.get_next_inst_id(),
-                                 p_value_space = self._ctrlled_var_space,
-                                 p_values = p_values,
-                                 p_tstamp = self.get_tstamp() )
-            inst_admin[setpoint.id] = (InstTypeNew, setpoint)
-        else:
-            setpoint.values = p_values
-            setpoint.tstamp = self.get_tstamp()
+        setpoint = SetPoint( p_id = self.get_next_inst_id(),
+                             p_value_space = self._ctrlled_var_space,
+                             p_values = p_values,
+                             p_tstamp = self.get_tstamp() )
+        
+        inst_admin[setpoint.id] = (InstTypeNew, setpoint)
 
 
         # 3 Outro
@@ -831,6 +849,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
         """
         
         self._superior_so = p_so
+        self.get_so().set_superior_so( p_so = p_so )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -860,52 +879,93 @@ class ControlWorkflow (StreamWorkflow, Mode):
              p_wait: bool = False, 
              p_inst : InstDict = None ):
         
-        # 0 Take over a setpoint instances from the predecessor task of a superior workflow
+        # 1 Transfer the setpoint instances from the predecessor tasks of a superior workflow
         try:
             inst_dict = p_inst.copy()
         except:
-            superior_setpoint : bool = False
+            superior_setpoint : SetPoint = None
             inst_dict = None
 
             if self._superior_so is not None:
                 self._superior_so.lock( p_tid = self.get_tid() )
 
                 for pred_task in self.get_predecessors():
-                    for inst_type, inst in self._superior_so._instances[pred_task.get_tid()].values():
-                        if isinstance( inst, SetPoint):
-                            inst_dict = { inst.id : (InstTypeNew, inst) }
-                            superior_setpoint = True
-                            break
-
-                    if superior_setpoint: break
-
+                    superior_setpoint = get_ctrl_data( p_inst = self._superior_so._instances[pred_task.get_tid()], 
+                                                       p_type = SetPoint,
+                                                       p_remove = True )
+                
                 self._superior_so.unlock()
 
+                if superior_setpoint is not None:
+                    self.get_so().set_setpoint( p_values = superior_setpoint.values )
+
         
-        # 1 Execute all tasks
+        # 2 Execute all tasks
         StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = inst_dict)
 
 
-        # 2 Add the outcomes of the final task(s) to the instance dict of the initial task
-        so = self.get_so()
-        so.lock( p_tid = ControlShared.C_TID_ADMIN )
+        # # 3 Add/replace the outcomes of the final task to the instance dict of the initial task
+        # so = self.get_so()
+        # so.lock( p_tid = ControlShared.C_TID_ADMIN )
+        # setpoint = get_ctrl_data( p_inst = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
 
-        for inst_id, (inst_type, inst) in so._instances[ControlShared.C_TID_ADMIN].items():
-            if isinstance(inst, SetPoint):
-                setpoint = inst
-                break
-        
-        del so._instances[ControlShared.C_TID_ADMIN]
-        new_setpoint = setpoint.copy()
-        new_setpoint.id = so.get_next_inst_id()
-        new_setpoint.tstamp = so.get_tstamp()
-        so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (inst_type, new_setpoint) }
+        # del so._instances[ControlShared.C_TID_ADMIN]
+        # new_setpoint = setpoint.copy()
+        # new_setpoint.id = so.get_next_inst_id()
+        # new_setpoint.tstamp = so.get_tstamp()
+        # so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (InstTypeNew, new_setpoint) }
 
-        for task in self._final_tasks:
-            so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
+        # for task in self._final_tasks:
+        #     so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
 
-        so.unlock()
+        # so.unlock()
 
+
+        # # 4 Add the outcomes of the final task to the instance dict of a superior shared object
+        # if self._superior_so is not None:
+        #     self._superior_so.lock( p_tid = self.get_tid() )
+
+        #     for task in self._final_tasks:
+        #         self._superior_so._instances[self.get_tid()].update( so._instances[task.id] )
+
+        #     self._superior_so.unlock()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _raise_event(self, p_event_id, p_event_object):
+
+        if p_event_id == self.C_EVENT_FINISHED:
+
+            # 1 Add/replace the outcomes of the final task to the instance dict of the initial task
+            so = self.get_so()
+            so.lock( p_tid = ControlShared.C_TID_ADMIN )
+            setpoint = get_ctrl_data( p_inst = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
+
+            del so._instances[ControlShared.C_TID_ADMIN]
+            new_setpoint = setpoint.copy()
+            new_setpoint.id = so.get_next_inst_id()
+            new_setpoint.tstamp = so.get_tstamp()
+            so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (InstTypeNew, new_setpoint) }
+
+            for task in self._final_tasks:
+                so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
+
+            so.unlock()
+
+
+            # 2 Add the outcomes of the final task to the instance dict of a superior shared object
+            if self._superior_so is not None:
+                self._superior_so.lock( p_tid = self.get_tid() )
+
+                self._superior_so._instances[self.get_tid()] = {}
+
+                for task in self._final_tasks:
+                    self._superior_so._instances[self.get_tid()].update( so._instances[task.id] )
+
+                self._superior_so.unlock()
+
+
+        super()._raise_event(p_event_id, p_event_object)
 
 
 
