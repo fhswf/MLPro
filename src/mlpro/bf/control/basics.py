@@ -904,37 +904,10 @@ class ControlWorkflow (StreamWorkflow, Mode):
         StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = inst_dict)
 
 
-        # # 3 Add/replace the outcomes of the final task to the instance dict of the initial task
-        # so = self.get_so()
-        # so.lock( p_tid = ControlShared.C_TID_ADMIN )
-        # setpoint = get_ctrl_data( p_inst = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
-
-        # del so._instances[ControlShared.C_TID_ADMIN]
-        # new_setpoint = setpoint.copy()
-        # new_setpoint.id = so.get_next_inst_id()
-        # new_setpoint.tstamp = so.get_tstamp()
-        # so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (InstTypeNew, new_setpoint) }
-
-        # for task in self._final_tasks:
-        #     so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
-
-        # so.unlock()
-
-
-        # # 4 Add the outcomes of the final task to the instance dict of a superior shared object
-        # if self._superior_so is not None:
-        #     self._superior_so.lock( p_tid = self.get_tid() )
-
-        #     for task in self._final_tasks:
-        #         self._superior_so._instances[self.get_tid()].update( so._instances[task.id] )
-
-        #     self._superior_so.unlock()
-
-
 ## -------------------------------------------------------------------------------------------------
-    def _raise_event(self, p_event_id, p_event_object):
+    def _on_finished(self):
 
-        if p_event_id == self.C_EVENT_FINISHED:
+        if isinstance(self, Workflow):
 
             # 1 Add/replace the outcomes of the final task to the instance dict of the initial task
             so = self.get_so()
@@ -952,7 +925,6 @@ class ControlWorkflow (StreamWorkflow, Mode):
 
             so.unlock()
 
-
             # 2 Add the outcomes of the final task to the instance dict of a superior shared object
             if self._superior_so is not None:
                 self._superior_so.lock( p_tid = self.get_tid() )
@@ -964,8 +936,6 @@ class ControlWorkflow (StreamWorkflow, Mode):
 
                 self._superior_so.unlock()
 
-
-        super()._raise_event(p_event_id, p_event_object)
 
 
 
