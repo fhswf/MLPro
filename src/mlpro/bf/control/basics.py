@@ -26,22 +26,23 @@
 ## -- 2024-11-10  0.14.0    DA       - class ControlWorkflow: master plot disabled
 ## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
 ## -- 2024-11-11  0.15.0    DA       Implementation of custom method ControlWorkflow._on_event()
+## -- 2024-11-14  0.16.0    DA       Introduction of time management
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.15.0 (2024-11-11)
+Ver. 0.16.0 (2024-11-14)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
 from typing import Iterable, Tuple, List
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from matplotlib.figure import Figure
 
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.various import Log, TStampType
+from mlpro.bf.various import Log, TStampType, Timer
 from mlpro.bf.mt import Range, Task, Workflow, Shared
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
@@ -326,8 +327,11 @@ class Controller (ControlTask):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
         
-        self._input_space : MSpace  = p_input_space
-        self._output_space : MSpace = p_output_space
+        self._input_space : MSpace     = p_input_space
+        self._output_space : MSpace    = p_output_space
+        self._last_update : TStampType = None
+        self._current_ctrl_var : ControlVariable = None
+        self._computation_time : timedelta = timedelta()
         
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
@@ -356,21 +360,47 @@ class Controller (ControlTask):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
+
+        # 0 Intro
+        so : ControlShared = self.get_so()
         
+
         # 1 Get control error instance
         ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
             self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
             return
 
+
         # 2 Remove existing control variable from inst dictionary
         get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
 
+
         # 3 Compute control output
-        ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
+        try:
+            compute = ( so.timer.get_time() - self._last_update - self._computation_time ) >= so.latency
+        except:
+            compute = True
+
+        if compute or ( self._current_ctrl_var is None ):
+            self.log(Log.C_LOG_TYPE_I, 'Computation started')
+            tstamp_before = so.timer.get_time()
+            self._current_ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
+            tstamp_after = so.timer.get_time()
+            tdelta = tstamp_after - tstamp_before
+            if tdelta > self._computation_time:
+                self._computation_time = tdelta
+
+            so.timer.add_time( p_delta = tdelta )
+
+            self._last_update = tstamp_after
+            self.log(Log.C_LOG_TYPE_I, 'Computation finished')
+        else:
+            self.log(Log.C_LOG_TYPE_I, 'Computation skipped')
+
 
         # 4 Complete and store new control variable
-        p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var)
+        p_inst[self._current_ctrl_var.id] = (InstTypeNew, self._current_ctrl_var)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -498,10 +528,16 @@ class ControlledSystem (ControlTask):
                           p_logging = p_logging )
 
         self.system : System = p_system
+        self._last_update : TStampType = None
+        self._current_action : Action  = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict ):
+
+        # 0 Intro
+        so : ControlShared = self.get_so()
+
 
         # 1 Get and remove control variable
         ctrl_var     = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
@@ -513,21 +549,27 @@ class ControlledSystem (ControlTask):
         ctrlled_var  = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
 
 
-        # 3 Create a new action instance for the wrapped system
-        action       = Action( p_agent_id = 0,
-                               p_action_space = ctrl_var.get_feature_data().get_related_set(),
-                               p_values = ctrl_var.values,
-                               p_tstamp = ctrl_var.tstamp )
-
+        # 3 Update the current action instance for the wrapped system after the latency time period
+        if ( self._last_update is None ) or ( ( so.timer.get_time() - self._last_update ) >= so.latency ):
+            self._current_action = Action( p_agent_id = 0,
+                                           p_action_space = ctrl_var.get_feature_data().get_related_set(),
+                                           p_values = ctrl_var.values,
+                                           p_tstamp = ctrl_var.tstamp )
+            self._last_update    = so.timer.get_time()
+            self.log(Log.C_LOG_TYPE_I, 'Action updated')
+            
 
         # 4 Let the wrapped system process the action
-        if self.system.process_action( p_action = action ):
+        if self.system.process_action( p_action = self._current_action, p_t_step = so.latency_min ):
             state                  = self.system.get_state()
-            ctrlled_var            = ControlledVariable( p_id = self.get_so().get_next_inst_id(),
+            ctrlled_var            = ControlledVariable( p_id = so.get_next_inst_id(),
                                                          p_value_space = self.system.get_state_space(),
                                                          p_values = state.values,
-                                                         p_tstamp = self.get_so().get_tstamp() )
+                                                         p_tstamp = so.get_tstamp() )
             p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
+
+            if self.system.get_mode() == System.C_MODE_SIM:
+                so.timer.add_time( p_delta = so.latency_min )
         else:
             self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
 
@@ -649,15 +691,26 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+
         StreamShared.__init__(self, p_range=p_range)
         Log.__init__(self, p_logging = Log.C_LOG_NOTHING)
-        self._next_inst_id = 0
+
+        self._next_inst_id                = 0
         self._superior_so : ControlShared = None
-        self._top_so : ControlShared = self
+        self._top_so : ControlShared      = self
+        self._ctrlled_var_space : MSpace  = None
+        self._ctrl_var_space : MSpace     = None
+        self._timer : Timer               = None
+        self._latency : timedelta         = None
+        self._latency_min : timedelta     = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init(self, p_ctrlled_var_space: MSpace, p_ctrl_var_space: MSpace):
+    def init( self, 
+              p_ctrlled_var_space: MSpace, 
+              p_ctrl_var_space: MSpace, 
+              p_mode: int,
+              p_latency: timedelta ):
         """
         Initializes the shared object with contextual information.
 
@@ -667,10 +720,18 @@ class ControlShared (StreamShared, ControlPanel, Log):
             Controlled variable space.
         p_ctrl_var_space : MSpace
             Control variable space.
+        p_mode : int
+            Operation mode (0 = Simulation, 1 = Real operation)
+        p_latency : timedelta
+             controlled system
         """
 
         self._ctrlled_var_space = p_ctrlled_var_space
         self._ctrl_var_space    = p_ctrl_var_space
+        self._timer             = Timer( p_mode = p_mode )
+
+        if ( self.latency is None ) or ( p_latency < self.latency ):
+            self.latency = p_latency     
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -697,14 +758,45 @@ class ControlShared (StreamShared, ControlPanel, Log):
             Superior shared object.
         """
 
+        if ( p_so.latency_min is None ) or ( self.latency_min is None ) or ( self.latency_min < p_so.latency_min ):
+            p_so.latency_min = self.latency_min
+
         self._superior_so = p_so
-        self._top_so      = p_so.get_top_so()
+        self._top_so      = p_so.top_so
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_top_so(self) -> Shared:
         return self._top_so
     
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        return self._latency
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_latency(self, p_latency : timedelta):
+        self._latency = p_latency
+        if ( self.latency_min is None ) or ( p_latency < self.latency_min ): 
+            self.latency_min = p_latency
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency_min(self) -> timedelta:
+        if self == self._top_so: 
+            return self._latency_min
+        else:
+            return self._top_so.latency_min
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_latency_min(self, p_latency : timedelta):
+        if self == self.top_so: 
+            self._latency_min = p_latency
+        else: 
+            self.top_so.latency_min = p_latency
+        
 
 ## -------------------------------------------------------------------------------------------------
     def get_next_inst_id(self) -> int:
@@ -735,15 +827,19 @@ class ControlShared (StreamShared, ControlPanel, Log):
         """
 
         if self.top_so == self:
-            #
-            # pseudo-implementation
-            #
-
-            return datetime.now()
+            return self._timer.get_time()
         
         else:
             return self.top_so.get_tstamp()
-    
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_timer(self) -> Timer:
+        if self.top_so == self:
+            return self._timer
+        else:
+            return self.top_so.timer
+        
     
 ## -------------------------------------------------------------------------------------------------
     def _start(self):
@@ -791,6 +887,9 @@ class ControlShared (StreamShared, ControlPanel, Log):
 ## -------------------------------------------------------------------------------------------------
     superior_so = property( fget = get_superior_so, fset = set_superior_so )
     top_so      = property( fget = get_top_so )
+    latency     = property( fget = get_latency, fset = set_latency )
+    latency_min = property( fget = get_latency_min, fset = set_latency_min )
+    timer       = property( fget = get_timer )
 
 
 
@@ -889,8 +988,10 @@ class ControlWorkflow (StreamWorkflow, Mode):
 
         if isinstance( p_task, ControlledSystem ):
             self.get_so().init( p_ctrlled_var_space = p_task.system.get_state_space(),
-                                p_ctrl_var_space = p_task.system.get_action_space() )
-
+                                p_ctrl_var_space = p_task.system.get_action_space(),
+                                p_mode = self._mode,
+                                p_latency = p_task.system.get_latency() )
+            
 
 ## -------------------------------------------------------------------------------------------------
     def run( self, 
