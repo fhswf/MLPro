@@ -27,10 +27,11 @@
 ## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
 ## -- 2024-11-11  0.15.0    DA       Implementation of custom method ControlWorkflow._on_event()
 ## -- 2024-11-14  0.16.0    DA       Introduction of time management
+## -- 2024-11-15  1.0.0     DA       Various corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.16.0 (2024-11-14)
+Ver. 1.0.0 (2024-11-15)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -396,7 +397,10 @@ class Controller (ControlTask):
             self._last_update = tstamp_after
             self.log(Log.C_LOG_TYPE_I, 'Computation finished')
         else:
-            self.log(Log.C_LOG_TYPE_I, 'Computation skipped')
+            self._current_ctrl_var = self._current_ctrl_var.copy()
+            self._current_ctrl_var.id = so.get_next_inst_id()
+            self._current_ctrl_var.tstamp = so.get_tstamp()
+            self.log(Log.C_LOG_TYPE_I, 'Computation skipped. Last action duplicated.')
 
 
         # 4 Complete and store new control variable
@@ -728,7 +732,9 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
         self._ctrlled_var_space = p_ctrlled_var_space
         self._ctrl_var_space    = p_ctrl_var_space
-        self._timer             = Timer( p_mode = p_mode )
+
+        mode_timer              = 1 - p_mode
+        self._timer             = Timer( p_mode = mode_timer )
 
         if ( self.latency is None ) or ( p_latency < self.latency ):
             self.latency = p_latency     
