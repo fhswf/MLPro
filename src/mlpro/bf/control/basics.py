@@ -532,12 +532,8 @@ class ControlledSystem (ControlTask):
                           p_logging = p_logging )
 
         self.system : System = p_system
-<<<<<<< HEAD
-        
-=======
         self._last_update : TStampType = None
         self._current_action : Action  = None
->>>>>>> origin/bf/oa/control
 
 
 ## -------------------------------------------------------------------------------------------------
