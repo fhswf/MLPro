@@ -25,23 +25,26 @@
 ## -- 2024-11-09  0.13.0    DA       Various changes and improvements
 ## -- 2024-11-10  0.14.0    DA       - class ControlWorkflow: master plot disabled
 ## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
+## -- 2024-11-11  0.15.0    DA       Implementation of custom method ControlWorkflow._on_event()
+## -- 2024-11-14  0.16.0    DA       Introduction of time management
+## -- 2024-11-15  1.0.0     DA       Various corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.14.0 (2024-11-10)
+Ver. 1.0.0 (2024-11-15)
 
 This module provides basic classes around the topic closed-loop control.
 
 """
 
 from typing import Iterable, Tuple, List
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from matplotlib.figure import Figure
 
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.various import Log, TStampType
-from mlpro.bf.mt import Range, Task, Workflow
+from mlpro.bf.various import Log, TStampType, Timer
+from mlpro.bf.mt import Range, Task, Workflow, Shared
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.exceptions import *
@@ -325,8 +328,11 @@ class Controller (ControlTask):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
         
-        self._input_space : MSpace  = p_input_space
-        self._output_space : MSpace = p_output_space
+        self._input_space : MSpace     = p_input_space
+        self._output_space : MSpace    = p_output_space
+        self._last_update : TStampType = None
+        self._current_ctrl_var : ControlVariable = None
+        self._computation_time : timedelta = timedelta()
         
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
@@ -355,21 +361,50 @@ class Controller (ControlTask):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
+
+        # 0 Intro
+        so : ControlShared = self.get_so()
         
+
         # 1 Get control error instance
         ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
             self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
             return
 
+
         # 2 Remove existing control variable from inst dictionary
         get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
 
+
         # 3 Compute control output
-        ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
+        try:
+            compute = ( so.timer.get_time() - self._last_update - self._computation_time ) >= so.latency
+        except:
+            compute = True
+
+        if compute or ( self._current_ctrl_var is None ):
+            self.log(Log.C_LOG_TYPE_I, 'Computation started')
+            tstamp_before = so.timer.get_time()
+            self._current_ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
+            tstamp_after = so.timer.get_time()
+            tdelta = tstamp_after - tstamp_before
+            if tdelta > self._computation_time:
+                self._computation_time = tdelta
+
+            so.timer.add_time( p_delta = tdelta )
+
+            self._last_update = tstamp_after
+            self.log(Log.C_LOG_TYPE_I, 'Computation finished')
+        else:
+            self._current_ctrl_var = self._current_ctrl_var.copy()
+            self._current_ctrl_var.id = so.get_next_inst_id()
+            self._current_ctrl_var.tstamp = so.get_tstamp()
+            self.log(Log.C_LOG_TYPE_I, 'Computation skipped. Last action duplicated.')
+
 
         # 4 Complete and store new control variable
-        p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var)
+        p_inst[self._current_ctrl_var.id] = (InstTypeNew, self._current_ctrl_var)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -497,11 +532,20 @@ class ControlledSystem (ControlTask):
                           p_logging = p_logging )
 
         self.system : System = p_system
+<<<<<<< HEAD
         
+=======
+        self._last_update : TStampType = None
+        self._current_action : Action  = None
+>>>>>>> origin/bf/oa/control
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict ):
+
+        # 0 Intro
+        so : ControlShared = self.get_so()
+
 
         # 1 Get and remove control variable
         ctrl_var     = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
@@ -513,21 +557,27 @@ class ControlledSystem (ControlTask):
         ctrlled_var  = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
 
 
-        # 3 Create a new action instance for the wrapped system
-        action       = Action( p_agent_id = 0,
-                               p_action_space = ctrl_var.get_feature_data().get_related_set(),
-                               p_values = ctrl_var.values,
-                               p_tstamp = ctrl_var.tstamp )
-
+        # 3 Update the current action instance for the wrapped system after the latency time period
+        if ( self._last_update is None ) or ( ( so.timer.get_time() - self._last_update ) >= so.latency ):
+            self._current_action = Action( p_agent_id = 0,
+                                           p_action_space = ctrl_var.get_feature_data().get_related_set(),
+                                           p_values = ctrl_var.values,
+                                           p_tstamp = ctrl_var.tstamp )
+            self._last_update    = so.timer.get_time()
+            self.log(Log.C_LOG_TYPE_I, 'Action updated')
+            
 
         # 4 Let the wrapped system process the action
-        if self.system.process_action( p_action = action ):
+        if self.system.process_action( p_action = self._current_action, p_t_step = so.latency_min ):
             state                  = self.system.get_state()
-            ctrlled_var            = ControlledVariable( p_id = self.get_so().get_next_inst_id(),
+            ctrlled_var            = ControlledVariable( p_id = so.get_next_inst_id(),
                                                          p_value_space = self.system.get_state_space(),
                                                          p_values = state.values,
-                                                         p_tstamp = self.get_so().get_tstamp() )
+                                                         p_tstamp = so.get_tstamp() )
             p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
+
+            if self.system.get_mode() == System.C_MODE_SIM:
+                so.timer.add_time( p_delta = so.latency_min )
         else:
             self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
 
@@ -648,13 +698,26 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+
         StreamShared.__init__(self, p_range=p_range)
         Log.__init__(self, p_logging = Log.C_LOG_NOTHING)
-        self._next_inst_id = 0
+
+        self._next_inst_id                = 0
+        self._superior_so : ControlShared = None
+        self._top_so : ControlShared      = self
+        self._ctrlled_var_space : MSpace  = None
+        self._ctrl_var_space : MSpace     = None
+        self._timer : Timer               = None
+        self._latency : timedelta         = None
+        self._latency_min : timedelta     = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init(self, p_ctrlled_var_space: MSpace, p_ctrl_var_space: MSpace):
+    def init( self, 
+              p_ctrlled_var_space: MSpace, 
+              p_ctrl_var_space: MSpace, 
+              p_mode: int,
+              p_latency: timedelta ):
         """
         Initializes the shared object with contextual information.
 
@@ -664,10 +727,20 @@ class ControlShared (StreamShared, ControlPanel, Log):
             Controlled variable space.
         p_ctrl_var_space : MSpace
             Control variable space.
+        p_mode : int
+            Operation mode (0 = Simulation, 1 = Real operation)
+        p_latency : timedelta
+             controlled system
         """
 
         self._ctrlled_var_space = p_ctrlled_var_space
         self._ctrl_var_space    = p_ctrl_var_space
+
+        mode_timer              = 1 - p_mode
+        self._timer             = Timer( p_mode = mode_timer )
+
+        if ( self.latency is None ) or ( p_latency < self.latency ):
+            self.latency = p_latency     
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -676,6 +749,63 @@ class ControlShared (StreamShared, ControlPanel, Log):
         if setpoint != None:
             replace_ctrl_data( p_inst = self._instances[self.C_TID_ADMIN], p_ctrl_data = setpoint )
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_superior_so(self) -> Shared:
+        return self._superior_so
+    
+
+## -------------------------------------------------------------------------------------------------
+    def set_superior_so(self, p_so : Shared ):
+        """
+        Sets the superior shared object. This is relevant for cascade control systems, where the
+        top level shared object is responsible for system-wide unique instance ids etc.
+
+        Parameters
+        ----------
+        p_so : Shared
+            Superior shared object.
+        """
+
+        if ( p_so.latency_min is None ) or ( self.latency_min is None ) or ( self.latency_min < p_so.latency_min ):
+            p_so.latency_min = self.latency_min
+
+        self._superior_so = p_so
+        self._top_so      = p_so.top_so
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_top_so(self) -> Shared:
+        return self._top_so
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        return self._latency
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_latency(self, p_latency : timedelta):
+        self._latency = p_latency
+        if ( self.latency_min is None ) or ( p_latency < self.latency_min ): 
+            self.latency_min = p_latency
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency_min(self) -> timedelta:
+        if self == self._top_so: 
+            return self._latency_min
+        else:
+            return self._top_so.latency_min
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_latency_min(self, p_latency : timedelta):
+        if self == self.top_so: 
+            self._latency_min = p_latency
+        else: 
+            self.top_so.latency_min = p_latency
+        
 
 ## -------------------------------------------------------------------------------------------------
     def get_next_inst_id(self) -> int:
@@ -688,23 +818,37 @@ class ControlShared (StreamShared, ControlPanel, Log):
             Next instance id.
         """
 
-        self.lock( p_tid = self.C_TID_ADMIN )
-        next_id = self._next_inst_id
-        self._next_inst_id += 1
-        self.unlock()
-        return next_id
+        if self.top_so == self:
+            self.lock( p_tid = self.C_TID_ADMIN )
+            next_id = self._next_inst_id
+            self._next_inst_id += 1
+            self.unlock()
+            return next_id
+        
+        else:
+            return self.top_so.get_next_inst_id()
     
 
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> TStampType:
-        
-        #
-        # pseudo-implementation
-        #
+        """
+        Returns the current process time stamp.
+        """
 
-        return datetime.now()
-        #raise NotImplementedError
-    
+        if self.top_so == self:
+            return self._timer.get_time()
+        
+        else:
+            return self.top_so.get_tstamp()
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_timer(self) -> Timer:
+        if self.top_so == self:
+            return self._timer
+        else:
+            return self.top_so.timer
+        
     
 ## -------------------------------------------------------------------------------------------------
     def _start(self):
@@ -734,25 +878,28 @@ class ControlShared (StreamShared, ControlPanel, Log):
             self._instances[self.C_TID_ADMIN] = inst_admin
 
 
-        # 2 Get or create a setpoint instance
-        for (inst_type, inst) in inst_admin.values():
-            if isinstance(inst, SetPoint):
-                setpoint = inst
-                break
+        # 2 Replace setpoint instance
+        get_ctrl_data( p_inst = inst_admin, p_type = SetPoint, p_remove = True)
 
-        if setpoint is None:
-            setpoint = SetPoint( p_id = self.get_next_inst_id(),
-                                 p_value_space = self._ctrlled_var_space,
-                                 p_values = p_values,
-                                 p_tstamp = self.get_tstamp() )
-            inst_admin[setpoint.id] = (InstTypeNew, setpoint)
-        else:
-            setpoint.values = p_values
-            setpoint.tstamp = self.get_tstamp()
+        setpoint = SetPoint( p_id = self.get_next_inst_id(),
+                             p_value_space = self._ctrlled_var_space,
+                             p_values = p_values,
+                             p_tstamp = self.get_tstamp() )
+        
+        inst_admin[setpoint.id] = (InstTypeNew, setpoint)
 
 
         # 3 Outro
         self.unlock()
+
+
+## -------------------------------------------------------------------------------------------------
+    superior_so = property( fget = get_superior_so, fset = set_superior_so )
+    top_so      = property( fget = get_top_so )
+    latency     = property( fget = get_latency, fset = set_latency )
+    latency_min = property( fget = get_latency_min, fset = set_latency_min )
+    timer       = property( fget = get_timer )
+
 
 
 
@@ -797,7 +944,6 @@ class ControlWorkflow (StreamWorkflow, Mode):
         self.get_so().switch_logging( p_logging = p_logging )
 
         self._workflows = []
-        self._superior_so : ControlShared = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -830,7 +976,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
         External assignment of shared objects is disabled for control workflows.
         """
         
-        self._superior_so = p_so
+        self.get_so().superior_so = p_so
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -851,8 +997,10 @@ class ControlWorkflow (StreamWorkflow, Mode):
 
         if isinstance( p_task, ControlledSystem ):
             self.get_so().init( p_ctrlled_var_space = p_task.system.get_state_space(),
-                                p_ctrl_var_space = p_task.system.get_action_space() )
-
+                                p_ctrl_var_space = p_task.system.get_action_space(),
+                                p_mode = self._mode,
+                                p_latency = p_task.system.get_latency() )
+            
 
 ## -------------------------------------------------------------------------------------------------
     def run( self, 
@@ -860,51 +1008,64 @@ class ControlWorkflow (StreamWorkflow, Mode):
              p_wait: bool = False, 
              p_inst : InstDict = None ):
         
-        # 0 Take over a setpoint instances from the predecessor task of a superior workflow
+        # 1 Transfer the setpoint instances from the predecessor tasks of a superior workflow
         try:
             inst_dict = p_inst.copy()
         except:
-            superior_setpoint : bool = False
+            superior_setpoint : SetPoint = None
             inst_dict = None
 
-            if self._superior_so is not None:
-                self._superior_so.lock( p_tid = self.get_tid() )
+            superior_so = self.get_so().superior_so
+
+            if superior_so is not None:
+                superior_so.lock( p_tid = self.get_tid() )
 
                 for pred_task in self.get_predecessors():
-                    for inst_type, inst in self._superior_so._instances[pred_task.get_tid()].values():
-                        if isinstance( inst, SetPoint):
-                            inst_dict = { inst.id : (InstTypeNew, inst) }
-                            superior_setpoint = True
-                            break
+                    superior_setpoint = get_ctrl_data( p_inst = superior_so._instances[pred_task.get_tid()], 
+                                                       p_type = SetPoint,
+                                                       p_remove = True )
+                
+                superior_so.unlock()
 
-                    if superior_setpoint: break
-
-                self._superior_so.unlock()
+                if superior_setpoint is not None:
+                    self.get_so().set_setpoint( p_values = superior_setpoint.values )
 
         
-        # 1 Execute all tasks
+        # 2 Execute all tasks
         StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = inst_dict)
 
 
-        # 2 Add the outcomes of the final task(s) to the instance dict of the initial task
+## -------------------------------------------------------------------------------------------------
+    def _on_finished(self):
+
+        # 1 Add/replace the outcomes of the final task to the instance dict of the initial task
         so = self.get_so()
         so.lock( p_tid = ControlShared.C_TID_ADMIN )
+        setpoint = get_ctrl_data( p_inst = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
 
-        for inst_id, (inst_type, inst) in so._instances[ControlShared.C_TID_ADMIN].items():
-            if isinstance(inst, SetPoint):
-                setpoint = inst
-                break
-        
         del so._instances[ControlShared.C_TID_ADMIN]
         new_setpoint = setpoint.copy()
         new_setpoint.id = so.get_next_inst_id()
         new_setpoint.tstamp = so.get_tstamp()
-        so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (inst_type, new_setpoint) }
+        so._instances[ControlShared.C_TID_ADMIN] = { new_setpoint.id : (InstTypeNew, new_setpoint) }
 
         for task in self._final_tasks:
             so._instances[ControlShared.C_TID_ADMIN].update(so._instances[task.id])
 
         so.unlock()
+
+        # 2 Add the outcomes of the final task to the instance dict of a superior shared object
+        superior_so = so.superior_so
+
+        if superior_so is not None:
+            superior_so.lock( p_tid = self.get_tid() )
+
+            superior_so._instances[self.get_tid()] = {}
+
+            for task in self._final_tasks:
+                superior_so._instances[self.get_tid()].update( so._instances[task.id] )
+
+            superior_so.unlock()
 
 
 

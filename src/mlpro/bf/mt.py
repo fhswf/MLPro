@@ -38,10 +38,13 @@
 ## -- 2024-06-18  2.1.0     DA       Class Task: new parent class KWArgs
 ## -- 2024-10-07  2.2.0     DA       Classes Task, Workflow: new method reset()
 ## -- 2024-11-10  2.2.0     DA       Refactoring of class Workflow regarding plotting
+## -- 2024-11-11  2.3.0     DA       Class Task:
+## --                                - new method _on_finished()
+## --                                - redefinition of method _raise_event()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2024-11-10)
+Ver. 2.3.0 (2024-11-11)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -708,6 +711,20 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
             self._predecessor_ids.append(task.get_tid())
 
         self._num_predecessors = self._ctr_predecessors = len(self._predecessor_ids)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _raise_event(self, p_event_id: str, p_event_object: Event):
+        if p_event_id == self.C_EVENT_FINISHED: self._on_finished()
+        EventManager._raise_event(self, p_event_id, p_event_object)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _on_finished(self):
+        """
+        Custom method that is called before an event C_EVENT_FINISHED is raised.
+        """
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
