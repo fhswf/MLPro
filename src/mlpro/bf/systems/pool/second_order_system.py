@@ -7,10 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-11-09  0.1.0     ASP       Initial implementation class PT2
 ## -- 2024-11-10  0.2.0     ASP       class PT2: update methods __init__(), _setup_spaces()
+## -- 2024-11-16  0.3.0     ASP       class PT2: update methods _simulate_reaction()
+##                                       - changed dt = p_step to dt = p_step.total_seconds()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-11-10)
+Ver. 0.3.0 (2024-11-16)
 
 This module provides a simple demo system that represent second order system.
     Further infos : https://www.circuitbread.com/tutorials/second-order-systems-2-3
@@ -149,7 +151,7 @@ class PT2 (System):
         # get control Variable
         u= p_action.get_elem(p_id=agent_id).get_values()[0]
 
-        dt=p_step 
+        dt=p_step.total_seconds() 
 
         # Calculation RK4-Koeffizienten 
         k1_y = self._dy[self._cycle-1] * dt
