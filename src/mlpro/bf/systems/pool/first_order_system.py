@@ -8,11 +8,13 @@
 ## -- 2024-11-05  0.1.0     ASP      Initial implementation class PT1
 ## -- 2024-11-05  0.2.0     ASP      class PT1: update methods __init__(), _setup_spaces()
 ## -- 2024-11-10  0.3.0     ASP      class PT1: update methods __init__(), _setup_spaces()
-#                                      - update singature of __init___()
+##                                       - update singature of __init___()
+## -- 2024-11-16  0.4.0     ASP      class PT1: update methods _simulate_reaction()
+##                                       - changed dt = p_step to dt = p_step.total_seconds() 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-11-10)
+Ver. 0.4.0 (2024-11-16)
 This module provides a simple demo system that represent a first-order-system
     Further information: https://www.circuitbread.com/tutorials/first-order-systems-2-2
 """
@@ -39,13 +41,14 @@ class PT1 (System):
     C_BOUNDARIES    = [-1000,1000]
     C_PLOT_ACTIVE   = False
 
-    C_LATENCY       = timedelta( seconds = 1 )
+    C_LATENCY       = timedelta( seconds = 0.1 )
 
     ## -------------------------------------------------------------------------------------------------
     def __init__( self,                  
                   p_K:float,
                   p_T: float,
                   p_sys_num:int,
+                  p_y_start: float =0,
                   p_id=None,
                   p_name = C_NAME,
                   p_latency : timedelta = None,
@@ -78,6 +81,8 @@ class PT1 (System):
         self.K = p_K          
         self.T = p_T
         self._sys_num = p_sys_num
+        self._y_start = p_y_start
+        self._y_prev = None
         
         self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
 
@@ -114,13 +119,17 @@ class PT1 (System):
         # get control Variable
         u = p_action.get_elem(p_id=agent_id).get_values()[0]
 
-        # get current state
-        y_prev = p_state.values[0]
+        # first run: assign start value
+        if self._y_prev is None:
+            self._y_prev = self._y_start
+        else:
+            # get current state
+            self._y_prev = p_state.values[0]
 
-        dt = p_step 
+        dt = p_step.total_seconds() 
         
         # rekursions function of first oder system
-        y = (dt* self.K * u + self.T * y_prev) / (self.T + dt) 
+        y = (dt* self.K * u + self.T * self._y_prev) / (self.T + dt) 
         
         #set values of new state state 
         new_state.values = [y]    
