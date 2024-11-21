@@ -9,10 +9,12 @@
 ## -- 2024-09-19  0.1.0     AS       Implementation PIDController 
 ## -- 2024-10-17  0.2.0     AS       Refactor PIDController 
 ## -- 2024-11-10  0.3.0     AS       Refactor class PIDController: signature methode __init__() 
+## -- 2024-11-16  0.4.0     AS       Refactor class PIDController: signature methode __init__() 
+## -- 2024-11-16  0.4.0     AS          Changed Task.C_RANGE_NONE to Range.C_RANGE_NONE
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-11-10)
+Ver. 0.4.0 (2024-11-16)
 
 This module provides an implementation of a PID controller.
 
@@ -23,7 +25,7 @@ https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_c
 """
 
 from mlpro.bf.math.basics import MSpace
-from mlpro.bf.mt import Log, Task
+from mlpro.bf.mt import Log, Task,Range
 from mlpro.bf.control.basics import ControlError, Controller
 from mlpro.bf.systems.basics import ActionElement
 import numpy as np 
@@ -57,9 +59,9 @@ class PIDController (Controller):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_input_space: MSpace, 
-                 p_output_space: MSpace, 
+    def __init__(self, 
+                 p_input_space,
+                 p_output_space, 
                  p_Kp: float,
                  p_Tn: float = 0.0 ,
                  p_Tv: float= 0.0,
@@ -67,17 +69,22 @@ class PIDController (Controller):
                  p_derivitave_off:bool = False,
                  p_anti_windup_on: bool = False,
                  p_windup_limit:float =0,
-                 p_id=None, p_name: str = None,
-                 p_range_max=Task.C_RANGE_NONE,
-                 p_visualize: bool = False, 
+                 p_id=None, 
+                 p_name = None,                  
+                 p_range_max=Range.C_RANGE_NONE, 
+                 p_visualize = False, 
                  p_logging=Log.C_LOG_ALL, 
                  **p_kwargs):
         
         super().__init__(p_input_space, 
                          p_output_space, 
-                         p_id, p_name, p_range_max, 
-                         p_visualize, p_logging, 
+                         p_id, 
+                         p_name, 
+                         p_range_max, 
+                         p_visualize, 
+                         p_logging, 
                          **p_kwargs)
+        
 
         self._Kp = p_Kp
         self._Tn = p_Tn  
@@ -90,7 +97,7 @@ class PIDController (Controller):
         self._windup_on = p_anti_windup_on
         self._windup_limit = p_windup_limit
         self._output_limits = p_output_space.get_dims()[0].get_boundaries()
-
+   
 
 ## -------------------------------------------------------------------------------------------------
     def set_parameter(self, **p_param):
