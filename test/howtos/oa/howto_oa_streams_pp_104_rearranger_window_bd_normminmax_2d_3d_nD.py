@@ -8,10 +8,11 @@
 ## -- 2023-01-09  1.0.0     DA       Creation
 ## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
 ## -- 2023-05-20  1.1.1     DA       Registered handler of boundary detector to window
+## -- 2024-10-30  1.1.2     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-05-20)
+Ver. 1.1.2 (2024-10-30)
 
 This module is an example of adaptive normalization of streaming data using MinMax normalizer. To 
 this regard, an online-adadptive custom scenario is set up. It combines a native 10-dimensional 
@@ -34,6 +35,7 @@ from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.tasks import RingBuffer, Rearranger
 from mlpro.oa.streams import *
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 
 
 
@@ -94,7 +96,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2.2.3 Boundary detector 
         task_bd = BoundaryDetector( p_name='Chain 2D, Task T3', 
                                     p_ada=True, 
-                                    p_visualize=True,   
+                                    p_visualize=p_visualize,   
                                     p_logging=p_logging )
 
         task_window.register_event_handler( p_event_id=RingBuffer.C_EVENT_DATA_REMOVED, p_event_handler=task_bd.adapt_on_event )
@@ -140,7 +142,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2.3.3 Boundary detector 
         task_bd = BoundaryDetector( p_name='Chain 3D, Task T3', 
                                     p_ada=True, 
-                                    p_visualize=True,   
+                                    p_visualize=p_visualize,   
                                     p_logging=p_logging,
                                     p_window=task_window )
 
@@ -187,7 +189,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2.5.3 Boundary detector 
         task_bd = BoundaryDetector( p_name='Chain nD, Task T3', 
                                     p_ada=True, 
-                                    p_visualize=True,   
+                                    p_visualize=p_visualize,   
                                     p_logging=p_logging,
                                     p_window=task_window )
 

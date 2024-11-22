@@ -19,10 +19,12 @@
 ## -- 2024-05-22  1.3.0     DA       Refactoring and splitting
 ## -- 2024-06-13  1.3.1     LSB      Bug Fix: Handling plot data with IDs
 ## -- 2024-07-12  1.3.2     LSB      Renormalization error
+## -- 2024-10-29  1.3.3     DA       - Refactoring of NormalizerMinMax._adapt_on_event()
+## --                                - Bugfix in NormalizerMinMax._update_plot_data_3d()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2024-07-12)
+Ver. 1.3.3 (2024-10-29)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
@@ -129,17 +131,16 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
         set = p_event_object.get_raising_object().get_related_set()
 
         self.update_parameters(set)
+
         if self._visualize:
-            try:
+            if self._plot_settings.view == PlotSettings.C_VIEW_2D:
                 self._update_plot_data_2d()
-            except:
-                try:
-                    self._update_plot_data_3d()
-                except:
-                    try:
-                         self._update_plot_data_nd()
-                    except:
-                        raise Error
+            elif self._plot_settings.view == PlotSettings.C_VIEW_3D:
+                self._update_plot_data_3d()
+            elif self._plot_settings.view == PlotSettings.C_VIEW_ND:
+                self._update_plot_data_nd()
+            else:
+                raise Error
 
         return True
 
@@ -205,7 +206,7 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
 
                 ids = []
                 for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
-                    ids.extend([i])
+                    ids.extend([id])
                     self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
                     self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
                     self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
