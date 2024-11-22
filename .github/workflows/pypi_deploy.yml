@@ -6,6 +6,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021        1.0.0     MRD      Creation 
 ## -- 2024-10-09  1.1.0     DA       Update Python version to 3.10
+## -- 2024-11-21  1.2.0     DA       Added the ability of manual execution
 ## -------------------------------------------------------------------------------------------------
 
 name: Deployment PyPI
@@ -13,6 +14,8 @@ name: Deployment PyPI
 on:
   release:
     types: [published]
+
+  workflow_dispatch:    
 
 jobs:
   build:
