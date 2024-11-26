@@ -10,10 +10,12 @@
 ## -- 2024-10-09  0.3.0     DA       Refactoring
 ## -- 2024-10-13  0.4.0     DA       Refactoring
 ## -- 2024-11-10  0.5.0     DA       Refactoring
+## -- 2024-11-26  0.6.0     DA       Method Comparator._run(): creation of ControlError only if
+## --                                both SetPoint and ControlledVariable are detected
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2024-11-10)
+Ver. 0.6.0 (2024-11-26)
 
 This module provides an implementation of a comparator that determins the control error based on 
 setpoint and controlled variable (system state).
@@ -53,7 +55,7 @@ class Comparator (Operator):
         ctrlled_var : ControlledVariable = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
         if ctrlled_var is None:
             self.log(Log.C_LOG_TYPE_W, 'Controlled variable missing!')
-            ctrlled_var = setpoint
+            return
 
 
         # 3 Compute control error
