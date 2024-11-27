@@ -27,11 +27,13 @@
 ## --                                - new helper functions get_ctrl_data(), replace_ctrl_data()
 ## -- 2024-11-11  0.15.0    DA       Implementation of custom method ControlWorkflow._on_event()
 ## -- 2024-11-14  0.16.0    DA       Introduction of time management
-## -- 2024-11-15  1.0.0     DA       Various corrections
+## -- 2024-11-15  0.17.0    DA       Various corrections
+## -- 2024-11-26  1.0.0     DA       Classes Controller, ControlledSystem: initial idle loop to
+## --                                determine the initial system state
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-11-15)
+Ver. 1.0.0 (2024-11-26)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -332,7 +334,7 @@ class Controller (ControlTask):
         self._output_space : MSpace    = p_output_space
         self._last_update : TStampType = None
         self._current_ctrl_var : ControlVariable = None
-        self._computation_time : timedelta = timedelta()
+        self._computation_time : timedelta = None
         
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
@@ -369,7 +371,7 @@ class Controller (ControlTask):
         # 1 Get control error instance
         ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
-            self.log(Log.C_LOG_TYPE_E, 'Control error instance is missing!')
+            self.log(Log.C_LOG_TYPE_W, 'Control error instance is missing!')
             return
 
 
@@ -379,7 +381,7 @@ class Controller (ControlTask):
 
         # 3 Compute control output
         try:
-            compute = ( so.timer.get_time() - self._last_update - self._computation_time ) >= so.latency
+            compute = ( so.timer.get_time() - self._last_update ) >= ( so.latency - self._computation_time )
         except:
             compute = True
 
@@ -389,10 +391,10 @@ class Controller (ControlTask):
             self._current_ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
             tstamp_after = so.timer.get_time()
             tdelta = tstamp_after - tstamp_before
-            if tdelta > self._computation_time:
+            
+            # Determine the smallest computation time > 0
+            if ( self._computation_time is None ) or ( tdelta < self._computation_time ):
                 self._computation_time = tdelta
-
-            so.timer.add_time( p_delta = tdelta )
 
             self._last_update = tstamp_after
             self.log(Log.C_LOG_TYPE_I, 'Computation finished')
@@ -425,14 +427,20 @@ class Controller (ControlTask):
         """
 
         # 1 Create new control variable 
-        ctrl_var    = ControlVariable( p_id = self.get_so().get_next_inst_id(),
+        so = self.get_so()
+        ctrl_var    = ControlVariable( p_id = so.get_next_inst_id(),
                                        p_value_space = self._output_space )
 
         # 2 Call custom method to fill the new action element
+        tstamp_before = datetime.now()
         self._compute_output( p_ctrl_error = p_ctrl_error, p_ctrl_var = ctrl_var )
+        tstamp_after  = datetime.now()
+        tdelta        = tstamp_after - tstamp_before
+        so.timer.add_time( p_delta = tdelta )
+
 
         # 3 Complete and return the new control variable
-        ctrl_var.tstamp = self.get_so().get_tstamp()
+        ctrl_var.tstamp = so.get_tstamp()
         return ctrl_var
 
 
@@ -543,40 +551,46 @@ class ControlledSystem (ControlTask):
         so : ControlShared = self.get_so()
 
 
-        # 1 Get and remove control variable
-        ctrl_var     = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
-        if ctrl_var is None:
-            raise Error( 'ControlVariable missing!')
+        # 1 Remove an already existing controlled variable
+        get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
 
 
-        # 2 Remove an already existing controlled variable
-        ctrlled_var  = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
+        # 2 Get and remove control variable
+        ctrl_var = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
 
+        if ctrl_var is not None:
+            # 3 Process control variable
 
-        # 3 Update the current action instance for the wrapped system after the latency time period
-        if ( self._last_update is None ) or ( ( so.timer.get_time() - self._last_update ) >= so.latency ):
-            self._current_action = Action( p_agent_id = 0,
-                                           p_action_space = ctrl_var.get_feature_data().get_related_set(),
-                                           p_values = ctrl_var.values,
-                                           p_tstamp = ctrl_var.tstamp )
-            self._last_update    = so.timer.get_time()
-            self.log(Log.C_LOG_TYPE_I, 'Action updated')
-            
+            # 3.1 Update the current action instance for the wrapped system after the latency time period
+            if ( self._last_update is None ) or ( ( so.timer.get_time() - self._last_update ) >= so.latency ):
+                self._current_action = Action( p_agent_id = 0,
+                                            p_action_space = ctrl_var.get_feature_data().get_related_set(),
+                                            p_values = ctrl_var.values,
+                                            p_tstamp = ctrl_var.tstamp )
+                self._last_update    = so.timer.get_time()
+                self.log(Log.C_LOG_TYPE_I, 'Action updated')
+                
 
-        # 4 Let the wrapped system process the action
-        if self.system.process_action( p_action = self._current_action, p_t_step = so.latency_min ):
-            state                  = self.system.get_state()
-            ctrlled_var            = ControlledVariable( p_id = so.get_next_inst_id(),
-                                                         p_value_space = self.system.get_state_space(),
-                                                         p_values = state.values,
-                                                         p_tstamp = so.get_tstamp() )
-            p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
-
-            if self.system.get_mode() == System.C_MODE_SIM:
+            # 3.2 Let the wrapped system process the action
+            if self.system.process_action( p_action = self._current_action, p_t_step = so.latency_min ):
                 so.timer.add_time( p_delta = so.latency_min )
-        else:
-            self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
 
+            else:
+                self.log(Log.C_LOG_TYPE_E, 'Processing of control variable failed!')
+
+        else:
+            self.log(Log.C_LOG_TYPE_W, 'Control variable missing!')
+
+
+        # 4 Determine the current system state
+        state                  = self.system.get_state()
+        ctrlled_var            = ControlledVariable( p_id = so.get_next_inst_id(),
+                                                     p_value_space = self.system.get_state_space(),
+                                                     p_values = state.values,
+                                                     p_tstamp = so.get_tstamp() )
+        p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
+        self.log(Log.C_LOG_TYPE_S, 'Controlled variable created')
+        
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure = None, p_plot_settings = None):
