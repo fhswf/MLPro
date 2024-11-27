@@ -60,6 +60,8 @@ else:
     visualize   = False
     step_rate   = 1
 
+setpoint_value = 400
+
 
 
 # 2 Setup the control system
@@ -122,7 +124,7 @@ mycontrolsystem = CascadeControlSystem( p_mode = Mode.C_MODE_SIM,
 
 # 3 Set initial setpoint values for all control workflows (=cascades) of the control system
 for panel_entry in mycontrolsystem.get_control_panels():
-    panel_entry[0].set_setpoint( p_values = np.zeros(shape=(num_dim)) )
+    panel_entry[0].set_setpoint( p_values = np.ones(shape=(num_dim))* setpoint_value )
 
 
 
