@@ -20,10 +20,10 @@ sys.path.insert(0, os.path.abspath("../../src"))
 
 project = "MLPro Documentations"
 copyright = "2024 South Westphalia University of Applied Sciences, Germany"
-author = "Detlef Arend, Steve Yuwono, Laxmikant Shrikant Baheti et al"
+author = "Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, Laxmikant Shrikant Baheti et al"
 
 # The full version, including alpha/beta/rc tags
-release = "1.9.0"
+release = "1.9.3"
 
 
 # -- General configuration ---------------------------------------------------

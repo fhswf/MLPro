@@ -1,22 +1,28 @@
-cff-version: 1.1.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+title: "Github repository fhswf/mlpro"
 authors:
 - family-names: "Arend"
   given-names: "Detlef"
   orcid: "https://orcid.org/0000-0002-8315-2346"
+  affiliation: "South Westphalia University of Applied Sciences, Germany"
 - family-names: "Yuwono"
   given-names: "Steve"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
+  orcid: "https://orcid.org/0000-0001-7570-2726"
+  affiliation: "South Westphalia University of Applied Sciences, Germany"
 - family-names: "Diprasetya"
   given-names: "Mochammad Rizky"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
+  orcid: "https://orcid.org/0000-0001-5879-4657"
+  affiliation: "South Westphalia University of Applied Sciences, Germany"
 - family-names: "Baheti"
   given-names: "Laxmikant Shrikant"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
+  affiliation: "South Westphalia University of Applied Sciences, Germany"
 - family-names: "Schwung"
   given-names: "Andreas"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
-title: "MLPro — An integrative middleware framework for standardized machine learning tasks in Python"
-version: v1.9.0
-date-released: 2024-08-11
+  orcid: "https://orcid.org/0000-0001-8405-0977"
+  affiliation: "South Westphalia University of Applied Sciences, Germany"
+license: "Apache-2.0"
+version: "1.9.3"
+date-released: 2024-11-27
+doi: 10.5281/zenodo.6653484
 url: "https://mlpro.readthedocs.io"
