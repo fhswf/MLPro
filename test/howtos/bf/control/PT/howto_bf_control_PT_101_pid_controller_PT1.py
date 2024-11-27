@@ -59,6 +59,7 @@ if __name__ == '__main__':
     if i != '': num_dim = int(i)
     i = input(f'\n\nStep rate (visualization) (press ENTER for {step_rate}): ')
     if i != '': step_rate = int(i)
+    setpoint_value = 10
 
 
 
@@ -99,7 +100,7 @@ mycontrolsystem = BasicControlSystem( p_mode = Mode.C_MODE_SIM,
 
 
 # 3 Set initial setpoint values and reset the controlled system
-mycontrolsystem.get_control_panels()[0][0].set_setpoint( p_values = np.zeros(shape=(num_dim)) )
+mycontrolsystem.get_control_panels()[0][0].set_setpoint( p_values = np.ones(shape=(num_dim))*setpoint_value )
 my_ctrl_sys.reset( p_seed = 1 )
 
 
