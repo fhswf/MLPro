@@ -12,10 +12,11 @@
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
 ## -- 2024-05-22  1.3.0     SK       Refactoring
+## -- 2024-11-27  1.3.1     DA       Bugfix in method GroupAnomaly.__init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-22)
+Ver. 1.3.1 (2024-11-27)
 
 This module provides a template class for group anomaly to be used in anomaly detection algorithms.
 """
@@ -71,9 +72,13 @@ class GroupAnomaly (Anomaly):
                  p_raising_object : object = None,
                  **p_kwargs):
         
-        super().__init__(p_id=p_id, p_instance=p_instances, p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize, p_raising_object=p_raising_object,
-                         p_det_time=p_det_time, **p_kwargs)
+        super().__init__( p_id = p_id, 
+                          p_instances = p_instances, 
+                          p_ano_scores = p_ano_scores,
+                          p_visualize = p_visualize, 
+                          p_raising_object = p_raising_object,
+                          p_det_time = p_det_time, 
+                          **p_kwargs )
         
         self.plot_update = True
         self._mean = p_mean
@@ -142,24 +147,28 @@ class GroupAnomaly (Anomaly):
         alpha (float): Transparency of the shaded region (default is 0.5).
         """
         if not self.plot_update: return
-    
-        label = self.C_NAME[0]
 
-        x1 = self.get_instances()[0]
-        x2 = self.get_instances()[-1]
+        my_instances = self.get_instances()
+    
+        x1 = my_instances[0]
+        x2 = my_instances[-1]
 
         x1 = x1.get_id()
         x2 = x2.get_id()
         a=[]
         b=[]
-        for instance in self.get_instances():
+
+        for instance in my_instances:
             a.append(instance.get_feature_data().get_values())
+
         for x in a:
             b.extend(x)
+            
         y1 = min(b)
         y2 = max(b)
 
         if self._rect is None:
+            label = self.C_NAME[0]
             self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)
             self._plot_rectangle = p_settings.axes.add_patch(self._rect)
             self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
