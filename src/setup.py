@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(name='mlpro',
-version='1.9.0',
+version='1.9.3',
 description='MLPro - The Integrative Middleware Framework for Standardized Machine Learning',
 author='MLPro Team',
 author_mail='mlpro@listen.fh-swf.de',
@@ -12,14 +12,13 @@ packages=['mlpro'],
 # Package dependencies for full installation
 extras_require={
     "full": [
-        "dill==0.3.6",
-        "numpy==1.23.5",
-        "torch==1.13.1",
-        "matplotlib==3.6.3",
-        "transformations==2022.9.26",
-        "scipy==1.8.1",
-        "multiprocess==0.70.14",
-        "pandas==2.1.3"
+        "dill>=0.3.6",
+        "numpy>=1.23.5",
+        "torch>=1.13.1",
+        "matplotlib>=3.6.3",
+        "scipy>=1.8.1",
+        "multiprocess>=0.70.14",
+        "pandas>=2.1.3"
     ],
 },
 

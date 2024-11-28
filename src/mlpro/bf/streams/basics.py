@@ -71,10 +71,11 @@
 ## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
 ## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
+## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2024-10-30)
+Ver. 2.4.0 (2024-11-10)
 
 This module provides classes for standardized data stream processing. 
 
@@ -191,7 +192,9 @@ class Instance (Id, TStamp, KWArgs):
 
 
 
-# Type aliases for instance handling
+## -------------------------------------------------------------------------------------------------
+## -- Type aliases for instance handling
+## -------------------------------------------------------------------------------------------------
 InstType    = str
 InstTypeNew = '+'
 InstTypeDel = '-'
@@ -1568,11 +1571,6 @@ class StreamWorkflow (StreamTask, Workflow):
                    p_figure: Figure = None, 
                    p_plot_settings : PlotSettings = None ):
 
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
-
         self._plot_num_inst = 0
 
         return Workflow.init_plot( self, 
@@ -1648,6 +1646,8 @@ class StreamScenario (ScenarioBase):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    p_kwargs : dict
+        Custom keyword parameters handed over to custom method setup().
     """
     
     C_TYPE              = 'Stream-Scenario'
@@ -1658,7 +1658,8 @@ class StreamScenario (ScenarioBase):
                   p_mode, 
                   p_cycle_limit=0, 
                   p_visualize:bool=False, 
-                  p_logging=Log.C_LOG_ALL ):
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
 
         self._stream : Stream           = None
         self._iterator : Stream         = None
@@ -1669,23 +1670,30 @@ class StreamScenario (ScenarioBase):
                                p_cycle_limit=p_cycle_limit, 
                                p_auto_setup=True, 
                                p_visualize=p_visualize, 
-                               p_logging=p_logging )
+                               p_logging=p_logging,
+                               **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self):
+    def setup(self, **p_kwargs):
         """
         Specialized method to set up a stream scenario. It is automatically called by the constructor
         and calls in turn the custom method _setup().
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Custom keyword parameters
         """
 
         self._stream, self._workflow = self._setup( p_mode=self.get_mode(), 
                                                     p_visualize=self.get_visualization(),
-                                                    p_logging=self.get_log_level() )
+                                                    p_logging=self.get_log_level(),
+                                                    **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize:bool, p_logging):
+    def _setup(self, p_mode, p_visualize:bool, p_logging, **p_kwargs):
         """
         Custom method to set up a stream scenario consisting of a stream and a processing stream
         workflow.
@@ -1698,6 +1706,8 @@ class StreamScenario (ScenarioBase):
             Boolean switch for visualisation.
         p_logging
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+        p_kwargs : dict
+            Custom keyword parameters
 
         Returns
         -------

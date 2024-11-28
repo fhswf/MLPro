@@ -6,6 +6,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021        1.0.0     MRD      Creation 
 ## -- 2024-10-09  1.1.0     DA       Updated Python version to 3.10
+## -- 2024-11-21  1.2.0     DA       Updated versions of actions/checkout, actions/setup-python
 ## -------------------------------------------------------------------------------------------------
 
 name: Deployment Conda
@@ -14,14 +15,16 @@ on:
   release:
     types: [published]
 
+  workflow_dispatch:    
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
     - name: Add conda to system path

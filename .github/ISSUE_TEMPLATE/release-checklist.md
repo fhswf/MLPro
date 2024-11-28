@@ -15,7 +15,7 @@ Release Checklist
 - [ ] 1.2 Create a new version number in project custom field 'version'
 - [ ] 1.3 Assign new version number to all related issues and remove label 'next release'
 - [ ] 1.4 Updates in branch main 
-    - [ ] 1.4.1 Update version in ./setup.py
+    - [ ] 1.4.1 Update version in ./setup.cfg
     - [ ] 1.4.2 Update version in ./src/setup.py
     - [ ] 1.4.3 Update version in ./src/conda/meta.yaml
     - [ ] 1.4.4 Update version in ./doc/rtd/conf.py
