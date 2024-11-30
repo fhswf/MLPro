@@ -37,7 +37,7 @@ from mlpro.bf.math import normalizers as Norm
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
+class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
     """
     Online adaptive normalization of instances with Z-Transformation
 
@@ -70,7 +70,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
-        OATask.__init__(self,
+        OAStreamTask.__init__(self,
             p_name=p_name,
             p_range_max=p_range_max,
             p_ada=p_ada,
@@ -210,7 +210,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         self.update_plot_data()
 
-        OATask._update_plot_2d( self,
+        OAStreamTask._update_plot_2d( self,
                                 p_settings = p_settings,
                                 p_inst = p_inst,
                                 **p_kwargs )
@@ -261,7 +261,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         self._update_plot_data_3d()
 
-        OATask._update_plot_3d( self,
+        OAStreamTask._update_plot_3d( self,
                                 p_settings = p_settings,
                                 p_inst = p_inst,
                                 **p_kwargs )
@@ -308,7 +308,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         self._update_plot_data_nd()
 
-        OATask._update_plot_nd( self,
+        OAStreamTask._update_plot_nd( self,
                                 p_settings = p_settings,
                                 p_inst = p_inst,
                                 **p_kwargs )

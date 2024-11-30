@@ -23,10 +23,11 @@
 ## -- 2024-05-22  1.0.0     DA       Initial design finished
 ## -- 2024-05-29  1.0.1     DA       Correction in method OATask.adapt()
 ## -- 2024-06-18  1.0.2     DA       Litte code cleanup
+## -- 2024-11-30  1.1.0     DA       Renaming OA... to OAStream...
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2024-06-18)
+Ver. 1.1.0 (2024-11-30)
 
 Core classes for online adaptive stream processing.
 
@@ -46,7 +47,7 @@ from typing import List
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAShared (StreamShared):
+class OAStreamShared (StreamShared):
     """
     Template class for shared objects in the context of online adaptive stream processing.
     """ 
@@ -59,7 +60,7 @@ class OAShared (StreamShared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OATask (StreamTask, Model):
+class OAStreamTask (StreamTask, Model):
     """
     Template class for online adaptive ML tasks.
 
@@ -83,7 +84,7 @@ class OATask (StreamTask, Model):
         Further optional named parameters.
     """
 
-    C_TYPE              = 'OA-Task'
+    C_TYPE              = 'OA Stream-Task'
 
     C_PLOT_ACTIVE       = True
     C_PLOT_STANDALONE   = True
@@ -280,7 +281,7 @@ class OATask (StreamTask, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAWorkflow (StreamWorkflow, AWorkflow):
+class OAStreamWorkflow (StreamWorkflow, AWorkflow):
     """
     Online adaptive workflow based on a stream-workflow and an adaptive workflow.
 
@@ -302,13 +303,13 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
         Further optional named parameters.
      """
 
-    C_TYPE      = 'OA-Workflow'
+    C_TYPE      = 'OA Stream-Workflow'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max = StreamWorkflow.C_RANGE_THREAD, 
-                  p_class_shared = OAShared, 
+                  p_class_shared = OAStreamShared, 
                   p_ada : bool = True, 
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
@@ -342,7 +343,7 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
 
 # -------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------
-class OAScenario (StreamScenario): 
+class OAStreamScenario (StreamScenario): 
     """
     Template class for stream based scenarios with online adaptive workflows. 
 
@@ -360,7 +361,7 @@ class OAScenario (StreamScenario):
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
     
-    C_TYPE      = 'OA-Scenario'
+    C_TYPE      = 'OA Stream-Scenario'
 
 # -------------------------------------------------------------------------------------------------
     def __init__( self, 

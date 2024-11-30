@@ -37,7 +37,7 @@ from mlpro.bf.math import normalizers as Norm
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
+class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
     """
     Class with functionality for adaptive normalization of instances using MinMax Normalization.
 
@@ -70,7 +70,7 @@ class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs):
 
-        OATask.__init__(self,
+        OAStreamTask.__init__(self,
                         p_name = p_name,
                         p_range_max = p_range_max,
                         p_ada = p_ada,

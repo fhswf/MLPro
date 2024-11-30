@@ -35,7 +35,7 @@ from typing import Callable
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PseudoTask(OATask):
+class PseudoTask(OAStreamTask):
     """
     A template class PseudoTask, only to be used by the OASystem. This functions runs a wrapped method as it's run
     method.
@@ -61,7 +61,7 @@ class PseudoTask(OATask):
                  p_visualize=False,
                  **p_kwargs):
 
-        OATask.__init__(self,
+        OAStreamTask.__init__(self,
                         p_name = p_name,
                         p_range_max = p_range_max,
                         p_duplicate_data = p_duplicate_data,
@@ -129,7 +129,7 @@ class OAFctSTrans(FctSTrans, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_wf_strans: OAWorkflow = None,
+                 p_wf_strans: OAStreamWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -166,7 +166,7 @@ class OAFctSTrans(FctSTrans, Model):
                        **p_kwargs)
 
         if p_wf_strans is None:
-            self._wf_strans = OAWorkflow(p_name='State Transition',
+            self._wf_strans = OAStreamWorkflow(p_name='State Transition',
                                   p_visualize=p_visualize,
                                   p_ada=p_ada,
                                   p_logging=p_logging)
@@ -272,7 +272,7 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task_strans(self, p_task:OATask, p_pred_task = None):
+    def add_task_strans(self, p_task:OAStreamTask, p_pred_task = None):
         """
         Adds a task to the workflow.
 
@@ -326,7 +326,7 @@ class OAFctSTrans(FctSTrans, Model):
             p_pred_tasks = None
         else:
             p_pred_tasks = [self._wf_strans._tasks[-1]]
-            self._wf_strans = OAWorkflow()
+            self._wf_strans = OAStreamWorkflow()
         self._wf_strans.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_strans, p_logging=self.get_log_level()),
                                  p_pred_tasks=p_pred_tasks)
 
@@ -382,7 +382,7 @@ class OAFctSuccess(FctSuccess, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_wf_success: OAWorkflow = None,
+                 p_wf_success: OAStreamWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -419,7 +419,7 @@ class OAFctSuccess(FctSuccess, Model):
                        **p_kwargs)
 
         if p_wf_success is None:
-            self._wf_success = OAWorkflow(p_name='Success Computation',
+            self._wf_success = OAStreamWorkflow(p_name='Success Computation',
                                           p_visualize=p_visualize,
                                           p_ada=p_ada,
                                           p_logging=p_logging)
@@ -614,7 +614,7 @@ class OAFctBroken(FctBroken, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_wf_broken: OAWorkflow = None,
+                 p_wf_broken: OAStreamWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -653,7 +653,7 @@ class OAFctBroken(FctBroken, Model):
                        **p_kwargs)
 
         if p_wf_broken is None:
-            self._wf_broken = OAWorkflow(p_name='Broken Computation',
+            self._wf_broken = OAStreamWorkflow(p_name='Broken Computation',
                                          p_visualize=p_visualize,
                                          p_ada=p_ada,
                                          p_logging=p_logging)
@@ -873,9 +873,9 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                  p_fct_strans : FctSTrans = None,
                  p_fct_success : FctSuccess = None,
                  p_fct_broken : FctBroken = None,
-                 p_wf_strans : OAWorkflow = None,
-                 p_wf_success : OAWorkflow = None,
-                 p_wf_broken : OAWorkflow = None,
+                 p_wf_strans : OAStreamWorkflow = None,
+                 p_wf_success : OAStreamWorkflow = None,
+                 p_wf_broken : OAStreamWorkflow = None,
                  p_mujoco_file = None,
                  p_frame_skip: int = 1,
                  p_state_mapping = None,

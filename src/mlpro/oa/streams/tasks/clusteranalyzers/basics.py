@@ -56,7 +56,7 @@ from mlpro.bf.mt import PlotSettings
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
-from mlpro.oa.streams import OATask
+from mlpro.oa.streams import OAStreamTask
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster, ClusterId
 
@@ -68,7 +68,7 @@ ResultItem = Tuple[ClusterId, float, object]
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ClusterAnalyzer (OATask):
+class ClusterAnalyzer (OAStreamTask):
     """
     Base class for online cluster analysis. It raises an event when a cluster was added or removed.
 
@@ -134,7 +134,7 @@ class ClusterAnalyzer (OATask):
                   p_cls_cluster : type = Cluster,
                   p_cluster_limit : int = 0,
                   p_name: str = None, 
-                  p_range_max = OATask.C_RANGE_THREAD, 
+                  p_range_max = OAStreamTask.C_RANGE_THREAD, 
                   p_ada: bool = True, 
                   p_duplicate_data: bool = False, 
                   p_visualize: bool = False, 
