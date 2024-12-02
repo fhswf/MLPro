@@ -56,14 +56,14 @@ from mlpro.bf.mt import Task
 from mlpro.bf.events import Event
 from mlpro.bf.math import Set
 from mlpro.bf.streams import Instance, InstDict
-from mlpro.oa.streams.basics import OATask
+from mlpro.oa.streams.basics import OAStreamTask
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class BoundaryDetector (OATask):
+class BoundaryDetector (OAStreamTask):
     """
     This class provides the functionality of boundary observation of incoming instances. It raises 
     event C_EVENT_ADAPTED when a change in the current boundaries is detected.
