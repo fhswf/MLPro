@@ -38,10 +38,11 @@
 ## -- 2023-03-07  2.2.1     SY       Refactoring
 ## -- 2023-04-09  2.2.2     SY       Refactoring
 ## -- 2023-05-06  2.2.3     DA       Class Element: completion of data type definitions
+## -- 2024-12-02  2.3.0     DA       Class Dimension: new parent KWArgs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.3 (2023-05-06)
+Ver. 2.3.0 (2024-12-02)
 
 This module provides basic mathematical classes.
 """
@@ -50,7 +51,7 @@ This module provides basic mathematical classes.
 import numpy as np
 from itertools import repeat
 import uuid
-from mlpro.bf.various import Log
+from mlpro.bf.various import Log, KWArgs
 from mlpro.bf.events import *
 from typing import Union
 
@@ -60,7 +61,7 @@ from typing import Union
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Dimension (EventManager):
+class Dimension (EventManager, KWArgs):
     """
     Objects of this type specify properties of a dimension of a set.
 
@@ -113,6 +114,7 @@ class Dimension (EventManager):
                   p_logging=Log.C_LOG_NOTHING,
                   **p_kwargs ):
 
+        KWArgs.__init__(self, **p_kwargs)
         EventManager.__init__(self, p_logging=p_logging)
 
         self._id = str(uuid.uuid4())
@@ -124,7 +126,6 @@ class Dimension (EventManager):
         self._unit_latex    = p_unit_latex
         self._description   = p_description
         self._symmetrical   = p_symmetrical
-        self._kwargs        = p_kwargs.copy()
 
         self.set_boundaries(p_boundaries=p_boundaries)
 
@@ -205,7 +206,11 @@ class Dimension (EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def get_kwargs(self) -> dict:
-        return self._kwargs
+        """
+        Returns all keyword arguments provided during initialization as a dictionary. Alternatively,
+        public attribute kwargs can be used directly.
+        """
+        return self.kwargs
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -218,7 +223,9 @@ class Dimension (EventManager):
                                p_unit_latex=self._unit_latex,
                                p_boundaries=self._boundaries,
                                p_description=self._description,
-                               p_symmetrical=self._symmetrical )
+                               p_symmetrical=self._symmetrical,
+                               p_logging=self.get_log_level(),
+                               **self.kwargs )
 
 
 
