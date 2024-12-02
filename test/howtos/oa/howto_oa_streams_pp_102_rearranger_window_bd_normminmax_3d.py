@@ -42,14 +42,14 @@ from mlpro.bf.plot import PlotSettings
 
 from mlpro.bf.streams.streams import StreamProviderMLPro, StreamMLProRnd10D
 from mlpro.bf.streams.tasks import RingBuffer, Rearranger
-from mlpro.oa.streams import OAWorkflow, OAScenario
+from mlpro.oa.streams import OAStreamWorkflow, OAStreamScenario
 from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyAdaptiveScenario (OAScenario):
+class MyAdaptiveScenario (OAStreamScenario):
 
     C_NAME = 'Dummy'
 
@@ -67,8 +67,8 @@ class MyAdaptiveScenario (OAScenario):
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a workflow
-        workflow = OAWorkflow( p_name='Input Signal',
-                               p_range_max=OAWorkflow.C_RANGE_NONE,
+        workflow = OAStreamWorkflow( p_name='Input Signal',
+                               p_range_max=OAStreamWorkflow.C_RANGE_NONE,
                                p_ada=p_ada,
                                p_visualize=p_visualize, 
                                p_logging=p_logging )

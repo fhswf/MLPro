@@ -52,7 +52,7 @@ from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax, ClusterDr
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 # 1 Prepare a scenario
-class MyScenario(OAScenario):
+class MyScenario(OAStreamScenario):
     C_NAME = 'ClusterDriftScenario'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
@@ -74,8 +74,8 @@ class MyScenario(OAScenario):
         # 1.2 Set up a stream workflow
 
         # 1.2.1 Creation of a workflow
-        workflow = OAWorkflow( p_name='Anomaly Detection',
-                               p_range_max=OAWorkflow.C_RANGE_NONE,
+        workflow = OAStreamWorkflow( p_name='Anomaly Detection',
+                               p_range_max=OAStreamWorkflow.C_RANGE_NONE,
                                p_ada=p_ada,
                                p_visualize=p_visualize,
                                p_logging=p_logging )
