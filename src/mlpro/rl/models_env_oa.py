@@ -74,7 +74,7 @@ class OAFctReward(FctReward, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_wf_reward: OAWorkflow = None,
+                 p_wf_reward: OAStreamWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -111,7 +111,7 @@ class OAFctReward(FctReward, Model):
                        **p_kwargs)
 
         if p_wf_reward is None:
-            self._wf_reward = OAWorkflow(p_name='Reward Computation',
+            self._wf_reward = OAStreamWorkflow(p_name='Reward Computation',
                                          p_visualize=p_visualize,
                                          p_ada=p_ada,
                                          p_logging=p_logging)
@@ -344,10 +344,10 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
                  p_fct_reward: FctReward = None,
                  p_fct_success: FctSuccess = None,
                  p_fct_broken: FctBroken = None,
-                 p_wf : OAWorkflow = None,
-                 p_wf_success : OAWorkflow = None,
-                 p_wf_broken : OAWorkflow = None,
-                 p_wf_reward : OAWorkflow = None,
+                 p_wf : OAStreamWorkflow = None,
+                 p_wf_success : OAStreamWorkflow = None,
+                 p_wf_broken : OAStreamWorkflow = None,
+                 p_wf_reward : OAStreamWorkflow = None,
                  p_mujoco_file = None,
                  p_frame_skip: int = 1,
                  p_state_mapping = None,

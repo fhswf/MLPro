@@ -51,10 +51,11 @@
 ## --                                - class TStamp: new property tstamp
 ## -- 2024-05-21  2.3.0     DA       Class TStamp: introduction of alias TStampType
 ## -- 2024-06-18  2.4.0     DA       New class KWArgs
+## -- 2024-12-02  2.5.0     DA       New property KWargs.kwargs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-06-18)
+Ver. 2.5.0 (2024-12-02)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -964,3 +965,7 @@ class KWArgs:
                 raise ParamError('Keyword parameter "' + p_name + '" not supplied')
             else:
                 return p_default
+            
+
+## -------------------------------------------------------------------------------------------------
+    kwargs = property( fget = _get_kwargs )
