@@ -1,37 +1,47 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.bf.control.controllers
-## -- Module  : hunter.py
+## -- Package : mlpro.oa.streams.tasks.anomalypredictors
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-10-10  0.1.0     DA       Initial implementation
-## -- 2024-12-03  0.1.1     DA       Bugfix
+## -- 2024-06-04  0.0.0     DA/DS    Creation
+## -- 2024-08-23  0.1.0     DA/DS    Creation
+## -- 2024-12-02  0.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2024-12-03)
+Ver. 0.2.0 (2024-12-02)
 
-This module provides a simple demo system that just cumulates a percentage part of the incoming
-action to the inner state.
+This module provides basic templates for online anomaly prediction in MLPro.
+ 
 """
 
 
-import numpy as np
+from mlpro.bf.events import Event
+from mlpro.oa.streams import OAStreamTask
 
-from mlpro.bf.control import Controller, ControlError, ControlVariable
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Hunter (Controller):
+class AnomalyPredictor (OAStreamTask):
+    """
+    ...
+    """
+    
+    pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AnomalyPrediction (Event):
     """
     ...
     """
 
-    C_NAME              = 'Hunter'
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_output(self, p_ctrl_error : ControlError, p_ctrl_var : ControlVariable ):
-        p_ctrl_var.values = np.array(p_ctrl_error.values) 
+    pass

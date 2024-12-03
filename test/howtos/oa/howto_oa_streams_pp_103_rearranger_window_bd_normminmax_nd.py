@@ -44,7 +44,7 @@ from mlpro.oa.streams.tasks import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyAdaptiveScenario (OAScenario):
+class MyAdaptiveScenario (OAStreamScenario):
 
     C_NAME = 'Demo'
 
@@ -62,8 +62,8 @@ class MyAdaptiveScenario (OAScenario):
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a workflow
-        workflow = OAWorkflow( p_name='Input Signal',
-                               p_range_max=OAWorkflow.C_RANGE_NONE,
+        workflow = OAStreamWorkflow( p_name='Input Signal',
+                               p_range_max=OAStreamWorkflow.C_RANGE_NONE,
                                p_ada=p_ada,
                                p_visualize=p_visualize, 
                                p_logging=p_logging )

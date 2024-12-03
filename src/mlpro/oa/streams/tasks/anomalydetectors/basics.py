@@ -29,7 +29,7 @@ from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
-from mlpro.oa.streams import OATask
+from mlpro.oa.streams import OAStreamTask
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 
@@ -37,7 +37,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetector(OATask):
+class AnomalyDetector(OAStreamTask):
     """
     Base class for online anomaly detectors. It raises an event when an
     anomaly is detected.
@@ -71,7 +71,7 @@ class AnomalyDetector(OATask):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_name:str = None,
-                 p_range_max = OATask.C_RANGE_THREAD,
+                 p_range_max = OAStreamTask.C_RANGE_THREAD,
                  p_ada : bool = True,
                  p_duplicate_data : bool = False,
                  p_visualize : bool = False,

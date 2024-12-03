@@ -38,7 +38,7 @@ from mlpro.oa.streams.tasks.normalizers import NormalizerZTransform
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyAdaptiveScenario (OAScenario):
+class MyAdaptiveScenario (OAStreamScenario):
 
     C_NAME = 'Demo'
 
@@ -62,8 +62,8 @@ class MyAdaptiveScenario (OAScenario):
                                           p_logging=p_logging )
 
         # 2.2 Creation of a workflow
-        workflow = OAWorkflow( p_name='Input Signal "' + StreamMLProClouds2D4C1000Static.C_NAME + '"',
-                               p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
+        workflow = OAStreamWorkflow( p_name='Input Signal "' + StreamMLProClouds2D4C1000Static.C_NAME + '"',
+                               p_range_max=OAStreamWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
                                p_ada=p_ada,
                                p_visualize=p_visualize,
                                p_logging=p_logging )

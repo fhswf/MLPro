@@ -78,7 +78,6 @@ Ver. 2.3.0 (2023-07-24)
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
 """
-import warnings
 
 from mlpro.bf.various import *
 from mlpro.bf.math import *
