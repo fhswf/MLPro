@@ -63,9 +63,8 @@ if __name__ == '__main__':
     if i != '': num_dim = int(i)
     i = input(f'\n\nStep rate (visualization) (press ENTER for {step_rate}): ')
     if i != '': step_rate = int(i)
-    setpoint_value = 10
 
-
+setpoint_value = 10
 
 # 2 Setup the control system
 
