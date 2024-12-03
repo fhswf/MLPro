@@ -1,22 +1,21 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.control
-## -- Module  : howto_bf_control_PT_001_basic_control_PT1.py
+## -- Module  : howto_bf_control_PT_001_pid_control_PT1.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-11-11  0.1.0     AS       Creation
-## -- 2024-12-03  0.2.0     AS       Update cycle_limits and pt1 system 
+## -- 2024-12-03  0.1.0     AS       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-12-03)
+Ver. 0.1.0 (2024-11-11)
 
 The HowTo is intended to show the behavior of a first-order system in a closed loop control, without a controller
 
 You will learn:
 
-1) How to set up a basic control system with a PT1-controlled system
+1) How to set up a PID control system with a PT1-controlled system
 
 2) How to execute a control system and to change the setpoint from outside
 
@@ -37,9 +36,9 @@ from mlpro.bf.control.controlsystems import BasicControlSystem
 
 
 # 1 Preparation of demo/unit test mode
-pt1_T = 5
-latency = 0.1 
-cycle_limit = int(3*pt1_T/latency)
+T = 5
+T_l = 0.1 
+cycle_limit = int(3*T/T_l)
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
     cycle_limit = cycle_limit
@@ -69,10 +68,10 @@ if __name__ == '__main__':
 
 # 2.1 Controlled system
 my_ctrl_sys = PT1(p_K=5,
-                p_T=pt1_T,
+                p_T=T,
                 p_sys_num=0,
                 p_y_start=0,#setpoint_value,
-                p_latency = timedelta( seconds =latency),
+                p_latency = timedelta( seconds =T_l),
                 p_visualize = visualize,
                 p_logging = logging )
 
@@ -82,11 +81,11 @@ my_ctrl_sys.reset( p_seed = 1 )
 #p_Kp = 1, p_integral_off = True, p_derivitave_off = True, it means PID Controller is not active and it forwards the control error 1 to 1
 my_ctrl = PIDController( p_input_space = my_ctrl_sys.get_state_space(),
                        p_output_space = my_ctrl_sys.get_action_space(),
-                       p_Kp=1,
-                       p_Tn=0,
-                       p_Tv=0,
-                       p_integral_off=True,
-                       p_derivitave_off=True,
+                       p_Kp=0.59,
+                       p_Tn=1,
+                       p_Tv=0.5,
+                       p_integral_off=False,
+                       p_derivitave_off=False,
                        p_name = 'PID Controller',
                        p_visualize = visualize,
                        p_logging = logging )
