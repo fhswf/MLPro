@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-10  0.1.0     DA       Initial implementation
+## -- 2024-12-03  0.1.1     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-10-10)
+Ver. 0.1.1 (2024-12-03)
 
 This module provides a simple demo system that just cumulates a percentage part of the incoming
 action to the inner state.
@@ -33,4 +34,4 @@ class Hunter (Controller):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_output(self, p_ctrl_error : ControlError, p_ctrl_var : ControlVariable ):
-        p_ctrl_var.values = np.array(p_ctrl_error.values) * (-1)
+        p_ctrl_var.values = np.array(p_ctrl_error.values) 

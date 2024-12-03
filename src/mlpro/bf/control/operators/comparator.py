@@ -12,10 +12,11 @@
 ## -- 2024-11-10  0.5.0     DA       Refactoring
 ## -- 2024-11-26  0.6.0     DA       Method Comparator._run(): creation of ControlError only if
 ## --                                both SetPoint and ControlledVariable are detected
+## -- 2024-12-03  0.6.1     DA       Bugfix in method Comparator.get_control_error()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2024-11-26)
+Ver. 0.6.1 (2024-12-03)
 
 This module provides an implementation of a comparator that determins the control error based on 
 setpoint and controlled variable (system state).
@@ -84,5 +85,5 @@ class Comparator (Operator):
 
         return ControlError( p_id = self.get_so().get_next_inst_id(),
                              p_value_space = p_ctrlled_var.value_space, 
-                             p_values = np.subtract( np.array(p_ctrlled_var.values), np.array(p_setpoint.values) ), 
+                             p_values = np.subtract( np.array(p_setpoint.values), np.array(p_ctrlled_var.values) ), 
                              p_tstamp = self.get_so().get_tstamp() )
