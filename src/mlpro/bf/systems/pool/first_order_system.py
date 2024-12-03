@@ -11,6 +11,8 @@
 ##                                       - update singature of __init___()
 ## -- 2024-11-16  0.4.0     ASP      class PT1: update methods _simulate_reaction()
 ##                                       - changed dt = p_step to dt = p_step.total_seconds() 
+## -- 2024-12-03  0.5.0     ASP      class PT1: update methods _reset()
+##                                       - add start state of the system
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -38,7 +40,7 @@ class PT1 (System):
     """
 
     C_NAME          = 'PT1'
-    C_BOUNDARIES    = [-1000,1000]
+    C_BOUNDARIES    = [0,1000]
     C_PLOT_ACTIVE   = False
 
     C_LATENCY       = timedelta( seconds = 0.1 )
@@ -103,7 +105,8 @@ class PT1 (System):
     def _reset(self, p_seed=None):
 
         random.seed( p_seed )
-        new_state = State( p_state_space = self.get_state_space(), p_initial = True )        
+        new_state = State( p_state_space = self.get_state_space(), p_initial = True )    
+        new_state.get_feature_data().set_values([self._y_start])    
         self._set_state( p_state = new_state )
 
 
