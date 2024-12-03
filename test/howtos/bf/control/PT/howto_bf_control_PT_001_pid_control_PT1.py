@@ -36,9 +36,9 @@ from mlpro.bf.control.controlsystems import BasicControlSystem
 
 
 # 1 Preparation of demo/unit test mode
-T = 5
-T_l = 0.1 
-cycle_limit = int(3*T/T_l)
+pt1_T = 5
+latency = 0.1 
+cycle_limit = int(3*pt1_T/latency)
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
     cycle_limit = cycle_limit
@@ -68,10 +68,10 @@ if __name__ == '__main__':
 
 # 2.1 Controlled system
 my_ctrl_sys = PT1(p_K=5,
-                p_T=T,
+                p_T=pt1_T,
                 p_sys_num=0,
                 p_y_start=0,#setpoint_value,
-                p_latency = timedelta( seconds =T_l),
+                p_latency = timedelta( seconds =latency),
                 p_visualize = visualize,
                 p_logging = logging )
 

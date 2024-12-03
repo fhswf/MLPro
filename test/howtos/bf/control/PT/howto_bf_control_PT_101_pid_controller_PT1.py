@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-11-11  0.1.0     AS       Creation
+## -- 2024-12-03  0.2.0     AS       Update
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -38,9 +39,12 @@ from mlpro.bf.control.controlsystems import BasicControlSystem
 
 
 # 1 Preparation of demo/unit test mode
+pt1_T = 5
+latency = 0.1 
+cycle_limit = int(3*pt1_T/latency)
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 500
+    cycle_limit = cycle_limit
     num_dim     = 1
     logging     = Log.C_LOG_ALL
     visualize   = True
@@ -67,9 +71,10 @@ if __name__ == '__main__':
 
 # 2.1 Controlled system
 my_ctrl_sys = PT1(p_K=1,
-                p_T=20,
+                p_T=pt1_T,
                 p_sys_num=0,
-                p_latency = timedelta( seconds = 5 ),
+                p_y_start=0,
+                p_latency = timedelta( seconds = latency ),
                 p_visualize = visualize,
                 p_logging = logging )
 
