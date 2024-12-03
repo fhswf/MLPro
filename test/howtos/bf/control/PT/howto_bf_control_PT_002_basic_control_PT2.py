@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-11-10  0.1.0     AS       Creation
+## -- 2024-12-03  0.2.0     AS       Update PT2 system
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-11-11)
+Ver. 0.2.0 (2024-12-93)
 
 The HowTo is intended to show the behavior of a second-order system in a closed loop control, without a controller.
 Further infos about relevant beahvious: https://www.circuitbread.com/tutorials/second-order-systems-2-3
@@ -39,7 +40,7 @@ from mlpro.bf.control.controlsystems import BasicControlSystem
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 500
+    cycle_limit = 100
     num_dim     = 1
     logging     = Log.C_LOG_ALL
     visualize   = True
@@ -68,8 +69,9 @@ if __name__ == '__main__':
 my_ctrl_sys = PT2(p_K=1,
                     p_D=1,
                     p_omega_0=5,
-                    p_sys_num=1,
+                    p_sys_num=1,                    
                     p_max_cycle=cycle_limit,
+                    p_y_start =0,
                     p_latency = timedelta( seconds = 0.01 ),
                     p_visualize = visualize,
                     p_logging = logging )
