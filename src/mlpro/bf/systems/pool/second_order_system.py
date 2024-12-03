@@ -9,10 +9,12 @@
 ## -- 2024-11-10  0.2.0     ASP       class PT2: update methods __init__(), _setup_spaces()
 ## -- 2024-11-16  0.3.0     ASP       class PT2: update methods _simulate_reaction()
 ##                                       - changed dt = p_step to dt = p_step.total_seconds()
+## -- 2024-12-03  0.4.0     ASP       class PT2: update methods __init__() und _reset
+## 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-11-16)
+Ver. 0.4.0 (2024-12-03)
 
 This module provides a simple demo system that represent second order system.
     Further infos : https://www.circuitbread.com/tutorials/second-order-systems-2-3
@@ -54,8 +56,9 @@ class PT2 (System):
                   p_K:float,
                   p_D: float,
                   p_omega_0:float,
-                  p_sys_num:int,
+                  p_sys_num:int,                 
                   p_max_cycle:int,
+                  p_y_start: float =0,
                   p_id=None,
                   p_name = C_NAME,
                   p_latency : timedelta = None,
@@ -84,8 +87,10 @@ class PT2 (System):
         self._D =p_D
         self._omega_0 =p_omega_0
         self._sys_num = p_sys_num
+        self._y_start = p_y_start
         self._y = np.zeros(p_max_cycle+1)  
         self._dy = np.zeros(p_max_cycle+1)
+        self._y[0] = self._y_start
         self._cycle = 1  
 
         super().__init__( p_id = p_id, 
@@ -116,6 +121,9 @@ class PT2 (System):
         random.seed( p_seed )
         new_state = State( p_state_space = self.get_state_space(), p_initial = True )
         self._set_state( p_state = new_state )
+        self._y = self._y*0  
+        self._dy = self._dy*0
+        self._y[0] = self._y_start
         self._cycle = 1 
 
 
