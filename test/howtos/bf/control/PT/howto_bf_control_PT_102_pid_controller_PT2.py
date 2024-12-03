@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-11-11  0.1.0     AS       Creation
+## -- 2024-12-03  0.1.0     AS       Update PID Parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-11-11)
+Ver. 0.1.0 (2024-12-03)
 
 This howto demonstrates a basic control system consisting of a PID
 controller and a first-order-system (PT1) as a controlled system.
@@ -71,7 +72,7 @@ my_ctrl_sys = PT2(p_K=1,
                     p_omega_0=5,
                     p_sys_num=1,
                     p_max_cycle=cycle_limit,
-                    p_latency = timedelta( seconds = 5 ),
+                    p_latency = timedelta( seconds = 0.01 ),
                     p_visualize = visualize,
                     p_logging = logging )
 
@@ -82,9 +83,9 @@ my_ctrl_sys.reset( p_seed = 1 )
 # 2.2 Controller
 my_ctrl = PIDController( p_input_space = my_ctrl_sys.get_state_space(),
                        p_output_space = my_ctrl_sys.get_action_space(),
-                       p_Kp=10,
-                       p_Tn=4,
-                       p_Tv=2,
+                       p_Kp=0.59,
+                       p_Tn=1,
+                       p_Tv=0.5,
                        p_integral_off=False,
                        p_derivitave_off=False,
                        p_name = 'PID Controller',

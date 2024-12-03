@@ -12,7 +12,8 @@
 ##                                      - Added PT2 Controlled System
 ##                                      - Changed paramters for the controlled system PT1
 ##                                      - Removed CasscadedSystem 
-##                                      - adjust values of controlled systems properties and PID properties                     
+##                                      - adjust values of controlled systems properties and PID properties 
+## -- 2024-12-03  1.1.0     AS       Update PT1 und PT2                    
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -69,9 +70,11 @@ setpoint_value = 400
 my_ctrl_sys_1 = PT1(p_K=25,
                 p_T=1200,
                 p_sys_num=0,
-                p_latency = timedelta( seconds = 5 ),
+                p_y_start=0,
+                p_latency = timedelta( seconds = 0.1 ),
                 p_visualize = visualize,
                 p_logging = logging )
+
 
 my_ctrl_sys_1.reset( p_seed = 1 )
 
@@ -87,14 +90,15 @@ my_ctrl_1 = PIDController( p_input_space = my_ctrl_sys_1.get_state_space(),
 
 
 # 2.2 Controller and controlled system of the inner cascade
-my_ctrl_sys_2 = PT2(K=1,
+my_ctrl_sys_2 = PT2(p_K=1,
                     p_D=1.6165,
                     p_omega_0=0.00577,
                     p_sys_num=1,
                     p_max_cycle=cycle_limit,
-                    p_latency = timedelta( seconds = 5 ),
+                    p_latency = timedelta( seconds = 0.1 ),
                     p_visualize = visualize,
                     p_logging = logging )
+
 
 my_ctrl_sys_2.reset( p_seed = 2 )
 
