@@ -7,6 +7,8 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-09-01  0.0.0     DA       Creation
 ## -- 2024-10-28  0.1.0     DA       Implementation PID CartPole Control
+## -- 2024-10-28  0.2.0     ASP      Update PID CartPole Control
+
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -24,18 +26,16 @@ You will learn:
 
 """
 
-
-
 from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.ops import Mode
-
 from mlpro.bf.control import ControlledSystem
-from mlpro.bf.control.controlsystems import ControlSystemBasic
-from mlpro.bf.systems.pool.cartPole import CartPole
 from mlpro.bf.control.controllers.pid_controller import PIDController
 import gymnasium as gym
 from mlpro_int_gymnasium.wrappers import WrEnvGYM2MLPro
+from mlpro.bf.control.controlsystems import BasicControlSystem
+import numpy as np
+
 
 
 
@@ -70,30 +70,32 @@ mycontrolledsystem = ControlledSystem( p_system =  WrEnvGYM2MLPro( p_gym_env=gym
                                        p_name = 'Cart Pole',
                                        p_visualize = visualize,
                                        p_logging = logging )
+mycontrolledsystem.system.reset()
 
 # 2.2 Controller
 mycontroller = PIDController( p_input_space = mycontrolledsystem.system.get_state_space(),
-                       p_output_space = mycontrolledsystem.system.get_action_space(),Kp=1.33,Ti=1.33,Tv=1.99,
+                       p_output_space = mycontrolledsystem.system.get_action_space(),p_Kp=1.33,p_Ti=1.33,p_Tv=1.99,
                        p_name = 'PID Controller',
                        p_visualize = visualize,
                        p_logging = logging )
 
 
 
-
 # 2.3 Basic control system
-mycontrolsystem = ControlSystemBasic( p_mode = Mode.C_MODE_SIM,
+mycontrolsystem = BasicControlSystem( p_mode = Mode.C_MODE_SIM,
                                       p_controller = mycontroller,
                                       p_controlled_system = mycontrolledsystem,
+                                      p_name = 'PID+Cartpole',
                                       p_ctrl_var_integration = False,
                                       p_cycle_limit = cycle_limit,
                                       p_visualize = visualize,
                                       p_logging = logging )
 
 
+
 # 3 Set initial setpoint values and reset the controlled system
-mycontrolsystem.get_control_panel().set_setpoint( p_values = [0]) 
-mycontrolledsystem.system.reset( p_seed = 1 )
+mycontrolsystem.get_control_panels()[0][0].set_setpoint( p_values = np.zeros(shape=(num_dim)) )
+mycontrolledsystem.reset( p_seed = 1 )
 
 
 # 4 Run some control cycles
