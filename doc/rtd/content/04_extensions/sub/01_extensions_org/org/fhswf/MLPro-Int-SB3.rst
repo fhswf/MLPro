@@ -10,9 +10,9 @@ MLPro: Integration StableBaselines3
     * - **Topics**
       - machine-learning, mlpro-extension, reinforcement-learning, stable-baselines3, wrapper
     * - **Version**
-      - v1.0.3  - Compatibility with Gymnasium >= 1.0.0
+      - v1.0.4  - Bug Fixing: Reward Function on Off-Policy Algorithm
     * - **Last update**
-      - Tue, 03 Dec 2024 03:30:36 GMT
+      - Wed, 04 Dec 2024 09:39:49 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-SB3
     * - **URL**
