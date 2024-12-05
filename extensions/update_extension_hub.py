@@ -295,7 +295,12 @@ class ExtensionHub (Log):
 
         topics = ', '.join(p_extension[8])
         with open( sys.path[0] + os.sep + self.C_FNAME_TPL_ISSUE_BODY ) as f:
-            body = f.read().format( vars='variables', url=p_extension[6], title=p_extension[1], topics=topics, version=p_extension[3], desc=p_extension[2] )
+            body = f.read().format( vars='variables', 
+                                    url=p_extension[6], 
+                                    title=p_extension[1], 
+                                    topics=topics, 
+                                    version=p_extension[3], 
+                                    desc=p_extension[2] )
 
         return body
     
