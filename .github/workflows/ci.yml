@@ -6,6 +6,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021        1.0.0     MRD      Creation 
 ## -- 2024-10-09  1.1.0     DA       Updated the version range for Python to 3.10 - 3.12
+## -- 2024-12-05  1.2.0     DA       Section 'on': added an exception for branch 'extension-hub-tmp'
 ## -------------------------------------------------------------------------------------------------
 
 name: Unit Tests
@@ -13,8 +14,12 @@ name: Unit Tests
 on:
   push:
     branches: [ main ]
+    branches-ignore:
+      - extension-hub-tmp    
   pull_request:
     branches: [ main ]
+    branches-ignore:
+      - extension-hub-tmp      
   schedule:
     - cron: '00 1 * * 1'
   workflow_dispatch:
