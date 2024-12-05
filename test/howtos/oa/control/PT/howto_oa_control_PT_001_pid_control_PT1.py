@@ -5,11 +5,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-12-03  0.1.0     AS       Creation
+## -- 2024-12-03  0.1.0     ASP       Creation
+## -- 2024-12-06  0.2.0     ASP       Update RLPID
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-11-11)
+Ver. 0.2.0 (2024-12-06)
 
 The HowTo is intended to show the behavior of a first-order system in a closed loop control, without a controller
 
@@ -132,10 +133,8 @@ else:
     step_rate   = 1
 
 if __name__ == '__main__':
-    i = input(f'\n\nDimensionality (press ENTER for {num_dim}): ')
-    if i != '': num_dim = int(i)
-    i = input(f'\n\nStep rate (visualization) (press ENTER for {step_rate}): ')
-    if i != '': step_rate = int(i)
+
+
     setpoint_value =10
 
 
@@ -195,11 +194,17 @@ my_pid_ctrl = PIDController( p_input_space = my_ctrl_sys.get_state_space(),
 rl_pid_policy = RLPID(p_observation_space=my_ctrl_sys.get_state_space(),
                       p_action_space=my_ctrl_sys.get_action_space(),
                       p_pid_controller = my_pid_ctrl,
-                      p_policy=poliy_wrapper)
-
+                      p_policy=poliy_wrapper,
+                       p_visualize = visualize,
+                       p_logging = logging )
 
 #create OAControllerRL
-my_ctrl = wrapper_rl.OAControllerRL(p_input_space=MSpace(),p_output_space=MSpace(),p_rl_policy=rl_pid_policy,p_rl_fct_reward=MyReward())
+my_ctrl = wrapper_rl.OAControllerRL(p_input_space=MSpace()
+                                    ,p_output_space=MSpace()
+                                    ,p_rl_policy=rl_pid_policy
+                                    ,p_rl_fct_reward=MyReward()
+                                    ,p_visualize = visualize
+                                    ,p_logging = logging)
 
 
 # 3.3 Basic control system
