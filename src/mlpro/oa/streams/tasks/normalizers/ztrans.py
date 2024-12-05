@@ -21,10 +21,11 @@
 ## -- 2024-05-27  1.3.2     LSB      Fixed Plotting
 ## -- 2024-05-28  1.3.3     LSB      Fixing the plotting bugs
 ## -- 2024-05-28  1.3.4     LSB      Fixed the denormalizing method when zero std
+## -- 2024-12-05  1.3.5     DA       Bufix in method NormalizersZTransform._run()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2024-05-27)
+Ver. 1.3.5 (2024-12-05)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
@@ -101,6 +102,7 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
         # 1 Online update of transformation parameters
         self.adapt( p_inst = p_inst )
+
         for inst_id, (inst_type, inst) in sorted(p_inst.items()):
 
             feature_data = inst.get_feature_data()
@@ -108,10 +110,10 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
             if self._param is None:
                 if inst_type == InstTypeNew:
                     self.update_parameters( p_data_new = feature_data )
-                    self.update_plot_data()
                 else:
                     self.update_parameters( p_data_del = feature_data )
-                    self.update_plot_data()
+
+            self.update_plot_data()
             feature_data.set_values( p_values = self.normalize(feature_data).get_values() )
 
 
