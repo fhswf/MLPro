@@ -58,6 +58,8 @@ else:
 if __name__ == '__main__':
     i = input(f'\n\nDimensionality (press ENTER for {num_dim}): ')
     if i != '': num_dim = int(i)
+
+    
     i = input(f'\n\nStep rate (visualization) (press ENTER for {step_rate}): ')
     if i != '': step_rate = int(i)
 
