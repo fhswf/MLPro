@@ -20,11 +20,13 @@
 ## -- 2023-09-21  1.1.2     DA       Method ExtensionHub._get_extensions:
 ## --                                - bugfix in repo extraction from white/blacklist
 ## -- 2023-10-30  1.1.3     DA       Bugfix
-## -- 2024-10-08  1.2.0     Da       Removed dependency from MLPro to avoid installations from PyPI
+## -- 2024-10-08  1.2.0     DA       Removed dependency from MLPro to avoid installations from PyPI
+## -- 2024-12-05  1.3.0     DA       Method ExtensionHub._create_issue(): optimization and linking
+## --                                to GitHub team 'mlpro-admin'
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-10-08)
+Ver. 1.3.0 (2024-12-05)
 
 This standalone module collects meta data of all public GitHub repositories that are labelled as
 MLPro extensions (repo topic "mlpro-extension). It updates the RTD subsection "Extension Hub"
@@ -43,7 +45,6 @@ See also:
 import sys, os.path
 import shutil
 from datetime import datetime
-#from mlpro.bf.various import Log
 from github import Auth, Github
 
 
@@ -294,7 +295,12 @@ class ExtensionHub (Log):
 
         topics = ', '.join(p_extension[8])
         with open( sys.path[0] + os.sep + self.C_FNAME_TPL_ISSUE_BODY ) as f:
-            body = f.read().format( vars='variables', url=p_extension[6], title=p_extension[1], topics=topics, version=p_extension[3], desc=p_extension[2] )
+            body = f.read().format( vars='variables', 
+                                    url=p_extension[6], 
+                                    title=p_extension[1], 
+                                    topics=topics, 
+                                    version=p_extension[3], 
+                                    desc=p_extension[2] )
 
         return body
     
@@ -327,7 +333,9 @@ class ExtensionHub (Log):
 
         # 1 Preparation
         if self._extension_issues is None:
-            self._mlpro  = self.gh.get_repo('fhswf/MLPro')
+            self.log(Log.C_LOG_TYPE_I, 'Creating new issue...')
+
+            self._mlpro = self.gh.get_repo('fhswf/MLPro')
 
             # 1.1 Searching for open issues for pending extensions
             issues = self._mlpro.get_issues( state='open', labels=['pending-extension'] )
@@ -337,27 +345,21 @@ class ExtensionHub (Log):
                 self._extension_issues[issue.title] = issue.number
 
             # 1.2 Get list of MLPro's administrators
-            team_members        = {}
-            self._mlpro_admins  = []
+            self.log(Log.C_LOG_TYPE_I, 'Determining MLPro administrators...')
+            mlpro_admins  = []
 
             for team in self._mlpro.get_teams():
-                if ( team.slug == 'mlpro-team' ) and ( team.organization.login == 'fhswf' ):
-                    self._mlpro_team = team
-                    break
+                if ( team.slug == 'mlpro_admin' ) and ( team.organization.login == 'fhswf' ):
+                    for mlpro_admin in team.get_members():
+                        mlpro_admins.append(mlpro_admin.login)
+                        self.log(Log.C_LOG_TYPE_I, 'MLPro admin found:', mlpro_admin.login)
 
-            for team_member in self._mlpro_team.get_members():
-                team_members[team_member.login] = True
-
-            for collaborator in self._mlpro.get_collaborators():
-                try:
-                    if ( team_members[collaborator.login] ) and ( self._mlpro.get_collaborator_permission(collaborator) == 'admin' ):
-                        self._mlpro_admins.append(collaborator.login)
-                except:
-                    pass
-
-            if len( self._mlpro_admins ) == 0:
+            if len( mlpro_admins ) == 0:
                 self.log(Log.C_LOG_TYPE_E, 'No administrator found in repository fhswf/MLPro')
                 return
+            
+        else:
+            self.log(Log.C_LOG_TYPE_I, 'Updating existing issue...')
                 
 
         # 2 Check: does an open issue already exist for the given extension?
@@ -369,7 +371,7 @@ class ExtensionHub (Log):
             # 2.1 Issue needs to be created
             issue = self._mlpro.create_issue( title     = issue_title,
                                               labels    = [ 'pending-extension'],
-                                              assignees = self._mlpro_admins,
+                                              assignees = mlpro_admins,
                                               body      = self._create_issue_body(p_extension) )
             
             issue.create_comment(self._create_issue_comment(p_extension))
@@ -377,7 +379,7 @@ class ExtensionHub (Log):
             self.log(Log.C_LOG_TYPE_I, 'New issue created:', issue.number)
 
 
-        # 2 Outro
+        # 3 Outro
         self.log(Log.C_LOG_TYPE_S, 'End of creating/updating issue for extension', p_extension[0])
 
 
