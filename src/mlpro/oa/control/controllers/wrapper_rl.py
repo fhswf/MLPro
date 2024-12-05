@@ -9,7 +9,9 @@
 ## -- 2024-10-09  0.2.0     DA       Refactoring
 ## -- 2024-10-13  0.3.0     DA       Refactoring
 ## -- 2024-10-16  0.3.1     DA/ASP   Bugfix in method OAControllerRL._adapt()
-## -- 2024-12-05  0.4.0     DA       Class OAControllerRL: implementation of plot methods
+## -- 2024-12-05  0.4.0     DA       Class OAControllerRL: 
+## --                                - implementation of plot methods
+## .-                                - redefintion of method assign_so()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -81,6 +83,12 @@ class OAControllerRL (OAController):
                           p_visualize = p_visualize, 
                           p_logging = p_logging, 
                           **p_kwargs )
+        
+
+## -------------------------------------------------------------------------------------------------
+    def assign_so(self, p_so):
+        super().assign_so( p_so = p_so )
+        self._rl_policy.assign_so( p_so = p_so )
 
 
 ## -------------------------------------------------------------------------------------------------
