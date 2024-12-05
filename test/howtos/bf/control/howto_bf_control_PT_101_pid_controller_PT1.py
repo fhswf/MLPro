@@ -82,9 +82,9 @@ my_ctrl_sys.reset( p_seed = 1 )
 # 2.2 Controller
 my_ctrl = PIDController( p_input_space = my_ctrl_sys.get_state_space(),
                        p_output_space = my_ctrl_sys.get_action_space(),
-                       p_Kp=10,
-                       p_Tn=4,
-                       p_Tv=2,
+                       p_Kp=0.59,
+                       p_Tn=1,
+                       p_Tv=0.5,
                        p_integral_off=False,
                        p_derivitave_off=False,
                        p_name = 'PID Controller',
