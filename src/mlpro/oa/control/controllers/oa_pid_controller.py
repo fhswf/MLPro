@@ -12,10 +12,11 @@
 ## -- 2024-11-10  0.3.0     ASP      -Removed class OffPolicyRLPID
 ## -- 2024-12-05  0.4.0     ASP      -Add plot methods
 ## -- 2024-12-05  0.5.0     ASP      -changed signature of compute_action()
+## -- 2024-12-05  0.6.0     ASP      -implementation assign_so(), update compute_action()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2024-12-05)
+Ver. 0.6.0 (2024-12-05)
 
 This module provides an implementation of a OA PID controller.
 
@@ -135,48 +136,67 @@ class RLPID(Policy):
         control_variable=self._pid_controller.compute_output(p_ctrl_error=p_obs)
 
         #return action
-        return control_variable 
+        return Action(p_action_space=control_variable.get_feature_data().get_related_set(),
+               p_values=control_variable.values, 
+               p_tstamp=control_variable.tstamp)       
     
-    ## -------------------------------------------------------------------------------------------------
+    
+## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure, p_settings):
-        return self._rl_policy._init_plot_2d(p_figure, p_settings)
+        return self._pid_controller._init_plot_2d(p_figure, p_settings)
     
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_3d(self, p_figure, p_settings):
-        return self._rl_policy._init_plot_3d(p_figure, p_settings)
+        return self._pid_controller._init_plot_3d(p_figure, p_settings)
     
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure, p_settings):
-        return self._rl_policy._init_plot_nd(p_figure, p_settings)
+        return self._pid_controller._init_plot_nd(p_figure, p_settings)
     
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings, p_inst, **p_kwargs):
-        return self._rl_policy._update_plot_2d(p_settings, p_inst, **p_kwargs)
+        return self._pid_controller._update_plot_2d(p_settings, p_inst, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings, p_inst, **p_kwargs):
-        return self._rl_policy._update_plot_3d(p_settings, p_inst, **p_kwargs)
+        return self._pid_controller._update_plot_3d(p_settings, p_inst, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings, p_inst, **p_kwargs):
-        return self._rl_policy._update_plot_nd(p_settings, p_inst, **p_kwargs)
+        return self._pid_controller._update_plot_nd(p_settings, p_inst, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
-        return self._rl_policy._remove_plot_2d()
+        return self._pid_controller._remove_plot_2d()
     
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_3d(self):
-        return self._rl_policy._remove_plot_3d()
+        return self._pid_controller._remove_plot_3d()
     
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self):
-        return self._rl_policy._remove_plot_nd()
+        return self._pid_controller._remove_plot_nd()
+
+
+## -------------------------------------------------------------------------------------------------
+    def assign_so(self, p_so:Shared):
+        """
+        Assigns an existing shared object to the task. The task takes over the range of asynchronicity
+        of the shared object if it is less than the current one of the task.
+
+        Parameters
+        ----------
+        p_so : Shared
+            Shared object.
+        """
+
+        self._pid_controller.assign_so(p_so=p_so)
+
