@@ -8,6 +8,7 @@
 ## -- 2024-10-09  2.0.0     DA       Restructuring and introduction of PR-based processing
 ## -- 2024-10-16  2.1.0     DA       Step 3: creation of virtual environment due to new security
 ## --                                restrictions in Python 3.12
+## -- 2024-12-05  2.2.0     DA       Changed name of tmp. branch to 'extension_hub_tmp'
 ## -------------------------------------------------------------------------------------------------
 
 name: Update Extension Hub
@@ -33,7 +34,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b temp-branch
+          git checkout -b extension_hub_tmp
 
       - name: Step 3 - Updates on the extension hub
         id: step3
@@ -53,21 +54,21 @@ jobs:
       - name: Step 5 - Pull/push changes
         id: step5
         if: ${{ steps.step4.outcome == 'success' }}
-        run: git push origin temp-branch
+        run: git push origin extension_hub_tmp
 
       - name: Step 6 - Create Pull Request
         id: step6
         if: ${{ steps.step5.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_UPDATES }}
-        run: gh pr create --title "Update Extension Hub" --body "This PR was created automatically." --head temp-branch --base main
+        run: gh pr create --title "Update Extension Hub" --body "This PR was created automatically." --head extension_hub_tmp --base main
 
       - name: Step 7 - Auto-Review Pull Request
         id: step7
         if: ${{ steps.step6.outcome == 'success' }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXTENSION_HUB_REVIEW_DA }}
-        run: gh pr review --approve temp-branch
+        run: gh pr review --approve extension_hub_tmp
           
       - name: Step 8 - Merge Pull Request
         id: step8
