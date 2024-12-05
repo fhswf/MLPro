@@ -11,10 +11,11 @@
 ## --                                -change class name RLPIDOffPolicy to OffPolicyRLPID
 ## -- 2024-11-10  0.3.0     ASP      -Removed class OffPolicyRLPID
 ## -- 2024-12-05  0.4.0     ASP      -Add plot methods
+## -- 2024-12-05  0.5.0     ASP      -changed signature of compute_action()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-12-05)
+Ver. 0.5.0 (2024-12-05)
 
 This module provides an implementation of a OA PID controller.
 
@@ -23,7 +24,7 @@ This module provides an implementation of a OA PID controller.
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.bf.ml.basics import *
 from mlpro.rl import Policy,SARSElement
-from mlpro.bf.control import ControlVariable, ControlledVariable
+from mlpro.rl import Action, State, SARSElement, FctReward, Policy
 
 
 
@@ -128,7 +129,7 @@ class RLPID(Policy):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_obs: ControlledVariable) -> ControlVariable:  
+    def compute_action(self, p_obs: State) -> Action:  
 
         #get action 
         control_variable=self._pid_controller.compute_output(p_ctrl_error=p_obs)
