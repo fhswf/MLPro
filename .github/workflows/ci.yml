@@ -14,12 +14,8 @@ name: Unit Tests
 on:
   push:
     branches: [ main ]
-    branches-ignore:
-      - extension-hub-tmp    
   pull_request:
     branches: [ main ]
-    branches-ignore:
-      - extension-hub-tmp      
   schedule:
     - cron: '00 1 * * 1'
   workflow_dispatch:
