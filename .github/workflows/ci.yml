@@ -6,6 +6,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021        1.0.0     MRD      Creation 
 ## -- 2024-10-09  1.1.0     DA       Updated the version range for Python to 3.10 - 3.12
+## -- 2024-12-05  1.2.0     DA       Excluded source branch 'extension-hub-tmp' from execution
 ## -------------------------------------------------------------------------------------------------
 
 name: Unit Tests
@@ -23,6 +24,7 @@ on:
 jobs:
   deps_gen:
     runs-on: ubuntu-latest
+    if: ${{ github.head_ref != 'extension-hub-tmp' }}
     outputs:
       trigger_build: ${{ steps.trigger_build.outputs.build }}
 
