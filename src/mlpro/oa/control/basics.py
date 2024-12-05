@@ -11,20 +11,24 @@
 ## -- 2024-09-27  0.3.0     DA       New method OAController hdl_setpoint_changed
 ## -- 2024-10-04  0.3.1     DA       Bugfix in OAController.__init__()
 ## -- 2024-10-09  0.4.0     DA       Refactoring
+## -- 2024-12-05  0.5.0     DA       Refactoring and code cleanup
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-10-09)
+Ver. 0.5.0 (2024-12-05)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
 """
 
 
-from mlpro.bf.systems import State, Action
-from mlpro.bf.control import *
-from mlpro.bf.ml import Model, Training, TrainingResults
+from mlpro.bf.various import Log
+from mlpro.bf.events import Event
+from mlpro.bf.mt import Task
+from mlpro.bf.math import MSpace
+from mlpro.bf.control import Controller, get_ctrl_data, ControlError, ControlVariable
 from mlpro.bf.streams import InstDict
+from mlpro.bf.ml import Model, Training, TrainingResults
 
 
 
@@ -89,32 +93,21 @@ class OAController (Controller, Model):
         information like setpoint, state, action.
         """
 
-        # 0 Intro
-        setpoint : SetPoint              = None
-        ctrlled_var : State = None
-        ctrl_error : ControlError        = None
-
-
-        # 1 Determine the contextual data for action computation
-        ctrl_error = self._get_instance( p_inst = p_inst, p_type = ControlError )
-
+        # 1 Get control error instance
+        ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
-            raise Error( 'Control error not found. Please check control workflow.')
-
+            self.log(Log.C_LOG_TYPE_W, 'Control error instance is missing!')
+            return
 
         # 2 Compute the next action
         ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
 
-
         # 3 Adapt
-        self.adapt( p_ctrl_error = ctrl_error, 
-                    p_ctrl_var = ctrl_var )
+        self.adapt( p_ctrl_error = ctrl_error, p_ctrl_var = ctrl_var )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt( self, 
-                p_ctrl_error: ControlError, 
-                p_ctrl_var: ControlVariable ) -> bool:
+    def _adapt( self, p_ctrl_error: ControlError, p_ctrl_var: ControlVariable ) -> bool:
         """
         Specialized custom method for online adaptation in closed-loop control systems.
 
