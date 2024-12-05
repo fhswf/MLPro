@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-09-01  0.0.0     DA       Creation 
-## -- 2024-09-19  0.1.0     AS       Implementation PIDController 
-## -- 2024-10-17  0.2.0     AS       Refactor PIDController 
-## -- 2024-11-10  0.3.0     AS       Refactor class PIDController: signature methode __init__() 
-## -- 2024-11-16  0.4.0     AS       Refactor class PIDController: signature methode __init__() 
-## -- 2024-11-16  0.4.0     AS          Changed Task.C_RANGE_NONE to Range.C_RANGE_NONE
+## -- 2024-09-19  0.1.0     ASP      Implementation PIDController 
+## -- 2024-10-17  0.2.0     ASP      Refactor PIDController 
+## -- 2024-11-10  0.3.0     ASP      Refactor class PIDController: signature methode __init__() 
+## -- 2024-11-16  0.4.0     ASP      Refactor class PIDController: signature methode __init__() 
+## -- 2024-11-16  0.4.0     ASP      Changed Task.C_RANGE_NONE to Range.C_RANGE_NONE
 ## -------------------------------------------------------------------------------------------------
 
 """
