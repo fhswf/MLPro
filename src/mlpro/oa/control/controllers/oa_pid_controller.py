@@ -10,10 +10,11 @@
 ## -- 2024-10-17  0.2.0     ASP      -Refactoring class RLPID
 ## --                                -change class name RLPIDOffPolicy to OffPolicyRLPID
 ## -- 2024-11-10  0.3.0     ASP      -Removed class OffPolicyRLPID
+## -- 2024-12-05  0.4.0     ASP      -Add plot methods
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-11-10)
+Ver. 0.4.0 (2024-12-05)
 
 This module provides an implementation of a OA PID controller.
 
@@ -134,3 +135,47 @@ class RLPID(Policy):
 
         #return action
         return control_variable 
+    
+    ## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure, p_settings):
+        return self._rl_policy._init_plot_2d(p_figure, p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure, p_settings):
+        return self._rl_policy._init_plot_3d(p_figure, p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure, p_settings):
+        return self._rl_policy._init_plot_nd(p_figure, p_settings)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings, p_inst, **p_kwargs):
+        return self._rl_policy._update_plot_2d(p_settings, p_inst, **p_kwargs)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings, p_inst, **p_kwargs):
+        return self._rl_policy._update_plot_3d(p_settings, p_inst, **p_kwargs)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings, p_inst, **p_kwargs):
+        return self._rl_policy._update_plot_nd(p_settings, p_inst, **p_kwargs)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_2d(self):
+        return self._rl_policy._remove_plot_2d()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_3d(self):
+        return self._rl_policy._remove_plot_3d()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        return self._rl_policy._remove_plot_nd()
