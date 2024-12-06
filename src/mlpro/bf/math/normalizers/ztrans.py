@@ -128,12 +128,12 @@ class NormalizerZTrans (Normalizer, ScientificObject):
                 self._mean = (old_mean * self._n - data_del) / (self._n-1)
 
                 #DEBUG
-                term1 = np.square(self._std)*self._n
-                term2 = (data_del - old_mean)*(data_del - self._mean)
-                term3 = term1 - term2
-                self._std = np.sqrt(np.abs(term3))
+                # term1 = np.square(self._std)*self._n
+                # term2 = (data_del - old_mean)*(data_del - self._mean)
+                # term3 = term1 - term2
+                # self._std = np.sqrt(np.abs(term3))
 
-                #self._std = np.sqrt((np.square(self._std)*self._n - (data_del - old_mean)*(data_del - self._mean)) / (self._n-1))
+                self._std = np.sqrt((np.square(self._std)*self._n - (data_del - old_mean)*(data_del - self._mean)) / (self._n-1))
 
                 
                 self._n -= 1

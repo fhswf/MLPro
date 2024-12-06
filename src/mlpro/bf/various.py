@@ -180,7 +180,7 @@ class Log:
 
         self._write = sys.stdout.write
 
-        self.switch_logging( p_logging=p_logging )
+        self._switch_logging( p_logging=p_logging )
 
         if self.C_INST_MSG:
             self.log(self.C_LOG_TYPE_I, 'Instantiated')
@@ -198,7 +198,7 @@ class Log:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging):
+    def _switch_logging(self, p_logging):
         """
         Sets new log level. 
 
@@ -217,6 +217,11 @@ class Log:
             self.log = self._log_on
         else:
             self.log = self._log_off
+
+
+ ## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        self._switch_logging(p_logging=p_logging)
 
 
  ## -------------------------------------------------------------------------------------------------
