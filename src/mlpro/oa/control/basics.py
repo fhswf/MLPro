@@ -12,10 +12,11 @@
 ## -- 2024-10-04  0.3.1     DA       Bugfix in OAController.__init__()
 ## -- 2024-10-09  0.4.0     DA       Refactoring
 ## -- 2024-12-05  0.5.0     DA       Refactoring and code cleanup
+## -- 2024-12-06  0.5.1     DA       Bugfix in method OAController._run()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2024-12-05)
+Ver. 0.5.1 (2024-12-06)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
