@@ -13,6 +13,7 @@
 ## -- 2024-12-05  0.4.0     ASP      -Add plot methods
 ## -- 2024-12-05  0.5.0     ASP      -changed signature of compute_action()
 ## -- 2024-12-05  0.6.0     ASP      -implementation assign_so(), update compute_action()
+## -- 2024-12-06  0.7.0     ASP      -BugFix: _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -120,7 +121,7 @@ class RLPID(Policy):
 
             #set paramter pid
             self._pid_controller.set_parameter(p_param={"Kp":pid_values[0],
-                                                    "Ti":pid_values[1],
+                                                    "Tn":pid_values[1],
                                                     "Tv":pid_values[2]})
         else:
             #compute new action with new error value (second s of Sars element)
