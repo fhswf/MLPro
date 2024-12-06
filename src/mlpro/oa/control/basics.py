@@ -12,7 +12,7 @@
 ## -- 2024-10-04  0.3.1     DA       Bugfix in OAController.__init__()
 ## -- 2024-10-09  0.4.0     DA       Refactoring
 ## -- 2024-12-05  0.5.0     DA       Refactoring and code cleanup
-## -- 2024-12-06  0.5.1     DA       Bugfix in method OAController._run()
+## -- 2024-12-06  0.5.1     DA       Bugfixes in methods OAController.__init__(), ._run()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -83,6 +83,7 @@ class OAController (Controller, Model):
         
         Model.__init__( self,
                         p_ada = p_ada,
+                        p_name = p_name,
                         p_visualize = p_visualize,
                         p_logging = p_logging )
 
