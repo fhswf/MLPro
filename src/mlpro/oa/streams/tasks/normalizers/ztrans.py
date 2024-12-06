@@ -21,11 +21,12 @@
 ## -- 2024-05-27  1.3.2     LSB      Fixed Plotting
 ## -- 2024-05-28  1.3.3     LSB      Fixing the plotting bugs
 ## -- 2024-05-28  1.3.4     LSB      Fixed the denormalizing method when zero std
-## -- 2024-12-05  1.3.5     DA       Bufix in method NormalizersZTransform._run()
+## -- 2024-12-05  1.3.5     DA       Bugfix in method NormalizersZTransform._run()
+## -- 2024-12-06  1.3.6     DA       Fixes and optimization 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.5 (2024-12-05)
+Ver. 1.3.6 (2024-12-06)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
@@ -88,6 +89,7 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
             self._plot_data_3d = None
             self._plot_data_nd = None
 
+
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
         """
@@ -99,6 +101,8 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
             Stream instances to be processed
 
         """
+
+        if len( p_inst ) == 0: return
 
         # 1 Online update of transformation parameters
         self.adapt( p_inst = p_inst )
@@ -213,9 +217,10 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
         self.update_plot_data()
 
         OAStreamTask._update_plot_2d( self,
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
+                                      p_settings = p_settings,
+                                      p_inst = p_inst,
+                                      **p_kwargs )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_3d(self):
@@ -242,6 +247,7 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
             self._parameters_updated = False
 
+
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d( self,
                          p_settings : PlotSettings,
@@ -264,9 +270,9 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
         self._update_plot_data_3d()
 
         OAStreamTask._update_plot_3d( self,
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
+                                      p_settings = p_settings,
+                                      p_inst = p_inst,
+                                      **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -316,12 +322,14 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
                                 **p_kwargs )
 
 
-
 ## -------------------------------------------------------------------------------------------------
     def update_plot_data(self):
         """
         Updates the plot data.
         """
+
+        if not self.get_visualization(): return
+
         try:
             self._update_plot_data_2d()
         except:

@@ -52,10 +52,11 @@
 ## -- 2024-05-21  2.3.0     DA       Class TStamp: introduction of alias TStampType
 ## -- 2024-06-18  2.4.0     DA       New class KWArgs
 ## -- 2024-12-02  2.5.0     DA       New property KWargs.kwargs
+## -- 2024-12-06  2.6.0     DA       Class Log: tuning by about 10%
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2024-12-02)
+Ver. 2.6.0 (2024-12-06)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -170,9 +171,16 @@ class Log:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=C_LOG_ALL):
-        if p_logging not in self.C_LOG_LEVELS: 
-            raise ParamError('Wrong log level. See class Log for valid log levels')
-        self._level = p_logging
+
+        self._color_map = {
+            self.C_LOG_TYPE_W: self.C_COL_WARNING,
+            self.C_LOG_TYPE_E: self.C_COL_ERROR,
+            self.C_LOG_TYPE_S: self.C_COL_SUCCESS,
+        }
+
+        self._write = sys.stdout.write
+
+        self.switch_logging( p_logging=p_logging )
 
         if self.C_INST_MSG:
             self.log(self.C_LOG_TYPE_I, 'Instantiated')
@@ -201,17 +209,28 @@ class Log:
 
         """
 
-        if p_logging not in self.C_LOG_LEVELS: raise ParamError('Wrong log level. See class Log for valid log levels')
+        if p_logging not in self.C_LOG_LEVELS: 
+            raise ParamError('Wrong log level. See class Log for valid log levels')
+        
         self._level = p_logging
+        if self._level:
+            self.log = self._log_on
+        else:
+            self.log = self._log_off
 
 
  ## -------------------------------------------------------------------------------------------------
     def get_log_level(self):
         return self._level
 
- 
- ## -------------------------------------------------------------------------------------------------
-    def log(self, p_type, *p_args):
+
+## -------------------------------------------------------------------------------------------------
+    def _log_off(self, p_type, *p_args):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _log_on(self, p_type, *p_args):
         """
         Writes log line to standard output in format:
         yyyy-mm-dd  hh:mm:ss.mmmmmm  [p_type  C_TYPE C_NAME]: [p_args] 
@@ -224,27 +243,17 @@ class Log:
             Nothing
         """
 
-        if not self._level: return
+        level = self._level
 
-        if self._level == self.C_LOG_WE:
-            if (p_type == self.C_LOG_TYPE_I) or (p_type == self.C_LOG_TYPE_S): return
-        elif self._level == self.C_LOG_E:
-            if (p_type == self.C_LOG_TYPE_I) or (p_type == self.C_LOG_TYPE_S) or (p_type == self.C_LOG_TYPE_W): return
-
-        now = datetime.now()
-
-        if p_type == self.C_LOG_TYPE_W:
-            col = self.C_COL_WARNING
-        elif p_type == self.C_LOG_TYPE_E:
-            col = self.C_COL_ERROR
-        elif p_type == self.C_LOG_TYPE_S:
-            col = self.C_COL_SUCCESS
-        else:
-            col = self.C_COL_RESET
-
-        print(col + '%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (
-        now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond),
-              p_type + '  ' + self.C_TYPE + ' "' + self.C_NAME + '":', *p_args, self.C_COL_RESET)
+        if level == self.C_LOG_WE:
+            if p_type in (self.C_LOG_TYPE_I, self.C_LOG_TYPE_S): return
+        elif level == self.C_LOG_E:
+            if p_type in (self.C_LOG_TYPE_I, self.C_LOG_TYPE_S, self.C_LOG_TYPE_W): return
+            
+        now     = datetime.now().isoformat( sep = ' ' )
+        col     = self._color_map.get(p_type, self.C_COL_RESET)
+        arg_str = ' '.join(map(str, p_args))  
+        self._write( col + now + '  ' + p_type + '  ' + self.C_TYPE + ' "' + self.C_NAME + '": ' + arg_str + self.C_COL_RESET  + '\n' )
 
 
 
