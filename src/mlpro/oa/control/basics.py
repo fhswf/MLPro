@@ -27,7 +27,7 @@ from mlpro.bf.events import Event
 from mlpro.bf.mt import Task
 from mlpro.bf.math import MSpace
 from mlpro.bf.control import Controller, get_ctrl_data, ControlError, ControlVariable
-from mlpro.bf.streams import InstDict
+from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.bf.ml import Model, Training, TrainingResults
 
 
@@ -101,6 +101,7 @@ class OAController (Controller, Model):
 
         # 2 Compute the next action
         ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
+        p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var)
 
         # 3 Adapt
         self.adapt( p_ctrl_error = ctrl_error, p_ctrl_var = ctrl_var )
