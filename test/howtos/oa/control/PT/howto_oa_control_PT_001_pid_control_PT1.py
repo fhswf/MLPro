@@ -116,6 +116,7 @@ class MyReward(FctReward):
 T = 5
 T_l = 0.1 
 cycle_limit = int(3*T/T_l)*10
+cycle_limit = 500
 if __name__ == '__main__':
     # 2.1 Parameters for demo mode
     cycle_limit = cycle_limit

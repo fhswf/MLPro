@@ -149,7 +149,7 @@ class PIDController (Controller):
         """
 
         #get control error
-        control_error_siso = p_ctrl_error._get_values()[0]
+        control_error_siso = p_ctrl_error.values[0]
 
         #time delta
         dt = 0
