@@ -178,8 +178,6 @@ class Log:
             self.C_LOG_TYPE_S: self.C_COL_SUCCESS,
         }
 
-        self._write = sys.stdout.write
-
         self._switch_logging( p_logging=p_logging )
 
         if self.C_INST_MSG:
@@ -258,7 +256,7 @@ class Log:
         now     = datetime.now().isoformat( sep = ' ' )
         col     = self._color_map.get(p_type, self.C_COL_RESET)
         arg_str = ' '.join(map(str, p_args))  
-        self._write( col + now + '  ' + p_type + '  ' + self.C_TYPE + ' "' + self.C_NAME + '": ' + arg_str + self.C_COL_RESET  + '\n' )
+        print( col + now + '  ' + p_type + '  ' + self.C_TYPE + ' "' + self.C_NAME + '": ' + arg_str + self.C_COL_RESET )
 
 
 
