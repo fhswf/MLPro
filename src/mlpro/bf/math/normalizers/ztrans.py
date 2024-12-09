@@ -110,8 +110,13 @@ class NormalizerZTrans (Normalizer, ScientificObject):
                 else:
                     self._n   += 1
                     old_mean   = self._mean.copy()
+
                     self._mean = old_mean + ( data_new - old_mean ) / self._n 
-                    self._s    = self._s + (data_new - self._mean) * (data_new - old_mean)
+                    try:
+                        self._s = self._s + (data_new - self._mean) * (data_new - old_mean)
+                    except:
+                        self._s = np.square(self._std) * self._n
+
                     self._std  = np.sqrt( self._s / self._n ) 
 
                 if self._param_new is None: 
@@ -129,8 +134,13 @@ class NormalizerZTrans (Normalizer, ScientificObject):
                 if self._n > 0:
                     self._n   -= 1
                     old_mean   = self._mean.copy()
+
                     self._mean = old_mean - ( data_del - old_mean ) / self._n 
-                    self._s    = self._s - (data_del - self._mean) * (data_del - old_mean)
+                    try:
+                        self._s = self._s - (data_del - self._mean) * (data_del - old_mean)
+                    except:
+                        self._s = np.square(self._std) * self._n                    
+                        
                     self._std  = np.sqrt( self._s / self._n ) 
                 
                 else:
