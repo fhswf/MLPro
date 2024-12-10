@@ -971,7 +971,7 @@ class Workflow (Task):
         for task in self._tasks:
 
             task_figure        = None
-            task_plot_settings = None
+            task_plot_settings = p_plot_settings
 
             if task.get_visualization():
 
