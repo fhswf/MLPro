@@ -36,14 +36,16 @@
 ## -- 2024-05-31  1.9.2     DA       Class Task: new exception rule for MacOs in meth. init_plot()
 ## -- 2024-06-17  2.0.0     DA       Class Workflow: new method get_tasks()
 ## -- 2024-06-18  2.1.0     DA       Class Task: new parent class KWArgs
+## -- 2024-10-07  2.2.0     DA       Classes Task, Workflow: new method reset()
 ## -- 2024-11-10  2.2.0     DA       Refactoring of class Workflow regarding plotting
 ## -- 2024-11-11  2.3.0     DA       Class Task:
 ## --                                - new method _on_finished()
 ## --                                - redefinition of method _raise_event()
+## -- 2024-12-10  2.3.1     DA       Method Workflow.init_plot(): Bugfix and optimization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2024-11-11)
+Ver. 2.3.1 (2024-12-10)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -561,6 +563,11 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
         """
 
         return self.get_id()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, **p_kwargs):
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -925,6 +932,12 @@ class Workflow (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def reset(self, **p_kwargs):
+        for task in self._tasks:
+            task.reset(**p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
     def _get_plot_host_task(self, p_task : Task) -> Task:
         plot_host = None
 
@@ -963,52 +976,50 @@ class Workflow (Task):
                         p_figure=p_figure, 
                         p_plot_settings=p_plot_settings )
 
+        self.force_fg()
+
       
         # 2 Init plot output on task level
         for task in self._tasks:
-            task_plot_settings = None
 
-            if not task.C_PLOT_STANDALONE:
-                plot_host = self._get_plot_host_task(p_task=task)
-            else:
-                plot_host = self
+            task_figure        = None
+            task_plot_settings = p_plot_settings
 
-            ps = plot_host.get_plot_settings()
-            if ps is None: ps = p_plot_settings
+            if task.get_visualization():
 
-            if task.C_PLOT_STANDALONE:
-                # Task plots in a separate figure (=window)
-                task_figure = None
-
-                if ps is not None:
-                    task_plot_settings = ps.copy()
+                if not task.C_PLOT_STANDALONE:
+                    plot_host = self._get_plot_host_task(p_task=task)
                 else:
-                    task_plot_settings = PlotSettings( p_view = self.C_PLOT_DEFAULT_VIEW )
+                    plot_host = self
 
-                task_plot_settings.axes  = None
-                task_plot_settings.pos_x = 1
-                task_plot_settings.pos_y = 1
-                task_plot_settings.id    = 1
+                ps = plot_host.get_plot_settings()
+                if ps is None: ps = p_plot_settings
 
-            else:
-                # Task plots embedded in the predecessor/workflow figure/subplot
-                task_figure = plot_host._figure
-                task_plot_settings = ps
+                if task.C_PLOT_STANDALONE:
+                    # Task plots in a separate figure (=window)
+                    if ps is not None:
+                        task_plot_settings = ps.copy()
+                    else:
+                        task_plot_settings = PlotSettings( p_view = self.C_PLOT_DEFAULT_VIEW )
+
+                    task_plot_settings.axes  = None
+                    task_plot_settings.pos_x = 1
+                    task_plot_settings.pos_y = 1
+                    task_plot_settings.id    = 1
+
+                else:
+                    # Task plots embedded in the predecessor/workflow figure/subplot
+                    task_figure = plot_host._figure
+                    task_plot_settings = ps
                 
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings )
 
-
-        # 3 Force workflow window to stay in foreground
-        self.force_fg()
-
-
-        # 4 Force task windows to stay in foreground
-        for task in self._tasks:
-            if task.get_visualization() and task.C_PLOT_STANDALONE: task.force_fg()
+            # Force task window to stay in foreground
+            task.force_fg()
 
 
-        # 5 Initial refresh of workflow window
+        # 3 Initial refresh of workflow window
         if self.get_visualization() and self._plot_own_figure:
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
