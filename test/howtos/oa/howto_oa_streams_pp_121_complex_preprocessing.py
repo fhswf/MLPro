@@ -9,10 +9,11 @@
 ## -- 2024-05-02  1.1.0     DA       Review/minor adjustments
 ## -- 2024-05-12  1.2.0     DA       Event-based adaption Window->BoundaryDetector added
 ## -- 2024-07-19  1.2.1     SY       Refactoring due to method Deriver._prepare_derivation()
+## -- 2024-12-09  1.2.2     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-07-19)
+Ver. 1.2.2 (2024-12-09)
 
 This howto shows an example of complex preprocessing with parallel tasks. It addresses several
 problems like feature rearanging, numerical feature derivation, data windowing, and self-adapting
@@ -149,6 +150,7 @@ class MyScenario (OAStreamScenario):
         # 2.6 Setup Z Transform-Normalizer in Parallel
         task6_norm_ztrans = NormalizerZTransform( p_name = '6 - Normalizer Z-Trans',
                                                   p_ada = p_ada,
+                                                  p_duplicate_data = True,  # Important!! Avoids normalization of original instances
                                                   p_visualize = p_visualize,
                                                   p_logging = p_logging )
         
@@ -159,6 +161,7 @@ class MyScenario (OAStreamScenario):
         # 2.7 Setup MinMax-Normalizer
         task7_norm_minmax = NormalizerMinMax( p_name = '7 - Normalizer MinMax', 
                                               p_ada = p_ada, 
+                                              p_duplicate_data = True,  # Important!! Avoids normalization of original instances
                                               p_visualize = p_visualize, 
                                               p_logging = p_logging )
 

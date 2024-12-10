@@ -41,10 +41,11 @@
 ## -- 2024-11-11  2.3.0     DA       Class Task:
 ## --                                - new method _on_finished()
 ## --                                - redefinition of method _raise_event()
+## -- 2024-12-10  2.3.1     DA       Method Workflow.init_plot(): Bugfix and optimization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2024-11-11)
+Ver. 2.3.1 (2024-12-10)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -975,9 +976,14 @@ class Workflow (Task):
                         p_figure=p_figure, 
                         p_plot_settings=p_plot_settings )
 
+        self.force_fg()
+
       
         # 2 Init plot output on task level
         for task in self._tasks:
+
+            if not task.get_visualization(): continue
+
             task_plot_settings = None
 
             if not task.C_PLOT_STANDALONE:
@@ -1010,17 +1016,11 @@ class Workflow (Task):
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings )
 
-
-        # 3 Force workflow window to stay in foreground
-        self.force_fg()
-
-
-        # 4 Force task windows to stay in foreground
-        for task in self._tasks:
-            if task.get_visualization() and task.C_PLOT_STANDALONE: task.force_fg()
+            # Force task window to stay in foreground
+            task.force_fg()
 
 
-        # 5 Initial refresh of workflow window
+        # 3 Initial refresh of workflow window
         if self.get_visualization() and self._plot_own_figure:
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
