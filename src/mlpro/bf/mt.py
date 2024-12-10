@@ -982,36 +982,35 @@ class Workflow (Task):
         # 2 Init plot output on task level
         for task in self._tasks:
 
-            if not task.get_visualization(): continue
-
+            task_figure        = None
             task_plot_settings = None
 
-            if not task.C_PLOT_STANDALONE:
-                plot_host = self._get_plot_host_task(p_task=task)
-            else:
-                plot_host = self
+            if task.get_visualization():
 
-            ps = plot_host.get_plot_settings()
-            if ps is None: ps = p_plot_settings
-
-            if task.C_PLOT_STANDALONE:
-                # Task plots in a separate figure (=window)
-                task_figure = None
-
-                if ps is not None:
-                    task_plot_settings = ps.copy()
+                if not task.C_PLOT_STANDALONE:
+                    plot_host = self._get_plot_host_task(p_task=task)
                 else:
-                    task_plot_settings = PlotSettings( p_view = self.C_PLOT_DEFAULT_VIEW )
+                    plot_host = self
 
-                task_plot_settings.axes  = None
-                task_plot_settings.pos_x = 1
-                task_plot_settings.pos_y = 1
-                task_plot_settings.id    = 1
+                ps = plot_host.get_plot_settings()
+                if ps is None: ps = p_plot_settings
 
-            else:
-                # Task plots embedded in the predecessor/workflow figure/subplot
-                task_figure = plot_host._figure
-                task_plot_settings = ps
+                if task.C_PLOT_STANDALONE:
+                    # Task plots in a separate figure (=window)
+                    if ps is not None:
+                        task_plot_settings = ps.copy()
+                    else:
+                        task_plot_settings = PlotSettings( p_view = self.C_PLOT_DEFAULT_VIEW )
+
+                    task_plot_settings.axes  = None
+                    task_plot_settings.pos_x = 1
+                    task_plot_settings.pos_y = 1
+                    task_plot_settings.id    = 1
+
+                else:
+                    # Task plots embedded in the predecessor/workflow figure/subplot
+                    task_figure = plot_host._figure
+                    task_plot_settings = ps
                 
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings )
