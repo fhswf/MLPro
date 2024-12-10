@@ -257,7 +257,6 @@ class PlotSettings:
                                     p_id = self.id,
                                     p_view_autoselect = self.view_autoselect,
                                     p_kwargs = self.kwargs )
-
     
 
 
