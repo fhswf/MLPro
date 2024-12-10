@@ -1,44 +1,38 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.bf
-## -- Module  : exceptions
+## -- Package : mlpro.bf.plot.backends
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-09-27  1.0.0     DA       Creation
-## -- 2021-11-10  1.0.1     DA       Added new exception ImplementationError
-## -- 2021-12-12  1.0.2     DA       Added new exception Error
+## -- 2024-12-10  0.1.0     DA       Initial implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-12)
+Ver. 0.1.0 (2024-12-10)
 
-This module provides exception classes.
+This module provides various classes related to data plotting.
+
 """
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ParamError(Exception):
-    """
-    To be raised on a parameter error...
-    """
-    pass
-
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ImplementationError(Exception):
-    """
-    To be raised on an implementation error in a child class of MLPro...
-    """
-    pass
+class PlotBackend:
+    
+    C_NAME      = '????'
+
+## -------------------------------------------------------------------------------------------------
+    def force_foreground(self, p_window):
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_geometry(self, p_window, p_xpos, p_ypos, p_width, p_height):
+        pass
+
+
 ## -------------------------------------------------------------------------------------------------
-class Error(Exception):
-    """
-    To be raised on an error...
-    """
-    pass
+    def set_title(self, p_window, p_title):
+        pass

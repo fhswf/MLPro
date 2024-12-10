@@ -25,10 +25,11 @@
 ## -- 2024-05-23  1.2.0     DA       Refactoring (not yet finished)
 ## -- 2024-05-24  1.2.1     LSB      Bug fix for Parameter update using only p_data_del in Z-transform
 ## -- 2024-05-27  1.2.2     LSB      Scientific Reference added
+## -- 2024-12-09  1.3.0     DA       Method NormalizerZTrans.update_parameters(): review/optimization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-05-27)
+Ver. 1.3.0 (2024-12-09)
 
 This module provides a class for Z transformation.
 """
@@ -85,9 +86,10 @@ class NormalizerZTrans (Normalizer, ScientificObject):
 
         # 1 Update on dataset
         if p_dataset is not None:
-            self._std   = np.std(p_dataset, axis=0, dtype=np.float64)
-            self._mean  = np.mean(p_dataset, axis=0, dtype=np.float64)
             self._n     = len(p_dataset)
+            self._mean  = np.mean(p_dataset, axis=0, dtype=np.float64)
+            self._std   = np.std(p_dataset, axis=0, dtype=np.float64)
+            self._s     = np.square(self._std) * self._n
 
             if self._param_new is None: 
                 self._param_new = np.zeros([2, self._std.shape[-1]])
@@ -102,34 +104,41 @@ class NormalizerZTrans (Normalizer, ScientificObject):
                     data_new = p_data_new
                 
                 if self._n == 0:
-                    self._n = 1
+                    self._n    = 1
                     self._mean = data_new.copy()
-                    self._std = np.zeros(shape=data_new.shape)
+                    self._s    = np.zeros(shape=data_new.shape)
+                    self._std  = np.zeros(shape=data_new.shape)
                 else:
+                    self._n   += 1
                     old_mean   = self._mean.copy()
-                    self._mean = (old_mean * self._n + data_new) / (self._n + 1)
+                    self._mean = old_mean + ( data_new - old_mean ) / self._n 
+                    self._s = self._s + (data_new - self._mean) * (data_new - old_mean)
+                    self._std  = np.sqrt( self._s / self._n ) 
 
-                    self._std = np.sqrt((np.square(self._std) * self._n
-                                        + (data_new - self._mean) * (data_new - old_mean)) / (self._n+1))
-                    self._n += 1
-                    
                 if self._param_new is None: 
                     self._param_new = np.zeros([2, data_new.shape[-1]])
 
 
             # 3 Update on obsolete data
-            if ( p_data_del is not None ) and ( self._n > 0 ):
+            if p_data_del is not None:
+                
                 try:
                     data_del = np.array(p_data_del.get_values())
                 except:
                     data_del = p_data_del
-            
-                old_mean = self._mean.copy()
-                self._mean = (old_mean * self._n - data_del) / (self._n-1)
-
-                self._std = np.sqrt((np.square(self._std)*self._n - (data_del - old_mean)*(data_del - self._mean)) / (self._n-1))
                 
-                self._n -= 1
+                if self._n > 0:
+                    self._n   -= 1
+                    old_mean   = self._mean.copy()
+                    self._mean = old_mean - ( data_del - old_mean ) / self._n 
+                    self._s = self._s - (data_del - self._mean) * (data_del - old_mean)
+                    self._std  = np.sqrt( self._s / self._n ) 
+                
+                else:
+                    self._n    = 0
+                    self._mean = np.zeros(shape=data_del.shape)
+                    self._s    = np.zeros(shape=data_del.shape)
+                    self._std  = np.zeros(shape=data_del.shape)
 
 
         # 4 Update of parameters
