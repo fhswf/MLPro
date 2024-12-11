@@ -14,19 +14,25 @@
 ## --                                forwarding of changes on ax limits
 ## -- 2024-05-22  1.4.0     SK       Refactoring
 ## -- 2024-08-12  1.4.1     DA       Correction in AnomalyDetector.update_plot()
+## -- 2024-12-11  1.4.2     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2024-08-12)
+Ver. 1.4.2 (2024-12-11)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
 from typing import List
-from matplotlib.figure import Figure
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
+
 from mlpro.bf.math.properties import *
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance, InstDict
+from mlpro.bf.streams import InstDict
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.oa.streams import OAStreamTask

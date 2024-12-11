@@ -13,18 +13,26 @@
 ## -- 2024-06-26  0.6.0     DA       Refactoring
 ## -- 2024-07-13  0.7.0     DA       Refactoring
 ## -- 2024-10-31  0.8.0     DA       New parent class Crosshair
+## -- 2024-12-11  0.8.1     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2024-10-31)
+Ver. 0.8.1 (2024-12-11)
 
 This module provides ...
 
 """
 
-from matplotlib.figure import Figure
-from matplotlib.text import Text
-from mpl_toolkits.mplot3d.art3d import Line3D, Text3D
+try:
+    from matplotlib.figure import Figure
+    from matplotlib.text import Text
+    from mpl_toolkits.mplot3d.art3d import Line3D, Text3D
+except:
+    class Figure : pass
+    class Text : pass
+    class Line3D : pass
+    class Text3D : pass
+
 from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.bf.various import *
 from mlpro.bf.plot import *

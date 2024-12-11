@@ -69,22 +69,27 @@
 ## -- 2024-07-19  2.0.3     DA       Class StreamTask: excluded non-numeric feature data from default
 ## --                                visualization 2D,3D,ND
 ## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
+## -- 2024-10-01  2.1.1     DA       Method StreamScenario.__init__(): simplification
 ## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
+## -- 2024-12-11  2.4.1     DA       Pseudo class Figure if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-11-10)
+Ver. 2.4.1 (2024-12-11)
 
 This module provides classes for standardized data stream processing. 
 
 """
-import datetime
 
-from matplotlib.figure import Figure
 import random
 from typing import Dict, Tuple
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
 
 from mlpro.bf.math.basics import *
 from mlpro.bf.various import Id, TStamp, KWArgs
@@ -395,7 +400,9 @@ class Sampler (ScientificObject):
 
         Parameters
         ----------
-        p_inst : Instance
+        p_inst : Instancep_set = {}
+p_set[0] = tuple([1,Instance(12)])
+print(p_set)
             An input instance to be filtered.
 
         Returns
@@ -1227,14 +1234,10 @@ class StreamTask (Task):
 
         # 5 Update of ax limits
         if ax_limits_changed:
-            try:
+            if self._plot_2d_xmin != self._plot_2d_xmax:
                 p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
-            except:
-                pass
-            try:
+            if self._plot_2d_ymin != self._plot_2d_ymax:
                 p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
-            except:
-                pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1373,9 +1376,12 @@ class StreamTask (Task):
 
         # 5 Update of ax limits
         if ax_limits_changed:
-            p_settings.axes.set_xlim( self._plot_3d_xmin, self._plot_3d_xmax )
-            p_settings.axes.set_ylim( self._plot_3d_ymin, self._plot_3d_ymax )
-            p_settings.axes.set_zlim( self._plot_3d_zmin, self._plot_3d_zmax )
+            if self._plot_3d_xmin != self._plot_3d_xmax:
+                p_settings.axes.set_xlim( self._plot_3d_xmin, self._plot_3d_xmax )
+            if self._plot_3d_ymin != self._plot_3d_ymax:
+                p_settings.axes.set_ylim( self._plot_3d_ymin, self._plot_3d_ymax )
+            if self._plot_3d_zmin != self._plot_3d_zmax:
+                p_settings.axes.set_zlim( self._plot_3d_zmin, self._plot_3d_zmax )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1661,10 +1667,6 @@ class StreamScenario (ScenarioBase):
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._stream : Stream           = None
-        self._iterator : Stream         = None
-        self._workflow : StreamWorkflow = None
-
         ScenarioBase.__init__( self,
                                p_mode, 
                                p_cycle_limit=p_cycle_limit, 
@@ -1793,6 +1795,11 @@ class StreamScenario (ScenarioBase):
         Plot updates take place during workflow/task processing and are disabled here...
         """
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh = True):
+        self._workflow.remove_plot(p_refresh=p_refresh)
 
 
 ## -------------------------------------------------------------------------------------------------
