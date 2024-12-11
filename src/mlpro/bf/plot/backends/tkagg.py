@@ -11,7 +11,7 @@
 """
 Ver. 0.1.0 (2024-12-10)
 
-This module provides various classes related to data plotting.
+This module provides an integration for Matplotlib backend 'TkAgg'.
 
 """
 
@@ -24,6 +24,9 @@ from mlpro.bf.plot.backends.basics import PlotBackend
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PlotBackendTkAgg (PlotBackend):
+    """
+    Integrates the Matplotlib backend 'TkAgg' into MLPro.
+    """
 
     C_NAME      = 'TkAgg'
 
@@ -46,7 +49,7 @@ class PlotBackendTkAgg (PlotBackend):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_geometry(self, p_window, p_geo, p_attempts: int = 10, p_wait: int = 100):
+    def _set_geometry(self, p_window, p_geo : str, p_attempts: int = 10, p_wait: int = 100):
         if p_attempts <= 0: return
 
         p_window.update_idletasks()            
@@ -76,5 +79,5 @@ class PlotBackendTkAgg (PlotBackend):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_title(self, p_window, p_title):
+    def set_title(self, p_window, p_title: str):
         p_window.title(p_title)

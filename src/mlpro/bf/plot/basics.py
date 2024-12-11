@@ -820,11 +820,5 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __del__(self):
-        if ( not self.get_visualization() ) or ( self._plot_first_time ): return
-        self.remove_plot(p_refresh=False)
-
-
-## -------------------------------------------------------------------------------------------------
     color             = property( fget = get_plot_color, fset = set_plot_color )
     plot_detail_level = property( fget = get_plot_detail_level, fset = assign_plot_detail_level )

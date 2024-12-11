@@ -11,7 +11,7 @@
 """
 Ver. 0.1.0 (2024-12-10)
 
-This module provides various classes related to data plotting.
+This module provides the template class PlotBackend for special support of common Matplotlib backends.
 
 """
 
@@ -44,5 +44,5 @@ class PlotBackend:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_title(self, p_window, p_title):
+    def set_title(self, p_window, p_title: str):
         pass
