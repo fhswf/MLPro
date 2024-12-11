@@ -35,10 +35,11 @@
 ## -- 2024-10-29  1.5.0     DA       - Refactoring
 ## --                                - Pseudo-implementation of BoundaryDetector._adapt_reverse()
 ## -- 2024-11-05  1.5.1     DA       Bugfix in method BoundaryDetector._upate_plot_nd()
+## -- 2024-12-11  1.5.2     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2024-11-05)
+Ver. 1.5.2 (2024-12-11)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 
@@ -46,8 +47,11 @@ This module provides pool of boundary detector object further used in the contex
 
 from itertools import repeat
 
-import matplotlib.colors
-from matplotlib.figure import Figure
+try:
+    import matplotlib.colors
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
 
 from mlpro.bf.various import Log
 from mlpro.bf.exceptions import ImplementationError

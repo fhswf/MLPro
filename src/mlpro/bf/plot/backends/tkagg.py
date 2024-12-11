@@ -15,6 +15,7 @@ This module provides various classes related to data plotting.
 
 """
 
+import re
 
 from mlpro.bf.plot.backends.basics import PlotBackend
 
@@ -29,6 +30,19 @@ class PlotBackendTkAgg (PlotBackend):
 ## -------------------------------------------------------------------------------------------------
     def force_foreground(self, p_window):
         p_window.attributes('-topmost', True) 
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_geometry(self, p_window):
+        geometry = p_window.geometry()
+        pattern  = r"(\d+)x(\d+)\+(\d+)\+(\d+)"
+
+        match = re.match(pattern, geometry)
+
+        if match:
+            return map(int, match.groups())
+        else:
+            return None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -54,6 +68,11 @@ class PlotBackendTkAgg (PlotBackend):
         geo = str(p_width) + 'x' + str(p_height) + '+' + str(p_xpos) + '+' + str(p_ypos)
 
         self._set_geometry( p_window = p_window, p_geo = geo )
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_title(self, p_window):
+        return p_window.title()
 
 
 ## -------------------------------------------------------------------------------------------------

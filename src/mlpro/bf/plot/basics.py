@@ -58,7 +58,8 @@
 ## --                                - Class Plottable: extensions on init_plot(), update_plot() 
 ## --                                - Refactoring: removed par p_force from Plottable.refresh()
 ## -- 2024-11-10  2.18.0    DA       Bugfix in method Plottable.force_fg()
-## -- 2024-12-10  3.0.0     DA       Created new module basics.py for classes PlotSettings, Plottable
+## -- 2024-12-10  3.0.0     DA       - Created new module basics.py for classes PlotSettings, Plottable
+## --                                - Class Plottable: plot window memory
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -69,25 +70,30 @@ This module provides various classes related to data plotting.
 """
 
 
-from operator import mod
-import sys
-import os
-from pathlib import Path
-
 try:
+    # Import of all packages related to plotting is optional and not needed in case of 'dark' processing
+    import matplotlib
     from tkinter import *
-    import matplotlib
     matplotlib.use('TkAgg')
+
+    from operator import mod
+    import sys
+    import os
+    from pathlib import Path
+    import atexit
+
+    from matplotlib.figure import Figure
+    from matplotlib.axes import Axes
+    import matplotlib.pyplot as plt
+
+    from mlpro.bf.exceptions import ImplementationError, ParamError
+    from mlpro.bf.plot.backends import *
+    from mlpro.bf.data import ConfigFile
+
 except:
-    print('Please install tkinter for a better plot experience')
-    import matplotlib
+    class Figure: pass
+    class Axes: pass
 
-from matplotlib.figure import Figure
-from matplotlib.axes import Axes
-import matplotlib.pyplot as plt
-
-from mlpro.bf.exceptions import ImplementationError, ParamError
-from mlpro.bf.plot.backends import *
 
 
 
@@ -305,18 +311,30 @@ class Plottable:
     C_PLOT_VALID_VIEWS : list   = []
     C_PLOT_DEFAULT_VIEW : str   = PlotSettings.C_VIEW_ND
     C_PLOT_DETAIL_LEVEL : int   = 0 
-    C_PLOT_CONFIG_FNAME : str   = 'mlpro-plot-settings.csv'
+    C_PLOT_CONFIG_PATH : str    = 'mlpro-plot-settings'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_visualize:bool=False):
-        self._visualize                    = self.C_PLOT_ACTIVE and p_visualize
-        self._plot_settings : PlotSettings = None
-        self.plot_detail_level             = self.C_PLOT_DETAIL_LEVEL
-        self._plot_initialized : bool      = False
-        self._plot_first_time : bool       = True
-        self._plot_own_figure : bool       = False
-        self._plot_color                   = None
 
+        # 1 Initialize attributes needed (even in 'dark' mode)
+        self._visualize                    = p_visualize and self.C_PLOT_ACTIVE
+        self._plot_settings : PlotSettings = None
+
+        # 1.1 Do nothing if visualization is turned off
+        if not self._visualize: return
+
+
+        # 2 Initialize further attributes
+        self.plot_detail_level        = self.C_PLOT_DETAIL_LEVEL
+        self._plot_initialized : bool = False
+        self._plot_first_time : bool  = True
+        self._plot_own_figure : bool  = False
+        self._plot_color              = None
+        self._plot_manager            = None
+        self._plot_window             = None
+
+
+        # 3 Initialize MLPro's backend object
         backend = matplotlib.get_backend()
 
         try:
@@ -324,14 +342,14 @@ class Plottable:
         except KeyError:
             raise NotImplementedError( 'Matplotlib backend "' + backend + '" is not yet supported by MLPro. Please contact the team on GitHub.')
 
-        self._plot_manager                 = None
-        self._plot_window                  = None
 
-        self._program_name                 = sys.argv[0] if sys.argv[0] else "Unknown"  
-        try:
-            self._plot_config_fname        = str(Path.home()) + os.sep + self.C_PLOT_CONFIG_FNAME
-        except:
-            self._plot_config_fname        = None
+        # 4 Initialize related configuration file
+        self._cfg_file = ConfigFile( p_fname = str(Path.home()) + os.sep + self.C_PLOT_CONFIG_PATH + os.sep + Path(sys.argv[0]).stem + '.json' )
+        self._cfg_key  = None
+
+
+        # 5 Force storing the window geometry at program termination 
+        atexit.register(self._store_window_geometry)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -386,10 +404,7 @@ class Plottable:
         """
 
         # 1 Plot functionality turned on? Initialization already called?
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
+        if not self.get_visualization(): return
 
         try:
             if ( p_plot_settings.detail_level > 0 ) and ( p_plot_settings.detail_level < self.plot_detail_level ): return
@@ -419,6 +434,9 @@ class Plottable:
             self._figure : Figure   = self._init_figure( p_window_title=p_window_title )
             self._plot_own_figure   = True
         else:
+            if self._plot_window is not None:
+                self._plot_backend.set_title( p_window = self._plot_window, p_title = p_window_title )
+
             self._figure : Figure   = p_figure
             
         self._plot_settings.register( p_plot_obj = self )
@@ -510,10 +528,15 @@ class Plottable:
         fig = plt.figure()   
         self._plot_manager = fig.canvas.manager
         self._plot_window  = self._plot_manager.window
-
         plt.show(block=False)
-        self._plot_backend.set_title( p_window=self._plot_window, p_title = p_window_title )
-        self._recover_window_geometry( p_window_title=p_window_title )
+
+        if p_window_title is not None:
+            self._plot_backend.set_title( p_window = self._plot_window, p_title = p_window_title )
+
+        if self._cfg_key is None:
+            self._cfg_key = self._plot_backend.get_title( p_window = self._plot_window )
+
+        self._recover_window_geometry()
         self.force_fg()
 
         return fig
@@ -523,18 +546,30 @@ class Plottable:
     def _store_window_geometry(self):
         if self._plot_window is None: return
 
+        try:
+            width, height, xpos, ypos = self._plot_backend.get_geometry( p_window = self._plot_window )
+            geometry = {'xpos' : xpos, 'ypos' : ypos, 'width' : width, 'height' : height }
+            self._cfg_file.set( p_key = self._cfg_key,
+                                p_values = geometry )
+        except:
+            pass
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _recover_window_geometry(self, p_window_title):
+    def _recover_window_geometry(self):
 
         # 1 Get window geometry from local file
-        return
+        try:
+            geometry = self._cfg_file.get( p_key = self._cfg_key )
+        except:
+            return
 
+        # 2 Set geometry
         self._plot_backend.set_geometry( p_window = self._plot_window,
-                                         p_xpos = xpos,
-                                         p_ypos = ypos,
-                                         p_width = width,
-                                         p_height = height )
+                                         p_xpos = geometry['xpos'],
+                                         p_ypos = geometry['ypos'],
+                                         p_width = geometry['width'],
+                                         p_height = geometry['height'] )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -544,10 +579,7 @@ class Plottable:
         """
 
         # 1 Plot functionality turned on?
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
+        if not self.get_visualization(): return
 
         if ( not self._plot_settings.force_fg ) or ( self._plot_window is None ): return
         
@@ -562,10 +594,7 @@ class Plottable:
         """
     
         # 1 Plot functionality turned on?
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
+        if not self.get_visualization(): return
         
 
          # 2 Update the plot step counter
@@ -662,10 +691,7 @@ class Plottable:
         """
 
         # 0 Plot functionality turned on?
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
+        if not self.get_visualization(): return
             
 
          # 1 Plot already initialized?
@@ -749,19 +775,19 @@ class Plottable:
         """
 
         # 1 Plot functionality turned on?
-        try:
-            if not self._plot_initialized: return
-        except:
-            return
+        if not self.get_visualization(): return
+
+        # 2 Store window geometry in the local config file
+        self._store_window_geometry()
             
-        # 2 Call _remove_plot method of current view
+        # 3 Call _remove_plot method of current view
         view = self._plot_settings.view
         self._plot_methods[view][2]()
 
-        # 3 Optionally refresh
+        # 4 Optionally refresh
         if p_refresh: self.refresh_plot()
 
-        # 4 Clear internal plot parameters
+        # 5 Clear internal plot parameters
         self._plot_settings.unregister( p_plot_obj = self )
         self._plot_first_time = True
    
@@ -791,6 +817,12 @@ class Plottable:
         """
 
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def __del__(self):
+        if ( not self.get_visualization() ) or ( self._plot_first_time ): return
+        self.remove_plot(p_refresh=False)
 
 
 ## -------------------------------------------------------------------------------------------------

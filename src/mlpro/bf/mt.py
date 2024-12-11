@@ -42,10 +42,11 @@
 ## --                                - redefinition of method _raise_event()
 ## -- 2024-12-10  2.3.1     DA       - Method Task.init_plot(): refactoring
 ## --                                - Method Workflow.init_plot(): Bugfix and optimization
+## -- 2024-12-11  2.4.0     DA       New method Workflow.remove_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.1 (2024-12-10)
+Ver. 2.4.0 (2024-12-11)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -61,8 +62,13 @@ See also: https://stackoverflow.com/questions/40234771/replace-pickle-in-python-
 
 import threading as mt
 import multiprocess as mp
-from matplotlib.figure import Figure
 from multiprocess.managers import BaseManager
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
+
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import *
 from mlpro.bf.events import EventManager, Event
@@ -766,10 +772,15 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
 
         self.log(Log.C_LOG_TYPE_S, 'Init plot')
 
+        try:
+            view = p_plot_settings.view
+        except:
+            view = self.C_PLOT_DEFAULT_VIEW
+
         if p_window_title is not None:
             title = p_window_title
         else:
-            title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() + ' (' + p_plot_settings.view + ')'
+            title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() + ' (' + view + ')'
 
         Plottable.init_plot( self,
                              p_figure=p_figure, 
@@ -1009,6 +1020,14 @@ class Workflow (Task):
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
 
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh = True):
+        for task in self._tasks:
+            task.remove_plot( p_refresh=p_refresh )
+
+        return super().remove_plot(p_refresh)
+    
 
 ## -------------------------------------------------------------------------------------------------
     def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):

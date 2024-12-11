@@ -73,22 +73,13 @@ from operator import mod
 import numpy as np
 from sys import platform
 
-# try:
-#     from tkinter import *
-#     import matplotlib
-#     # Due to bug in TKinter for macos, disabled for macos https://bugs.python.org/issue46573
-#     #if platform != 'darwin':
-#     matplotlib.use('TkAgg')
-# except:
-#     print('Please install tkinter for a better plot experience')
-#     import matplotlib
+try:
+    import matplotlib.pyplot as plt
+except:
+    pass
 
-#from matplotlib.figure import Figure
-#from matplotlib.axes import Axes
-import matplotlib.pyplot as plt
 import os
 import statistics
-#from mlpro.bf.exceptions import ImplementationError, ParamError
 from mlpro.bf.various import Persistent
 from mlpro.bf.data import DataStoring
 
