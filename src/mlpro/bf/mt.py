@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf
 ## -- Module  : mt
 ## -------------------------------------------------------------------------------------------------
@@ -41,11 +41,13 @@
 ## -- 2024-11-11  2.3.0     DA       Class Task:
 ## --                                - new method _on_finished()
 ## --                                - redefinition of method _raise_event()
-## -- 2024-12-10  2.3.1     DA       Method Workflow.init_plot(): Bugfix and optimization
+## -- 2024-12-10  2.3.1     DA       - Method Task.init_plot(): refactoring
+## --                                - Method Workflow.init_plot(): Bugfix and optimization
+## -- 2024-12-11  2.4.0     DA       New method Workflow.remove_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.1 (2024-12-10)
+Ver. 2.4.0 (2024-12-11)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -61,14 +63,17 @@ See also: https://stackoverflow.com/questions/40234771/replace-pickle-in-python-
 
 import threading as mt
 import multiprocess as mp
-import matplotlib
-from matplotlib.figure import Figure
 from multiprocess.managers import BaseManager
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
+
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import *
 from mlpro.bf.events import EventManager, Event
 from mlpro.bf.plot import PlotSettings, Plottable
-
 
 
 
@@ -759,7 +764,8 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings : PlotSettings = None ):
+                   p_plot_settings : PlotSettings = None,
+                   p_window_title: str = None ):
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
@@ -771,23 +777,21 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
             pass
 
         self.log(Log.C_LOG_TYPE_S, 'Init plot')
+
+        try:
+            view = p_plot_settings.view
+        except:
+            view = self.C_PLOT_DEFAULT_VIEW
+
+        if p_window_title is not None:
+            title = p_window_title
+        else:
+            title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() + ' (' + view + ')'
+
         Plottable.init_plot( self,
                              p_figure=p_figure, 
-                             p_plot_settings=p_plot_settings )
-
-        if self._plot_own_figure:
-            title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() + ' (' + self._plot_settings.view + ')'
-            backend = matplotlib.get_backend()
-
-            if backend == 'TkAgg':
-                self._figure.canvas.manager.window.title(title)
-            elif backend == 'macosx':
-                self.log(Log.C_LOG_TYPE_W, 'Window titles can not be set under MacOs ("darwin")')
-            else:
-                try:
-                    self._figure.canvas.setWindowTitle(title)
-                except AttributeError:
-                    self._figure.canvas.set_window_title(title)
+                             p_plot_settings=p_plot_settings,
+                             p_window_title=title )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -955,7 +959,8 @@ class Workflow (Task):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure=None, 
-                   p_plot_settings : PlotSettings = None ):
+                   p_plot_settings : PlotSettings = None,
+                   p_window_title: str = None ):
         """
         Initializes the plot of a workflow. The method creates a host figure for all tasks if no 
         external host figure is parameterized. The sub-plots of the tasks are autmatically arranged
@@ -969,12 +974,15 @@ class Workflow (Task):
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
         p_plot_settings : PlotSettings
             Optional plot settings. If None, the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
+        p_window_title : str
+            Optional window title.
         """
 
         # 1 Init plot output on workflow level (if activated)
         Task.init_plot( self,
-                        p_figure=p_figure, 
-                        p_plot_settings=p_plot_settings )
+                        p_figure = p_figure, 
+                        p_plot_settings = p_plot_settings,
+                        p_window_title = p_window_title )
 
         self.force_fg()
 
@@ -1024,6 +1032,14 @@ class Workflow (Task):
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
 
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh = True):
+        for task in self._tasks:
+            task.remove_plot( p_refresh=p_refresh )
+
+        return super().remove_plot(p_refresh)
+    
 
 ## -------------------------------------------------------------------------------------------------
     def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):

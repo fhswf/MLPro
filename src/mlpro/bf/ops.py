@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf
 ## -- Module  : ops
 ## -------------------------------------------------------------------------------------------------
@@ -406,9 +406,11 @@ class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
         if self._timer is None: self._init_timer()
         self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': Start of processing')
 
+
         # 2 Late initialization of visualization with default parameters
-        if self._visualize:
+        if self.get_visualization():
             self.init_plot()
+
 
         # 3 Main loop 
         while True:
@@ -418,6 +420,7 @@ class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
             if p_term_on_error and error: break
             if p_term_on_timeout and timeout: break
             if limit or end_of_data: break
+
 
         # 4 Outro
         self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': End of processing')
