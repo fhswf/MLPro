@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-12-10  0.1.0     DA       Initial implementation
+## -- 2024-12-12  0.1.1     DA       Stabilization of method PlotBackendTkAgg.force_foreground()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-12-10)
+Ver. 0.1.1 (2024-12-12)
 
 This module provides an integration for Matplotlib backend 'TkAgg'.
 
@@ -32,7 +33,7 @@ class PlotBackendTkAgg (PlotBackend):
 
 ## -------------------------------------------------------------------------------------------------
     def force_foreground(self, p_window):
-        p_window.attributes('-topmost', True) 
+        p_window.after( 2000, lambda: p_window.attributes('-topmost', True) )
 
 
 ## -------------------------------------------------------------------------------------------------

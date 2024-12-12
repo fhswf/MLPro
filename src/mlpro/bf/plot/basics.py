@@ -60,10 +60,11 @@
 ## -- 2024-11-10  2.18.0    DA       Bugfix in method Plottable.force_fg()
 ## -- 2024-12-10  3.0.0     DA       - Created new module basics.py for classes PlotSettings, Plottable
 ## --                                - Class Plottable: plot window memory
+## -- 2024-12-12  3.1.0     DA       Method Plottable._init_figure(): optimization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.0 (2024-12-10)
+Ver. 3.1.0 (2024-12-12)
 
 This module provides various classes related to data plotting.
 
@@ -95,6 +96,8 @@ except:
     class Axes: pass
 
 
+
+g_event_loop_started = False
 
 
 
@@ -330,7 +333,6 @@ class Plottable:
         self._plot_first_time : bool  = True
         self._plot_own_figure : bool  = False
         self._plot_color              = None
-        self._plot_manager            = None
         self._plot_window             = None
 
 
@@ -525,18 +527,39 @@ class Plottable:
             Matplotlib figure object to host the subplot(s)
         """
 
-        fig = plt.figure()   
-        self._plot_manager = fig.canvas.manager
-        self._plot_window  = self._plot_manager.window
-        plt.show(block=False)
+        # 1 Start Matplotlib event-loop once
+        global g_event_loop_started
 
+        if not g_event_loop_started:
+            plt.show(block=False)
+            g_event_loop_started = True
+
+
+        # 2 Create a new window with an embedded figure
+        fig = plt.figure()   
+        self._plot_window = fig.canvas.manager.window
+
+
+        # 3 Set optional window title
         if p_window_title is not None:
             self._plot_backend.set_title( p_window = self._plot_window, p_title = p_window_title )
 
+
+        # 4 Create unique configuration key from actual window title
         if self._cfg_key is None:
             self._cfg_key = self._plot_backend.get_title( p_window = self._plot_window )
 
+
+        # 5 Recover size and position of the window
         self._recover_window_geometry()
+
+
+        # 6 Make window visible
+        while not self._plot_window.winfo_viewable():
+            plt.pause(0.01)    
+
+
+        # 7 Bring window on top
         self.force_fg()
 
         return fig
