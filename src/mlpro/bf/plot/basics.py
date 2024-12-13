@@ -333,6 +333,8 @@ class Plottable:
         self._plot_first_time : bool  = True
         self._plot_own_figure : bool  = False
         self._plot_color              = None
+        self._figure : Figure         = None
+        self._plot_window_manager     = None
         self._plot_window             = None
 
 
@@ -433,11 +435,11 @@ class Plottable:
         
         # 2.3 Setup the Matplotlib host figure if no one is provided as parameter
         if p_figure is None:
-            self._figure : Figure   = self._init_figure( p_window_title=p_window_title )
+            self._init_figure( p_window_title=p_window_title )
             self._plot_own_figure   = True
         else:
-            if self._plot_window is not None:
-                self._plot_backend.set_title( p_window = self._plot_window, p_title = p_window_title )
+            if self._plot_window_manager is not None:
+                self._plot_window_manager.set_window_title( p_window_title )
 
             self._figure : Figure   = p_figure
             
@@ -517,14 +519,9 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_figure(self, p_window_title: str = None) -> Figure:
+    def _init_figure(self, p_window_title: str = None):
         """
-        Custom method to initialize a suitable standalone Matplotlib figure.
-
-        Returns
-        -------
-        figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s)
+        Method to initialize a suitable standalone Matplotlib figure.
         """
 
         # 1 Start Matplotlib event-loop once
@@ -536,18 +533,19 @@ class Plottable:
 
 
         # 2 Create a new window with an embedded figure
-        fig = plt.figure()   
-        self._plot_window = fig.canvas.manager.window
+        self._figure = plt.figure()   
+        self._plot_window_manager = self._figure.canvas.manager
+        self._plot_window = self._plot_window_manager.window
 
 
         # 3 Set optional window title
         if p_window_title is not None:
-            self._plot_backend.set_title( p_window = self._plot_window, p_title = p_window_title )
+            self._plot_window_manager.set_window_title( p_window_title )
 
 
         # 4 Create unique configuration key from actual window title
         if self._cfg_key is None:
-            self._cfg_key = self._plot_backend.get_title( p_window = self._plot_window )
+            self._cfg_key = self._plot_window_manager.get_window_title() 
 
 
         # 5 Recover size and position of the window
@@ -562,15 +560,16 @@ class Plottable:
         # 7 Bring window on top
         self.force_fg()
 
-        return fig
-    
 
 ## -------------------------------------------------------------------------------------------------
     def _store_window_geometry(self):
         if self._plot_window is None: return
 
         try:
-            width, height, xpos, ypos = self._plot_backend.get_geometry( p_window = self._plot_window )
+            xpos, ypos = self._plot_backend.get_pos( p_window = self._plot_window )
+            size = self._figure.get_size_inches()
+            width = size[0]
+            height = size[1]
             geometry = {'xpos' : xpos, 'ypos' : ypos, 'width' : width, 'height' : height }
             self._cfg_file.set( p_key = self._cfg_key,
                                 p_values = geometry )
@@ -588,11 +587,11 @@ class Plottable:
             return
 
         # 2 Set geometry
-        self._plot_backend.set_geometry( p_window = self._plot_window,
-                                         p_xpos = geometry['xpos'],
-                                         p_ypos = geometry['ypos'],
-                                         p_width = geometry['width'],
-                                         p_height = geometry['height'] )
+        self._figure.set_size_inches( w = geometry['width'], h = geometry['height'] )
+        #self._plot_window_manager.resize( geometry['width'], geometry['height'] )
+        self._plot_backend.set_pos( p_window = self._plot_window,
+                                    p_xpos = geometry['xpos'],
+                                    p_ypos = geometry['ypos'] )
 
 
 ## -------------------------------------------------------------------------------------------------

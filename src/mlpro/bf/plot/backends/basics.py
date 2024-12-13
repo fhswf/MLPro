@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-12-10  0.1.0     DA       Initial implementation
+## -- 2924-12-13  0.2.0     DA       Removed methods get_title(), set_title()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2024-12-10)
+Ver. 0.2.0 (2024-12-13)
 
 This module provides the template class PlotBackend for special support of common Matplotlib backends.
 
@@ -29,20 +30,10 @@ class PlotBackend:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_geometry(self, p_window):
+    def get_pos(self, p_window):
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_geometry(self, p_window, p_xpos, p_ypos, p_width, p_height):
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_title(self, p_window) -> str:
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_title(self, p_window, p_title: str):
+    def set_pos(self, p_window, p_xpos, p_ypos):
         pass
