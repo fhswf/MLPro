@@ -334,7 +334,6 @@ class Plottable:
         self._plot_own_figure : bool  = False
         self._plot_color              = None
         self._figure : Figure         = None
-        self._plot_window_manager     = None
         self._plot_window             = None
 
 
@@ -437,10 +436,10 @@ class Plottable:
         if p_figure is None:
             self._init_figure( p_window_title=p_window_title )
             self._plot_own_figure   = True
+        elif self._figure is not None:
+            if p_window_title is not None:
+                self._plot_backend.figure_set_title( p_figure = self._figure, p_title = p_window_title )
         else:
-            if self._plot_window_manager is not None:
-                self._plot_window_manager.set_window_title( p_window_title )
-
             self._figure : Figure   = p_figure
             
         self._plot_settings.register( p_plot_obj = self )
@@ -533,28 +532,27 @@ class Plottable:
 
 
         # 2 Create a new window with an embedded figure
-        self._figure = plt.figure()   
-        self._plot_window_manager = self._figure.canvas.manager
-        self._plot_window = self._plot_window_manager.window
+        self._figure      = plt.figure()   
+        self._plot_window = self._figure.canvas.manager.window
 
 
         # 3 Set optional window title
         if p_window_title is not None:
-            self._plot_window_manager.set_window_title( p_window_title )
+            self._plot_backend.figure_set_title( p_figure = self._figure, p_title = p_window_title )
 
 
         # 4 Create unique configuration key from actual window title
         if self._cfg_key is None:
-            self._cfg_key = self._plot_window_manager.get_window_title() 
+            self._cfg_key = self._plot_backend.figure_get_title( p_figure = self._figure ) 
 
 
-        # 5 Recover size and position of the window
-        self._recover_window_geometry()
-
-
-        # 6 Make window visible
+        # 5 Make window visible
         while not self._plot_window.winfo_viewable():
             plt.pause(0.01)    
+
+
+        # 6 Recover size and position of the window
+        self._recover_window_geometry()
 
 
         # 7 Bring window on top
@@ -566,13 +564,9 @@ class Plottable:
         if self._plot_window is None: return
 
         try:
-            xpos, ypos = self._plot_backend.get_pos( p_window = self._plot_window )
-            size = self._figure.get_size_inches()
-            width = size[0]
-            height = size[1]
+            xpos, ypos, width, height = self._plot_backend.figure_get_geometry( p_figure = self._figure )
             geometry = {'xpos' : xpos, 'ypos' : ypos, 'width' : width, 'height' : height }
-            self._cfg_file.set( p_key = self._cfg_key,
-                                p_values = geometry )
+            self._cfg_file.set( p_key = self._cfg_key, p_values = geometry )
         except:
             pass
 
@@ -587,11 +581,11 @@ class Plottable:
             return
 
         # 2 Set geometry
-        self._figure.set_size_inches( w = geometry['width'], h = geometry['height'] )
-        #self._plot_window_manager.resize( geometry['width'], geometry['height'] )
-        self._plot_backend.set_pos( p_window = self._plot_window,
-                                    p_xpos = geometry['xpos'],
-                                    p_ypos = geometry['ypos'] )
+        self._plot_backend.figure_set_geometry( p_figure = self._figure, 
+                                                p_xpos = geometry['xpos'],
+                                                p_ypos = geometry['ypos'],
+                                                p_width = geometry['width'],
+                                                p_height = geometry['height'] )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -603,10 +597,10 @@ class Plottable:
         # 1 Plot functionality turned on?
         if not self.get_visualization(): return
 
-        if ( not self._plot_settings.force_fg ) or ( self._plot_window is None ): return
+        if ( not self._plot_settings.force_fg ) or ( self._figure is None ): return
         
         # 2 Call internal custom method
-        self._plot_backend.force_foreground( p_window=self._plot_window )
+        self._plot_backend.figure_force_foreground( p_figure = self._figure )
 
 
 ## -------------------------------------------------------------------------------------------------

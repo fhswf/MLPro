@@ -18,6 +18,7 @@ This module provides an integration for Matplotlib backend 'TkAgg'.
 
 """
 
+
 import re
 
 from mlpro.bf.plot.backends.basics import PlotBackend
@@ -34,35 +35,78 @@ class PlotBackendTkAgg (PlotBackend):
     C_NAME      = 'TkAgg'
 
 ## -------------------------------------------------------------------------------------------------
-    def force_foreground(self, p_window):
-        p_window.after( 2000, lambda: p_window.attributes('-topmost', True) )
+    def _figure_force_foreground_default(self, p_figure):
+        window = p_figure.canvas.manager.window
+        window.after( 2000, lambda: window.attributes('-topmost', True) )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_pos(self, p_window):
-        geometry = p_window.geometry().split('+')
-        return int(geometry[1]), int(geometry[2])
+    def _figure_get_geometry_Windows(self, p_figure):
+        geometry = p_figure.canvas.manager.window.geometry().split('+')
+        xpos = int(geometry[1])
+        ypos = int(geometry[2])
+
+        size = p_figure.get_size_inches()
+        width = size[0]
+        height = size[1]
+
+        return xpos, ypos, width, height
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_pos(self, p_window, p_pos : str, p_attempts: int = 10, p_wait: int = 100):
+    def _figure_get_geometry_default(self, p_figure):
+        geometry = p_figure.canvas.manager.window.geometry()
+        numbers = list(map(int, re.findall(r'\d+', geometry)))
+        return numbers[2], numbers[3], numbers[0], numbers[1]
+    
+
+    ## -------------------------------------------------------------------------------------------------
+    def _figure_set_pos_Windows_rec(self, p_window, p_pos: str, p_attempts: int = 10, p_wait: int = 100):
         if p_attempts <= 0: return
 
         p_window.update_idletasks()            
         p_window.geometry(p_pos)
         p_window.update_idletasks()  
 
-        geo_new = p_window.geometry()
+        match = re.search(r'\+\d+\+\d+', p_window.geometry())
+        if match:
+            pos_new = match.group()
 
-        if p_pos in geo_new: 
+        if p_pos == pos_new: 
             return
 
-        p_window.after( p_wait, lambda: self._set_geometry( p_window = p_window, 
-                                                            p_pos = p_pos,
-                                                            p_attempts = p_attempts - 1, 
-                                                            p_wait = p_wait ) )                
+        p_window.after( p_wait, lambda: self._figure_set_pos_Windows_rec( p_window = p_window, 
+                                                                          p_pos = p_pos,
+                                                                          p_attempts = p_attempts - 1, 
+                                                                          p_wait = p_wait ) )            
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_pos(self, p_window, p_xpos, p_ypos):
-        self._set_pos( p_window = p_window, p_pos = f'+{p_xpos}+{p_ypos}' )
+    def _figure_set_geometry_Windows(self, p_figure, p_xpos, p_ypos, p_width, p_height):
+        p_figure.set_size_inches( w = p_width, h = p_height)
+        self._figure_set_pos_Windows_rec( p_window=p_figure.canvas.manager.window, p_pos=f'+{p_xpos}+{p_ypos}')
+
+
+## -------------------------------------------------------------------------------------------------
+    def _figure_set_geometry_default_rec(self, p_window, p_geometry: str, p_attempts: int = 10, p_wait: int = 100):
+        if p_attempts <= 0: return
+
+        p_window.update_idletasks()            
+        p_window.geometry(p_geometry)
+        p_window.update_idletasks()  
+
+        geo_new = p_window.geometry()
+
+        if p_geometry == geo_new: 
+            return
+
+        p_window.after( p_wait, lambda: self._figure_set_geometry_default_rec( p_window = p_window, 
+                                                                               p_geometry = p_geometry,
+                                                                               p_attempts = p_attempts - 1, 
+                                                                               p_wait = p_wait ) )             
+
+
+## -------------------------------------------------------------------------------------------------
+    def _figure_set_geometry_default(self, p_figure, p_xpos, p_ypos, p_width, p_height):
+        geometry = f'{p_width}x{p_height}+{p_xpos}+{p_ypos}'
+        self._figure_set_geometry_default_rec( p_window = p_figure.canvas.manager.window, p_geometry=geometry )
