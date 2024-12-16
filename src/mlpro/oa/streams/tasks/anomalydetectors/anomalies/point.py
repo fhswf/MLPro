@@ -8,20 +8,26 @@
 ## -- 2023-06-08  0.0.0     SK       Creation
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-12-11  1.2.1     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-04-10)
+Ver. 1.2.1 (2024-12-11)
 
 
 This module provides a template class for point anomaly event to be used in anomaly detection algorithms.
 """
 
+try:
+    from matplotlib.figure import Figure
+    from matplotlib.text import Text
+except:
+    class Figure : pass
+    class Text : pass
+    
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
-from matplotlib.figure import Figure
-from matplotlib.text import Text
 
 
 

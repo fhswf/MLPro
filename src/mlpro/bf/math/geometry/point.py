@@ -20,17 +20,22 @@
 ## -- 2024-06-03  1.8.0     DA       Class Point: new attributes color, marker
 ## -- 2024-06-05  1.8.1     DA       Bugfix in Point._remove_plot_2d()
 ## -- 2024-06-26  1.9.0     DA       Refactoring
+## -- 2024-12-11  1.9.1     DA       Pseudo class Figure if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2024-06-26)
+Ver. 1.9.1 (2024-12-11)
 
 This module provides a property class for the geometric shape 'point'.
 
 """ 
 
 
-from matplotlib.figure import Figure
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure: pass
+
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.normalizers import Normalizer

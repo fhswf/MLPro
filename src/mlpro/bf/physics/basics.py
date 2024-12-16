@@ -7,17 +7,22 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-04  0.0.0     SY       Creation 
 ## -- 2023-02-04  1.0.0     SY       First release 
+## -- 2024-12-11  1.0.1     DA       Optional import of matplotlib
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-02-04)
+Ver. 1.0.1 (2024-12-11)
 
 This module provides models and templates for physics.
 """
 
 
 from mlpro.bf.various import ScientificObject, PersonalisedStamp, Log
-import matplotlib.pyplot as plt
+
+try:
+    import matplotlib.pyplot as plt
+except:
+    pass
 
 
 
