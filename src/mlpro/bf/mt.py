@@ -972,8 +972,6 @@ class Workflow (Task):
                         p_plot_settings = p_plot_settings,
                         p_window_title = p_window_title )
 
-        self.force_fg()
-
       
         # 2 Init plot output on task level
         for task in self._tasks:
@@ -1010,9 +1008,6 @@ class Workflow (Task):
                 
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings )
-
-            # Force task window to stay in foreground
-            task.force_fg()
 
 
         # 3 Initial refresh of workflow window

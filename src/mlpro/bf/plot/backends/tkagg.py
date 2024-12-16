@@ -9,10 +9,11 @@
 ## -- 2024-12-12  0.1.1     DA       Stabilization of method PlotBackendTkAgg.force_foreground()
 ## -- 2024-12-13  0.2.0     DA       - bugfix in PlotBackendTkAgg._set_geometry()
 ## --                                - removed methods get_title(), set_title()
+## -- 2024-12-16  0.3.0     DA       Refactoring and validation for Linux
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-12-13)
+Ver. 0.3.0 (2024-12-16)
 
 This module provides an integration for Matplotlib backend 'TkAgg'.
 
