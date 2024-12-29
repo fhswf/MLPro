@@ -74,8 +74,17 @@ This module provides various classes related to data plotting.
 try:
     # Import of all packages related to plotting is optional and not needed in case of 'dark' processing
     import matplotlib
-    from tkinter import *
-    matplotlib.use('TkAgg')
+
+    try:
+        from matplotlib.backends.qt_compat import QtCore, QtGui
+        qtcore_test = QtCore.__version__
+        qtgui_test  = QtGui.__version__
+        matplotlib.use('QtAgg')
+    except:
+        import tkinter
+        matplotlib.use('TkAgg')
+
+    g_plotting_enabled = True
 
     from operator import mod
     import sys
@@ -94,10 +103,12 @@ try:
 except:
     class Figure: pass
     class Axes: pass
+    g_plotting_enabled = False
 
 
 
 g_event_loop_started = False
+
 
 
 
@@ -320,7 +331,7 @@ class Plottable:
     def __init__(self, p_visualize:bool=False):
 
         # 1 Initialize attributes needed (even in 'dark' mode)
-        self._visualize                    = p_visualize and self.C_PLOT_ACTIVE
+        self._visualize                    = p_visualize and self.C_PLOT_ACTIVE and g_plotting_enabled
         self._plot_settings : PlotSettings = None
 
         # 1.1 Do nothing if visualization is turned off
