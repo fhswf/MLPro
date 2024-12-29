@@ -59,54 +59,34 @@
 ## --                                - Refactoring: removed par p_force from Plottable.refresh()
 ## -- 2024-11-10  2.18.0    DA       Bugfix in method Plottable.force_fg()
 ## -- 2024-12-10  3.0.0     DA       - Created new module basics.py for classes PlotSettings, Plottable
-## --                                - Class Plottable: plot window memory
+## --                                - Class Plottable: memory function for plot window geometries
 ## -- 2024-12-12  3.1.0     DA       Method Plottable._init_figure(): optimization
+## -- 2024-12-29  3.2.0     DA       Import of all plot packages moved to class Plottable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.1.0 (2024-12-12)
+Ver. 3.2.0 (2024-12-29)
 
 This module provides various classes related to data plotting.
 
 """
 
+from operator import mod
+import sys
+import os
+from pathlib import Path
+import atexit
 
-try:
-    # Import of all packages related to plotting is optional and not needed in case of 'dark' processing
-    import matplotlib
+from mlpro.bf.exceptions import ImplementationError, ParamError
+from mlpro.bf.plot.backends import *
+from mlpro.bf.data import ConfigFile
 
-    try:
-        from matplotlib.backends.qt_compat import QtCore, QtGui
-        qtcore_test = QtCore.__version__
-        qtgui_test  = QtGui.__version__
-        matplotlib.use('QtAgg')
-    except:
-        import tkinter
-        matplotlib.use('TkAgg')
-
-    g_plotting_enabled = True
-
-    from operator import mod
-    import sys
-    import os
-    from pathlib import Path
-    import atexit
-
-    from matplotlib.figure import Figure
-    from matplotlib.axes import Axes
-    import matplotlib.pyplot as plt
-
-    from mlpro.bf.exceptions import ImplementationError, ParamError
-    from mlpro.bf.plot.backends import *
-    from mlpro.bf.data import ConfigFile
-
-except:
-    class Figure: pass
-    class Axes: pass
-    g_plotting_enabled = False
+# Pseudo definitions until the final plot classes are imported
+class Figure: pass
+class Axes: pass
 
 
-
+g_plot_packages_imported = None
 g_event_loop_started = False
 
 
@@ -331,10 +311,14 @@ class Plottable:
     def __init__(self, p_visualize:bool=False):
 
         # 1 Initialize attributes needed (even in 'dark' mode)
-        self._visualize                    = p_visualize and self.C_PLOT_ACTIVE and g_plotting_enabled
+        self._visualize                    = p_visualize and self.C_PLOT_ACTIVE 
         self._plot_settings : PlotSettings = None
 
-        # 1.1 Do nothing if visualization is turned off
+        # 1.1 Import plot packages
+        if self._visualize:
+            self._visualize = self._import_plot_packages()
+        
+        # 1.2 Do nothing if visualization is turned off
         if not self._visualize: return
 
 
@@ -364,6 +348,39 @@ class Plottable:
 
         # 5 Force storing the window geometry at program termination 
         atexit.register(self._store_window_geometry)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _import_plot_packages(self) -> bool:
+
+        global g_plot_packages_imported
+
+        if g_plot_packages_imported is not None: return g_plot_packages_imported
+
+        try:
+            global matplotlib, tkinter, Figure, Axes, plt
+            import matplotlib
+
+            try:
+                from matplotlib.backends.qt_compat import QtCore
+                qtcore_test = QtCore.__version__
+                matplotlib.use('qtagg')
+            except:
+                import tkinter
+                matplotlib.use('TkAgg')
+                print('Plot backend "Tk" activated. Nevertheless, we recommend installing package PySide6 for better plot performance.')
+
+            from matplotlib.figure import Figure
+            from matplotlib.axes import Axes
+            import matplotlib.pyplot as plt
+
+            g_plot_packages_imported = True
+
+        except:
+            print('Plotting disabled. To enable it, please install matplotlib and Qt or Tk.')
+            g_plot_packages_imported = False
+
+        return g_plot_packages_imported
 
 
 ## -------------------------------------------------------------------------------------------------
