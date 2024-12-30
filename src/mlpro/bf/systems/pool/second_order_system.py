@@ -8,13 +8,16 @@
 ## -- 2024-11-09  0.1.0     ASP       Initial implementation class PT2
 ## -- 2024-11-10  0.2.0     ASP       class PT2: update methods __init__(), _setup_spaces()
 ## -- 2024-11-16  0.3.0     ASP       class PT2: update methods _simulate_reaction()
-##                                       - changed dt = p_step to dt = p_step.total_seconds()
+##                                      - changed dt = p_step to dt = p_step.total_seconds()
 ## -- 2024-12-03  0.4.0     ASP       class PT2: update methods __init__() und _reset
-## 
+## -- 2024-12-30  0.5.0     ASP       class PT2: Refactoring
+##                                      - add C_SAMPLE_FREQ : Specifies how often the system is sampled in a control cycle
+##                                      - add self._dt: Sampling time
+##                                      - update _simulate_reaction(), _rest()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-12-03)
+Ver. 0.5.0 (2024-12-30)
 
 This module provides a simple demo system that represent second order system.
     Further infos : https://www.circuitbread.com/tutorials/second-order-systems-2-3
@@ -44,12 +47,10 @@ class PT2 (System):
     """
 
     C_NAME          = 'PT2'
-    C_BOUNDARIES    = [-1000,1000]
+    C_BOUNDARIES    = [-250,250]
     C_PLOT_ACTIVE   = False
-
     C_LATENCY       = timedelta( seconds = 1 )
-    
-    
+    C_SAMPLE_FREQ   = 20    
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -71,16 +72,19 @@ class PT2 (System):
 
         Parameters
         ----------
-        p_K : float
-            Gain factor of the system.
-        p_D : float
-            Damping ration of the system.
-        p_omega_0 : float
-            Characteristic frequency of the system.
-        p_sys_num : float
-            Num id of the system.
+        p_K         : float
+                    Gain factor of the system.
+        p_D         : float
+                    Damping ration of the system.
+        p_omega_0   : float
+                    Characteristic frequency of the system.
+        p_sys_num   : float
+                    Num id of the system.
         p_max_cycle : float
-            Number of max cycles.        
+                    Number of max cycles.    
+
+        p_y_start   : float
+                    Start value of the control variable    
         """
 
         self.K = p_K
@@ -88,10 +92,10 @@ class PT2 (System):
         self._omega_0 =p_omega_0
         self._sys_num = p_sys_num
         self._y_start = p_y_start
-        self._y = np.zeros(p_max_cycle+1)  
-        self._dy = np.zeros(p_max_cycle+1)
+        self._y = np.zeros(p_max_cycle*self.C_SAMPLE_FREQ+1)  
+        self._dy = np.zeros(p_max_cycle*self.C_SAMPLE_FREQ+1)
         self._y[0] = self._y_start
-        self._cycle = 1  
+        self._cycle = 1        
 
         super().__init__( p_id = p_id, 
                           p_name = p_name,
@@ -101,6 +105,7 @@ class PT2 (System):
                           p_visualize = False, 
                           p_logging = p_logging )     
 
+        self._dt=self.get_latency().total_seconds()/self.C_SAMPLE_FREQ   
         self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
         
 
@@ -118,17 +123,21 @@ class PT2 (System):
   
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
+
         random.seed( p_seed )
         new_state = State( p_state_space = self.get_state_space(), p_initial = True )
         self._set_state( p_state = new_state )
+        #clear dy- Array
         self._y = self._y*0  
+        #clear dy- array
         self._dy = self._dy*0
+        #set start value of control_varibale 
         self._y[0] = self._y_start
         self._cycle = 1 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def acceleration(self,p_y:float, p_dy:float, p_u:float):
+    def _state_equation(self,p_y:float, p_dy:float, p_u:float)-> float:
 
         """
         Initialsize second-order-system.
@@ -144,7 +153,7 @@ class PT2 (System):
         """
 
         #Calculating the second derivative (acceleration)
-        return -2 * self._D * self._omega_0 * p_dy - self._omega_0**2 * p_y + self._omega_0**2 * p_u
+        return -2 * self._D * self._omega_0 * p_dy - self._omega_0**2 * p_y + self._omega_0**2 * p_u*self.K
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -157,29 +166,45 @@ class PT2 (System):
         new_state = State( p_state_space = self.get_state_space())
 
         # get control Variable
-        u= p_action.get_elem(p_id=agent_id).get_values()[0]
-
-        dt=p_step.total_seconds() 
-
-        # Calculation RK4-Koeffizienten 
-        k1_y = self._dy[self._cycle-1] * dt
-        k1_dy = self.acceleration(self._y[self._cycle-1], self._dy[self._cycle-1], u) * dt
-
-        k2_y = (self._dy[self._cycle-1] + 0.5 * k1_dy) * dt
-        k2_dy = self.acceleration(self._y[self._cycle-1] + 0.5 * k1_y, self._dy[self._cycle-1] + 0.5 * k1_dy, u) * dt
-
-        k3_y = (self._dy[self._cycle-1] + 0.5 * k2_dy) * dt
-        k3_dy = self.acceleration(self._y[self._cycle-1] + 0.5 * k2_y, self._dy[self._cycle-1] + 0.5 * k2_dy, u) * dt
-
-        k4_y = (self._dy[self._cycle-1] + k3_dy) * dt
-        k4_dy = self.acceleration(self._y[self._cycle-1] + k3_y, self._dy[self._cycle-1] + k3_dy, u) * dt
-
-        # update von y und dy
-        self._y[self._cycle] = self._y[self._cycle-1] + (k1_y + 2 * k2_y + 2 * k3_y + k4_y) / 6
-        self._dy[self._cycle] = self._dy[self._cycle-1] + (k1_dy + 2 * k2_dy + 2 * k3_dy + k4_dy) / 6
+        u= p_action.get_elem(p_id=agent_id).get_values()[0]      
         
-        #set values of new state state 
-        new_state.values = [self._y[self._cycle]]
-        self._cycle+=1    
+
+        for step in range(self.C_SAMPLE_FREQ):             
+
+            # Calculation R1-Coefficient  of the first derivative
+            k1_y = self._dy[self._cycle-1] * self._dt
+
+            # Calculation R1-Coefficient of the second derivative
+            k1_dy = self._state_equation(self._y[self._cycle-1], self._dy[self._cycle-1], u) * self._dt
+
+            # Calculation R2-Coefficient  of the second derivative
+            k2_y = (self._dy[self._cycle-1] + 0.5 * k1_dy) * self._dt
+
+            # Calculation R2-Coefficient of the second derivative
+            k2_dy = self._state_equation(self._y[self._cycle-1] + 0.5 * k1_y, self._dy[self._cycle-1] + 0.5 * k1_dy, u) * self._dt
+
+            # Calculation R3-Coefficient  of the first derivative
+            k3_y = (self._dy[self._cycle-1] + 0.5 * k2_dy) * self._dt
+
+            # Calculation R3-Coefficient  of the second derivative
+            k3_dy = self._state_equation(self._y[self._cycle-1] + 0.5 * k2_y, self._dy[self._cycle-1] + 0.5 * k2_dy, u) * self._dt
+
+            # Calculation R4-Coefficient  of the first derivative
+            k4_y = (self._dy[self._cycle-1] + k3_dy) * self._dt
+
+            # Calculation R4-Coefficient  of the second derivative
+            k4_dy = self._state_equation(self._y[self._cycle-1] + k3_y, self._dy[self._cycle-1] + k3_dy, u) * self._dt
+
+            # update von y und dy
+            self._y[self._cycle] = self._y[self._cycle-1] + (k1_y + 2 * k2_y + 2 * k3_y + k4_y) / 6
+            self._dy[self._cycle] = self._dy[self._cycle-1] + (k1_dy + 2 * k2_dy + 2 * k3_dy + k4_dy) / 6
+            
+            # Limit output
+            self._y[self._cycle] = max(self.C_BOUNDARIES[0],self._y[self._cycle])
+            self._y[self._cycle]= min(self.C_BOUNDARIES[1],self._y[self._cycle])
+
+            #set values of new state state 
+            new_state.values = [self._y[self._cycle]]
+            self._cycle+=1    
 
         return new_state
