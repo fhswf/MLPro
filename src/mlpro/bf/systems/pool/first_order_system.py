@@ -13,10 +13,14 @@
 ##                                       - changed dt = p_step to dt = p_step.total_seconds() 
 ## -- 2024-12-03  0.5.0     ASP      class PT1: update methods _reset()
 ##                                       - add start state of the system
+## -- 2024-12-30  0.6.0     ASP       class PT1: Refactoring
+##                                      - add C_SAMPLE_FREQ : Specifies how often the system is sampled in a control cycle
+##                                      - add self._dt: Sampling time
+##                                      - update _simulate_reaction(), _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-11-16)
+Ver. 0.6.0 (2024-12-30)
 This module provides a simple demo system that represent a first-order-system
     Further information: https://www.circuitbread.com/tutorials/first-order-systems-2-2
 """
@@ -40,10 +44,10 @@ class PT1 (System):
     """
 
     C_NAME          = 'PT1'
-    C_BOUNDARIES    = [0,1000]
+    C_BOUNDARIES    = [-250,250]
     C_PLOT_ACTIVE   = False
-
     C_LATENCY       = timedelta( seconds = 0.1 )
+    C_SAMPLE_FREQ   = 20    
 
     ## -------------------------------------------------------------------------------------------------
     def __init__( self,                  
@@ -64,13 +68,21 @@ class PT1 (System):
 
         Parameters
         ----------
-        p_K : float
-            Gain factor of the system.
-        p_T : float
-            Time constant of the system.
-        p_sys_num : float
-            Num id of the system
+        p_K         : float
+                    Gain factor of the system.
+        p_T         : float
+                    Time constant of the system.
+        p_sys_num   : float
+                    Num id of the system
+        p_y_start   : float
+                    Start value of the control variable  
         """
+
+        self.K = p_K          
+        self.T = p_T
+        self._sys_num = p_sys_num
+        self._y_start = p_y_start
+        self._y_prev = None
         
         super().__init__( p_id = p_id, 
                           p_name = p_name,
@@ -78,14 +90,9 @@ class PT1 (System):
                           p_mode = Mode.C_MODE_SIM, 
                           p_latency = p_latency,
                           p_visualize = False, 
-                          p_logging = p_logging )
-        
-        self.K = p_K          
-        self.T = p_T
-        self._sys_num = p_sys_num
-        self._y_start = p_y_start
-        self._y_prev = None
-        
+                          p_logging = p_logging )        
+
+        self._dt = self.get_latency().total_seconds()/self.C_SAMPLE_FREQ       
         self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
 
 
@@ -129,11 +136,17 @@ class PT1 (System):
             # get current state
             self._y_prev = p_state.values[0]
 
-        dt = p_step.total_seconds() 
+
+        for step in range(self.C_SAMPLE_FREQ):   
+
+             # rekursions function of first oder system
+            y = (self._dt* self.K * u + self.T * self._y_prev) / (self.T + self._dt) 
+            self._y_prev = y
         
-        # rekursions function of first oder system
-        y = (dt* self.K * u + self.T * self._y_prev) / (self.T + dt) 
-        
+        # Limit output
+        y = max(self.C_BOUNDARIES[0],y)
+        y = min(self.C_BOUNDARIES[1],y)
+
         #set values of new state state 
         new_state.values = [y]    
 
