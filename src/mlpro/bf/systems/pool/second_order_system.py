@@ -13,7 +13,7 @@
 ## -- 2024-12-30  0.5.0     ASP       class PT2: Refactoring
 ##                                      - add C_SAMPLE_FREQ : Specifies how often the system is sampled in a control cycle
 ##                                      - add self._dt: Sampling time
-##                                      - update _simulate_reaction(), _rest()
+##                                      - update _simulate_reaction(), _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -105,7 +105,7 @@ class PT2 (System):
                           p_visualize = False, 
                           p_logging = p_logging )     
 
-        self._dt=self.get_latency().total_seconds()/self.C_SAMPLE_FREQ   
+        self._dt = self.get_latency().total_seconds()/self.C_SAMPLE_FREQ   
         self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
         
 
@@ -201,10 +201,10 @@ class PT2 (System):
             
             # Limit output
             self._y[self._cycle] = max(self.C_BOUNDARIES[0],self._y[self._cycle])
-            self._y[self._cycle]= min(self.C_BOUNDARIES[1],self._y[self._cycle])
+            self._y[self._cycle] = min(self.C_BOUNDARIES[1],self._y[self._cycle])
 
             #set values of new state state 
             new_state.values = [self._y[self._cycle]]
-            self._cycle+=1    
+            self._cycle += 1    
 
         return new_state
