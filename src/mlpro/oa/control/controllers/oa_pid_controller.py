@@ -14,10 +14,11 @@
 ## -- 2024-12-05  0.5.0     ASP      -changed signature of compute_action()
 ## -- 2024-12-05  0.6.0     ASP      -implementation assign_so(), update compute_action()
 ## -- 2024-12-06  0.7.0     ASP      -BugFix: _adapt()
+## -- 2025-01-02  0.8.0     ASP      -Renaming of variable names 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2024-12-05)
+Ver. 0.8.0 (2025-01-02
 
 This module provides an implementation of a OA PID controller.
 
@@ -26,7 +27,8 @@ This module provides an implementation of a OA PID controller.
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.bf.ml.basics import *
 from mlpro.rl import Policy,SARSElement
-from mlpro.rl import Action, State, SARSElement, FctReward, Policy
+from mlpro.rl import Action, State, SARSElement,Policy
+from mlpro.bf.streams import InstDict
 
 
 
@@ -57,11 +59,15 @@ class RLPID(Policy):
                   p_visualize: bool = False,
                   p_logging=Log.C_LOG_ALL ):
         
-        super().__init__(p_observation_space, p_action_space, p_id, p_buffer_size, p_ada, p_visualize, p_logging)
+        super().__init__(p_observation_space,
+                        p_action_space, p_id,
+                        p_buffer_size, 
+                        p_ada, p_visualize,
+                        p_logging)
 
         self._pid_controller = p_pid_controller
         self._policy = p_policy
-        self._crtl_variable_old = None #None
+        self._action_old = None 
         self._action_space = p_action_space
 
 
@@ -78,6 +84,7 @@ class RLPID(Policy):
         except:
             pass
 
+
 ## -------------------------------------------------------------------------------------------------
     def get_hyperparam(self) -> HyperParamTuple:
        return self._policy.get_hyperparam()
@@ -90,42 +97,41 @@ class RLPID(Policy):
 
 ## -------------------------------------------------------------------------------------------------    
     def _adapt(self, p_sars_elem: SARSElement) -> bool:
-        """
-        Parameters:
-        p_sars_elem:SARSElement
-            Element of a SARSBuffer
-        """
 
         is_adapted = False
 
         #get SARS Elements 
         p_state,p_crtl_variable,p_reward,p_state_new=tuple(p_sars_elem.get_data().values())
-
         
-        if self._crtl_variable_old is not None:
+        if self._action_old is not None:
 
            # create a new SARS
-            p_sars_elem_new = SARSElement(p_state=p_state,
-                                        p_action=self._crtl_variable_old,
-                                        p_reward=p_reward, 
-                                        p_state_new=p_state_new)
-            
+            p_sars_elem_new = SARSElement(p_state = p_state,
+                                        p_action = self._action_old,
+                                        p_reward = p_reward, 
+                                        p_state_new = p_state_new)       
+
+
             #adapt own policy
-            is_adapted = self._policy._adapt(p_sars_elem_new)        
+            is_adapted = self._policy._adapt(p_sars_elem_new)
+
+            if is_adapted:     
                 
-            # compute new action with new error value (second s of Sars element)
-            self._crtl_variable_old=self._policy.compute_action(p_obs=p_state_new)
+                # compute new action with new error value (second s of Sars element)
+                self._action_old=self._policy.compute_action(p_obs=p_state_new)
 
-            #get the pid paramter values 
-            pid_values = self._crtl_variable_old.get_feature_data().get_values()
+                #get the pid paramter values 
+                pid_values = self._action_old.get_feature_data().get_values()
 
-            #set paramter pid
-            self._pid_controller.set_parameter(p_param={"Kp":pid_values[0],
+                #set paramter pid
+                self._pid_controller.set_parameter(p_param={"Kp":pid_values[0],
                                                     "Tn":pid_values[1],
-                                                    "Tv":pid_values[2]})
+                                                    "Tv":pid_values[2]})         
+            
         else:
+
             #compute new action with new error value (second s of Sars element)
-            self._crtl_variable_old = self._policy.compute_action(p_obs=p_state_new) 
+            self._action_old = self._policy.compute_action(p_obs=p_state_new) 
 
         return is_adapted 
     
@@ -168,9 +174,9 @@ class RLPID(Policy):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings, p_inst, **p_kwargs):
-        return self._pid_controller._update_plot_nd(p_settings, p_inst, **p_kwargs)
-    
+    def _update_plot_nd(self, p_settings, p_inst:InstDict, **p_kwargs): 
+        return self._pid_controller._update_plot_nd(p_settings, p_inst, **p_kwargs)   
+
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
