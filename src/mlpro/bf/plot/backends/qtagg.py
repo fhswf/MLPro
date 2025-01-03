@@ -49,10 +49,9 @@ class PlotBackendqtagg (PlotBackend):
     def _figure_get_geometry_default(self, p_figure : Figure) -> WindowGeometry:
 
         # 1 Get size and position
-        window   = p_figure.canvas.manager.window
-        geometry = window.geometry()
-        pos      = geometry.topLeft()
-        size     = geometry.size()
+        window = p_figure.canvas.manager.window
+        pos    = window.pos()
+        size   = window.size()
 
         # 2 Get window state
         state_qt = window.windowState()

@@ -570,8 +570,9 @@ class Plottable:
 
 
         # 5 Make window visible
-        # while not self._plot_window.winfo_viewable():
-        plt.pause(0.01)    
+        # while not self._plot_window.winfo_viewable(): # Tk
+        # while not self._plot_window.isVisible():  # Qt
+        plt.pause(0.1)    
 
 
         # 6 Recover size and position of the window
