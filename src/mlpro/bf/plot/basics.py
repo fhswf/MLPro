@@ -75,7 +75,6 @@ from operator import mod
 import sys
 import os
 from pathlib import Path
-import atexit
 
 from mlpro.bf.exceptions import ImplementationError, ParamError
 from mlpro.bf.plot.backends import *
@@ -346,10 +345,6 @@ class Plottable:
         self._cfg_key  = None
 
 
-        # 5 Force storing the window geometry at program termination 
-        atexit.register(self._store_window_geometry)
-
-
 ## -------------------------------------------------------------------------------------------------
     def _import_plot_packages(self) -> bool:
 
@@ -575,8 +570,8 @@ class Plottable:
 
 
         # 5 Make window visible
-        while not self._plot_window.winfo_viewable():
-            plt.pause(0.01)    
+        # while not self._plot_window.winfo_viewable():
+        plt.pause(0.01)    
 
 
         # 6 Recover size and position of the window
@@ -585,6 +580,10 @@ class Plottable:
 
         # 7 Bring window on top
         self.force_fg()
+  
+  
+        # 8 Force storing the window geometry at program termination 
+        self._plot_backend.figure_atexit( p_figure = self._figure, p_fct = self._store_window_geometry )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -592,8 +591,7 @@ class Plottable:
         if self._plot_window is None: return
 
         try:
-            xpos, ypos, width, height = self._plot_backend.figure_get_geometry( p_figure = self._figure )
-            geometry = {'xpos' : xpos, 'ypos' : ypos, 'width' : width, 'height' : height }
+            geometry = self._plot_backend.figure_get_geometry( p_figure = self._figure )
             self._cfg_file.set( p_key = self._cfg_key, p_values = geometry )
         except:
             pass
@@ -610,10 +608,7 @@ class Plottable:
 
         # 2 Set geometry
         self._plot_backend.figure_set_geometry( p_figure = self._figure, 
-                                                p_xpos = geometry['xpos'],
-                                                p_ypos = geometry['ypos'],
-                                                p_width = geometry['width'],
-                                                p_height = geometry['height'] )
+                                                p_geometry = geometry )
 
 
 ## -------------------------------------------------------------------------------------------------

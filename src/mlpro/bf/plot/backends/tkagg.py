@@ -10,10 +10,11 @@
 ## -- 2024-12-13  0.2.0     DA       - bugfix in PlotBackendTkAgg._set_geometry()
 ## --                                - removed methods get_title(), set_title()
 ## -- 2024-12-16  0.3.0     DA       Refactoring and validation for Linux
+## -- 2025-01-03  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-12-16)
+Ver. 0.4.0 (2025-01-03)
 
 This module provides an integration for Matplotlib backend 'TkAgg'.
 
@@ -22,7 +23,12 @@ This module provides an integration for Matplotlib backend 'TkAgg'.
 
 import re
 
-from mlpro.bf.plot.backends.basics import PlotBackend
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
+
+from mlpro.bf.plot.backends import PlotBackend, WindowGeometry, WindowState, WSNORMAL, WSMINIMIZED, WSMAXIMIZED
 
 
 
@@ -39,29 +45,65 @@ class PlotBackendTkAgg (PlotBackend):
     def _figure_force_foreground_default(self, p_figure):
         window = p_figure.canvas.manager.window
         window.after( 2000, lambda: window.attributes('-topmost', True) )
+        # p_figure.canvas.manager.window.attributes('-topmost', True) 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _figure_get_geometry_Windows(self, p_figure):
-        geometry = p_figure.canvas.manager.window.geometry().split('+')
+    def _figure_get_geometry_Windows(self, p_figure) -> WindowGeometry:
+
+        # 1 Get size and position   
+        window   = p_figure.canvas.manager.window     
+        geometry = window.geometry().split('+')
         xpos = int(geometry[1])
         ypos = int(geometry[2])
 
-        size = p_figure.get_size_inches()
-        width = size[0]
+        size   = p_figure.get_size_inches()
+        width  = size[0]
         height = size[1]
 
-        return xpos, ypos, width, height
+        # 2 Get window state
+        state_tk = window.wm_state()
+        if state_tk == 'iconic':
+            state = WSMINIMIZED
+        elif state_tk == 'zoomed': 
+            state = WSMAXIMIZED
+        else:
+            state = WSNORMAL
+
+        # 3 Return dictionary compatible with type WindowGeometry
+        return { 'xpos'   : xpos,
+                 'ypos'   : ypos,
+                 'width'  : width,
+                 'height' : height,
+                 'state'  : state }
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _figure_get_geometry_default(self, p_figure):
-        geometry = p_figure.canvas.manager.window.geometry()
-        numbers = list(map(int, re.findall(r'\d+', geometry)))
-        return numbers[2], numbers[3], numbers[0], numbers[1]
+    def _figure_get_geometry_default(self, p_figure) -> WindowGeometry:
+
+        # 1 Get size and position  
+        window   = p_figure.canvas.manager.window
+        geometry = window.geometry()
+        numbers  = list(map(int, re.findall(r'\d+', geometry)))
+
+        # 2 Get window state
+        state_tk = window.wm_state()
+        if state_tk == 'iconic':
+            state = WSMINIMIZED
+        elif state_tk == 'zoomed': 
+            state = WSMAXIMIZED
+        else:
+            state = WSNORMAL
+
+        # 3 Return dictionary compatible with type WindowGeometry
+        return { 'xpos'   : numbers[2],
+                 'ypos'   : numbers[3],
+                 'width'  : numbers[0],
+                 'height' : numbers[1],
+                 'state'  : state }
     
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _figure_set_pos_Windows_rec(self, p_window, p_pos: str, p_attempts: int = 10, p_wait: int = 100):
         if p_attempts <= 0: return
 
@@ -83,9 +125,23 @@ class PlotBackendTkAgg (PlotBackend):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _figure_set_geometry_Windows(self, p_figure, p_xpos, p_ypos, p_width, p_height):
-        p_figure.set_size_inches( w = p_width, h = p_height)
-        self._figure_set_pos_Windows_rec( p_window=p_figure.canvas.manager.window, p_pos=f'+{p_xpos}+{p_ypos}')
+    def _figure_set_geometry_Windows(self, p_figure : Figure, p_geometry : WindowGeometry):
+
+        # 1 Set size and position
+        window=p_figure.canvas.manager.window
+        p_figure.set_size_inches( w = p_geometry['width'], h = p_geometry['height'])
+        self._figure_set_pos_Windows_rec( p_window=window, p_pos=f'+{p_geometry["xpos"]}+{p_geometry["ypos"]}')
+
+        # 2 Set window state
+        state = p_geometry['state']
+        if state == WSMINIMIZED:
+            state_tk = 'iconic'
+        elif state == WSMAXIMIZED:
+            state_tk = 'zoomed'
+        else:
+            state_tk = 'normal'
+
+        window.wm_state(state_tk)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -108,6 +164,20 @@ class PlotBackendTkAgg (PlotBackend):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _figure_set_geometry_default(self, p_figure, p_xpos, p_ypos, p_width, p_height):
-        geometry = f'{p_width}x{p_height}+{p_xpos}+{p_ypos}'
-        self._figure_set_geometry_default_rec( p_window = p_figure.canvas.manager.window, p_geometry=geometry )
+    def _figure_set_geometry_default(self, p_figure : Figure, p_geometry : WindowGeometry):
+
+        # 1 Set size and position        
+        window=p_figure.canvas.manager.window
+        geometry_tk = f'{p_geometry["width"]}x{p_geometry["height"]}+{p_geometry["xpos"]}+{p_geometry["ypos"]}'
+        self._figure_set_geometry_default_rec( p_window = window, p_geometry=geometry_tk )
+
+        # 2 Set window state
+        state = p_geometry['state']
+        if state == WSMINIMIZED:
+            state_tk = 'iconic'
+        elif state == WSMAXIMIZED:
+            state_tk = 'zoomed'
+        else:
+            state_tk = 'normal'
+
+        window.wm_state(state_tk)

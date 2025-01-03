@@ -437,6 +437,6 @@ class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
             if duration_musec == 0: duration_musec = 1
             duration_sec = duration_musec / 1000000
 
-            self.log(Log.C_LOG_TYPE_W, str(self._cycle_id + 1),'cycles in', round(duration_sec,2), 's (' + str(round( (self._cycle_id + 1) / duration_sec,1)), 'cycles/sec)', p_type_col='S')
+            self.log(Log.C_LOG_TYPE_W, str(self._cycle_id + 1),'cycles in', round(duration_sec,2), 's (' + str(round( (self._cycle_id + 1) / duration_sec,1)), 'cycles/s)', p_type_col='S')
 
         return success, error, timeout, limit, adapted, end_of_data, self._cycle_id
