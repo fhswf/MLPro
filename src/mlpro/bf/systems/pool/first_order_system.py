@@ -13,14 +13,17 @@
 ##                                       - changed dt = p_step to dt = p_step.total_seconds() 
 ## -- 2024-12-03  0.5.0     ASP      class PT1: update methods _reset()
 ##                                       - add start state of the system
-## -- 2024-12-30  0.6.0     ASP       class PT1: Refactoring
+## -- 2024-12-30  0.6.0     ASP      class PT1: Refactoring
 ##                                      - add C_SAMPLE_FREQ : Specifies how often the system is sampled in a control cycle
 ##                                      - add self._dt: Sampling time
 ##                                      - update _simulate_reaction(), _reset()
+## -- 2025-01-05  0.7.0     ASP       class PT1: Refactoring
+##                                      - changed self.K to self._K
+##                                      - changed self.T to self._T
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2024-12-30)
+Ver. 0.7.0 (2025-01-05)
 This module provides a simple demo system that represent a first-order-system
     Further information: https://www.circuitbread.com/tutorials/first-order-systems-2-2
 """
@@ -78,8 +81,8 @@ class PT1 (System):
                     Start value of the control variable  
         """
 
-        self.K = p_K          
-        self.T = p_T
+        self._K = p_K          
+        self._T = p_T
         self._sys_num = p_sys_num
         self._y_start = p_y_start
         self._y_prev = None
@@ -140,7 +143,7 @@ class PT1 (System):
         for step in range(self.C_SAMPLE_FREQ):   
 
              # rekursions function of first oder system
-            y = (self._dt* self.K * u + self.T * self._y_prev) / (self.T + self._dt) 
+            y = (self._dt* self._K * u + self._T * self._y_prev) / (self._T + self._dt) 
             self._y_prev = y
         
         # Limit output
