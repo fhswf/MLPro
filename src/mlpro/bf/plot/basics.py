@@ -59,41 +59,34 @@
 ## --                                - Refactoring: removed par p_force from Plottable.refresh()
 ## -- 2024-11-10  2.18.0    DA       Bugfix in method Plottable.force_fg()
 ## -- 2024-12-10  3.0.0     DA       - Created new module basics.py for classes PlotSettings, Plottable
-## --                                - Class Plottable: plot window memory
+## --                                - Class Plottable: memory function for plot window geometries
+## -- 2024-12-12  3.1.0     DA       Method Plottable._init_figure(): optimization
+## -- 2024-12-29  3.2.0     DA       Import of all plot packages moved to class Plottable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.0 (2024-12-10)
+Ver. 3.2.0 (2024-12-29)
 
 This module provides various classes related to data plotting.
 
 """
 
+from operator import mod
+import sys
+import os
+from pathlib import Path
 
-try:
-    # Import of all packages related to plotting is optional and not needed in case of 'dark' processing
-    import matplotlib
-    from tkinter import *
-    matplotlib.use('TkAgg')
+from mlpro.bf.exceptions import ImplementationError, ParamError
+from mlpro.bf.plot.backends import *
+from mlpro.bf.data import ConfigFile
 
-    from operator import mod
-    import sys
-    import os
-    from pathlib import Path
-    import atexit
+# Pseudo definitions until the final plot classes are imported
+class Figure: pass
+class Axes: pass
 
-    from matplotlib.figure import Figure
-    from matplotlib.axes import Axes
-    import matplotlib.pyplot as plt
 
-    from mlpro.bf.exceptions import ImplementationError, ParamError
-    from mlpro.bf.plot.backends import *
-    from mlpro.bf.data import ConfigFile
-
-except:
-    class Figure: pass
-    class Axes: pass
-
+g_plot_packages_imported = None
+g_event_loop_started = False
 
 
 
@@ -317,10 +310,14 @@ class Plottable:
     def __init__(self, p_visualize:bool=False):
 
         # 1 Initialize attributes needed (even in 'dark' mode)
-        self._visualize                    = p_visualize and self.C_PLOT_ACTIVE
+        self._visualize                    = p_visualize and self.C_PLOT_ACTIVE 
         self._plot_settings : PlotSettings = None
 
-        # 1.1 Do nothing if visualization is turned off
+        # 1.1 Import plot packages
+        if self._visualize:
+            self._visualize = self._import_plot_packages()
+        
+        # 1.2 Do nothing if visualization is turned off
         if not self._visualize: return
 
 
@@ -330,7 +327,7 @@ class Plottable:
         self._plot_first_time : bool  = True
         self._plot_own_figure : bool  = False
         self._plot_color              = None
-        self._plot_manager            = None
+        self._figure : Figure         = None
         self._plot_window             = None
 
 
@@ -348,8 +345,37 @@ class Plottable:
         self._cfg_key  = None
 
 
-        # 5 Force storing the window geometry at program termination 
-        atexit.register(self._store_window_geometry)
+## -------------------------------------------------------------------------------------------------
+    def _import_plot_packages(self) -> bool:
+
+        global g_plot_packages_imported
+
+        if g_plot_packages_imported is not None: return g_plot_packages_imported
+
+        try:
+            global matplotlib, tkinter, Figure, Axes, plt
+            import matplotlib
+
+            try:
+                from matplotlib.backends.qt_compat import QtCore
+                qtcore_test = QtCore.__version__
+                matplotlib.use('qtagg')
+            except:
+                import tkinter
+                matplotlib.use('TkAgg')
+                print('Plot backend "Tk" activated. Nevertheless, we recommend installing package PySide6 for better plot performance.')
+
+            from matplotlib.figure import Figure
+            from matplotlib.axes import Axes
+            import matplotlib.pyplot as plt
+
+            g_plot_packages_imported = True
+
+        except:
+            print('Plotting disabled. To enable it, please install matplotlib and Qt or Tk.')
+            g_plot_packages_imported = False
+
+        return g_plot_packages_imported
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -431,12 +457,12 @@ class Plottable:
         
         # 2.3 Setup the Matplotlib host figure if no one is provided as parameter
         if p_figure is None:
-            self._figure : Figure   = self._init_figure( p_window_title=p_window_title )
+            self._init_figure( p_window_title=p_window_title )
             self._plot_own_figure   = True
+        elif self._figure is not None:
+            if p_window_title is not None:
+                self._plot_backend.figure_set_title( p_figure = self._figure, p_title = p_window_title )
         else:
-            if self._plot_window is not None:
-                self._plot_backend.set_title( p_window = self._plot_window, p_title = p_window_title )
-
             self._figure : Figure   = p_figure
             
         self._plot_settings.register( p_plot_obj = self )
@@ -515,42 +541,59 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_figure(self, p_window_title: str = None) -> Figure:
+    def _init_figure(self, p_window_title: str = None):
         """
-        Custom method to initialize a suitable standalone Matplotlib figure.
-
-        Returns
-        -------
-        figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s)
+        Method to initialize a suitable standalone Matplotlib figure.
         """
 
-        fig = plt.figure()   
-        self._plot_manager = fig.canvas.manager
-        self._plot_window  = self._plot_manager.window
-        plt.show(block=False)
+        # 1 Start Matplotlib event-loop once
+        global g_event_loop_started
 
+        if not g_event_loop_started:
+            plt.show(block=False)
+            g_event_loop_started = True
+
+
+        # 2 Create a new window with an embedded figure
+        self._figure      = plt.figure()   
+        self._plot_window = self._figure.canvas.manager.window
+
+
+        # 3 Set optional window title
         if p_window_title is not None:
-            self._plot_backend.set_title( p_window = self._plot_window, p_title = p_window_title )
+            self._plot_backend.figure_set_title( p_figure = self._figure, p_title = p_window_title )
 
+
+        # 4 Create unique configuration key from actual window title
         if self._cfg_key is None:
-            self._cfg_key = self._plot_backend.get_title( p_window = self._plot_window )
+            self._cfg_key = self._plot_backend.figure_get_title( p_figure = self._figure ) 
 
+
+        # 5 Make window visible
+        # while not self._plot_window.winfo_viewable(): # Tk
+        # while not self._plot_window.isVisible():  # Qt
+        plt.pause(0.1)    
+
+
+        # 6 Recover size and position of the window
         self._recover_window_geometry()
-        self.force_fg()
 
-        return fig
-    
+
+        # 7 Bring window on top
+        self.force_fg()
+  
+  
+        # 8 Force storing the window geometry at program termination 
+        self._plot_backend.figure_atexit( p_figure = self._figure, p_fct = self._store_window_geometry )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _store_window_geometry(self):
         if self._plot_window is None: return
 
         try:
-            width, height, xpos, ypos = self._plot_backend.get_geometry( p_window = self._plot_window )
-            geometry = {'xpos' : xpos, 'ypos' : ypos, 'width' : width, 'height' : height }
-            self._cfg_file.set( p_key = self._cfg_key,
-                                p_values = geometry )
+            geometry = self._plot_backend.figure_get_geometry( p_figure = self._figure )
+            self._cfg_file.set( p_key = self._cfg_key, p_values = geometry )
         except:
             pass
 
@@ -565,11 +608,8 @@ class Plottable:
             return
 
         # 2 Set geometry
-        self._plot_backend.set_geometry( p_window = self._plot_window,
-                                         p_xpos = geometry['xpos'],
-                                         p_ypos = geometry['ypos'],
-                                         p_width = geometry['width'],
-                                         p_height = geometry['height'] )
+        self._plot_backend.figure_set_geometry( p_figure = self._figure, 
+                                                p_geometry = geometry )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -581,10 +621,10 @@ class Plottable:
         # 1 Plot functionality turned on?
         if not self.get_visualization(): return
 
-        if ( not self._plot_settings.force_fg ) or ( self._plot_window is None ): return
+        if ( not self._plot_settings.force_fg ) or ( self._figure is None ): return
         
         # 2 Call internal custom method
-        self._plot_backend.force_foreground( p_window=self._plot_window )
+        self._plot_backend.figure_force_foreground( p_figure = self._figure )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -817,12 +857,6 @@ class Plottable:
         """
 
         pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def __del__(self):
-        if ( not self.get_visualization() ) or ( self._plot_first_time ): return
-        self.remove_plot(p_refresh=False)
 
 
 ## -------------------------------------------------------------------------------------------------

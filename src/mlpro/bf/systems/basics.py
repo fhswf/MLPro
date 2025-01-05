@@ -52,10 +52,11 @@
 ## -- 2024-09-11  2.4.0     DA       - code review and documentation
 ## --                                - new method State.get_kwargs()
 ## -- 2024-10-06  2.5.0     DA       New property attribute State.value
+## -- 2024-12-11  2.5.0     DA       New method DemoScenario.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2024-10-06)
+Ver. 2.5.0 (2024-12-11)
 
 This module provides models and templates for state based systems.
 """
@@ -2405,10 +2406,14 @@ class DemoScenario(ScenarioBase):
                 action.append(random.randint(*dim.get_boundaries()))
 
         return Action(p_action_space=action_space, p_values=action)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure = None, p_plot_settings = None, p_window_title = None):
+        self._system.init_plot( p_figure = p_figure, p_plot_settings= p_plot_settings, p_window_title = p_window_title )
  
  
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-       
-       super().update_plot(**p_kwargs)
+    #    super().update_plot(**p_kwargs)
        self._system.update_plot(**p_kwargs)

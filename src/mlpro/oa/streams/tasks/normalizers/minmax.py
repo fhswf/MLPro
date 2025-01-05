@@ -21,10 +21,11 @@
 ## -- 2024-07-12  1.3.2     LSB      Renormalization error
 ## -- 2024-10-29  1.3.3     DA       - Refactoring of NormalizerMinMax._adapt_on_event()
 ## --                                - Bugfix in NormalizerMinMax._update_plot_data_3d()
+## -- 2024-12-16  1.4.0     DA       Method NormalizerMinMax._run(): little code tuning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2024-10-29)
+Ver. 1.4.0 (2024-12-16)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
@@ -102,10 +103,13 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         
         # Normalization of all incoming stream instances (order doesn't matter)
         for ids, (inst_type, inst) in p_inst.items():
+            feature_data = inst.get_feature_data()
+
             if self._param is None:
-                self.update_parameters( p_set = inst.get_feature_data().get_related_set() )
-            normalized_element = self.normalize(inst.get_feature_data())
-            inst.get_feature_data().set_values(normalized_element.get_values())
+                self.update_parameters( p_set = feature_data.get_related_set() )
+                
+            normalized_element = self.normalize(feature_data)
+            feature_data.set_values(normalized_element.get_values())
 
 
 ## -------------------------------------------------------------------------------------------------

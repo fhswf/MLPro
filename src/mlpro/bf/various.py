@@ -53,10 +53,12 @@
 ## -- 2024-06-18  2.4.0     DA       New class KWArgs
 ## -- 2024-12-02  2.5.0     DA       New property KWargs.kwargs
 ## -- 2024-12-06  2.6.0     DA       Class Log: tuning by about 10%
+## -- 2024-12-29  2.7.0     DA       - Method Log.log(): new parameter p_type_col
+## --                                - Class Log: code optimization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.6.0 (2024-12-06)
+Ver. 2.7.0 (2024-12-29)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -172,7 +174,7 @@ class Log:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=C_LOG_ALL):
 
-        self._color_map = {
+        self._log_color_map = {
             self.C_LOG_TYPE_W: self.C_COL_WARNING,
             self.C_LOG_TYPE_E: self.C_COL_ERROR,
             self.C_LOG_TYPE_S: self.C_COL_SUCCESS,
@@ -212,9 +214,9 @@ class Log:
         
         self._level = p_logging
         if self._level:
-            self.log = self._log_on
+            self.log = self._log
         else:
-            self.log = self._log_off
+            self.log = lambda *args, **kwargs: None
 
 
  ## -------------------------------------------------------------------------------------------------
@@ -225,26 +227,30 @@ class Log:
  ## -------------------------------------------------------------------------------------------------
     def get_log_level(self):
         return self._level
-
+    
 
 ## -------------------------------------------------------------------------------------------------
-    def _log_off(self, p_type, *p_args):
+    def log(self, p_type, *p_args, p_type_col = None):
+        """
+        Writes a log line to the standard output in the format:
+        yyyy-mm-dd  hh:mm:ss.mmmmmm  [p_type] [self.C_TYPE] [self.C_NAME]: [p_args] 
+
+        Parameters
+        ----------
+        p_type
+            Type of log entry
+        p_args      
+            Optional log information
+        p_type_col = None
+            Optional differing log type used to color the log line.
+        """
+        
+        # self.log is assigned dynamically to the method self._log. See constructor for more details...
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _log_on(self, p_type, *p_args):
-        """
-        Writes log line to standard output in format:
-        yyyy-mm-dd  hh:mm:ss.mmmmmm  [p_type  C_TYPE C_NAME]: [p_args] 
-
-        Parameters:
-            p_type      type of log entry
-            p_args      log informations
-
-        Returns: 
-            Nothing
-        """
+    def _log(self, p_type, *p_args, p_type_col = None):
 
         level = self._level
 
@@ -254,7 +260,14 @@ class Log:
             if p_type in (self.C_LOG_TYPE_I, self.C_LOG_TYPE_S, self.C_LOG_TYPE_W): return
             
         now     = datetime.now().isoformat( sep = ' ' )
-        col     = self._color_map.get(p_type, self.C_COL_RESET)
+
+        if p_type_col is not None:
+            type_col = p_type_col
+        else:
+            type_col = p_type
+
+        col     = self._log_color_map.get(type_col, self.C_COL_RESET)
+
         arg_str = ' '.join(map(str, p_args))  
         print( col + now + '  ' + p_type + '  ' + self.C_TYPE + ' "' + self.C_NAME + '": ' + arg_str + self.C_COL_RESET )
 

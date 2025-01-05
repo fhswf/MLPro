@@ -15,17 +15,18 @@
 ## -- 2022-11-21  1.2.2     DA       Eliminated all uses of super()
 ## -- 2023-03-25  1.2.3     DA       Class ScenarioBase: new parent class Persistent
 ## -- 2024-11-09  1.3.0     DA       Class ScenarioBase: new parent class KWArgs
+## -- 2024-12-29  1.4.0     DA       Method ScenarioBase.run(): logging of duration/speed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-11-09)
+Ver. 1.4.0 (2024-12-29)
 
 This module provides classes for operation.
 """
 
 
 import sys
-from datetime import timedelta
+from datetime import timedelta, datetime
 from mlpro.bf.various import Log, Persistent, Timer, KWArgs
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
@@ -412,7 +413,12 @@ class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
             self.init_plot()
 
 
-        # 3 Main loop 
+        # 3 Time measurement, if logging is active and a cycle limit is set
+        if ( self.get_log_level() in [ Log.C_LOG_ALL, Log.C_LOG_WE ] ) and ( self._cycle_limit > 0 ):
+            tp_before = datetime.now()
+
+
+        # 4 Main loop 
         while True:
             success, error, timeout, limit, adapted_cycle, end_of_data = self.run_cycle()
             adapted = adapted or adapted_cycle
@@ -422,6 +428,16 @@ class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
             if limit or end_of_data: break
 
 
-        # 4 Outro
+        # 5 Outro
         self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': End of processing')
+
+        if ( self.get_log_level() in [ Log.C_LOG_ALL, Log.C_LOG_WE ] ) and ( self._cycle_limit > 0 ):
+            tp_after = datetime.now()
+            tp_delta = tp_after - tp_before
+            duration_musec = ( tp_delta.seconds * 1000000 + tp_delta.microseconds )
+            if duration_musec == 0: duration_musec = 1
+            duration_sec = duration_musec / 1000000
+
+            self.log(Log.C_LOG_TYPE_W, str(self._cycle_id + 1),'cycles in', round(duration_sec,2), 's (' + str(round( (self._cycle_id + 1) / duration_sec,1)), 'cycles/s)', p_type_col='S')
+
         return success, error, timeout, limit, adapted, end_of_data, self._cycle_id
