@@ -17,12 +17,18 @@ BF-PLOT - Plotting and Visualization
    :private-members:
    :show-inheritance:
 
-.. automodule:: mlpro.bf.plot.backends.tkagg
+.. automodule:: mlpro.bf.plot.backends.qtagg
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
    
+.. automodule:: mlpro.bf.plot.backends.tkagg
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+
 .. automodule:: mlpro.bf.plot.dataplotting
    :members:
    :undoc-members:
