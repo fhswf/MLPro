@@ -721,7 +721,7 @@
         <mxCell id="K2d_EnuQvkdYyctcuyP0-6" value="&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;Template for custom control systems. The control workflow needs to be implemented in method _setup()...&lt;br&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=2;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1752" y="1770" width="138.79" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-0" value="bf.control.PIDController &#xa;(Controller)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="1XHOo6gPbHJZm55-H70s-0" value="bf.control.PIDController &#xa;(bf.control.Controller)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="1120" y="1670" width="300" height="440" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
