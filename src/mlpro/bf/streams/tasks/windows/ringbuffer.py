@@ -26,19 +26,27 @@
 ## -- 2024-05-22  1.2.0     DA       Refactoring, splitting, and renaming to RingBuffer
 ## -- 2024-05-23  1.2.1     DA       Bugfixes on plotting
 ## -- 2024-10-31  1.2.2     DA       Bugfix in RingBuffer.get_boundaries()
+## -- 2024-12-11  1.2.3     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2024-10-31)
+Ver. 1.2.3 (2024-12-11)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
 
-from matplotlib.axes import Axes
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from matplotlib.patches import Rectangle
 import numpy as np
+
+try:
+    from matplotlib.axes import Axes
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    from matplotlib.patches import Rectangle
+except:
+    class Axes : pass
+    class Poly3DCollection : pass
+    class Rectangle : pass
+
 from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
 from mlpro.bf.streams.tasks.windows.basics import Window

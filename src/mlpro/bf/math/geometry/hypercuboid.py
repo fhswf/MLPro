@@ -12,10 +12,11 @@
 ## -- 2024-06-30  1.2.0     DA       Refactoring of method Hypercuboid.set()
 ## -- 2024-07-13  1.3.0     DA       Refactoring
 ## -- 2024-08-20  1.4.0     DA       New method Hypercuboid.check_collision()
+## -- 2024-12-11  1.4.1     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-08-20)
+Ver. 1.4.1 (2024-12-11)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -23,8 +24,14 @@ This module provides a property class for the geometric shape 'hypercuboid'.
 """ 
 
 import numpy as np
-from matplotlib.patches import Rectangle
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3D
+
+try:
+    from matplotlib.patches import Rectangle
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3D
+except:
+    class Rectangle : pass
+    class Poly3DCollection : pass
+    class Line3D : pass
 
 from mlpro.bf.plot import *
 from mlpro.bf.math.properties import *

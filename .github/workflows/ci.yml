@@ -7,6 +7,7 @@
 ## -- 2021        1.0.0     MRD      Creation 
 ## -- 2024-10-09  1.1.0     DA       Updated the version range for Python to 3.10 - 3.12
 ## -- 2024-12-05  1.2.0     DA       Excluded source branch 'extension_hub_tmp' from execution
+## -- 2024-12-10  1.3.0     DA       Update actions/checkout to v4, actions/setup-python to v5
 ## -------------------------------------------------------------------------------------------------
 
 name: Unit Tests
@@ -30,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout Codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.CI_UNIT_TEST }}
           ref: ${{ github.head_ref }}
@@ -63,12 +64,12 @@ jobs:
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         
@@ -99,12 +100,12 @@ jobs:
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         
@@ -131,12 +132,12 @@ jobs:
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         
@@ -159,12 +160,12 @@ jobs:
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         

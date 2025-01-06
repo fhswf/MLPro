@@ -6,21 +6,25 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-31  1.0.0     DA       Creation
+## -- 2024-12-11  1.0.1     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-10-31)
+Ver. 1.0.1 (2024-12-11)
 
 This module provides the class Crosshair that provides crosshair functionality.
 
 """
 
-from matplotlib.figure import Figure
-from mpl_toolkits.mplot3d.art3d import Line3D
+try:
+    from matplotlib.figure import Figure
+    from mpl_toolkits.mplot3d.art3d import Line3D
+except:
+    class Figure : pass
+    class Line3D : pass
 
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.various import Id
 from mlpro.bf.math.geometry import Point
 from mlpro.bf.math.properties import *
 
