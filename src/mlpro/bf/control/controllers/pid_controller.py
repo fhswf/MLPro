@@ -10,11 +10,12 @@
 ## -- 2024-10-17  0.2.0     ASP      Refactor PIDController 
 ## -- 2024-11-10  0.3.0     ASP      Refactor class PIDController: signature methode __init__() 
 ## -- 2024-11-16  0.4.0     ASP      Refactor class PIDController: signature methode __init__() 
-## -- 2024-11-16  0.4.0     ASP      Changed Task.C_RANGE_NONE to Range.C_RANGE_NONE
+## -- 2024-11-16  0.5.0     ASP      Changed Task.C_RANGE_NONE to Range.C_RANGE_NONE
+## -- 2025-01-06  0.6.0     ASP      Refactor PIDController
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-11-16)
+Ver. 0.6.0 (2025-01-06)
 
 This module provides an implementation of a PID controller.
 
@@ -68,12 +69,12 @@ class PIDController (Controller):
                  p_integral_off:bool = False,
                  p_derivitave_off:bool = False,
                  p_anti_windup_on: bool = False,
-                 p_windup_limit:float =0,
-                 p_id=None, 
+                 p_windup_limit:float = 0,
+                 p_id = None, 
                  p_name = None,                  
                  p_range_max=Range.C_RANGE_NONE, 
                  p_visualize = False, 
-                 p_logging=Log.C_LOG_ALL, 
+                 p_logging = Log.C_LOG_ALL, 
                  **p_kwargs):
         
         super().__init__(p_input_space, 
@@ -176,21 +177,21 @@ class PIDController (Controller):
 
             # anti - windup 
             if self._windup_on and self._windup_limit is not None:
-                self._integral_val = max(min(self._integral_val, self._windup_limit), -self._windup_limit)
+                self._integral_val = max(min(self._integral_val, self._windup_limit), - self._windup_limit)
 
             #calculate i term , if Ti not zero
             if self._Tn != 0:
-                 i_term = (self._Kp/self._Tn)* self._integral_val 
+                 i_term = (self._Kp / self._Tn) * self._integral_val 
 
         # derivitave term 
         d_term =0
 
         #ignore i term , if it is disabled or delta is equal zero 
-        if dt> 0 and not self._derivitave_off:
-            d_term = self._Kp*self._Tv*(control_error_siso- self.prev_error)/dt
+        if dt > 0 and not self._derivitave_off:
+            d_term = self._Kp * self._Tv * (control_error_siso - self.prev_error) / dt
         
         #compute control variable value 
-        control_variable_siso = p_term+i_term+d_term
+        control_variable_siso = p_term + i_term + d_term
 
         #apply control variable limits
         lower_bound, upper_bound = tuple(self._output_limits)
@@ -203,33 +204,3 @@ class PIDController (Controller):
 
         #set control value
         p_ctrl_var._set_values([control_variable_siso])
-        
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-
-
-
-        
-
-
-
-       
-
-
-        
-        
-        
-    
-
