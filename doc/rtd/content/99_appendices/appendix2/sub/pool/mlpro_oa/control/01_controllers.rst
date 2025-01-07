@@ -1,6 +1,6 @@
 .. _target_pool_oa_control_controllers:
-OA-CONTROL - Controllers
-========================
+Controllers
+===========
 
 .. toctree::
    :maxdepth: 2
