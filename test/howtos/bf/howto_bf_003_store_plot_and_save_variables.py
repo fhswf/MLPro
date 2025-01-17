@@ -12,10 +12,11 @@
 ## -- 2021-10-25  1.2.2     SY       Adjustment due to improvement in DataPlotting
 ## -- 2021-10-26  1.2.3     SY       Rename module
 ## -- 2023-03-02  1.2.4     LSB      Refactoring
+## -- 2025-01-17  1.2.5     SY/DA    Refactoring/correction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2023-03-02)
+Ver. 1.2.5 (2025-01-17)
 
 This module demonstrates how to store, plot, save and load variables.
 
@@ -77,17 +78,10 @@ if __name__ == "__main__":
     #Do not include quote-unquote ("" or '' ) into target path name
     mem_plot.save_plots(path_save, "pdf")
     mem_plot.save(path_save, "plot_memory")
-    mem.save(path_save, "data_memory")
     mem.save_data(path_save, "data_storage", "\t")
 
-    ## 4. How to load data from binary file ##
+    ## 4. How to load data from csv file ##
     path_load   = path_save
-    mem_load    = DataStoring.load(path_load, "data_memory")
-    print("Comparison :")
-    print("Original data                : %.5f"%mem.memory_dict["reward"]["ep. 1"][0])
-    print("Loaded data from binary file : %.5f"%mem_load.memory_dict["reward"]["ep. 1"][0])
-
-    ## 5. How to load data from csv file ##
     data_names = []
     mem_from_csv = DataStoring(data_names)
     mem_from_csv.load_data(path_load, "data_storage.csv", "\t")
