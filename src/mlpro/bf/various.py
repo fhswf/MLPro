@@ -55,10 +55,11 @@
 ## -- 2024-12-06  2.6.0     DA       Class Log: tuning by about 10%
 ## -- 2024-12-29  2.7.0     DA       - Method Log.log(): new parameter p_type_col
 ## --                                - Class Log: code optimization
+## -- 2025-01-17  2.7.1     DA/SY    Correction of method Persistent.save()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.7.0 (2024-12-29)
+Ver. 2.7.1 (2025-01-17)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -501,6 +502,7 @@ class Persistent (Id, Log):
 
         if p_filename is not None:
             filename = p_filename
+            self.set_filename( p_filename_stub=p_filename )
         else:
             filename = self.get_filename()
 
