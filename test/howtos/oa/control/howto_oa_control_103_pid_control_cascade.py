@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.control.PT
-## -- Module  : howto_oa_control_PT_001_pid_control_cascade.py
+## -- Module  : howto_oa_control_103_pid_control_cascade.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

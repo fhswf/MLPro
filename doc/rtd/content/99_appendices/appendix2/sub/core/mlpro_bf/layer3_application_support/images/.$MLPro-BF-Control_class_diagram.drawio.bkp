@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.3 Chrome/130.0.6723.137 Electron/33.2.1 Safari/537.36" version="26.0.3">
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.4 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36" version="26.0.4">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1743" dy="983" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="2004" dy="1203" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -720,41 +720,6 @@
         </mxCell>
         <mxCell id="K2d_EnuQvkdYyctcuyP0-6" value="&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;Template for custom control systems. The control workflow needs to be implemented in method _setup()...&lt;br&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=2;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1752" y="1770" width="138.79" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-0" value="bf.control.PIDController &#xa;(bf.control.Controller)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="1120" y="1670" width="300" height="440" as="geometry">
-            <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-1" value="C_TYPE = &#39;PID-Controller&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" vertex="1" parent="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry y="40" width="300" height="26" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-2" value="C_NAME = &#39;PID Controller&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=light-dark(#000000, #cdcdff);fillColor=none;" vertex="1" parent="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry y="66" width="300" height="26" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-3" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry y="92" width="300" height="8" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-4" value="__init__(p_input_space,&#xa;                 p_output_space, &#xa;                 p_Kp : float,&#xa;                 p_Tn : float = 0.0 ,&#xa;                 p_Tv : float= 0.0,&#xa;                 p_integral_off : bool = False,&#xa;                 p_derivitave_off : bool = False,&#xa;                 p_anti_windup_on : bool = False,                &#xa;                 p_windup_limit : float,&#xa;                 p_id = None,&#xa;                 p_name : str = None,&#xa;                 p_range_max = Task.C_RANGE_NONE,&#xa;                 p_visualize : boot = False,&#xa;                 p_logging = Log.C_LOG_ALL )&#xa;&#xa;&#xa;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" vertex="1" parent="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry y="100" width="300" height="220" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-5" value="set_parameter(**p_param)&#xa;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" vertex="1" parent="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry y="320" width="300" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-6" value="get_parameter_values()-&gt; np.ndarray" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" vertex="1" parent="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry y="350" width="300" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-7" value="_compute_output( p_ctrl_error: ControlError,&#xa;                              p_ctrl_var: ControlVariable)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" vertex="1" parent="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry y="380" width="300" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="1XHOo6gPbHJZm55-H70s-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=default;endArrow=none;endFill=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="1XHOo6gPbHJZm55-H70s-0">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1270" y="1250" />
-            </Array>
-            <mxPoint x="1473" y="1250" as="targetPoint" />
-            <mxPoint x="1283" y="1670" as="sourcePoint" />
-          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

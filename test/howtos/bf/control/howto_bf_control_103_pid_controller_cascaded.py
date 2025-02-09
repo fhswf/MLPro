@@ -63,12 +63,14 @@ else:
 
 #init controlled systems parameter
 pt2_K = 1
-pt2_D = 1.6165
+pt2_D = 1.67
 pt2_w_0 = 0.00577
-pt1_T = 1200
+pt1_T = 100
 pt1_K = 25
 
 # calculate cycle limit
+cycle_time_pt1 = pt1_T / (20 * pt1_K)
+cycle_time_pt2 = 1 / (20 * pt2_w_0)
 simulation_time = 500 *1 / pt2_w_0
 cycle_limit = int(simulation_time / 2)
 
@@ -83,7 +85,8 @@ my_ctrl_sys_1 = PT1(p_K = pt1_T,
                 p_T = pt1_K,
                 p_sys_num = 0,
                 p_y_start = 0,
-                p_latency = timedelta( seconds = 1 ),
+                p_latency = timedelta( seconds = 1),
+                p_boundaries= [-500,500],
                 p_visualize = visualize,
                 p_logging = logging )
 
@@ -111,7 +114,7 @@ my_ctrl_sys_2 = PT2(p_K = pt2_K,
                     p_omega_0 = pt2_w_0,
                     p_sys_num = 1,
                     p_max_cycle = cycle_limit,
-                    p_latency = timedelta( seconds = 4 ),
+                    p_latency = timedelta( seconds = 1),
                     p_visualize = visualize,
                     p_logging = logging )
 
@@ -120,9 +123,9 @@ my_ctrl_sys_2.reset( p_seed = 42 )
 #4.2 Init PID-Controller
 my_ctrl_1 = PIDController( p_input_space = my_ctrl_sys_2.get_state_space(),
                     p_output_space = my_ctrl_sys_2.get_action_space(),
-                    p_Kp = 9.43,
-                    p_Tn = 228,
-                    p_Tv = 50,
+                    p_Kp = 10,
+                    p_Tn = 500,
+                    p_Tv = 0,
                     p_name = 'PID Controller',
                     p_visualize = visualize,
                     p_logging = logging )  

@@ -12,10 +12,11 @@
 ## -- 2024-11-16  0.4.0     ASP      Refactor class PIDController: signature methode __init__() 
 ## -- 2024-11-16  0.5.0     ASP      Changed Task.C_RANGE_NONE to Range.C_RANGE_NONE
 ## -- 2025-01-06  0.6.0     ASP      Refactor PIDController
+## -- 2025-01-26  0.7.0     ASP      class PIDController: Changed parameters and attributes comments
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2025-01-06)
+Ver. 0.7.0 (2025-01-26)
 
 This module provides an implementation of a PID controller.
 
@@ -25,8 +26,7 @@ https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_c
 
 """
 
-from mlpro.bf.math.basics import MSpace
-from mlpro.bf.mt import Log, Task,Range
+from mlpro.bf.mt import Log,Range
 from mlpro.bf.control.basics import ControlError, Controller
 from mlpro.bf.systems.basics import ActionElement
 import numpy as np 
@@ -43,20 +43,43 @@ class PIDController (Controller):
 
     Parameters
     ----------
-    Kp : float
-        gain factor 
-    Ti : float
+    Kp                : float
+        Gain factor 
+    Tn                : float
+        Settling time [s]
+    Tv                : float
+        Dead time [s]   
+    p_integral_off    : Bool
+        Disable integral term 
+    p_derivitave_off  : Bool
+        Disable derivitave term
+    p_anti_windup_on  : float
+        Enable anti windup filter 
+    
+    Attributes
+    ----------
+    _Kp              : float
+        Gain factor 
+    _Tn              : float
         settling time [s]
-    Tv : float
-        dead time [s]   
-    disable_integral: Bool
-        disable integral term 
-    disable_derivitave: Bool
-        disable derivitave term
-    enable_anti_windup: float
-        enable anti windup filter 
-
-    ...
+    _Tv              : float
+        Dead time [s]   
+    _integral_off    : Bool
+        Disable integral term 
+    _derivitave_off  : Bool
+        Disable derivitave term
+    _anti_windup_on  : float
+        Enable anti windup filter 
+    _integral_val    : float
+        Overall integral value 
+    _prev_error      : float 
+        Last control error     
+    _previous_tstamp : float 
+        Last timestamp [s]
+    _windup_limit    : list
+        Value range of anti windup filter
+    _output_limits   : list
+        Value range of control variable
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -92,10 +115,10 @@ class PIDController (Controller):
         self._Tv = p_Tv  
         self._integral_off = p_integral_off
         self._derivitave_off = p_derivitave_off
+        self._anti_windup_on = p_anti_windup_on
         self._integral_val = 0.0
-        self.prev_error = 0.0      
+        self._prev_error = 0.0      
         self._previous_tstamp = None 
-        self._windup_on = p_anti_windup_on
         self._windup_limit = p_windup_limit
         self._output_limits = p_output_space.get_dims()[0].get_boundaries()
    
@@ -176,7 +199,7 @@ class PIDController (Controller):
             self._integral_val += control_error_siso*dt
 
             # anti - windup 
-            if self._windup_on and self._windup_limit is not None:
+            if self._anti_windup_on and self._windup_limit is not None:
                 self._integral_val = max(min(self._integral_val, self._windup_limit), - self._windup_limit)
 
             #calculate i term , if Ti not zero
@@ -184,11 +207,11 @@ class PIDController (Controller):
                  i_term = (self._Kp / self._Tn) * self._integral_val 
 
         # derivitave term 
-        d_term =0
+        d_term = 0
 
         #ignore i term , if it is disabled or delta is equal zero 
         if dt > 0 and not self._derivitave_off:
-            d_term = self._Kp * self._Tv * (control_error_siso - self.prev_error) / dt
+            d_term = self._Kp * self._Tv * (control_error_siso - self._prev_error) / dt
         
         #compute control variable value 
         control_variable_siso = p_term + i_term + d_term
@@ -199,7 +222,7 @@ class PIDController (Controller):
         control_variable_siso = min(max(control_variable_siso,lower_bound), upper_bound)
 
         # safe the current values for the next iteration
-        self.prev_error = control_error_siso
+        self._prev_error = control_error_siso
         self._previous_tstamp = tstamp        
 
         #set control value

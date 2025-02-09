@@ -15,10 +15,11 @@
 ## -- 2024-12-05  0.6.0     ASP      -implementation assign_so(), update compute_action()
 ## -- 2024-12-06  0.7.0     ASP      -BugFix: _adapt()
 ## -- 2025-01-02  0.8.0     ASP      -Renaming of variable names 
+## -- 2025-01-26  0.9.0     ASP      class RLPID: Changed parameters and attributes comments
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2025-01-02
+Ver. 0.9.0 (2025-01-26)
 
 This module provides an implementation of a OA PID controller.
 
@@ -41,10 +42,26 @@ class RLPID(Policy):
 
     Parameters
     ----------
-    p_pid_controller : PIDController,
+    p_observation_space : MSpace
+        Observation space of the RLPID
+    p_action_space      : MSpace
+        Action space of the RLPID
+    p_pid_controller    : PIDController,
         Instance of PIDController
-    p_policy : Policy
+    p_policy            : Policy
         Policy algorithm
+
+    
+    Attributes
+    ----------
+    _pid_controller : PIDController
+        Internal PID-Controller
+    _policy         : Policy
+        Policy algorithm
+    _action_old     : Action
+        Last action
+    _action_space   : MSpace
+        Action space of RLPID 
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -53,7 +70,7 @@ class RLPID(Policy):
                   p_action_space: MSpace,
                   p_pid_controller:PIDController ,
                   p_policy:Policy,
-                  p_id=None, 
+                  p_id = None, 
                   p_buffer_size: int = 1, 
                   p_ada: bool = True, 
                   p_visualize: bool = False,

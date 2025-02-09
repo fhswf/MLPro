@@ -20,10 +20,11 @@
 ## -- 2025-01-05  0.7.0     ASP       class PT1: Refactoring
 ##                                      - changed self.K to self._K
 ##                                      - changed self.T to self._T
+## -- 2025-01-26  0.8.0     ASP       class PT1: Changed parameters and attributes comments
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2025-01-05)
+Ver. 0.8.0 (2025-01-26)
 This module provides a simple demo system that represent a first-order-system
     Further information: https://www.circuitbread.com/tutorials/first-order-systems-2-2
 """
@@ -44,48 +45,70 @@ from mlpro.bf.systems import State, Action, System
 class PT1 (System):
     """
     Class first-order-system
+
+    Parameters
+    ----------
+    p_K             : float
+        Gain factor of the system
+    p_T             : float
+        Time constant of the system
+    p_sys_num       : int
+        Num id of the system
+    p_y_start       : float
+        Start value of the control variable 
+    p_boundaries    : float
+        Boundries of the control variable 
+
+
+    Attributes
+    ----------
+        _K           : float
+            Gain factor of the system.
+        _T           : float
+            Time constant of the system.
+        _sys_num     : int
+            Num id of the system
+        _y_start     : float
+            Start value of the control variable 
+        _y_prev      : float
+            Old value of the control variable 
+        _boundaries  : list
+            Boundries of the control variable 
+        _dt          : float
+            Sampling rate 
+        _state_space : MSpace
+            State space of system
+        _action_space : MSpace
+            Action space of system   
+
     """
 
     C_NAME          = 'PT1'
-    C_BOUNDARIES    = [-250,250]
     C_PLOT_ACTIVE   = False
     C_LATENCY       = timedelta( seconds = 0.1 )
     C_SAMPLE_FREQ   = 20    
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__( self,                  
                   p_K:float,
                   p_T: float,
                   p_sys_num:int,
-                  p_y_start: float =0,
-                  p_id=None,
+                  p_y_start: float = 0,
+                  p_boundaries : list = [-250,250],
+                  p_id = None,
                   p_name = C_NAME,
                   p_latency : timedelta = None,
                   p_range_max = Task.C_RANGE_NONE, 
                   p_visualize = False, 
-                  p_logging=Log.C_LOG_ALL ):
-        
+                  p_logging = Log.C_LOG_ALL ): 
 
-        """
-        Initialsize first-order-system.
-
-        Parameters
-        ----------
-        p_K         : float
-                    Gain factor of the system.
-        p_T         : float
-                    Time constant of the system.
-        p_sys_num   : float
-                    Num id of the system
-        p_y_start   : float
-                    Start value of the control variable  
-        """
 
         self._K = p_K          
         self._T = p_T
         self._sys_num = p_sys_num
         self._y_start = p_y_start
         self._y_prev = None
+        self._boundaries = p_boundaries
         
         super().__init__( p_id = p_id, 
                           p_name = p_name,
@@ -95,8 +118,8 @@ class PT1 (System):
                           p_visualize = False, 
                           p_logging = p_logging )        
 
-        self._dt = self.get_latency().total_seconds()/self.C_SAMPLE_FREQ       
-        self._state_space, self._action_space = self._setup_spaces(p_sys_num=p_sys_num)
+        self._dt = self.get_latency().total_seconds() / self.C_SAMPLE_FREQ       
+        self._state_space, self._action_space = self._setup_spaces(p_sys_num = p_sys_num)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -104,15 +127,14 @@ class PT1 (System):
 
         state_action_space : MSpace = ESpace()    
         state_action_space.add_dim( p_dim = Dimension( p_name_short = 'SYS ' + str(p_sys_num),
-                                                           p_base_set = Dimension.C_BASE_SET_R,
-                                                           p_boundaries = self.C_BOUNDARIES ) )
+                                                       p_base_set = Dimension.C_BASE_SET_R,
+                                                       p_boundaries = self._boundaries ) )
         
-        return state_action_space, state_action_space
-    
+        return state_action_space, state_action_space    
 
   
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
+    def _reset(self, p_seed = None):
 
         random.seed( p_seed )
         new_state = State( p_state_space = self.get_state_space(), p_initial = True )    
@@ -124,7 +146,7 @@ class PT1 (System):
     def _simulate_reaction(self, p_state: State, p_action: Action, p_step = None):
         
         # get action id
-        agent_id  = p_action.get_agent_ids()[0]
+        agent_id = p_action.get_agent_ids()[0]
 
         #create a new state 
         new_state = State( p_state_space = self.get_state_space())
@@ -142,13 +164,14 @@ class PT1 (System):
 
         for step in range(self.C_SAMPLE_FREQ):   
 
-             # rekursions function of first oder system
+            # rekursions function of first oder system
             y = (self._dt* self._K * u + self._T * self._y_prev) / (self._T + self._dt) 
             self._y_prev = y
         
         # Limit output
-        y = max(self.C_BOUNDARIES[0],y)
-        y = min(self.C_BOUNDARIES[1],y)
+        y = max(self._boundaries[0],y)
+        y = min(self._boundaries[1],y)
+
 
         #set values of new state state 
         new_state.values = [y]    

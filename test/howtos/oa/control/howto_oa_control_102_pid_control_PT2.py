@@ -1,29 +1,29 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.bf.control
-## -- Module  : howto_oa_control_PT_001_pid_control_PT1.py
+## -- Package : mlpro.oa.control.PT
+## -- Module  : howto_oa_control_102_pid_control_PT2.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-12-03  0.1.0     ASP       Creation
-## -- 2024-12-06  0.2.0     ASP       Update RLPID
-## -- 2025-01-06  0.3.0     ASP       Update whole HowTo
+## -- 2024-12-03  0.1.0     ASP      Creation
+## -- 2025-01-06  0.2.0     ASP      Implementation
+## -- 2025-02-10  0.3.0     ASP      Update simulation parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-01-06)
+Ver. 0.2.0 (2025-02-10)
 
-The HowTo is intended to show the behavior of a PT1 control loop with an OA PID-Controller 
+The HowTo is intended to show the behavior of a PT2 control loop with an OA PID-Controller 
 
 You will learn:
 
-1) How to set up a basic control system with a PT1 controlled system and OA PID-Controller
+1) How to set up a basic control system with a PT2 controlled system and OA PID-Controller
 
 2) How to set up reward function, policy for the OA PID-Controller
 
 3) How to execute a basic control system with an OA PID-Controller and to change the setpoint from outside
 
-4) The behavior of the oa PID-Controller with the given policy and the resulting behavior of the PT1 control system
+4) The behavior of the oa PID-Controller with the given policy and the resulting behavior of the PT2 control system
 
 """
 
@@ -32,12 +32,12 @@ from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.ops import Mode
 from datetime import timedelta
-from mlpro.bf.systems.pool import PT1
+from mlpro.bf.systems.pool import PT2
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.bf.control.controlsystems import BasicControlSystem
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.oa.control.controllers import RLPID,wrapper_rl
-from stable_baselines3 import DDPG
+from stable_baselines3 import PPO
 from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
 from mlpro.rl.models import *
 from mlpro.rl.models_env import Reward
@@ -65,11 +65,12 @@ class MyReward(FctReward):
         error_old = p_state_old.get_feature_data().get_values()[0]
         
         #get new error
-        error_new = p_state_new.get_feature_data().get_values()[0]        
-        reward = - abs(error_new)
-        self._reward.set_overall_reward(reward) 
+        error_new = p_state_new.get_feature_data().get_values()[0]    
+        e_band = 0.05
         
-
+        reward = -abs(error_new)- error_new**2 - 3*max(abs(error_new)-e_band,0)**2 + 30*min(abs(error_new),0.03)
+        self._reward.set_overall_reward(reward)     
+        
         return self._reward
     
 
@@ -90,14 +91,14 @@ else:
 # 2.1 Define init parameters and calculate cycle limit
 
 #init controlled systems parameter
-pt1_K = 5
-pt1_T = 5
-
+pt2_K = 5
+pt2_D = 0.5
+pt2_w_0 = 0.5
 
 # calculate cycle limit
-cycle_time = pt1_T / (20 * pt1_K)
-simulation_time = 20 * 3 * pt1_T
-cycle_limit = int(simulation_time / cycle_time)
+cycle_time = 1 / 20 * pt2_w_0
+simulation_time = 300 *1 / pt2_w_0
+cycle_limit = 6000
 
 # init setpoint
 setpoint_value = 10
@@ -106,13 +107,14 @@ setpoint_value = 10
 # 3 Setup closed loop 
 
 # 3.1 controlled system 
-my_ctrl_sys = PT1(p_K = pt1_K,
-                p_T = pt1_T,
-                p_sys_num = 0,
-                p_y_start = 0,
-                p_latency = timedelta( seconds = cycle_time),
-                p_visualize = visualize,
-                p_logging = logging )
+my_ctrl_sys = PT2(p_K = pt2_K,
+                    p_D = pt2_D,
+                    p_omega_0 = pt2_w_0,
+                    p_sys_num = 1,
+                    p_max_cycle = cycle_limit,
+                    p_latency = timedelta( seconds = cycle_time ),
+                    p_visualize = visualize,
+                    p_logging = logging )
 
 my_ctrl_sys.reset( p_seed = 42 )
 y_max = 50
@@ -149,12 +151,7 @@ my_pid_ctrl = PIDController( p_input_space = my_ctrl_sys.get_state_space(),
 
 
 #3.2.4 Set RL-Policy 
-policy_sb3 = DDPG( policy="MlpPolicy",
-                learning_rate = 0.005,
-                seed = 42,
-                env = None,
-                _init_setup_model = False,
-                learning_starts = 100)    
+policy_sb3 = PPO( policy="MlpPolicy",learning_rate = 0.001, seed = 42,env = None,_init_setup_model = False)   
   
 
 #3.2.5 Init SB3 to MLPro wrapper
@@ -186,7 +183,7 @@ my_ctrl_OA = wrapper_rl.OAControllerRL(p_input_space = my_ctrl_sys.get_state_spa
 mycontrolsystem = BasicControlSystem( p_mode = Mode.C_MODE_SIM,
                                     p_controller = my_ctrl_OA,
                                     p_controlled_system = my_ctrl_sys,
-                                    p_name = 'First-Order-System',
+                                    p_name = 'Second-Order-System',
                                     p_ctrl_var_integration = False,
                                     p_cycle_limit = cycle_limit,
                                     p_visualize = visualize,
@@ -205,8 +202,21 @@ if visualize:
                                                             p_view_autoselect = True,
                                                             p_step_rate = step_rate,
                                                             p_plot_horizon = 100 ) )
-    input('\nPlease arrange all windows and press ENTER to start control processing...')
-        
+    input('\nPlease arrange all windows and press ENTER to start control processing...')    
+    
+mycontrolsystem.run()
+
+#switch off adaptivity 
+input('Press ENTER to switch off adaptivity and restart PT1 system...')
+my_ctrl_OA._adaptivity = False
+
+# set a new cycle limit
+mycontrolsystem._cycle_limit = 1000
+
+#reset PT1 System
+my_ctrl_sys.reset( p_seed = 42 )
+
+# run control loop again
 mycontrolsystem.run()
 
 if __name__ == '__main__':
