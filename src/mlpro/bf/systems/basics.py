@@ -51,23 +51,24 @@
 ## -- 2024-09-09  2.3.0     DA       Class Action: parent TSTamp replaced by Instance
 ## -- 2024-09-11  2.4.0     DA       - code review and documentation
 ## --                                - new method State.get_kwargs()
+## -- 2024-10-06  2.5.0     DA       New property attribute State.value
+## -- 2024-12-11  2.5.0     DA       New method DemoScenario.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-09-11)
+Ver. 2.5.0 (2024-12-11)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
-from typing import List
 
 import numpy as np
 
 from mlpro.bf.mt import Range
 from mlpro.bf.streams.basics import Instance
-from mlpro.bf.various import TStamp, ScientificObject, Persistent
+from mlpro.bf.various import ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings
 from matplotlib.figure import Figure
@@ -222,6 +223,9 @@ class State(Instance, Element):
             pass
         return copied_state
 
+
+## -------------------------------------------------------------------------------------------------
+    values = property( fget=Element.get_values, fset=Element.set_values)
 
 
 
@@ -2402,10 +2406,14 @@ class DemoScenario(ScenarioBase):
                 action.append(random.randint(*dim.get_boundaries()))
 
         return Action(p_action_space=action_space, p_values=action)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure = None, p_plot_settings = None, p_window_title = None):
+        self._system.init_plot( p_figure = p_figure, p_plot_settings= p_plot_settings, p_window_title = p_window_title )
  
  
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-       
-       super().update_plot(**p_kwargs)
+    #    super().update_plot(**p_kwargs)
        self._system.update_plot(**p_kwargs)

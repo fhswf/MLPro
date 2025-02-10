@@ -48,7 +48,11 @@ This module provides a template class for online cluster analysis.
 
 
 from typing import List, Tuple
-from matplotlib.figure import Figure
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
 
 from mlpro.bf.events import Event as MLProEvent
 from mlpro.bf.math.properties import *

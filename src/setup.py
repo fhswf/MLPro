@@ -12,12 +12,13 @@ packages=['mlpro'],
 # Package dependencies for full installation
 extras_require={
     "full": [
-        "dill>=0.3.6",
-        "numpy>=1.23.5",
-        "torch>=1.13.1",
-        "matplotlib>=3.6.3",
+        "dill>=0.3.9",
+        "multiprocess>=0.70.17",
+        "numpy>=1.24.2",
+        "torch>=2.0.0",
+        "PySide6>=6.8.1",
+        "matplotlib>=3.10.0",
         "scipy>=1.8.1",
-        "multiprocess>=0.70.14",
         "pandas>=2.1.3"
     ],
 },

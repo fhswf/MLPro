@@ -1,10 +1,11 @@
-dill>=0.3.6
+dill>=0.3.9
 numpy>=1.24.2
 torch>=2.0.0
-matplotlib>=3.7.1
+PySide6>=6.7.1
+matplotlib>=3.10.0
 transformations>=2022.9.26
 scipy>=1.10.1
-multiprocess>=0.70.14
+multiprocess>=0.70.17
 pyglet>=1.5.27
 sphinxcontrib-napoleon
 sphinx-copybutton

@@ -38,10 +38,11 @@
 ## --                                p_upd_derivatives
 ## -- 2026-07-08  1.6.0     DA       Introduction of kwargs
 ## -- 2024-07-27  1.7.0     DA       Class Property: introduction of self._value_bak
+## -- 2024-12-11  1.7.1     DA       Pseudo class Figure if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2024-07-27)
+Ver. 1.7.1 (2024-12-11)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -60,7 +61,11 @@ from datetime import datetime
 
 from collections.abc import Iterable 
 import numpy as np
-from matplotlib.figure import Figure
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure: pass
 
 from mlpro.bf.various import KWArgs
 from mlpro.bf.plot import Plottable, PlotSettings
