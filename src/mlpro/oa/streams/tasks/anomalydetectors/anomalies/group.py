@@ -13,20 +13,27 @@
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
 ## -- 2024-05-22  1.3.0     SK       Refactoring
 ## -- 2024-11-27  1.3.1     DA       Bugfix in method GroupAnomaly.__init__()
+## -- 2024-12-11  1.3.2     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2024-11-27)
+Ver. 1.3.2 (2024-12-11)
 
 This module provides a template class for group anomaly to be used in anomaly detection algorithms.
 """
 
+try:
+    from matplotlib.figure import Figure
+    from matplotlib.text import Text
+    from matplotlib import patches
+except:
+    class Figure : pass
+    class Text : pass
+    class patches : pass
+    
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
-from matplotlib.figure import Figure
-from matplotlib.text import Text
-from matplotlib import patches
 
 
 

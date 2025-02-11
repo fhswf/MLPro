@@ -11,19 +11,24 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.3.0     SK       Refactoring
+## -- 2024-12-11  1.3.1     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-28)
+Ver. 1.3.1 (2024-12-11)
 
 This module provides a template class for cluster-based anomalies to be used in anomaly detection algorithms.
 """
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
 
 from mlpro.oa.streams.basics import Instance
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
-from matplotlib.figure import Figure
 
 
 
