@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-12-03  0.1.0     ASP      Creation
 ## -- 2025-01-06  0.2.0     ASP      Implementation
+## -- 2025-02-11  0.3.0     ASP      Update simulation parameter 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-01-06)
+Ver. 0.3.0 (2025-02-11)
 
 The HowTo is intended to show the behavior of a cascaded control loop with an oa pid controller as the main controller 
 
@@ -63,11 +64,12 @@ class MyReward(FctReward):
         error_old = p_state_old.get_feature_data().get_values()[0]
         
         #get new error
-        error_new = p_state_new.get_feature_data().get_values()[0]        
-        reward = - abs(error_new)
-        self._reward.set_overall_reward(reward)
-
+        error_new = p_state_new.get_feature_data().get_values()[0]    
+        e_band = 0.5
         
+        reward = -abs(error_new)- error_new**2 - 10*max(abs(error_new)-e_band,0)**2
+        self._reward.set_overall_reward(reward)
+           
         return self._reward
     
 
@@ -96,7 +98,7 @@ pt1_K = 25
 
 # calculate cycle limit
 simulation_time = 500 *1 / pt2_w_0
-cycle_limit = int(simulation_time / 2)
+cycle_limit = 16000
 
 # init setpoint
 setpoint_value = 40
@@ -230,6 +232,21 @@ if visualize:
                                                             p_plot_horizon = 100 ) )
 input('\nPlease arrange all windows and press ENTER to start control processing...')    
     
+mycontrolsystem.run()
+
+#switch off adaptivity 
+input('Press ENTER to switch off adaptivity and restart PT1 system and PT2 system...')
+my_ctrl_OA._adaptivity = False
+
+# set a new cycle limit
+mycontrolsystem._cycle_limit = 1000
+
+#reset PT1 System
+my_ctrl_sys_1.reset( p_seed = 42 )
+#reset PT2 System
+my_ctrl_sys_1.reset( p_seed = 42 )
+
+# run control loop again
 mycontrolsystem.run()
 
 if __name__ == '__main__':
