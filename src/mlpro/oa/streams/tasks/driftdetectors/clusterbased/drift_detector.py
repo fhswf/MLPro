@@ -1,6 +1,6 @@
 ## -- ----------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.anomalydetectors.cb_detectors
+## -- Package : mlpro.oa.tasks.driftdetectors.clusterbased
 ## -- Module  : drift_detector.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -9,22 +9,25 @@
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2024-04-10  1.1.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.2.0     SK       Refactoring
+## -- 2025-02-12  2.0.0     DA       Relocation and refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-28)
+Ver. 2.0.0 (2025-02-12)
 
-This module provides cluster drift detector algorithm.
+This module provides a cluster-based drift detector algorithm.
 """
+
+import time
 
 from mlpro.oa.streams.basics import *
 from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.drift import ClusterDrift
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.drifts import ClusterDrift
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.centroid import cprop_centroid2
-import time
+
 
 
 

@@ -14,10 +14,11 @@
 ## -- 2024-05-07  1.3.1     SK       Bug fix related to p_instances
 ## -- 2024-05-09  1.3.2     DA       Bugfix in method Anomaly._update_plot()
 ## -- 2024-05-22  1.4.0     SK       Refactoring
+## -- 2025-02-12  1.4.1     DA       Code reduction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-05-22)
+Ver. 1.4.1 (2025-02-12)
 
 This module provides a template class for anomalies to be used in anomaly detection algorithms.
 """
@@ -26,7 +27,6 @@ from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
 from mlpro.bf.streams import Instance
-from mlpro.bf.math.properties import PropertyDefinitions, Properties
 
 
 
