@@ -5,11 +5,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-02-12  1.0.0     DA       Creation
+## -- 2025-02-12  0.1.0     DA       Creation
+## -- 2025-02-13  0.2.0     DA       Class Drift: new attributes event_id, drift_status
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-02-12)
+Ver. 0.2.0 (2025-02-13)
 
 This module provides a template class for types of data drift to be used in drift detection algorithms.
 """
@@ -22,17 +23,17 @@ from mlpro.bf.events import Event
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Drift (Id, Event, Plottable):
     """
-    This is the base class for drift events which can be raised by the drift detectors when a
-    drift is detected.
+    This is the base class for drift events which can be raised by drift detectors when the beginning
+    or end of a drift is detected.
 
     Parameters
     ----------
+    p_drift_status : bool
+        Determines whether a new drift starts (True) or an existing drift ends (False).
     p_id : int
         Drift ID. Default value = 0.
     p_tstamp : datetime
@@ -43,20 +44,49 @@ class Drift (Id, Event, Plottable):
         Reference of the object raised. Default = None.
     **p_kwargs
         Further optional keyword arguments.
+
+    Attributes
+    ----------
+    event_id : str
+        Event id to be used when raising a drift event object. It is a string consisting of the 
+        class name and one of the postfixes '(ON)', '(OFF)' depending on the drift status.
     """
 
-    C_TYPE                  = 'Drift'
-    C_PLOT_STANDALONE       = False
+    C_TYPE            = 'Drift'
+    C_PLOT_STANDALONE = False
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_id : int = 0,
-                 p_tstamp : datetime = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
-                 **p_kwargs):
+    def __init__( self,
+                  p_drift_status : bool,
+                  p_id : int = 0,
+                  p_tstamp : datetime = None,
+                  p_visualize : bool = False,
+                  p_raising_object : object = None,
+                  **p_kwargs):
         
         Id.__init__( self, p_id = p_id )
         Event.__init__( self, p_raising_object=p_raising_object,
                         p_tstamp=p_tstamp, **p_kwargs)
         Plottable.__init__( self, p_visualize = p_visualize )
+
+        self._drift_status : bool = p_drift_status
+
+        if p_drift_status:
+            self._event_id = type(self).__name__ + '(ON)'
+        else:
+            self._event_id = type(self).__name__ + '(OFF)'
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_drift_status(self) -> bool:
+        return self._drift_status
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _get_event_id(self) -> str:
+        return self._event_id
+
+
+## -------------------------------------------------------------------------------------------------
+    drift_status = property( fget = _get_drift_status )
+    event_id     = property( fget = _get_event_id ) 

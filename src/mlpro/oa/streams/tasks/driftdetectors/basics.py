@@ -31,8 +31,9 @@ from mlpro.oa.streams.tasks.driftdetectors.drifts import Drift
 ## -------------------------------------------------------------------------------------------------
 class DriftDetector (OAStreamTask):
     """
-    Base class for online anomaly detectors. It raises an event when an
-    anomaly is detected.
+    Base class for online anomaly detectors. It raises an event whenever the beginning or the end 
+    of a drift is detected. Please describe in child classes which event classes are used. Always
+    use the _raise_drift_event() method when raising an event. 
 
     Parameters
     ----------
@@ -52,13 +53,9 @@ class DriftDetector (OAStreamTask):
         Further optional named parameters.
     """
 
-    C_TYPE                  = 'Drift Detector'
-
-    C_EVENT_DRIFT_ADDED     = 'DRIFT_ADDED'
-    C_EVENT_DRIFT_REMOVED   = 'DRIFT_REMOVED'
-
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
+    C_TYPE            = 'Drift Detector'
+    C_PLOT_ACTIVE     = True
+    C_PLOT_STANDALONE = False
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -78,27 +75,8 @@ class DriftDetector (OAStreamTask):
                           p_logging = p_logging,
                           **p_kwargs )
         
-        self._drift_id      = 0
-        self._drifts        = {}
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict):
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _get_next_drift_id(self):
-        """
-        Methd that returns the id of the next drift. 
-
-        Returns
-        -------
-        drift_id : int
-        """
-
-        self._drift_id +=1
-        return self._drift_id
+        self._drift_id = 0
+        self._drifts   = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -114,6 +92,20 @@ class DriftDetector (OAStreamTask):
 
         return self._drifts
     
+
+## -------------------------------------------------------------------------------------------------
+    def _get_next_drift_id(self):
+        """
+        Methd that returns the id of the next drift. 
+
+        Returns
+        -------
+        drift_id : int
+        """
+
+        self._drift_id +=1
+        return self._drift_id
+
 
 ## -------------------------------------------------------------------------------------------------
     def _buffer_drift(self, p_drift:Drift):
@@ -137,7 +129,7 @@ class DriftDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def remove_drift(self, p_drift:Drift):
+    def _remove_drift(self, p_drift:Drift):
         """
         Method to remove an existing drift object. Please use as part of your algorithm.
 
@@ -152,16 +144,12 @@ class DriftDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _raise_drift_event( self, 
-                            p_event_id : str, 
-                            p_drift : Drift ):
+    def _raise_drift_event( self, p_drift : Drift ):
         """
         Specialized method to raise drift events. 
 
         Parameters
         ----------
-        p_event_id : str
-            Event id. See class constants C_EVENT_DRIFT_ADDED/REMOVED.
         p_drift : Drift
             Drift event object to be raised.
         """
@@ -171,7 +159,7 @@ class DriftDetector (OAStreamTask):
         if self.get_visualization(): 
             p_drift.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
-        return super()._raise_event( p_event_id = p_event_id, p_event_object = p_drift )
+        return super()._raise_event( p_event_id = p_drift.event_id, p_event_object = p_drift )
     
                  
 ## -------------------------------------------------------------------------------------------------

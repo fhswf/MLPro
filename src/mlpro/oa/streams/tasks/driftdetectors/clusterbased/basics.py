@@ -15,7 +15,7 @@ This module provides template for cluster-based drift detection algorithms to be
 """
 
 from mlpro.bf.various import Log
-from mlpro.bf.math.properties import *
+from mlpro.bf.math.properties import PropertyDefinitions
 
 from mlpro.oa.streams.basics import OAStreamTask
 from mlpro.oa.streams.tasks.driftdetectors.basics import DriftDetector
@@ -65,15 +65,15 @@ class DriftDetectorCB (DriftDetector):
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
-                  **p_kwargs):
+                  **p_kwargs ):
 
-        super().__init__(p_name = p_name,
-                         p_range_max = p_range_max,
-                         p_ada = p_ada,
-                         p_duplicate_data = p_duplicate_data,
-                         p_visualize = p_visualize,
-                         p_logging = p_logging,
-                         **p_kwargs)
+        super().__init__( p_name = p_name,
+                          p_range_max = p_range_max,
+                          p_ada = p_ada,
+                          p_duplicate_data = p_duplicate_data,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_kwargs )
         
         self._clusterer = p_clusterer
         unknown_prop    = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)

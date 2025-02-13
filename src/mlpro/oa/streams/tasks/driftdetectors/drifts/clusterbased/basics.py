@@ -9,7 +9,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-02-12)
+Ver. 0.1.0 (2025-02-12)
 
 This module provides a template class for cluster-based drifts to be used in cluster-based drift 
 detection algorithms.
@@ -28,11 +28,9 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class CBDrift (Drift):
+class DriftCB (Drift):
     """
     Sub-type for cluster-based drift events.
     
@@ -59,6 +57,7 @@ class CBDrift (Drift):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_drift_status : bool,
                  p_id : int = 0,
                  p_tstamp : datetime = None,
                  p_visualize : bool = False,
@@ -67,7 +66,8 @@ class CBDrift (Drift):
                  p_properties : dict = None,
                  **p_kwargs):
         
-        super().__init__( p_id = p_id,
+        super().__init__( p_drift_status = p_drift_status,
+                          p_id = p_id,
                           p_tstamp = p_tstamp,
                           p_visualize = p_visualize, 
                           p_raising_object = p_raising_object,
@@ -110,7 +110,10 @@ class CBDrift (Drift):
         cluster : Cluster = None
 
         for cluster in self._clusters.values(): 
-            cluster.color = "red"
+            if self.drift_status:
+                cluster.color = "red"
+            else:
+                raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -120,7 +123,7 @@ class CBDrift (Drift):
         cluster : Cluster = None
 
         for cluster in self._clusters.values(): 
-            cluster.color = "red"
-
-
-
+            if self.drift_status:
+                cluster.color = "red"
+            else:
+                raise NotImplementedError

@@ -1,0 +1,22 @@
+.. _target_oa_anomaly_prediction:
+Anomaly prediction
+==================
+
+Further descriptions coming soon...
+
+
+**Learn more**
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   21_anomaly_prediction/*
+
+
+**Cross reference**
+
+- Selected open access papers
+- Howtos
+- API
+- MLPro-OA-River

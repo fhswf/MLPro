@@ -1,8 +1,8 @@
-Online Adaptive Stream Processing
-=================================
+Online-adaptive data stream processing
+======================================
 
 .. toctree::
    :maxdepth: 1
    :glob:
    
-   oa_dsp/* 
+   streams/* 

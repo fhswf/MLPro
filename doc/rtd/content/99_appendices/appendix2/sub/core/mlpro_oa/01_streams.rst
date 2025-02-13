@@ -1,6 +1,6 @@
 .. _target_api_oa_streams:
-OA Stream Processing
-====================
+Online-adaptive data stream processing
+======================================
 
 .. image:: streams/images/MLPro-OA-Stream-Processing_class_diagram.drawio.png
    :scale: 50%

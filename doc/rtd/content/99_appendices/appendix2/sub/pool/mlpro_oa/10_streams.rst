@@ -1,6 +1,6 @@
 .. _target_api_pool_oa_streams:
-OA Stream Processing
-====================
+Online-adaptive data stream processing
+======================================
 
 .. toctree::
    :maxdepth: 2
