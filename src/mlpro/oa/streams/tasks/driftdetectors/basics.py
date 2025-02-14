@@ -165,7 +165,7 @@ class DriftDetector (OAStreamTask):
         self._plot_ax_ylim = None
         self._plot_ax_zlim = None
 
-        #super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
+        super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
 
         for drift in self._drifts.values():
             drift.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
