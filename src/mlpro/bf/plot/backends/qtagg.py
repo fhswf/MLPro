@@ -88,3 +88,11 @@ class PlotBackendqtagg (PlotBackend):
             state_qt = QtCore.Qt.WindowNoState
 
         window.setWindowState(state_qt)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class PlotBackendQtAgg (PlotBackendqtagg): pass

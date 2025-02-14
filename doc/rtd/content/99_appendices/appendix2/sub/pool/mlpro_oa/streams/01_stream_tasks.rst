@@ -1,6 +1,6 @@
 .. _target_api_oa_streams_tasks:
-OA Stream Tasks
-===============
+Online-adaptive stream tasks
+============================
 
 .. toctree::
    :maxdepth: 2
