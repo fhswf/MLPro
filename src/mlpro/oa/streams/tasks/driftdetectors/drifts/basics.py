@@ -65,8 +65,12 @@ class Drift (Id, Event, Plottable):
                   **p_kwargs):
         
         Id.__init__( self, p_id = p_id )
-        Event.__init__( self, p_raising_object=p_raising_object,
-                        p_tstamp=p_tstamp, **p_kwargs)
+
+        Event.__init__( self, 
+                        p_raising_object=p_raising_object,
+                        p_tstamp=p_tstamp, 
+                        **p_kwargs )
+        
         Plottable.__init__( self, p_visualize = p_visualize )
 
         self._drift_status : bool = p_drift_status

@@ -28,7 +28,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorPAGA(AnomalyDetector):
+class AnomalyDetectorPAGA (AnomalyDetector):
     """
     This class implements a ready-to-use detector for point and group anomalies.
 
@@ -50,32 +50,28 @@ class AnomalyDetectorPAGA(AnomalyDetector):
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
         Further optional named parameters.
-
     """
 
     C_NAME          = 'Anomaly Detector'
 
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
-
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_group_anomaly_det : bool = True,
-                 p_name:str = None,
-                 p_range_max = StreamTask.C_RANGE_THREAD,
-                 p_ada : bool = True,
-                 p_duplicate_data : bool = False,
-                 p_visualize : bool = False,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_kwargs):
+    def __init__( self,
+                  p_group_anomaly_det : bool = True,
+                  p_name:str = None,
+                  p_range_max = StreamTask.C_RANGE_THREAD,
+                  p_ada : bool = True,
+                  p_duplicate_data : bool = False,
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
-        super().__init__(p_name = p_name,
-                         p_range_max = p_range_max,
-                         p_ada = p_ada,
-                         p_duplicate_data = p_duplicate_data,
-                         p_visualize = p_visualize,
-                         p_logging = p_logging,
-                         **p_kwargs)
+        super().__init__( p_name = p_name,
+                          p_range_max = p_range_max,
+                          p_ada = p_ada,
+                          p_duplicate_data = p_duplicate_data,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_kwargs )
         
         self.group_anomalies : list[Anomaly] = []
         self.group_anomalies_instances : list[Instance] = []
@@ -117,13 +113,14 @@ class AnomalyDetectorPAGA(AnomalyDetector):
 
                         for i in range(2):
                             self.remove_anomaly(self.group_anomalies[i])
+
                         self._ano_id -= 2
-                        anomaly = GroupAnomaly(p_instances=self.group_anomalies_instances,
-                                               p_ano_scores=self.group_ano_scores, p_visualize=self._visualize,
-                                               p_raising_object=self,
-                                               p_det_time=str(inst_2.get_tstamp()))
-                        anomaly.set_id( p_id = self._get_next_anomaly_id() )
-                        self._anomalies[anomaly.get_id()] = anomaly
+                        anomaly = GroupAnomaly( p_instances=self.group_anomalies_instances,
+                                                p_ano_scores=self.group_ano_scores, p_visualize=self._visualize,
+                                                p_raising_object=self,
+                                                p_det_time=str(inst_2.get_tstamp()) )
+                        anomaly.id = self._get_next_anomaly_id()
+                        self._anomalies[anomaly.id] = anomaly
                         self.group_anomalies = []
                         self.group_anomalies.append(anomaly)
                         return anomaly
@@ -148,15 +145,15 @@ class AnomalyDetectorPAGA(AnomalyDetector):
                     self.group_anomalies.append(p_anomaly)
                     self.group_anomalies_instances.append(p_anomaly.get_instances()[-1])
                     self.group_ano_scores.append(p_anomaly.get_ano_scores())
-                    p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
-                    self._anomalies[p_anomaly.get_id()] = p_anomaly
+                    p_anomaly.id = self._get_next_anomaly_id() 
+                    self._anomalies[p_anomaly.id] = p_anomaly
                     return p_anomaly
             else:
-                p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
-                self._anomalies[p_anomaly.get_id()] = p_anomaly
+                p_anomaly.id = self._get_next_anomaly_id() 
+                self._anomalies[p_anomaly.id] = p_anomaly
                 return p_anomaly
             
         else:
-            p_anomaly.set_id( p_id = self._get_next_anomaly_id() )
-            self._anomalies[p_anomaly.get_id()] = p_anomaly
+            p_anomaly.id = self._get_next_anomaly_id() 
+            self._anomalies[p_anomaly.id] = p_anomaly
             return p_anomaly

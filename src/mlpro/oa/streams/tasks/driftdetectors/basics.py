@@ -116,16 +116,10 @@ class DriftDetector (OAStreamTask):
         ----------
         p_drift : Drift
             Drift object to be added.
-
-        Returns
-        -------
-        p_drift  Drift
-            Enriched drift object
         """
 
         p_drift.id = self._get_next_drift_id()
         self._drifts[p_drift.id] = p_drift
-        return p_drift
 
 
 ## -------------------------------------------------------------------------------------------------
