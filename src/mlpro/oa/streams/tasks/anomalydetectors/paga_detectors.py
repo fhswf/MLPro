@@ -13,16 +13,18 @@
 ## -- 2024-05-07  1.2.1     SK       Bug fix on groupanomaly visualisation
 ## -- 2024-08-12  1.3.0     DA       Review and adjustments on documentation
 ## -- 2025-02-14  1.4.0     DA       Refactoring
+## -- 2025-02-17  1.5.0     DA       Review and generalization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-02-14)
+Ver. 1.5.0 (2025-02-17)
 
-This module provides a ready-to-use detector for point and group anomalies.
+This module provides an extended template for custom anomaly detectors that supports an optional
+group anomaly detection based on point anomalies.
 """
 
+
 from mlpro.bf.various import Log
-from mlpro.bf.exceptions import ImplementationError
 from mlpro.bf.streams import Instance
 
 from mlpro.oa.streams.basics import StreamTask
@@ -35,9 +37,9 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly, PointAnom
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorPAGA (AnomalyDetector):
     """
-    This class is an extended template dedicated to point and group anomaly detection. Child 
-    class just need to focus on point anomaly detection. Groups of point anomalies are automatically 
-    detected and raised as group anomalies as part of method _buffer_anomaly().
+    This class is an extended template offering an optional group anomaly detection based on point 
+    anomalies. This detection can be turned on/off via the p_group_anomaly_det parameter. See 
+    method _buffer_anomaly() for further details. 
 
     Parameters
     ----------
@@ -59,7 +61,7 @@ class AnomalyDetectorPAGA (AnomalyDetector):
         Further optional named parameters.
     """
 
-    C_NAME = 'Anomaly Detector PAGA'
+    C_TYPE = 'Anomaly Detector PAGA'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -89,7 +91,7 @@ class AnomalyDetectorPAGA (AnomalyDetector):
 ## -------------------------------------------------------------------------------------------------
     def _buffer_anomaly(self, p_anomaly):
         """
-        Method to be used to add a new anomaly. Please use as part of your algorithm.
+        Method to be used to add a new anomaly. Please use as part of your algorithm. 
 
         Parameters
         ----------
@@ -97,9 +99,9 @@ class AnomalyDetectorPAGA (AnomalyDetector):
             Anomaly object to be added.
         """
 
-        if type(p_anomaly) != PointAnomaly:
-            raise ImplementationError('The AnomalyDetectorPAGA class only supports point anomalies.')
-            
+        if ( not self._group_anomaly_det ) or ( type(p_anomaly) != PointAnomaly ):
+            return super()._buffer_anomaly( p_anomaly = p_anomaly)
+
 
         if self._group_anomaly_det:
             self._group_anomalies.append(p_anomaly)
@@ -112,7 +114,7 @@ class AnomalyDetectorPAGA (AnomalyDetector):
                 second = inst_2.id
                 inst_1 = self._group_anomalies_instances[-2]
                 first  = inst_1.id
-                
+                    
                 if int(second) - 1 == int(first):
 
                     if len(self._group_anomalies_instances) == 3:
@@ -121,11 +123,11 @@ class AnomalyDetectorPAGA (AnomalyDetector):
                             self._remove_anomaly(self._group_anomalies[i])
 
                         self._ano_id -= 2
-                        groupanomaly = GroupAnomaly( p_instances=self._group_anomalies_instances,
-                                                     p_ano_scores=self._group_ano_scores, p_visualize=self._visualize,
-                                                     p_raising_object=self,
-                                                     p_tstampt=inst_2.tstamp )
-                        
+                        groupanomaly = GroupAnomaly( p_instances = self._group_anomalies_instances,
+                                                     p_ano_scores = self._group_ano_scores, p_visualize=self._visualize,
+                                                     p_raising_object = self,
+                                                     p_tstampt = inst_2.tstamp )
+                            
                         super()._buffer_anomaly( p_anomaly = groupanomaly )                    
 
                         self._group_anomalies = []
@@ -135,7 +137,7 @@ class AnomalyDetectorPAGA (AnomalyDetector):
                         self._group_anomalies[0].set_instances(self._group_anomalies_instances, self._group_ano_scores)
                         self._group_anomalies.pop(-1)
                         return self._group_anomalies[0]
-                        
+                            
                     else:
                         super()._buffer_anomaly( p_anomaly = p_anomaly)                    
 
@@ -152,5 +154,3 @@ class AnomalyDetectorPAGA (AnomalyDetector):
                     super()._buffer_anomaly( p_anomaly = p_anomaly )
             else:
                 super()._buffer_anomaly( p_anomaly = p_anomaly)            
-        else:
-            super()._buffer_anomaly( p_anomaly = p_anomaly)

@@ -76,6 +76,7 @@ class AnomalyDetector (OAStreamTask):
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
+                  p_anomaly_buffer_size : int = 0,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -86,9 +87,10 @@ class AnomalyDetector (OAStreamTask):
                           p_logging = p_logging,
                           **p_kwargs )
         
-        self._ano_id : int = 0
-        self._anomalies = {}
-        self._ano_scores = []
+        self._ano_id : int          = 0
+        self._anomalies             = {}
+        self._ano_scores            = []
+        self._ano_buffer_size : int = p_anomaly_buffer_size
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -135,7 +137,7 @@ class AnomalyDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _remove_anomaly(self, p_anomaly):
+    def _remove_anomaly(self, p_anomaly:Anomaly):
         """
         Method to remove an existing anomaly. Please use as part of your algorithm.
 
@@ -146,11 +148,11 @@ class AnomalyDetector (OAStreamTask):
         """
 
         p_anomaly.remove_plot(p_refresh=True)
-        del self._anomalies[p_anomaly.get_id()]
+        del self._anomalies[p_anomaly.id]
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _raise_anomaly_event(self, p_anomaly : Anomaly ):
+    def _raise_anomaly_event(self, p_anomaly:Anomaly):
         """
         Method to raise an anomaly event.
 
