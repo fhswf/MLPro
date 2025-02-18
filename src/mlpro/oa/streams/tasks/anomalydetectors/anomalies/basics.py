@@ -15,14 +15,14 @@
 ## -- 2024-05-09  1.3.2     DA       Bugfix in method Anomaly._update_plot()
 ## -- 2024-05-22  1.4.0     SK       Refactoring
 ## -- 2025-02-12  1.4.1     DA       Code reduction
-## -- 2025-02-14  1.5.0     DA       Class Anomaly:
-## --                                - refactoring
+## -- 2025-02-18  2.0.0     DA       Class Anomaly:
+## --                                - refactoring and simplification
 ## --                                - new attribute event_id
-## --                                - changes on method _raise_anomaly_event()
+## --                                - new parent Renormalizable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2025-02-14)
+Ver. 2.0.0 (2025-02-18)
 
 This module provides a template class for anomalies to be used in anomaly detection algorithms.
 """
@@ -32,13 +32,14 @@ from datetime import datetime
 from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
-from mlpro.bf.streams import Instance
+from mlpro.bf.math.normalizers import Renormalizable
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Anomaly (Id, Event, Plottable):
+class Anomaly (Id, Event, Plottable, Renormalizable):
     """
     This is the base class for anomaly events which can be raised by the anomaly detectors when an
     anomaly is detected.
@@ -61,8 +62,6 @@ class Anomaly (Id, Event, Plottable):
         Further optional keyword arguments.
     """
 
-    C_TYPE                  = 'Anomaly'
-
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
     C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
@@ -74,8 +73,6 @@ class Anomaly (Id, Event, Plottable):
     def __init__(self,
                  p_id : int = 0,
                  p_tstamp : datetime = None,
-                 p_instances: list[Instance] = None,
-                 p_ano_scores : list = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  **p_kwargs):
@@ -89,42 +86,4 @@ class Anomaly (Id, Event, Plottable):
         
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self._instances : list[Instance] = p_instances
-        self._ano_scores = p_ano_scores
-
-        self._event_id   = type(self).__name__
-
-
-## -------------------------------------------------------------------------------------------------
-    def _get_event_id(self) -> str:
-        return self._event_id
-    
-
-## -------------------------------------------------------------------------------------------------
-    def get_instances(self) -> list[Instance]:
-        """
-        Method that returns the instances associated with the anomaly.
-        
-        Returns
-        -------
-        list[Instance]
-            The list of instances.
-        """
-        return self._instances
-    
-
-## -------------------------------------------------------------------------------------------------
-    def get_ano_scores(self):
-        """
-        Method that returns the anomaly scores associated with the instances of the anomaly.
-        
-        Returns
-        -------
-        list
-            The list of anomaly scores.
-        """
-        return self._ano_scores
-    
-
-## -------------------------------------------------------------------------------------------------
-    event_id = property( fget = _get_event_id )
+        self.event_id   = type(self).__name__

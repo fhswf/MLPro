@@ -76,7 +76,7 @@ class AnomalyDetector (OAStreamTask):
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
-                  p_anomaly_buffer_size : int = 0,
+                  p_anomaly_buffer_size : int = 10,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -88,8 +88,7 @@ class AnomalyDetector (OAStreamTask):
                           **p_kwargs )
         
         self._ano_id : int          = 0
-        self._anomalies             = {}
-        self._ano_scores            = []
+        self.anomalies              = {}
         self._ano_buffer_size : int = p_anomaly_buffer_size
 
 
@@ -108,7 +107,7 @@ class AnomalyDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_anomalies(self) -> dict[Anomaly]:
+    def _get_anomalies(self) -> dict[Anomaly]:
         """
         Method to return the current list of anomalies. 
 
@@ -118,7 +117,7 @@ class AnomalyDetector (OAStreamTask):
             Current dictionary of anomalies.
         """
 
-        return self._anomalies
+        return self.anomalies
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -132,8 +131,19 @@ class AnomalyDetector (OAStreamTask):
             Anomaly object to be added.
         """
 
+        # 1 Buffering turned on?
+        if self._ano_buffer_size <= 0: return
+
+        # 2 Buffer full?
+        if len( self.anomalies ) >= self._ano_buffer_size:
+            # 2.1 Remove oldest entry
+            oldest_key     = next(iter(self.anomalies))
+            oldest_anomaly = self.anomalies.pop(oldest_key)
+            oldest_anomaly.remove_plot()
+
+        # 3 Buffer new anomaly
         p_anomaly.id = self._get_next_anomaly_id() 
-        self._anomalies[p_anomaly.id] = p_anomaly
+        self.anomalies[p_anomaly.id] = p_anomaly
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -148,11 +158,11 @@ class AnomalyDetector (OAStreamTask):
         """
 
         p_anomaly.remove_plot(p_refresh=True)
-        del self._anomalies[p_anomaly.id]
+        del self.anomalies[p_anomaly.id]
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _raise_anomaly_event(self, p_anomaly:Anomaly):
+    def _raise_anomaly_event(self, p_anomaly:Anomaly, p_buffer: bool = True):
         """
         Method to raise an anomaly event.
 
@@ -160,9 +170,11 @@ class AnomalyDetector (OAStreamTask):
         ----------
         p_anomaly : Anomaly
             Anomaly object to be raised.
+        p_buffer : bool
+            Anomaly is buffered when set to True.
         """
 
-        self._buffer_anomaly(p_anomaly=p_anomaly)
+        if p_buffer: self._buffer_anomaly( p_anomaly=p_anomaly )
 
         if self.get_visualization(): 
             p_anomaly.init_plot( p_figure=self._figure, 
@@ -183,7 +195,7 @@ class AnomalyDetector (OAStreamTask):
 
         super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
 
-        for anomaly in self._anomalies.values():
+        for anomaly in self.anomalies.values():
             anomaly.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
     
 
@@ -214,7 +226,7 @@ class AnomalyDetector (OAStreamTask):
         self._plot_ax_ylim = ax_ylim_new
         self._plot_ax_zlim = ax_zlim_new
 
-        for anomaly in self._anomalies.values():
+        for anomaly in self.anomalies.values():
             anomaly.update_plot( p_axlimits_changed = axlimits_changed,
                                  p_xlim = ax_xlim_new,
                                  p_ylim = ax_ylim_new,
@@ -229,15 +241,15 @@ class AnomalyDetector (OAStreamTask):
 
         # super().remove_plot(p_refresh=p_refresh)
 
-        for anomaly in self._anomalies.values():
+        for anomaly in self.anomalies.values():
             anomaly.remove_plot(p_refresh=p_refresh)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _renormalize(self, p_normalizer: Normalizer):
+    def _renormalize(self, p_normalizer):
         """
-        Internal renormalization of all anomaly instances. See method OATask.renormalize_on_event() for further
-        information.
+        Internal renormalization of all buffered anomalies. See method OATask.renormalize_on_event() 
+        for further information.
 
         Parameters
         ----------
@@ -245,10 +257,5 @@ class AnomalyDetector (OAStreamTask):
             Normalizer object to be applied on task-specific 
         """
 
-        anomaly : Anomaly = None
-
-        for anomaly in self._anomalies.values():
-            instances = anomaly.get_instances()
-
-            for inst in instances:
-                inst.remormalize( p_normalizer=p_normalizer)
+        for anomaly in self.anomalies.values():
+           anomaly.renormalize( p_normalizer=p_normalizer )

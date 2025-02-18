@@ -96,6 +96,7 @@ class CBAnomaly (Anomaly):
         self._clusters : dict[Cluster] = p_clusters
         self._properties : dict = p_properties
 
+
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> dict[Cluster]:
         """
