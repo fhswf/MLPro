@@ -26,7 +26,7 @@ Anomaly detection techniques can be broadly classified into two categories based
    :maxdepth: 2
    :glob:
 
-   20_anomaly_detection/*
+   30_anomaly_detection/*
 
 
 **Cross reference**

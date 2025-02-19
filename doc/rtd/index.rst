@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-MLPro - Machine Learning Professional
-#####################################
+MLPro - Elevate Your Machine Learning Journey
+#############################################
 
 Welcome to MLPro - the integrative middleware framework for standardized machine learning in Python!
 
@@ -48,18 +48,19 @@ MLPro
    :scale: 65 %
    :target: content/99_appendices/appendix2/main.html
 
-.. |project| image:: content/00_start_page/images/project_mlpro.png
-   :scale: 65 %
-   :target: content/99_appendices/appendix3/main.html
-
 .. |extensions| image:: content/00_start_page/images/extension_hub.png
    :scale: 65 %
    :target: content/04_extensions/main.html
 
+.. |project| image:: content/00_start_page/images/project_mlpro.png
+   :scale: 65 %
+   :target: content/99_appendices/appendix3/main.html
+
+
 
 |welcome| |mlpro_bf| |mlpro_sl| |mlpro_oa| |mlpro_rl| 
 
-|mlpro_gt| |examples| |mlpro_api| |project| |extensions|
+|mlpro_gt| |examples| |mlpro_api| |extensions| |project|
 
 
 .. |mlpro_pypi| image:: content/00_start_page/images/pypi.svg

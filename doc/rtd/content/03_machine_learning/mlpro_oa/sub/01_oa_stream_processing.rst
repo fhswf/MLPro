@@ -26,7 +26,6 @@ Browse the menu and see Section 'Cross reference' for further details.
 
 
 **Cross reference**
-  - :ref:`Howtos MPro-OA <target_appendix1_OA>`
+  - :ref:`Howtos MPro-OA-Streams <target_appendix1_OA_streams>`
   - :ref:`API reference: MLPro-OA-Streams <target_api_oa_streams>`
-  - :ref:`API reference: MLPro-OA-Streams - Pool of objects <target_api_pool_oa_streams>`
   - :ref:`Basics of data stream processing in MLPro <target_bf_streams>`

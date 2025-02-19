@@ -42,17 +42,16 @@ class AnomalyDetectorCB(AnomalyDetector):
     # List of cluster properties necessary for the algorithm
     C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []
 
-
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_clusterer : ClusterAnalyzer = None,
-                 p_name : str = None,
-                 p_range_max = StreamTask.C_RANGE_THREAD,
-                 p_ada : bool = True,
-                 p_duplicate_data : bool = False,
-                 p_visualize : bool = False,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_kwargs):
+    def __init__( self,
+                  p_clusterer : ClusterAnalyzer,
+                  p_name : str = None,
+                  p_range_max = StreamTask.C_RANGE_THREAD,
+                  p_ada : bool = True,
+                  p_duplicate_data : bool = False,
+                  p_visualize : bool = False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs):
 
         super().__init__(p_name = p_name,
                          p_range_max = p_range_max,
@@ -64,14 +63,7 @@ class AnomalyDetectorCB(AnomalyDetector):
         
         self._clusterer = p_clusterer
 
-        for x in self.C_PROPERTY_DEFINITIONS:
-            if x not in self.C_REQ_CLUSTER_PROPERTIES:
-                self.C_REQ_CLUSTER_PROPERTIES.append(x)
-
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
-        #if len(unknown_prop) >0:
-        #    raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
-        
-        self._visualize = p_visualize
-
+        if len(unknown_prop) >0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)

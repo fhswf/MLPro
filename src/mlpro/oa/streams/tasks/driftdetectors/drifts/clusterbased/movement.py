@@ -26,5 +26,4 @@ class DriftCBMovement (DriftCB):
     Sub-type indicating the begin or end of a cluster movement.
     """
 
-    C_NAME          = 'Cluster-based Drift (Movement)'
     C_PLOT_ACTIVE   = True

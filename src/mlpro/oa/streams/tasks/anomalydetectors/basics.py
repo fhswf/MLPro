@@ -107,20 +107,6 @@ class AnomalyDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_anomalies(self) -> dict[Anomaly]:
-        """
-        Method to return the current list of anomalies. 
-
-        Returns
-        -------
-        dict_of_anomalies : dict[Anomaly]
-            Current dictionary of anomalies.
-        """
-
-        return self.anomalies
-    
-
-## -------------------------------------------------------------------------------------------------
     def _buffer_anomaly(self, p_anomaly:Anomaly):
         """
         Method to be used to add a new anomaly. Please use as part of your algorithm.

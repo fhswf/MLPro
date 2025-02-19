@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-02-13  0.2.0     DA       Class Drift: new attributes event_id, drift_status
+## -- 2025-02-19  0.3.0     DA       Class Drift: new parent Renomalizable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-02-13)
+Ver. 0.3.0 (2025-02-19)
 
 This module provides a template class for types of data drift to be used in drift detection algorithms.
 """
@@ -20,12 +21,13 @@ from datetime import datetime
 from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import Event
+from mlpro.bf.math.normalizers import Renormalizable
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Drift (Id, Event, Plottable):
+class Drift (Id, Event, Plottable, Renormalizable):
     """
     This is the base class for drift events which can be raised by drift detectors when the beginning
     or end of a drift is detected.

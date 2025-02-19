@@ -52,7 +52,6 @@ class DriftCB (Drift):
         Further optional keyword arguments.
     """
 
-    C_NAME          = 'Cluster-based Drift'
     C_PLOT_ACTIVE   = True
 
 ## -------------------------------------------------------------------------------------------------

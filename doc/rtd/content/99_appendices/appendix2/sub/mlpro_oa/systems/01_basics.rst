@@ -1,8 +1,8 @@
-.. _target_api_oa_systems:
-OA Systems
-==========
+.. _target_api_oa_systems_basics:
+Basics
+======
 
-.. image:: systems/images/MLPro-OA-Systems_OASystems.drawio.png
+.. image:: images/MLPro-OA-Systems_OASystems.drawio.png
    :scale: 50%
    
 .. automodule:: mlpro.oa.systems.basics

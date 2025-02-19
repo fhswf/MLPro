@@ -25,12 +25,11 @@ try:
 except:
     class Figure : pass
 
-from mlpro.oa.streams.basics import Instance
+from datetime import datetime
+
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
-
-
 
 
 
@@ -44,14 +43,10 @@ class CBAnomaly (Anomaly):
     ----------
     p_id : int
         Anomaly ID. Default value = 0.
-    p_instances : Instance
-        List of instances. Default value = None.
     p_clusters : dict[Cluster]
         Clusters associated with the anomaly. Default = None.
     p_properties : dict
         Poperties of clusters associated with the anomaly. Default = None.
-    p_ano_scores : list
-        List of anomaly scores of instances. Default = None.
     p_det_time : str
         Time of occurance of anomaly. Default = None.
     p_visualize : bool
@@ -62,7 +57,6 @@ class CBAnomaly (Anomaly):
         Further optional keyword arguments.
     """
     
-    C_NAME      = 'Cluster based Anomaly'
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
     C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
@@ -75,40 +69,23 @@ class CBAnomaly (Anomaly):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id : int = 0,
-                 p_instances : list[Instance] = None,
                  p_clusters : dict[Cluster] = None,
                  p_properties : dict = None,
-                 p_ano_scores : list = None,
-                 p_det_time : str = None,
+                 p_tstamp : datetime = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  **p_kwargs):
         
-        super().__init__(p_id=p_id,
-                         p_instances=p_instances,
-                         p_ano_scores=p_ano_scores,
-                         p_visualize=p_visualize, 
-                         p_raising_object=p_raising_object,
-                         p_det_time=p_det_time,
-                         **p_kwargs)
+        super().__init__( p_id = p_id,
+                          p_tstamp = p_tstamp,
+                          p_visualize = p_visualize, 
+                          p_raising_object = p_raising_object,
+                          **p_kwargs )
         
-        self._colour_id = 0
-        self._clusters : dict[Cluster] = p_clusters
-        self._properties : dict = p_properties
+        self._colour_id               = 0
+        self.clusters : dict[Cluster] = p_clusters
+        self._properties : dict       = p_properties
 
-
-## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> dict[Cluster]:
-        """
-        Method that returns the clusters associated with the anomaly.
-        
-        Returns
-        -------
-        dict[Cluster]
-            Dictionary of clusters.
-        """
-        return self._clusters
-    
 
 ## -------------------------------------------------------------------------------------------------
     def get_properties(self) -> dict:
@@ -129,7 +106,7 @@ class CBAnomaly (Anomaly):
 
         cluster : Cluster = None
 
-        for cluster in self._clusters.values(): 
+        for cluster in self.clusters.values(): 
 
             cluster.color = "red"
 
@@ -140,9 +117,6 @@ class CBAnomaly (Anomaly):
     
         cluster : Cluster = None
 
-        for cluster in self._clusters.values(): 
+        for cluster in self.clusters.values(): 
 
             cluster.color = "red"
-
-
-

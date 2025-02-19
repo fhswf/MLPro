@@ -1,4 +1,4 @@
-.. _target_oa_normalizers:
+.. _target_oa_streams_normalization:
 Normalization
 =============
 
@@ -11,4 +11,4 @@ Further descriptions coming soon...
    :maxdepth: 2
    :glob:
 
-   03_oa_normalization/*
+   normalization/*

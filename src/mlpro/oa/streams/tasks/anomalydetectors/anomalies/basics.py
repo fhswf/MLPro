@@ -50,10 +50,6 @@ class Anomaly (Id, Event, Plottable, Renormalizable):
         Anomaly ID. Default value = 0.
     p_tstamp : datetime
         Time of occurance of anomaly. Default = None.
-    p_instances : Instance
-        List of instances. Default value = None.
-    p_ano_scores : list
-        List of anomaly scores of instances. Default = None.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_raising_object : object

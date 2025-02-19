@@ -1,6 +1,6 @@
-.. _target_oa_cluster_analyzer:
-Cluster analysis
-================
+.. _target_oa_drift_detection:
+Drift detection
+===============
 
 Further descriptions coming soon...
 
@@ -11,12 +11,11 @@ Further descriptions coming soon...
    :maxdepth: 2
    :glob:
 
-   10_cluster_analysis/*
+   40_drift_detection/*
 
 
-**Cross Reference**
+**Cross reference**
 
 - Selected open access papers
 - Howtos
 - API
-- MLPro-OA-River

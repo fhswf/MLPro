@@ -1,8 +1,8 @@
 .. _target_api_oa_stream_tasks_ad:
-Anomaly detectors
+Anomaly detection
 =================
 
-.. image:: anomaly_detectors/images/MLPro-OA-Anomaly-Detectors_class_diagram.drawio.png
+.. image:: images/MLPro-OA-Anomaly-Detectors_class_diagram.drawio.png
    :scale: 50%
    
    
