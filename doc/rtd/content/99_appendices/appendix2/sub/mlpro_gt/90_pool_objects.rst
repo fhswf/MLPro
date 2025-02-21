@@ -1,10 +1,10 @@
 .. _target_api_pool_gt:
-MLPro-GT - Game Theory
-======================
+Pool objects
+============
 
 .. toctree::
    :maxdepth: 3
    :glob:
    
-   mlpro_gt/*
+   pool/*
 

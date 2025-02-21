@@ -6,14 +6,24 @@
 MLPro - Elevate Your Machine Learning Journey
 #############################################
 
-Welcome to MLPro - the integrative middleware framework for standardized machine learning in Python!
+**Welcome to MLPro - the integrative middleware framework for standardized machine learning in Python!**
 
-MLPro
-   - enables hybrid ML applications in just one framework
-   - provides complete process landscapes and powerful ML templates on a scientific level
-   - integrates a growing number of :ref:`proven ML packages <target_wrappers>` 
-   - enables comparable and reproducible results in publications
-   - is open source and even commercially usable (`Apache License 2.0 <https://github.com/fhswf/MLPro/blob/main/LICENSE>`_)
+.. raw:: html
+
+    <div style="max-width: 840px; text-align: justify; margin: 0;">
+      💡 Machine learning frameworks often focus on specific algorithms or isolated tasks, leaving you to bridge
+      the gaps between tools, workflows, and real-world applications. MLPro takes a different approach: Instead 
+      of just another toolbox, it provides a structured foundation with powerful processes and reusable templates 
+      designed to bring standardization and productivity to your ML development.<br><br>
+
+      📐 Whether you're a researcher exploring new methods, a developer building intelligent systems, or a student 
+      discovering the world of machine learning, MLPro gives you the structure and flexibility to elevate your ML projects to the 
+      next level.<br><br>
+
+      🔓 MLPro is fully open source and licensed under <a href="https://github.com/fhswf/MLPro?tab=Apache-2.0-1-ov-file#readme" target="_blank">Apache 2.0</a>, giving you the freedom to innovate, customize, and contribute.<br><br>
+
+      ✨ Start exploring MLPro and take your machine learning journey further! <br><br>
+    </div>
 
 
 .. |welcome| image:: content/00_start_page/images/welcome.png
@@ -69,24 +79,21 @@ MLPro
 
 .. |mlpro_anaconda| image:: content/00_start_page/images/anaconda.png
    :target: https://anaconda.org/mlpro/mlpro
-   :scale: 11 %
+   :scale: 10 %
 
 .. |mlpro_github| image:: content/00_start_page/images/github.png
    :target: https://github.com/fhswf/MLPro
    :scale: 2 %
 
-.. |mlpro_rg| image:: content/00_start_page/images/researchgate.jpeg
-   :target: https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python
-   :scale: 6 %
 
-
-MLPro is also present on...
+🌐 MLPro is available on...
 
 .. list-table::
+   :widths: 33 33 33
 
-   * - |mlpro_pypi| `Python Package Index <https://pypi.org/project/mlpro>`_
-     - |mlpro_anaconda| `Anaconda.org <https://anaconda.org/mlpro/mlpro>`_
-     - |mlpro_github| `GitHub <https://github.com/fhswf/MLPro>`_
+   * - |mlpro_pypi|     `PyPI <https://pypi.org/project/mlpro>`_
+     - |mlpro_anaconda| `Anaconda <https://anaconda.org/mlpro/mlpro>`_
+     - |mlpro_github|   `GitHub <https://github.com/fhswf/MLPro>`_
 
 
 
