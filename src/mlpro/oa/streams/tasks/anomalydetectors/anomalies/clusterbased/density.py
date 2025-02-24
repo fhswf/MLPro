@@ -32,7 +32,6 @@ class ClusterDensityVariation (CBAnomaly):
     Event class to be raised when the density of a cluster changes.
     
     """
-
-    C_NAME      = 'Cluster density variation'
-
+    
+    pass
 
