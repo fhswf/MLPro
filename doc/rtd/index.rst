@@ -27,50 +27,58 @@ MLPro - Elevate Your Machine Learning Journey
 
 
 .. |welcome| image:: content/00_start_page/images/welcome.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/01_welcome/main.html
 
 .. |mlpro_bf| image:: content/00_start_page/images/mlpro_bf.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/02_basic_functions/mlpro_bf/main.html
    
 .. |mlpro_sl| image:: content/00_start_page/images/mlpro_sl.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/03_machine_learning/mlpro_sl/main.html
 
 .. |mlpro_rl| image:: content/00_start_page/images/mlpro_rl.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/03_machine_learning/mlpro_rl/main.html
 
 .. |mlpro_gt| image:: content/00_start_page/images/mlpro_gt.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/03_machine_learning/mlpro_gt/main.html
 
 .. |mlpro_oa| image:: content/00_start_page/images/mlpro_oa.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/03_machine_learning/mlpro_oa/main.html
 
 .. |examples| image:: content/00_start_page/images/example_pool.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/99_appendices/appendix1/main.html
 
+.. |podcast| image:: content/00_start_page/images/podcast.png
+   :scale: 35 %
+   :target: https://www.gitpodcast.com/fhswf/mlpro
+
+.. |chatgpt| image:: content/00_start_page/images/chatgpt.png
+   :scale: 35 %
+   :target: https://chatgpt.com/g/g-67a1b30e91d481918ee1d6fe2af91bb5-mlpro
+
 .. |mlpro_api| image:: content/00_start_page/images/api_reference.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/99_appendices/appendix2/main.html
 
 .. |extensions| image:: content/00_start_page/images/extension_hub.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/04_extensions/main.html
 
 .. |project| image:: content/00_start_page/images/project_mlpro.png
-   :scale: 65 %
+   :scale: 35 %
    :target: content/99_appendices/appendix3/main.html
 
 
 
-|welcome| |mlpro_bf| |mlpro_sl| |mlpro_oa| |mlpro_rl| 
+|welcome| |mlpro_bf| |mlpro_sl| |mlpro_oa| |mlpro_rl| |mlpro_gt| 
 
-|mlpro_gt| |examples| |mlpro_api| |extensions| |project|
+|examples| |mlpro_api| |extensions| |podcast| |chatgpt| |project|
 
 
 .. |mlpro_pypi| image:: content/00_start_page/images/pypi.svg
