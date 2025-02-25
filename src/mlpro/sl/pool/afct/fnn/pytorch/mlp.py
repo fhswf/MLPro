@@ -140,23 +140,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             pass 
         
         self._loss_fct      = self.get_hyperparam().get_value(ids_[8])()
-        try:
-            self._optimizer     = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
-        except:
-            # Create a workaround for Python 3.10 (since Self is unavailable)
-            import typing
-            from torch._dynamo.variables.lazy import LazyVariableTracker
-            from torch._dynamo.variables import VariableTracker
-            from typing import TypeVar, Union
-            
-            T = TypeVar("T", bound="LazyVariableTracker")
-            
-            def patched_unwrap(self) -> Union[VariableTracker, T]:
-                return self
-            
-            LazyVariableTracker.unwrap = patched_unwrap
-            self._optimizer     = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
-        
+        self._optimizer     = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
         self._sampling_seed = self.get_hyperparam().get_value(ids_[11])
         
         return model
