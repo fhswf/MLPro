@@ -1,5 +1,5 @@
 .. _target_api_rl_env_ada:
-RL-ENV-ADA - Environment Models
+RL-ENV-ADA - Environment models
 ===============================
 
 .. image:: images/01_environments/MLPro-RL-Env-Ada_class_diagram.drawio.png
