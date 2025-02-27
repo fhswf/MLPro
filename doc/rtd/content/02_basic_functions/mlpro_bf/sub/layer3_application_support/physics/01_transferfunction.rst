@@ -1,6 +1,6 @@
 .. _target_basics_physics_tf:
-Transfer Function
-=================
+Transfer functions
+==================
 
 A transfer function is a mathematical representation of the relationship between the input and output of a time-invariant system.
 It is commonly used in control theory and electrical engineering to analyze and design systems with inputs and outputs, but it is not restricted only to those aspects.
@@ -26,7 +26,7 @@ Transfer Function class can be accessed as follows:
     from mlpro.bf.physics import TransferFunction
 
 
-**Cross Reference**
-    + :ref:`Howto BF-PHYSICS-001: Transfer Functions <Howto BF PHYSICS 001>`
-    + :ref:`Howto BF-PHYSICS-002: Unit Converter <Howto BF PHYSICS 002>`
-    + :ref:`API Reference <target_ap_bf_physics_basics>`
+**Cross reference**
+    + :ref:`Howto BF-PHYSICS-001: Transfer functions <Howto BF PHYSICS 001>`
+    + :ref:`Howto BF-PHYSICS-002: Unit converter <Howto BF PHYSICS 002>`
+    + :ref:`API reference <target_ap_bf_physics_basics>`

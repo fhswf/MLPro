@@ -5,7 +5,7 @@ Boundary detection
 Further descriptions coming soon...
 
 
-**Cross Reference**
+**Cross reference**
 
 - Related Howtos
 - API

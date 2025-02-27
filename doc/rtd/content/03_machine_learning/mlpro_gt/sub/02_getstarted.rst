@@ -1,5 +1,5 @@
 .. _target_getstarted_GT:
-Getting Started
+Getting started
 ---------------
 
 .. toctree::

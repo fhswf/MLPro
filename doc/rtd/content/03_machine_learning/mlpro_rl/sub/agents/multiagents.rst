@@ -1,7 +1,7 @@
-Multi-Agents
---------------
+Multi-agents
+------------
 
-In Reinforcement Learning, multi-agent refers to a scenario where multiple independent agents interact with each other and with their environment in an attempt to accomplish a common goal or optimize their own reward.
+In reinforcement learning, multi-agent refers to a scenario where multiple independent agents interact with each other and with their environment in an attempt to accomplish a common goal or optimize their own reward.
 In this setting, the behavior of each agent not only depends on its own actions and observations, but also on the actions and observations of other agents, leading to a complex, dynamic and interactive decision-making process.
 The scientific study of multi-agent reinforcement learning involves modeling the interdependence and cooperation/competition among agents, and developing algorithms for agents to learn and adapt to the environment effectively.
 
@@ -13,6 +13,6 @@ Multi-agent interactions take place in appropriate contexts that support the sca
 These are native applications that incorporate the MLPro environment template or PettingZoo environments that may be incorporated using the corresponding :ref:`wrapper class<target_extension_hub>` offered by MLPro.
 
 
-**Cross Reference**
-    - `Howto RL-AGENT-004: Train Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
+**Cross reference**
+    - `Howto RL-AGENT-004: Train multi-agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
     - :ref:`MLPro-RL: Training <target_training_RL>`

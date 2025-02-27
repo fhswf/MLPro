@@ -1,6 +1,6 @@
 .. _target_mpc_RL:
 Model Predictive Control (MPC) 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.actionplanner.mpc
 
@@ -11,7 +11,7 @@ Model Predictive Control (MPC)
 
 
 
-**General Information**
+**General information**
 
 We introduce an MPC method as action planner in the model-based RL territory.
 Monte Carlo MPC is a control algorithm that uses a Monte Carlo simulation-based approach to generate control actions for a dynamic system.
@@ -34,10 +34,10 @@ Multiprocessing has also been incorporated into MPC, which allows parallel compu
 Depending on the number of planning horizon, but we believe that this reduces the training time massively.
 
 
-**Cross Reference**
+**Cross reference**
 
-    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
-    + :ref:`API Reference <target_pool_mpc>`
+    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World environment <Howto MB RL 002>`
+    + :ref:`API reference <target_pool_mpc>`
 
 **Citation**
 

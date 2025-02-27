@@ -1,6 +1,6 @@
 .. _GridWorld:
 Grid World
-^^^^^^^^^^^^
+^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.gridworld
 
@@ -40,7 +40,7 @@ This Grid World environment can be imported via:
     - `NumPy <https://pypi.org/project/numpy/>`_
 
 
-**General Information**
+**General information**
 
 +------------------------------------+-----------------------------------------------------------------+
 |         Parameter                  |                         Value                                   |
@@ -68,7 +68,8 @@ This Grid World environment can be imported via:
 | Reward Structure                   | Overall reward                                                  |
 +------------------------------------+-----------------------------------------------------------------+
  
-**Action Space**
+
+**Action space**
 
 There are two types of actions that can be selected in the beginning of the training, such as continuous actions ('C_ACTION_TYPE_CONT') and discrete actions ('C_ACTION_TYPE_DISC_2D').
 At the moment, the discrete action is limited to 2-dimensional grid world.
@@ -83,7 +84,8 @@ Number '1' means 'right' or 'east'.
 Number '2' means 'down' or 'south'.
 Number '3' means 'left' or 'west'.
 
-**State Space**
+
+**State space**
 
 The state space is initialized from the grid_size parameter, which can be set up to however many dimension 
 as needed. For example, the agent can be placed in a two dimensional world with a n x m size, three dimensional world with a n x m x p, or even more,
@@ -94,7 +96,8 @@ or
 
 Additionally, the initial and goal position can be randomized or predefined.
   
-**Reward Structure**
+
+**Reward structure**
 
 The default reward function is really simple and straight forward, where the reward is 1, if the agent reaches the goal.
 The reward is 1 minus the euclidean distance between goal states and current states, if the agent has not reached the goal yet.
@@ -112,9 +115,9 @@ The reward is 1 minus the euclidean distance between goal states and current sta
     reward.set_overall_reward(rew.item())
 
   
-**Cross Reference**
-    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
-    + :ref:`API Reference <target_pool_rl_env_grid_world>`
+**Cross reference**
+    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World environment <Howto MB RL 001>`
+    + :ref:`API reference <target_pool_rl_env_grid_world>`
 
 
 **Citation**

@@ -43,7 +43,7 @@ Please install below package to use the MLPro's BGLP environment
 
 
 
-**General Information**
+**General information**
 
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -78,7 +78,7 @@ Please install below package to use the MLPro's BGLP environment
     section, see :ref:`here <api-ref-bglp>`.
     
 
-**Action Space**
+**Action space**
 
 In this environment, we consider 5 actuators to be controlled. 
 Thus, there are 5 agents and 5 joint actions because each agent requires an action.
@@ -103,7 +103,7 @@ The vibratory conveyor can only be either fully switched-on or switched-off. The
 +-------+-------------------+--------+-------------------+--------------+
   
   
-**State Space**
+**State space**
 
 The state information in the BGLP is the fill levels of the reservoirs.
 Each agent is always placed in between two reservoirs, e.g. between a silo and a hopper or vice versa.
@@ -136,7 +136,7 @@ Every state is normalized within a range between 0 and 1.
 +------+----------+--------+--------+---------------+
   
   
-**Reward Structure**
+**Reward structure**
 
 The reward structure is implemented according to `this paper <https://doi.org/10.1016/j.compchemeng.2021.107382>`_.
 You can also find the source code of the reward structure, `here <https://github.com/fhswf/MLPro/blob/13b7b8a82d90b626f40ea7c268706e43889b9e00/src/mlpro/rl/pool/envs/bglp.py#L971-L982>`_.
@@ -163,7 +163,7 @@ If you would like to implement a customized reward function, you can follow thes
                 return self.overall_reward
  
 
-**Cross Reference**
+**Cross reference**
 
     + :ref:`API Reference <target_pool_rl_env_bglp>`
 

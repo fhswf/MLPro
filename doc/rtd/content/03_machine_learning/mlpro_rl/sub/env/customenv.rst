@@ -1,10 +1,10 @@
 .. _customEnv:
-Developing Custom Environments
+Developing custom environments
 --------------------------------
 
 .. image:: images/MLPro-RL-Env_class_Environment_commented.png
 
-- **Environment Creation for Simulation Mode**
+- **Environment creation for simulation mode**
 
     To create an environment that satisfies MLPro interface is immensly simple and straigtforward.
     Basically a MLPro environment is a class with 5 main functions. Each environment must apply the
@@ -97,7 +97,7 @@ Developing Custom Environments
     3. **C_TYPE_EVERY_ACTION** is a scalar for every agent and action.
 
 
-- **Environment Creation for Real Hardware Mode**
+- **Environment creation for real hardware mode**
 
     In MLPro, we can choose simulation mode or real hardward mode. For real hardware mode, the creation of
     an environment is very similar to simulation mode. You do not need to define **_simulate_reaction**, but you
@@ -192,13 +192,15 @@ Developing Custom Environments
                 #     self.goal_achievement = 0.0
                 ....
 
-- **Environment from Third Party Packages**
+
+- **Environment from 3rd party packages**
 
     Alternatively, if your environment follows Gym or PettingZoo interface, you can apply our
     relevant useful wrappers for the integration between third party packages and MLPro. For more
     information, please click :ref:`here<target_extension_hub>`.
 
-- **Environment Checker**
+
+- **Environment checker**
 
     To check whether your developed environment is compatible to MLPro interface, we provide a test script
     using unittest. At the moment, you can find the source code `here <https://github.com/fhswf/MLPro/blob/main/test/test_environment.py>`_.
