@@ -6,9 +6,6 @@ Preprocessing
    :scale: 50%
    
 
-Boundary detector
------------------
-
 .. automodule:: mlpro.oa.streams.tasks.boundarydetector
    :members:
    :undoc-members:
@@ -16,18 +13,12 @@ Boundary detector
    :show-inheritance:
 
 
-Normalizer MinMax
------------------
-
 .. automodule:: mlpro.oa.streams.tasks.normalizers.minmax
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
-
-Normalizer ZTrans
------------------
 
 .. automodule:: mlpro.oa.streams.tasks.normalizers.ztrans
    :members:

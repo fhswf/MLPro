@@ -6,9 +6,6 @@ Cluster analysis
    :scale: 50%
    
    
-Template for cluster algorithms
--------------------------------
-
 .. automodule:: mlpro.oa.streams.tasks.clusteranalyzers.basics
    :members:
    :undoc-members:
@@ -16,18 +13,12 @@ Template for cluster algorithms
    :show-inheritance:
 
 
-Template for clusters
----------------------
-
 .. automodule:: mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
-
-Centroid-based clusters
------------------------
 
 .. automodule:: mlpro.oa.streams.tasks.clusteranalyzers.clusters.centroid
    :members:
