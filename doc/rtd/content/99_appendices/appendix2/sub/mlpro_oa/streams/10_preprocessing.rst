@@ -2,14 +2,14 @@
 Preprocessing
 =============
 
-.. image:: images/MLPro-OA-Preprocessing-Tasks_class_diagram.drawio.png
+.. image:: 10_preprocessing/images/MLPro-OA-Preprocessing-Tasks_class_diagram.drawio.png
    :scale: 50%
    
 
 Boundary detector
 -----------------
 
-.. automodule:: mlpro.oa.streams.tasks.boundarydetectors
+.. automodule:: mlpro.oa.streams.tasks.boundarydetector
    :members:
    :undoc-members:
    :private-members:

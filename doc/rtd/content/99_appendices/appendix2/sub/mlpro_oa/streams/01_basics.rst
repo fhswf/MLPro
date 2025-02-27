@@ -2,7 +2,7 @@
 Basics
 ======
 
-.. image:: images/MLPro-OA-Stream-Processing_class_diagram.drawio.png
+.. image:: 00_basics/images/MLPro-OA-Stream-Processing_class_diagram.drawio.png
    :scale: 50%
    
 .. automodule:: mlpro.oa.streams.basics

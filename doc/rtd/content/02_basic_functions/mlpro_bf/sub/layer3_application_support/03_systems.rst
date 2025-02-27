@@ -1,5 +1,5 @@
 .. _target_bf_systems:
-State-based Systems
+State-based systems
 ===================
 
 MLPro aims to standardize machine learning processes to accommodate complex applications in simplified reusable APIs.
@@ -103,10 +103,10 @@ The demo scenario supports two action styles:
    systems/*
 
 
-**Cross Reference**
+**Cross reference**
 
-- :ref:`Howto BF-SYSTEMS-001: Demonstrating Native Systems <Howto BF SYSTEMS 001>`
+- :ref:`Howto BF-SYSTEMS-001: Demonstrating native systems <Howto BF SYSTEMS 001>`
 - :ref:`Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 010>`
 - :ref:`MLPro-Int-MuJoCo <https://mlpro-int-mujoco.readthedocs.io>`_
-- :ref:`API Reference BF-Systems <target_ap_bf_systems>`
-- :ref:`API Reference BF-Systems Sample Pool <target_pool_bf_systems>`
+- :ref:`API reference BF-Systems <target_ap_bf_systems>`
+- :ref:`API reference BF-Systems Sample pool <target_pool_bf_systems>`

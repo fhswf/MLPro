@@ -52,7 +52,7 @@ it into MLPro. The deeper the level, the more universal the usability, and thus 
    :scale: 40 %
 
 
-Standardized Machine Learning
+Standardized machine learning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 A special feature of MLPro is that machine learning standards are already defined in the basic functions. 
 Templates for adaptive models and their hyperparameters as well as for executable ML scenarios are introduced 
@@ -64,7 +64,7 @@ from MLPro in your hybrid ML applications.
 **Learn more:** :ref:`Basics of Machine Learning <target_bf_ml>`
 
 
-Example Pool
+Example pool
 ^^^^^^^^^^^^
 
 Numerous executable example programs (we call them "howtos") illustrate the essential functions of MLPro.
@@ -75,7 +75,7 @@ demonstrated functionalities (tdd - test-driven development).
 **Learn more:** :ref:`Example Pool <target_appendix1>`
 
 
-Third Party Support
+Third party support
 ^^^^^^^^^^^^^^^^^^^
 
 MLPro integrates an increasing number of selected ML packages into its process landscapes.
@@ -85,7 +85,7 @@ the corresponding MLPro classes.
 **Learn more:** :ref:`Wrappers <target_wrappers>`
 
 
-Real-World Applications in Focus
+Real-world applications in focus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 MLPro was designed not only for simulations but for use in real-world applications. To this end, various 
@@ -132,7 +132,7 @@ The development team consistently applies the following principles:
       cycle of software. Anyone who opens any source code of MLPro knows immediately what we mean :-)
 
 
-Customer Extensions
+Customer extensions
 ^^^^^^^^^^^^^^^^^^^
 
 Of course, frameworks like MLPro are made to reuse their functions in own applications. That's why we put a lot of effort into design and 

@@ -1,5 +1,5 @@
 .. _target_bf_application_support:
-Layer 3 - Application Support
+Layer 3 - Application support
 =============================
 
 This layer deals with the provision of basic technologies to support real-world applications.

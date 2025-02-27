@@ -36,7 +36,7 @@ In particular, this includes the method **_start_async()**, which allows the exe
 thread or process. 
 
 
-**Tasks und Workflows**
+**Tasks und workflows**
 
 A fundamental and consistently used concept in MLPro is that of tasks and workflows. A task is a class that can be 
 executed in one of the three possible ranges mentioned above. Tasks can in turn be grouped into workflows. 
@@ -55,10 +55,10 @@ check MLPro functionalities in multiprocessing mode on MacOS-based computers ver
 multithreading.
 
 
-**Cross Reference**
+**Cross reference**
 
-- :ref:`Howto BF-MT-001: Multitasking - Parallel Algorithms <Howto BF MT 001>`
-- :ref:`Howto BF-MT-002: Multitasking - Tasks and Workflows <Howto BF MT 002>`
+- :ref:`Howto BF-MT-001: Multitasking - Parallel algorithms <Howto BF MT 001>`
+- :ref:`Howto BF-MT-002: Multitasking - Tasks and workflows <Howto BF MT 002>`
 - :ref:`API Reference BF-MT - Multitasking <target_api_bf_mt>`
 
 

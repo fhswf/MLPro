@@ -14,7 +14,7 @@ Combines the functionalities of MLPro's stream task and ML model...
    01_overview/*
 
 
-**Cross Reference**
+**Cross reference**
 
 - BF: Stream Processing
 - Howto section

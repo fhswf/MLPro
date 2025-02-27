@@ -1,6 +1,6 @@
 .. _RobotHMI:
 Robot Manipulator on Homogeneous Matrix
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.robotinhtm
 
@@ -42,7 +42,7 @@ This robotinhtm environment can be imported via:
     - `PyTorch <https://pypi.org/project/torch/>`_
 
 
-**General Information**
+**General information**
 
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -67,18 +67,18 @@ This robotinhtm environment can be imported via:
 +------------------------------------+-------------------------------------------------------+
   
   
-**Action Space**
+**Action space**
 
 By default, there are 4 action in this environment. The action space represents the angular velocity of
 each joint of the robot manipulator.
   
   
-**State Space**
+**State space**
 
 The state space consists of end-effector positions (x,y,z) of the robot manipulator and target positions (x,y,z).
   
 
-**Reward Structure**
+**Reward structure**
 
 By default, the reward structures are shown in the following equation:
 
@@ -87,10 +87,10 @@ By default, the reward structures are shown in the following equation:
     reward=-1*\frac{distError}{initDist}-stepReward
 
     
-**Cross Reference**
-  + `Howto RL-ENV-002: SB3 Policy on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/02_howtos_env/howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment.html>`_
-  + `Howto RL-MB-001: MBRL on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
-  + :ref:`API Reference <target_pool_rl_env_robot_manipulator>`
+**Cross reference**
+  + `Howto RL-ENV-002: SB3 policy on RobotHTM environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/02_howtos_env/howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment.html>`_
+  + `Howto RL-MB-001: MBRL on RobotHTM environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
+  + :ref:`API reference <target_pool_rl_env_robot_manipulator>`
 
   
 **Citation**

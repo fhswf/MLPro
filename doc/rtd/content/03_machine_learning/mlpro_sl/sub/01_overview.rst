@@ -12,11 +12,12 @@ The current implementation covers:
  - A base class of an adaptive function for feedforward neural networks, including MLP
  - Ready-to-use PyTorch-based MLP networks in the pool of objects
 
+
 **Learn more**
 
   - :ref:`Getting started with MLPro-SL <target_getstarted_SL>`
 
 
-**Cross Reference**
-    - :ref:`API Reference: MLPro-SL <target_api_sl>`
-    - :ref:`API Reference: MLPro-SL Pool of Objects <target_api_pool_sl>`
+**Cross reference**
+    - :ref:`API reference: MLPro-SL <target_api_sl>`
+    - :ref:`API reference: MLPro-SL pool of objects <target_api_pool_sl>`

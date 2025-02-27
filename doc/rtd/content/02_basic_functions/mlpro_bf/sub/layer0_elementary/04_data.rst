@@ -1,4 +1,4 @@
-Data Management
+Data management
 ===============
 
 Data management in a framework is extremely important, which mostly refers to the organization, storage, and retrieval of data within the framework.
@@ -16,10 +16,10 @@ The related data management classes can be accessed as follows:
 
 In general, there are three main functionalities of data management in MLPro:
 
-    1) **Data Storing**
+    1) **Data storing**
         The second possibility is to store a bunch of data in MLPro's **DataStoring** class with three different layers, as follows:
 
-            - **Layer 1 - Data Names** : the labels or the feature names of the data.
+            - **Layer 1 - Data names** : the labels or the feature names of the data.
 
             - **Layer 2 - Frames** : the frames can be added to each label or feature name. If none, then the frame id can be set to '0' all the time.
 
@@ -59,7 +59,7 @@ In general, there are three main functionalities of data management in MLPro:
         A further class named **ConfigFile** enables persistent storage of program configuration data in a local JSON file.
         
     
-**Cross Reference**
+**Cross reference**
     + :ref:`Howto BF-003: Store and plot data <Howto BF 003>`
     + :ref:`Howto BF-004: Buffers <Howto BF 004>`
     + :ref:`API Reference <target_api_bf_data>`

@@ -1,5 +1,5 @@
 .. _target_training_RL:
-Training and Tuning
+Training and tuning
 ===================
 
 In RL, the agent and the environment interact over a sequence of time steps.
@@ -28,7 +28,7 @@ The training can be ended, once the stagnation is detected. For more information
 
 In MLPro-RL, we simplify the process of setting up an RL scenario and training for both single-agent and multi-agent RL, as shown below:
 
-- **Single-Agent Scenario Creation**
+- **Single-agent scenario creation**
 
     .. code-block:: python
         
@@ -69,7 +69,7 @@ In MLPro-RL, we simplify the process of setting up an RL scenario and training f
         training    = Training(....)
         training.run()
 
-- **Multi-Agent Scenario Creation**
+- **Multi-agent scenario creation**
 
     .. code-block:: python
         
@@ -122,13 +122,13 @@ In MLPro-RL, we simplify the process of setting up an RL scenario and training f
         training.run()
 
 
-**Cross Reference**
+**Cross reference**
 
     - `A sample application video of MLPro-RL on a UR5 robot <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc2.mp4>`_
-    - `Howto RL-AGENT-002: Train an Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.html>`_
-    - `Howto RL-AGENT-004: Train Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
-    - `Howto RL-AGENT-001: Train and Reload Single Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
-    - `Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_
-    - `Howto RL-MB-001: Train and Reload Model Based Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_001_train_and_reload_model_based_agent_gym%20copy.html>`_
-    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
-    - :ref:`MLPro-BF-ML: Training and Tuning <target_bf_ml_train_and_tune>`
+    - `Howto RL-AGENT-002: Train an agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.html>`_
+    - `Howto RL-AGENT-004: Train multi-agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
+    - `Howto RL-AGENT-001: Train and reload single agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
+    - `Howto RL-ATT-001: Train and reload single agent using stagnation detection (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_
+    - `Howto RL-MB-001: Train and reload model-based agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_001_train_and_reload_model_based_agent_gym%20copy.html>`_
+    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World environment <Howto MB RL 001>`
+    - :ref:`MLPro-BF-ML: Training and tuning <target_bf_ml_train_and_tune>`

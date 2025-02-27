@@ -1,5 +1,5 @@
 .. _target_bf_systems_mujoco:
-MuJoCo Integration
+MuJoCo integration
 ==================
 
 |pic1| |pic2|
@@ -26,7 +26,7 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
 
           pip install mlpro-int-mujoco[full] --upgrade
 
-    * **Create a MuJoCo Model**
+    * **Create a MuJoCo model**
 
         Create a MuJoCo model file accordingly to your design. Some example model are published by MuJoCo and can be accessed `here <https://mujoco.readthedocs.io/en/latest/models.html>`_.
         Below is an example of MuJoCo model file.
@@ -57,7 +57,7 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
         The above model simulates one body called ``link1`` which has a cylindrical shape. It is attached to the world body with a joint called ``pin`` 
         with the type of hinge. This joint is controlled by an actuator called ``torque1`` boundaries between -50 and 50.
 
-    * **Create a System**
+    * **Create a system**
 
         When you instantiate the System, put the MuJoCo model file path on ``p_mujoco_file``.
         If the model is correct and the path is correct, then the wrapper will automatically wrap the state and action space based on the MuJoCo model.
@@ -65,10 +65,11 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
 If you want to view your model only before including it in MLPro, you can use the MuJoCo tool by dragging and dropping the model file into it. The tool 
 can be downloaded `here <https://github.com/deepmind/mujoco/releases>`_.
 
-**Cross Reference**
+
+**Cross reference**
 
 - `MLPro-Int-MuJoCo <https://mlpro-int-mujoco.readthedocs.io>`_
 - `MuJoCo Tool <https://github.com/deepmind/mujoco/releases>`_
-- `MuJoCo XML Reference <https://mujoco.readthedocs.io/en/stable/XMLreference.html>`_
-- `MuJoCo Model Samples <https://mujoco.readthedocs.io/en/latest/models.html>`_
-- `Unity Plug-in for MuJoCo <https://mujoco.readthedocs.io/en/stable/unity.html>`_
+- `MuJoCo XML reference <https://mujoco.readthedocs.io/en/stable/XMLreference.html>`_
+- `MuJoCo model samples <https://mujoco.readthedocs.io/en/latest/models.html>`_
+- `Unity plug-in for MuJoCo <https://mujoco.readthedocs.io/en/stable/unity.html>`_

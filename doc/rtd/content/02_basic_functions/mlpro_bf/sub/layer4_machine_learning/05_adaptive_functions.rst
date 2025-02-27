@@ -1,5 +1,5 @@
 .. _target_bf_ml_afct:
-Adaptive Functions
+Adaptive functions
 ==================
 
 A special kind of adaptive models are the **adaptive functions**. They combine the properties of a mathematical 
@@ -14,8 +14,8 @@ Adaptive functions have a high practical relevance. They are reused within MLPro
 agents. But they can also be used in general for predictions.
 
 
-**Cross Reference**
+**Cross reference**
 
 - :ref:`BF-Math: Mathematics <target_bf_mathematics>`
-- :ref:`SL: Adaptive Functions for Supervised Learning <target_bf_sl_afct>`
-- :ref:`RL: Model-based Agents <target_agents_MBRL>`
+- :ref:`SL: Adaptive functions for supervised learning <target_bf_sl_afct>`
+- :ref:`RL: Model-based agents <target_agents_MBRL>`

@@ -1,8 +1,8 @@
 .. _target_agents_MBRL:
-Model-Based Agents
+Model-based agents
 ==================
 
-Model-Based Agents have a dissimilar learning target as Model-Free Agents, whereas learning the environment model is not required in the model-free RL.
+Model-based agents have a dissimilar learning target as model-free agents, whereas learning the environment model is not required in the model-free RL.
 An environment model can be incorporated into a single agent, as **EnvModel**.
 Then, this model learns the behaviour and dynamics of the environment.
 After learning the environment, the model is optimized to be able to accurately predict the output states, rewards, or status of the environment with respect to the calculated actions.
@@ -49,7 +49,8 @@ In MLPro-RL, we have also provided a base class for ActionPlanner, where only th
 
             raise NotImplementedError
  
-**Environment Model (EnvModel)**
+
+**Environment model (EnvModel)**
 
 To set up environment model, the adaptive function needs to created first. In this case, our adaptive function will
 predict the next state of the environment based on provided action.
@@ -110,10 +111,10 @@ the original environment module.
             self.reset()
 
 
-**Cross Reference**
+**Cross reference**
 
-    - `Howto RL-AGENT-001: Train and Reload Single Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
-    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
-    - `Howto RL-MB-002: MBRL on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
+    - `Howto RL-AGENT-001: Train and reload single agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
+    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World environment <Howto MB RL 001>`
+    - `Howto RL-MB-002: MBRL on RobotHTM environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
     - :ref:`MLPro-SL <target_bf_sl_afct>`
 

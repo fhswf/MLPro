@@ -1,10 +1,10 @@
 Random Action Generator
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.policies.randomgenerator
     
     
-**General Information**
+**General information**
 
 A random generator for a specific action space with defined boundaries is an algorithm that generates random values within a specific range or set of constraints.
 This type of random generator is often used for testing environments, generate sample data for model-based learning, and many more.
@@ -23,8 +23,10 @@ This Random Action Generator policy can be imported via:
     from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
     
 
-**Cross Reference**
-    + :ref:`API Reference <target_pol_randoms>`
+
+**Cross reference**
+    + :ref:`API reference <target_pol_randoms>`
+
 
 
 **Citation**

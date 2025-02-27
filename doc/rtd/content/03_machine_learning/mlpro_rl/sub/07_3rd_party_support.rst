@@ -1,5 +1,5 @@
 .. _target_rl_3rd_party:
-3rd Party Support
+3rd party support
 -----------------
 
 MLPro enables the seamless integration of RL environments and policy algorithms of popular open-source 

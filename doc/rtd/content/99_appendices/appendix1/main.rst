@@ -1,5 +1,5 @@
 .. _target_appendix1:
-A1 - Example Pool
+A1 - Example pool
 =================
 
 .. toctree::

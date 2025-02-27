@@ -1,5 +1,5 @@
 .. _target_bf_sl_afct:
-Adaptive Functions
+Adaptive functions
 ==================
 
 In supervised learning, the adaptive function refers to the ability of the model to adjust its parameters in response to new input data.
@@ -17,8 +17,8 @@ We provide ready-to-use adaptive function models in MLPro-SL's pool of objects, 
       afct/pool
 
 
-**Cross Reference**
+**Cross reference**
 
    - :ref:`BF-ML: Adaptive Functions <target_bf_ml_afct>`
 
-   - :ref:`API Reference: MLPro-SL <target_api_sl>`
+   - :ref:`API reference: MLPro-SL <target_api_sl>`

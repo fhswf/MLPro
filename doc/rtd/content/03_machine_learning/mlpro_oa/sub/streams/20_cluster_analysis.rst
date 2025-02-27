@@ -14,7 +14,7 @@ Further descriptions coming soon...
    20_cluster_analysis/*
 
 
-**Cross Reference**
+**Cross reference**
 
 - Selected open access papers
 - Howtos
