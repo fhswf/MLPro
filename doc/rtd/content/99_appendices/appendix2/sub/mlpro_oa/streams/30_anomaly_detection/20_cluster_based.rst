@@ -3,7 +3,7 @@ Cluster-based anomalies and detectors
 =====================================
 
 
-.. image:: cluster_based/images/MLPro-OA-CB-Anomaly-Detectors_class_diagram.drawio.png
+.. image:: 20_cluster_based/images/MLPro-OA-CB-Anomaly-Detectors_class_diagram.drawio.png
    :scale: 50%
 
 
@@ -11,4 +11,4 @@ Cluster-based anomalies and detectors
    :maxdepth: 2
    :glob:
    
-   cluster_based/*
+   20_cluster_based/*

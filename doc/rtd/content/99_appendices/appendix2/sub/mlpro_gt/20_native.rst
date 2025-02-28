@@ -1,6 +1,6 @@
 .. _target_api_gt_native:
-Native GT
-=======================
+MLPro-GT-Native - Native game theory
+====================================
 
 .. image:: images/MLPro-GT-Native_class_diagram.drawio.png
    :scale: 50%

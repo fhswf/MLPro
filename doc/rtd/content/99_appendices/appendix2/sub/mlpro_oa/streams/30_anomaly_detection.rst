@@ -2,22 +2,16 @@
 Anomaly detection
 =================
 
-.. image:: images/MLPro-OA-Anomaly-Detectors_class_diagram.drawio.png
+.. image:: 30_anomaly_detection/images/MLPro-OA-Anomaly-Detectors_class_diagram.drawio.png
    :scale: 50%
    
    
-Template for anomaly detectors
-------------------------------
-
 .. automodule:: mlpro.oa.streams.tasks.anomalydetectors.basics
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
-
-Template for anomalies
-----------------------
 
 .. automodule:: mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics
    :members:
@@ -26,11 +20,8 @@ Template for anomalies
    :show-inheritance:
 
 
-Concrete anomalies and algorithms
----------------------------------
-
 .. toctree::
    :maxdepth: 2
    :glob:
    
-   anomaly_detectors/*
+   30_anomaly_detection/*

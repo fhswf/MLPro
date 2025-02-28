@@ -1,6 +1,6 @@
 .. _target_api_oa_streams:
-Online-adaptive data stream processing
-======================================
+MLPro-OA-Streams - Online-adaptive data stream processing
+=========================================================
 
 .. toctree::
    :maxdepth: 2

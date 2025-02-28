@@ -1,31 +1,29 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies.instancebased
-## -- Module  : contextual.py
+## -- Package : mlpro.oa.streams.tasks.anomalydetectors.instancebased
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-06-08  0.0.0     SK       Creation
-## -- 2023-09-12  1.0.0     SK       Release
-## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2025-02-28  1.3.0     DA       Refactoring
+## -- 2025-02-28  1.0.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2025-02-28)
+Ver. 1.0.0 (2025-02-28)
 
-This module provides a template class for contextual anomaly to be used in anomaly detection algorithms.
+This module provides MLPro's template class for instance-based anomaly detectors.
 """
 
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
+
+from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ContextualAnomaly (AnomalyIB):
+class AnomalyDetectorIB (AnomalyDetector):
     """
-    Event class for contextual anomaly events.
+    This class is a sub-type template for instance-based anomaly detectors.
     """
 
-    pass
+    C_TYPE = 'Anomaly Detector (IB)'
