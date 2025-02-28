@@ -1,5 +1,5 @@
 .. _target_api_bf_l3:
-Layer 3 - Application Support
+Layer 3 - Application support
 =============================
 
 .. toctree::

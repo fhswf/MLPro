@@ -1,6 +1,6 @@
 .. _target_api_sl:
-SL - Basics
-===========
+Basics
+======
 
 .. image:: images/MLPro-SL-Basics_class_diagram.drawio.png
    :scale: 50%
