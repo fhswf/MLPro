@@ -1,5 +1,5 @@
 .. _target_api_bf_l4:
-Layer 4 - Machine Learning
+Layer 4 - Machine learning
 ==========================
 
 .. toctree::

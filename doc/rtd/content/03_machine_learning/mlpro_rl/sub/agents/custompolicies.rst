@@ -1,8 +1,8 @@
 .. _target_custom_policies_RL:
-Custom Policies
--------------------
+Custom policies
+---------------
 
-- **Policy Creation**
+- **Policy creation**
 
     .. image:: images/MLPro-RL-Agent_Class_Policy_Commented.png
     
@@ -56,11 +56,13 @@ Custom Policies
     The hyperparameter initialization method (**_init_hyperparam**) can be used in this case.
     To set up a hyperparameter space, please refer to our :ref:`how-to file <Howto BF ML 001>`.
 
-- **Policy from Third Party Packages**
+
+- **Policy from 3rd party packages**
 
     Alternatively, the user can also apply algorithms from Stable Baselines 3 by using the developed relevant wrapper for the integration between third-party packages and MLPro.
     For more information, please click :ref:`here<target_extension_hub>`.
 
-- **Algorithm Checker**
+
+- **Algorithm checker**
 
     A test script using a unit test to check the developed policies will be available soon!

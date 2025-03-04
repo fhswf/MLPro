@@ -2,9 +2,3 @@
 Common algorithms
 =================
   
-
-.. toctree::
-   :maxdepth: 2
-   :glob:
-   
-   common_algorithms/*

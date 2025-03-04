@@ -48,8 +48,8 @@ Additionally, you can find more comprehensive explanations of MLPro-GT-DG includ
   - :ref:`Getting started with MLPro-GT <target_getstarted_GT>`
 
 
-**Cross Reference**
-  - :ref:`Related Howtos <target_appendix1_GT>`
-  - :ref:`API Reference: MLPro-GT <target_api_gt>`
-  - :ref:`API Reference: MLPro-GT Pool of Objects <target_api_pool_gt>`
-  - `MLPro 1.0 Paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
+**Cross reference**
+  - :ref:`Related howtos <target_appendix1_GT>`
+  - :ref:`API reference: MLPro-GT <target_api_gt>`
+  - :ref:`API reference: MLPro-GT pool of objects <target_api_pool_gt>`
+  - `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_

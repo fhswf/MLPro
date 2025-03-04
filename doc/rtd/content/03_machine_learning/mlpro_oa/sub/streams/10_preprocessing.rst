@@ -13,7 +13,7 @@ Further descriptions coming soon...
 
 
 
-**Cross Reference**
+**Cross reference**
 
 - BF: Stream Processing
 - Howto section

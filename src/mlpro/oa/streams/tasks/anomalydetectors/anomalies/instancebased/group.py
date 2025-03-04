@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies
+## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies.instancebased
 ## -- Module  : group.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -22,6 +22,8 @@ Ver. 1.3.2 (2024-12-11)
 This module provides a template class for group anomaly to be used in anomaly detection algorithms.
 """
 
+from datetime import datetime
+
 try:
     from matplotlib.figure import Figure
     from matplotlib.text import Text
@@ -33,58 +35,52 @@ except:
     
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import Instance
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GroupAnomaly (Anomaly):
+class GroupAnomaly (AnomalyIB):
     """
     Event class for anomaly events when group anomalies are detected.
     
     Parameters
     ----------
-    p_id : int
-        Anomaly ID. Default value = 0.
     p_instances : Instance
         List of instances. Default value = None.
-    p_ano_scores : list
-        List of anomaly scores of instances. Default = None.
-    p_det_time : str
+    p_id : int
+        Anomaly ID. Default value = 0.
+    p_tstamp : datetime = None
         Time of occurance of anomaly. Default = None.
-    p_mean : float
-        The mean value of the anomaly. Default = None.
-    p_mean_deviation : float
-        The mean deviation of the anomaly. Default = None.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_raising_object : object
         Reference of the object raised. Default = None.
+    p_mean : float
+        The mean value of the anomaly. Default = None.
+    p_mean_deviation : float
+        The mean deviation of the anomaly. Default = None.
     **p_kwargs
         Further optional keyword arguments.
     """
 
-    C_NAME      = 'Group'
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_instances : list[Instance],
                  p_id = 0,
-                 p_instances : list[Instance] = None,
-                 p_ano_scores : list = None,
-                 p_det_time : str = None,
-                 p_mean : float= None,
-                 p_mean_deviation : float = None,
+                 p_tstamp : datetime = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
+                 p_mean : float= None,
+                 p_mean_deviation : float = None,
                  **p_kwargs):
         
-        super().__init__( p_id = p_id, 
-                          p_instances = p_instances, 
-                          p_ano_scores = p_ano_scores,
+        super().__init__( p_instances = p_instances, 
+                          p_id = p_id, 
                           p_visualize = p_visualize, 
                           p_raising_object = p_raising_object,
-                          p_det_time = p_det_time, 
+                          p_tstamp = p_tstamp,
                           **p_kwargs )
         
         self.plot_update = True
@@ -93,23 +89,7 @@ class GroupAnomaly (Anomaly):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_instances(self, p_instances = None, p_ano_scores = None):
-        """
-        Method to set the instances associated with the anomaly.
-        
-        Parameters
-        ----------
-        p_instances : list[Instance]
-            List of instances. Default is None.
-        p_ano_scores : list
-            List of anomaly scores.
-        """
-        self._instances = p_instances
-        self._ano_scores = p_ano_scores
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_mean(self) -> float:
+    def _get_mean(self) -> float:
         """
         Method that returns the mean value of the anomaly.
         
@@ -122,7 +102,7 @@ class GroupAnomaly (Anomaly):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_mean_deviation(self) -> float:
+    def _get_mean_deviation(self) -> float:
         """
         Method that returns the mean deviation of anomaly from the normal distribution of data.
         
@@ -155,17 +135,15 @@ class GroupAnomaly (Anomaly):
         """
         if not self.plot_update: return
 
-        my_instances = self.get_instances()
-    
-        x1 = my_instances[0]
-        x2 = my_instances[-1]
+        x1 = self.instances[0]
+        x2 = self.instances[-1]
 
-        x1 = x1.get_id()
-        x2 = x2.get_id()
+        x1 = x1.id
+        x2 = x2.id
         a=[]
         b=[]
 
-        for instance in my_instances:
+        for instance in self.instances:
             a.append(instance.get_feature_data().get_values())
 
         for x in a:
@@ -175,7 +153,7 @@ class GroupAnomaly (Anomaly):
         y2 = max(b)
 
         if self._rect is None:
-            label = self.C_NAME[0]
+            label = 'G'
             self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)
             self._plot_rectangle = p_settings.axes.add_patch(self._rect)
             self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )
@@ -198,3 +176,7 @@ class GroupAnomaly (Anomaly):
         if self._plot_rectangle is not None: self._plot_rectangle .remove()
         if self._plot_rectangle_t is not None: self._plot_rectangle_t.remove()
 
+
+## -------------------------------------------------------------------------------------------------
+    mean            = property( fget = _get_mean )
+    mean_deviation  = property( fget = _get_mean_deviation )

@@ -1,5 +1,5 @@
 .. _target_api_bf_l0:
-Layer 0 - Elementary Functions
+Layer 0 - Elementary functions
 ==============================
 
 .. toctree::

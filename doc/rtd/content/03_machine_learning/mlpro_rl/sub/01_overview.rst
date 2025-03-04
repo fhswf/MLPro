@@ -43,10 +43,9 @@ Additionally, you can find the more comprehensive explanations of MLPro-RL inclu
   - :ref:`Getting started with MLPro-RL <target_getstarted_RL>`
 
 
-**Cross Reference**
+**Cross reference**
 
-  - :ref:`Related Howtos <target_appendix1_RL>`
-  - :ref:`API Reference: MLPro-RL <target_api_rl>`
-  - :ref:`API Reference: MLPro-RL Pool of Objects <target_api_pool_rl>`
-  - `MLPro 1.0 Paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
-  - `MLPro GitHub <https://github.com/fhswf/MLPro/tree/main/src/mlpro/rl/examples>`_
+  - :ref:`Related howtos <target_appendix1_RL>`
+  - :ref:`API reference: MLPro-RL <target_api_rl>`
+  - :ref:`API reference: MLPro-RL Pool of Objects <target_api_pool_rl>`
+  - `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_

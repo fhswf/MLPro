@@ -1,4 +1,4 @@
-Time Measurement
+Time measurement
 ================
 
 MLPro provides an internal timing mechanism that is introduced by class property **Timer**.
@@ -23,6 +23,6 @@ The following are the functionalities of the timer:
     * ``add_time`` : to add actual time, which is specifically for virtual mode
     * ``finish_lap`` : to end the current lap
 
-**Cross Reference**
+**Cross reference**
     + :ref:`Howto BF-002: Timer <Howto BF 002>`
     + :ref:`API Reference <target_api_bf_various>`

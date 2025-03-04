@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies
+## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies.instancebased
 ## -- Module  : point.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -9,10 +9,11 @@
 ## -- 2023-09-12  1.0.0     SK       Release
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-12-11  1.2.1     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-02-28  1.3.0     DA       Refactoring and simplification
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-12-11)
+Ver. 1.3.0 (2025-02-28)
 
 
 This module provides a template class for point anomaly event to be used in anomaly detection algorithms.
@@ -26,75 +27,19 @@ except:
     class Text : pass
     
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import Instance
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PointAnomaly (Anomaly):
+class PointAnomaly (AnomalyIB):
     """
-    Event class for anomaly events when point anomalies are detected.
-    
-    Parameters
-    ----------
-    p_id : int
-        Anomaly ID. Default value = 0.
-    p_instances : Instance
-        List of instances. Default value = None.
-    p_ano_scores : list
-        List of anomaly scores of instances. Default = None.
-    p_det_time : str
-        Time of occurance of anomaly. Default = None.
-    p_deviation : float
-        The deviation of the anomaly. Default = None.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_raising_object : object
-        Reference of the object raised. Default = None.
-    **p_kwargs
-        Further optional keyword arguments.
+    Sub-type for point anomalies including a particular visualization.
     """
-
-    C_NAME              = 'Point'
 
     C_PLOT_CH_SIZE      = 0.06           # Crosshair size in % of visible axes area
     C_PLOT_CH_OFFSET    = 0.4            # Crosshair distance from the center in [0,1]
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_id = 0,
-                 p_instances : list[Instance] = None,
-                 p_ano_scores : list = None,
-                 p_det_time : str = None,
-                 p_deviation : float = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
-                 **p_kwargs):
-        
-        super().__init__( p_id=p_id,
-                          p_instances=p_instances, 
-                          p_ano_scores=p_ano_scores,
-                          p_visualize=p_visualize, 
-                          p_raising_object=p_raising_object,
-                          p_det_time=p_det_time, 
-                          **p_kwargs )
-        
-        self._deviation = p_deviation
-        
-
-## -------------------------------------------------------------------------------------------------
-    def get_deviation(self) -> float:
-        """
-        Method that returns the deviation of anomaly from the normal distribution of data.
-        
-        Returns
-        -------
-        float
-            The devaition of anomaly from the normal data distribution.
-        """
-        return self._instances
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
@@ -123,7 +68,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst = self.get_instances()[-1]
+        inst = self.instances[-1]
         feature_values = inst.get_feature_data().get_values()
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -165,7 +110,7 @@ class PointAnomaly (Anomaly):
 
         if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
 
-        inst = self.get_instances()[-1]
+        inst = self.instances[-1]
         feature_values = inst.get_feature_data().get_values()
 
         len_x          = ( p_xlim[1] - p_xlim[0] ) * self.C_PLOT_CH_SIZE / 2
@@ -226,7 +171,7 @@ class PointAnomaly (Anomaly):
         if ( self._plot_line is not None ) and not p_axlimits_changed: return
         
 
-        inst = self.get_instances()[-1]
+        inst = self.instances[-1]
 
         inst_id = inst.get_id()
         xpos    = [inst_id, inst_id]

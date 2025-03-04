@@ -46,6 +46,6 @@ Lastly, there are more advanced functions of mathematics, as follows:
    layer2_mathematics/*
 
 
-**Cross Reference**
+**Cross reference**
     + :ref:`Howto BF-MATH-001: Dimensions, Spaces and Elements <Howto BF MATH 001>`
     + :ref:`API Reference <target_ap_bf_math>`
