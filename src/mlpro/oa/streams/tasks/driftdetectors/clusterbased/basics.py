@@ -11,7 +11,7 @@
 """
 Ver. 0.1.0 (2025-02-12)
 
-This module provides template for cluster-based drift detection algorithms to be used in the context of online adaptivity.
+This module provides a template for cluster-based drift detection algorithms to be used in the context of online adaptivity.
 """
 
 from mlpro.bf.various import Log

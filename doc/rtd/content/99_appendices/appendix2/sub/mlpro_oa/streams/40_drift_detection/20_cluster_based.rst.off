@@ -1,9 +1,9 @@
 .. _target_api_oa_stream_tasks_dd_cb:
 Cluster-based drifts and detectors
-===================================
+==================================
 
 
-.. image:: 20_cluster_based/images/MLPro-OA-Drift-Detectors-CB_class_diagram.drawio.png
+.. image:: 20_cluster_based/images/MLPro-OA-CB-Drift-Detectors_class_diagram.drawio.png
    :scale: 50%
 
 

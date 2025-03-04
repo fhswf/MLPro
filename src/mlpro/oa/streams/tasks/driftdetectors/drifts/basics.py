@@ -54,7 +54,6 @@ class Drift (Id, Event, Plottable, Renormalizable):
         class name and one of the postfixes '(ON)', '(OFF)' depending on the drift status.
     """
 
-    C_TYPE            = 'Drift'
     C_PLOT_STANDALONE = False
 
 ## -------------------------------------------------------------------------------------------------

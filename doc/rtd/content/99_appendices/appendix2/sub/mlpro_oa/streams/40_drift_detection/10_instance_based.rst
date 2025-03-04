@@ -3,7 +3,7 @@ Instance-based drifts and detectors
 ===================================
 
 
-.. image:: 10_instance_based/images/MLPro-OA-Drift-Detectors-IB_class_diagram.drawio.png
+.. image:: 10_instance_based/images/MLPro-OA-IB-Drift-Detectors_class_diagram.drawio.png
    :scale: 50%
 
 
@@ -19,7 +19,7 @@ Instance-based drifts and detectors
    :undoc-members:
    :private-members:
    :show-inheritance:
-
+   
 
 .. toctree::
    :maxdepth: 2
