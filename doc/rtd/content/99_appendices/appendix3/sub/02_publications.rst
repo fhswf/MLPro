@@ -11,7 +11,7 @@ Papers
 
 
 
-Code Ocean Capsules
+Code Ocean capsules
 -------------------
 
     - Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, Andreas Schwung: `"MLPro - Reinforcement Learning - Demo of Advanced Training with Stagnation Detection" <https://doi.org/10.24433/CO.9151382.v1>`_, Code Ocean, 2022, doi: 10.24433/CO.9151382.v1
@@ -19,7 +19,7 @@ Code Ocean Capsules
 
 
 
-GitHub Repository
+GitHub repository
 -----------------
 
-    - Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, Andreas Schwung: `"MLPro - A Synoptic Framework for Standardized Machine Learning Tasks in Python" <https://doi.org/10.5281/zenodo.6653485>`_, Zenodo, 2021, doi: 10.5281/zenodo.6653485
+    - Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, Laxmikant Shrikant Baheti, Andreas Schwung: `"Github repository fhswf/MLPro" <https://doi.org/10.5281/zenodo.6653484>`_, Zenodo, 2025, doi: 10.5281/zenodo.6653484

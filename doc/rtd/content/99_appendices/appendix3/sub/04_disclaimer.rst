@@ -1,9 +1,9 @@
 Disclaimer
-================
+==========
 
 If you require any more information or have any questions about our project's disclaimer, please feel free to contact us by email at mlpro@listen.fh-swf.de.
 
-Disclaimers for MLPro Usage
+Disclaimers for MLPro usage
 ---------------------------
 All the information on this website is published in good faith and for general information purpose only. 
 We do not make any warranties about the completeness, reliability and accuracy of this information. 

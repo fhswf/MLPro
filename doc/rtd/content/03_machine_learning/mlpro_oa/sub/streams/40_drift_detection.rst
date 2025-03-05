@@ -16,6 +16,6 @@ Further descriptions coming soon...
 
 **Cross reference**
 
-- Selected open access papers
-- Howtos
-- API
+.. - Selected open access papers
+.. - Howtos
+- :ref:`API reference: MLPro-OA-Streams - Drift detection <target_api_oa_stream_tasks_dd>`
