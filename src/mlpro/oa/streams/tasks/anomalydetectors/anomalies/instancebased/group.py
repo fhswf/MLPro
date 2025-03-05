@@ -14,12 +14,13 @@
 ## -- 2024-05-22  1.3.0     SK       Refactoring
 ## -- 2024-11-27  1.3.1     DA       Bugfix in method GroupAnomaly.__init__()
 ## -- 2024-12-11  1.3.2     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-03-05  1.4.0     DA       Code optimization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2024-12-11)
+Ver. 1.4.0 (2025-03-05)
 
-This module provides a template class for group anomaly to be used in anomaly detection algorithms.
+This module provides a class for group anomalies to be used in anomaly detection algorithms.
 """
 
 from datetime import datetime
@@ -133,27 +134,23 @@ class GroupAnomaly (AnomalyIB):
         color (str): Color of the shaded region.
         alpha (float): Transparency of the shaded region (default is 0.5).
         """
+
         if not self.plot_update: return
 
-        x1 = self.instances[0]
-        x2 = self.instances[-1]
+        x1 = self.instances[0].tstamp
+        x2 = self.instances[-1].tstamp
 
-        x1 = x1.id
-        x2 = x2.id
-        a=[]
-        b=[]
+        y_values = []
 
         for instance in self.instances:
-            a.append(instance.get_feature_data().get_values())
+            y_values.extend(instance.get_feature_data().get_values())
 
-        for x in a:
-            b.extend(x)
-            
-        y1 = min(b)
-        y2 = max(b)
+           
+        y1 = min(y_values)
+        y2 = max(y_values)
 
         if self._rect is None:
-            label = 'G'
+            label = 'GA(' + str(self.id) + ')'
             self._rect = patches.Rectangle((x1, y1), x2 - x1, y2 - y1, linewidth=1, edgecolor='black', facecolor='yellow', alpha=0.5)
             self._plot_rectangle = p_settings.axes.add_patch(self._rect)
             self._plot_rectangle_t = p_settings.axes.text((x1+x2)/2, 0, label, color='b' )

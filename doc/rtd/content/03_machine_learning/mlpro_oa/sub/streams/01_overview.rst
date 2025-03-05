@@ -16,7 +16,6 @@ Combines the functionalities of MLPro's stream task and ML model...
 
 **Cross reference**
 
-- BF: Stream Processing
-- Howto section
-- API
-- MLPro-Int-River
+- :ref:`Howtos MPro-OA-Streams <target_appendix1_OA_streams>`
+- :ref:`API reference: MLPro-OA-Streams <target_api_oa_streams>`
+- :ref:`Basics of data stream processing in MLPro <target_bf_streams>`

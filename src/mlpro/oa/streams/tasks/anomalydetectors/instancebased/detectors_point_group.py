@@ -14,11 +14,11 @@
 ## -- 2024-08-12  1.3.0     DA       Review and adjustments on documentation
 ## -- 2025-02-14  1.4.0     DA       Refactoring
 ## -- 2025-02-17  1.5.0     DA       Review and generalization
-## -- 2025-02-28  1.6.0     DA       Refactoring and simplification
+## -- 2025-03-05  1.6.0     DA       Refactoring and simplification
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2025-02-28)
+Ver. 1.6.0 (2025-03-05)
 
 This module provides an extended template for instance-based anomaly detectors that supports an optional
 group anomaly detection based on point anomalies.
@@ -59,6 +59,8 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_anomaly_buffer_size : int = 100
+        Size of the internal anomaly buffer self.anomalies. Default = 100.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -74,6 +76,7 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL,
+                  p_anomaly_buffer_size : int = 100,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -82,6 +85,7 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
                           p_logging = p_logging,
+                          p_anomaly_buffer_size = p_anomaly_buffer_size,
                           **p_kwargs )
         
         self._group_anomalies : list[Anomaly] = []
@@ -90,7 +94,7 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _buffer_anomaly(self, p_anomaly):
+    def _buffer_anomaly(self, p_anomaly : Anomaly):
         """
         Method to be used to add a new anomaly. Please use as part of your algorithm. 
 
@@ -124,11 +128,13 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
 
                         self._ano_id -= 2
                         groupanomaly = GroupAnomaly( p_instances = self._group_anomalies_instances,
-                                                     p_visualize=self._visualize,
+                                                     p_visualize=self.get_visualization(),
                                                      p_raising_object = self,
                                                      p_tstampt = inst_2.tstamp )
+                        
+                        self._raise_anomaly_event( p_anomaly = groupanomaly )
                             
-                        super()._buffer_anomaly( p_anomaly = groupanomaly )                    
+                        # super()._buffer_anomaly( p_anomaly = groupanomaly )                    
 
                         self._group_anomalies = []
                         self._group_anomalies.append(groupanomaly)
