@@ -18,7 +18,7 @@ from mlpro.bf.various import Log
 from mlpro.bf.math.properties import *
 from mlpro.bf.streams import InstDict
 from mlpro.oa.streams import OAStreamTask
-from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
+from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.anomalydetectors.clusterbased import AnomalyDetectorCB
 
 
@@ -67,7 +67,45 @@ class AnomalyDetectorCBGeneric(AnomalyDetectorCB):
                           p_logging= p_logging,
                           p_anomaly_buffer_size = p_anomaly_buffer_size,
                           **p_kwargs )
-        
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst: InstDict):
+
+        #1 Get the clusters
+        clusters = self._clusterer.get_clusters()
+
+        #2 Observation of the clusters
+        for cluster in clusters.values():
+
+            #2.1 Determie the current anomaly status of the cluster
+            anomaly_status = self._get_anomaly_status( p_cluster = cluster,
+                                                       p_properties = self.C_REQ_CLUSTER_PROPERTIES,
+                                                       p_kwargs = self.kwargs )
+            
+
+            pass
+## -------------------------------------------------------------------------------------------------
+    def _get_anomaly_status( self, 
+                             p_cluster : Cluster, 
+                             p_properties : PropertyDefinitions, 
+                             **p_kwargs ) -> bool:
+        """
+        Custom method to determine the anomaly status of the given cluster.
+
+        Parameters
+        ----------
+        p_cluster : Cluster
+            Cluster to be observed.
+        p_properties : PropertyDefinitions
+            List of cluster properties to be processed.
+        **p_kwargs
+            Dictionary with further keyword arguments parameterizing the detection.
+
+        Returns
+        -------
+        bool
+            True, if the cluster is an anomaly. False otherwise.
+        """
+        raise NotImplementedError
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorCBGenSingle(AnomalyDetectorCBGeneric):
