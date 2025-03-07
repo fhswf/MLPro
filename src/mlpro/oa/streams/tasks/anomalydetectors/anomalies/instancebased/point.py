@@ -90,7 +90,7 @@ class PointAnomaly (AnomalyIB):
         line_y2_ypos   = [ feature_values[1], feature_values[1] ]
 
         if self._plot_line_x1 is None:
-            label = 'PO(' + str(self.get_id()) + ')'
+            label = 'PA(' + str(self.id) + ')'
             self._plot_line_x1 = p_settings.axes.plot(line_x1_xpos, line_x1_ypos, color='r', linestyle='dashed', lw=1)[0]
             self._plot_line_x2 = p_settings.axes.plot(line_x2_xpos, line_x2_ypos, color='r', linestyle='dashed', lw=1)[0]
             self._plot_line_y1 = p_settings.axes.plot(line_y1_xpos, line_y1_ypos, color='r', linestyle='dashed', lw=1)[0]
@@ -146,7 +146,7 @@ class PointAnomaly (AnomalyIB):
         line_z2_zpos   = [ feature_values[2] - offset_z, feature_values[2] - len_z ]
 
         if self._plot_line_x1 is None:
-            label = 'PO(' + str(self.get_id()) + ')'
+            label = 'PA(' + str(self.id) + ')'
             self._plot_line_x1 = p_settings.axes.plot( line_x1_xpos, line_x1_ypos, line_x1_zpos, color='r', linestyle='dashed', lw=1 )[0]
             self._plot_line_x2 = p_settings.axes.plot( line_x2_xpos, line_x2_ypos, line_x2_zpos, color='r', linestyle='dashed', lw=1 )[0]
             self._plot_line_y1 = p_settings.axes.plot( line_y1_xpos, line_y1_ypos, line_y1_zpos, color='r', linestyle='dashed', lw=1 )[0]
@@ -173,11 +173,11 @@ class PointAnomaly (AnomalyIB):
 
         inst = self.instances[-1]
 
-        inst_id = inst.get_id()
+        inst_id = inst.id
         xpos    = [inst_id, inst_id]
         
         if self._plot_line is None:
-            label = 'PO(' + str(self.get_id()) + ')'
+            label = 'PA(' + str(self.id) + ')'
             self._plot_line  = p_settings.axes.plot(xpos, p_ylim, color='r', linestyle='dashed', lw=1)[0]
             self._plot_label = p_settings.axes.text(inst_id, p_ylim[1], label, color='r' )
 

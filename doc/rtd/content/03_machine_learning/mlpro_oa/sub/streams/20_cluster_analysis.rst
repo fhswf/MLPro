@@ -16,7 +16,6 @@ Further descriptions coming soon...
 
 **Cross reference**
 
-- Selected open access papers
-- Howtos
-- API
-- MLPro-OA-River
+.. - Selected open access papers
+.. - Howtos
+- :ref:`API reference: MLPro-OA-Streams - Cluster analysis <target_api_oa_stream_tasks_clu>`

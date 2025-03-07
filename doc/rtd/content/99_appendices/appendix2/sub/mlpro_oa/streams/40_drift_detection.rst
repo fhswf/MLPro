@@ -2,11 +2,11 @@
 Drift detection
 ===============
 
-.. image:: images/MLPro-OA-Drift-Detectors_class_diagram.drawio.png
+.. image:: 40_drift_detection/images/MLPro-OA-Drift-Detectors_class_diagram.drawio.png
    :scale: 50%
    
    
-.. automodule:: mlpro.oa.streams.tasks.driftydetectors.basics
+.. automodule:: mlpro.oa.streams.tasks.driftdetectors.basics
    :members:
    :undoc-members:
    :private-members:

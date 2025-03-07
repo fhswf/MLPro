@@ -1,18 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.driftdetectors.drifts.clusterbased
+## -- Package : mlpro.oa.tasks.driftdetectors.drifts.instancebased
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-02-12  0.1.0     DA       Creation
-## -- 2025-03-04  0.2.0     DA       Simplification
+## -- 2025-03-04  0.1.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-03-04)
+Ver. 0.1.0 (2025-03-04)
 
-This module provides a template class for cluster-based drifts to be used in cluster-based drift 
+This module provides a template class for instance-based drifts to be used in instance-based drift 
 detection algorithms.
 """
 
@@ -24,16 +23,17 @@ except:
     class Figure : pass
 
 from mlpro.bf.mt import PlotSettings
+
+from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.driftdetectors.drifts.basics import Drift
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftCB (Drift):
+class DriftIB (Drift):
     """
-    Sub-type for cluster-based drift events.
+    Sub-type for instance-based drift events.
     
     Parameters
     ----------
@@ -53,17 +53,14 @@ class DriftCB (Drift):
         Further optional keyword arguments.
     """
 
-    C_PLOT_ACTIVE   = True
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_drift_status : bool,
+                 p_instances : list[Instance],
                  p_id : int = 0,
                  p_tstamp : datetime = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
-                 p_clusters : dict[Cluster] = None,
-                 p_properties : dict = None,
                  **p_kwargs):
         
         super().__init__( p_drift_status = p_drift_status,
@@ -73,31 +70,4 @@ class DriftCB (Drift):
                           p_raising_object = p_raising_object,
                           **p_kwargs )
         
-        self.clusters : dict[Cluster] = p_clusters
-        self.properties : dict = p_properties
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
-
-        cluster : Cluster = None
-
-        for cluster in self.clusters.values(): 
-            if self.drift_status:
-                cluster.color = "red"
-            else:
-                raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
-    
-        cluster : Cluster = None
-
-        for cluster in self.clusters.values(): 
-            if self.drift_status:
-                cluster.color = "red"
-            else:
-                raise NotImplementedError
+        self.instances : list[Instance] = p_instances

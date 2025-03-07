@@ -16,10 +16,11 @@
 ## -- 2024-08-12  1.4.1     DA       Correction in AnomalyDetector.update_plot()
 ## -- 2024-12-11  1.4.2     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-02-14  1.5.0     DA       Review and refactoring
+## -- 2025-03-03  1.5.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2025-02-12)
+Ver. 1.5.1 (2025-03-03)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -60,6 +61,8 @@ class AnomalyDetector (OAStreamTask):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_anomaly_buffer_size : int = 100
+        Size of the internal anomaly buffer self.anomalies. Default = 100.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -76,7 +79,7 @@ class AnomalyDetector (OAStreamTask):
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
-                  p_anomaly_buffer_size : int = 10,
+                  p_anomaly_buffer_size : int = 100,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
