@@ -1,5 +1,5 @@
 .. _target_extensions:
-Third-Party Extensions
+Third-party extensions
 ======================
 
 All MLPro extensions currently available in GitHub are listed below.

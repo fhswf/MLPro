@@ -1,5 +1,5 @@
 .. _target_bf_streams_3rd_party_support:
-3rd Party Support
+3rd party support
 =================
 
 As part of the MLPro project, numerous public data providers have been and are being integrated. 

@@ -1,5 +1,5 @@
 .. _target_bf_streams:
-Stream Processing
+Stream processing
 =================
 
 .. toctree::

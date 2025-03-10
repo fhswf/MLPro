@@ -1,5 +1,5 @@
 .. _target_bf_ml:
-Layer 4 - Machine Learning
+Layer 4 - Machine learning
 ==========================
 
 One of the fundamental concepts in MLPro is to anchor universal standards for machine learning already in the basic 
@@ -50,8 +50,7 @@ on historical data and/or online monitoring. For this purpose, MLPro provides st
    layer4_machine_learning/*
 
 
-**Cross Reference**
+**Cross reference**
 
-- :ref:`Related Howtos <target_howtos_bf_ml>`
-- :ref:`API Reference BF-ML - Machine Learning <target_api_bf_ml>`
-- :ref:`API Reference BF-ML-Systems - Adaptive Systems <target_api_bf_ml_systems>`
+- :ref:`Related howtos <target_howtos_bf_ml>`
+- :ref:`API reference BF-ML - Machine learning <target_api_bf_ml>`

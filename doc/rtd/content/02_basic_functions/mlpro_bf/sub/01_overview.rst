@@ -7,7 +7,7 @@ This is organized in a total of five layers that build on one another, as shown 
 .. image:: images/MLPro-BF_Overview.drawio.png
     :scale: 50%
 
-The lowest :ref:`Layer 0: Elementary Functions <target_bf_elementary>` provides a collection of functions for logging, 
+The lowest :ref:`Layer 0: Elementary functions <target_bf_elementary>` provides a collection of functions for logging, 
 time measurement in simulated or real processes, persistence and data management, plotting, etc. It also contains a framework for interactive
 GUI applications.
 
@@ -20,10 +20,10 @@ On top of this, :ref:`Layer 2: Mathematics <target_bf_mathematics>` introduces e
 dimensions, sets and elements, metric spaces, and functions. Furthermore, numeric algorithms for data normalization etc.
 are included.
 
-:ref:`Layer 3: Application Support <target_bf_application_support>` prepares the connection to real 
+:ref:`Layer 3: Application support <target_bf_application_support>` prepares the connection to real 
 applications. It introduces powerful systematics for stream data processing/visualization and state-based systems that 
 are, in turn, prepared for communication with real hardware components like sensors and actuators.
 
-The top :ref:`Layer 4: Machine Learning <target_bf_ml>` of MLPro-BF specifies fundamental standards for machine learning. 
+The top :ref:`Layer 4: Machine learning <target_bf_ml>` of MLPro-BF specifies fundamental standards for machine learning. 
 All higher ML-related sub-frameworks reuse and specialize them. Topics like hyperparameters, adaptive models, and their training 
 and tuning in ML scenarios are handled here.

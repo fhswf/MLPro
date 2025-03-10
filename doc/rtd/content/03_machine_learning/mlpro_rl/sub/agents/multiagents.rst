@@ -1,18 +1,32 @@
-Multi-Agents
---------------
+Multi-agents
+------------
 
-In Reinforcement Learning, multi-agent refers to a scenario where multiple independent agents interact with each other and with their environment in an attempt to accomplish a common goal or optimize their own reward.
-In this setting, the behavior of each agent not only depends on its own actions and observations, but also on the actions and observations of other agents, leading to a complex, dynamic and interactive decision-making process.
-The scientific study of multi-agent reinforcement learning involves modeling the interdependence and cooperation/competition among agents, and developing algorithms for agents to learn and adapt to the environment effectively.
+Multi-agent reinforcement learning (MARL) extends RL to scenarios where multiple independent agents interact with each other and their environment to achieve a common goal or optimize their own individual rewards.
 
-MLPro-RL is not only compatible with single-agent RL but also multi-agent RL, where the extent of the agent landscape is completed by the multi-agent model.
-It is compatible with single-agent but does not have its own policy.
-Instead, it is utilized to combine and control any quantity of single agents that together control the action calculation.
-Every single agent in this situation interacts with a separate portion of the surrounding multi-observation agents and action space.
-Multi-agent interactions take place in appropriate contexts that support the scalar reward per agent reward type. 
-These are native applications that incorporate the MLPro environment template or PettingZoo environments that may be incorporated using the corresponding :ref:`wrapper class<target_extension_hub>` offered by MLPro.
+Unlike single-agent RL, where an agent's decisions are based solely on its own observations and actions, multi-agent interactions introduce complexity, as each agent’s behavior depends on:
 
+    - Its own actions and observations
 
-**Cross Reference**
-    - `Howto RL-AGENT-004: Train Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
+    - The actions and observations of other agents
+
+This dynamic interdependence makes cooperation, competition, and adaptation key challenges in multi-agent RL.
+
+**Multi-Agent RL in MLPro**
+
+MLPro-RL supports both single-agent and multi-agent RL, providing a structured approach to managing multiple agents within an environment.
+
+Here are some key characteristics of multi-agent RL in MLPro:
+
+    - Multi-Agent Model → Combines multiple single agents into a cohesive system
+
+    - Independent Agent Policies → Each agent can have its own policy
+
+    - Separate Observation & Action Spaces → Each agent operates within a unique portion of the multi-agent environment
+
+    - Scalar Reward Per Agent → Each agent receives individual feedback on performance
+
+    - Native & Third-Party Environments → Compatible with MLPro environments and PettingZoo environments (via :ref:`wrapper class<target_extension_hub>`)
+
+**Cross reference**
+    - `Howto RL-AGENT-004: Train multi-agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
     - :ref:`MLPro-RL: Training <target_training_RL>`

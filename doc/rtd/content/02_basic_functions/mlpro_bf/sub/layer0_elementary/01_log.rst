@@ -78,6 +78,6 @@ To log an information, function ``log(p_type, *pargs)`` needs to be called. The 
         my_random_class.switch_logging(Log.C_LOG_NOTHING)
         
 
-**Cross Reference**
+**Cross reference**
     + :ref:`Howto BF-001: Logging <Howto BF 001>`
     + :ref:`API Reference <target_api_bf_various>`

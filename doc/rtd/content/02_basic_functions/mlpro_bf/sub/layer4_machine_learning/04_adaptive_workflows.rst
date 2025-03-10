@@ -1,5 +1,5 @@
 .. _target_bf_ml_workflows:
-Adaptive Workflows
+Adaptive workflows
 ==================
 
 The **Model** class inherits from the **bf.mt.Task** class, among others. In combination with 
@@ -21,6 +21,6 @@ runtime resources.
    :scale: 50%
 
 
-**Cross Reference**
+**Cross reference**
 
 - :ref:`BF-MT: Multitasking <target_bf_mt>`

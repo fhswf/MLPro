@@ -1,5 +1,5 @@
 .. _DataPlotting:
-Plotting and Visualization
+Plotting and visualization
 ==========================
 
 In order to be able to visualize processes on different levels in a standardized way, MLPro provides a property class 
@@ -17,7 +17,7 @@ in connection with the output backend `TkAgg <https://matplotlib.org/stable/api/
 In this combination, a good user experience is made possible. In principle, however, other packages can also be used for visualization.
 
 
-**Cross Reference**
+**Cross reference**
 
-- :ref:`API Reference BF-PLOT - Plotting and Visualization <target_api_bf_plot>`
-- :ref:`Stream Plotting <target_bf_streams_processing_01>`
+- :ref:`API reference BF-PLOT - Plotting and visualization <target_api_bf_plot>`
+- :ref:`Stream plotting <target_bf_streams_processing_01>`

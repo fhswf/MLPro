@@ -1,5 +1,5 @@
 .. _target_bf_ml_train_and_tune:
-Training and Tuning
+Training and tuning
 ===================
 
 A template for training models in their defined context is also introduced at this level. In a broader sense, this 
@@ -9,7 +9,7 @@ concept pursued here envisages executing an ML scenario under defined conditions
 therein to learn.
 
 
-**Persistence of Training Results**
+**Persistence of training results**
 
 At the end of the training, the training results are saved in the file system. In particular, the entire scenario is 
 saved here for later operational use. This includes both the trained model and the context in the last state.
@@ -22,7 +22,7 @@ learning and can therefore only be specified in higher layers of MLPro. In any c
 number that allows a qualitative statement about the learning performance of the model in its scenario.
 
 
-**Hyperparameter Tuning**
+**Hyperparameter tuning**
 
 Hyperparameter tuning is an optional training function performed by its own **HyperParamTuner** class. In particular, 
 it defines the **maximize** method, which maximizes the highscore of a designated training by varying the hyperparameters 
@@ -30,8 +30,8 @@ of the model it contains. The optimization itself is not performed natively by M
 wrappers for :ref:`Optuna <Wrapper Optuna>` and :ref:`Hyperopt <Wrapper Hyperopt>`.
 
 
-**Cross Reference**
+**Cross reference**
 
-- :ref:`API Reference BF-ML <target_api_bf_ml>`
+- :ref:`API reference BF-ML <target_api_bf_ml>`
 - :ref:`Wrapper for Optuna <Wrapper Optuna>`
 - :ref:`Wrapper for Hyperopt <Wrapper Hyperopt>`

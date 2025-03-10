@@ -1,4 +1,4 @@
-Scientific Referencing
+Scientific referencing
 ======================
 
 MLPro integrates scientific referencing in any class using a class **ScientificObject**.
@@ -57,5 +57,5 @@ MLPro team has added a citing functionality. Therefore, the users can obtain the
     }
 
 
-**Cross Reference**
-    + :ref:`API Reference <target_api_bf_various>`
+**Cross reference**
+    + :ref:`API reference <target_api_bf_various>`
