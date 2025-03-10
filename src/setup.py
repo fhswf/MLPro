@@ -2,8 +2,8 @@ from setuptools import setup
 
 
 setup(name='mlpro',
-version='1.9.4',
-description='MLPro - The Integrative Middleware Framework for Standardized Machine Learning',
+version='1.9.7',
+description='MLPro - The integrative middleware framework for standardized machine learning',
 author='MLPro Team',
 author_mail='mlpro@listen.fh-swf.de',
 license='Apache Software License (http://www.apache.org/licenses/LICENSE-2.0)',

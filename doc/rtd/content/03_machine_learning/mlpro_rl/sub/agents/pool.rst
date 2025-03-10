@@ -1,6 +1,6 @@
 .. _target_agents_pool_RL:
-Policy Pool
--------------------
+Policy pool
+-----------
 
 .. toctree::
    :maxdepth: 1

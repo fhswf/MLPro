@@ -1,34 +1,79 @@
 .. _target_training_RL:
-Training and Tuning
+Training and tuning
 ===================
 
-In RL, the agent and the environment interact over a sequence of time steps.
-At each time step, the agent receives an observation of the current state of the environment and selects an action.
-The environment then transitions to a new state and returns a reward signal to the agent.
-This process continues until some terminal state is reached.
+In RL, training involves repeated interactions between an agent and an environment over multiple time steps.
 
-The agent uses the observed state-action-reward sequences to update its policy,
-either through model-based methods that estimate the underlying dynamics of the environment,
-or model-free methods that directly estimate the value or the policy.
-The policy is used to select actions in subsequent interactions with the environment, allowing the agent to learn from its mistakes and improve over time.
+**How RL Training Works**
 
-In MLPro-RL, a class **RLTraining** inherits the functionality from class **Training** in the basic function level, where the **RLTraining** class are used for training and hyperparameter tuning of RL agents.
-We implement episodic training algorithms and make the corresponding extended training data and results as well as the trained agents available in the file system.
-In this RL training, we always start with a defined random initial state of the environment and evaluate at each time step whether one of the following three categories is satisfied,
+    (1) Agent Observes the State → The agent receives information about the current state of the environment.
+    
+    (2) Agent Selects an Action → The agent chooses an action using its policy.
+    
+    (3) Environment Updates State → The environment transitions to a new state based on the action.
+    
+    (4) Agent Receives Reward → The environment returns a reward signal.
+    
+    (5) Policy Updates → The agent updates its policy using either:
 
-    (1) **Event Success**: This means that the defined target state is reached and the actual episode is ended.
+        - Model-based learning (estimates environment dynamics)
 
-    (2) **Event Broken**: This means that the defined target state is no longer reachable and the actual episode is ended.
+        - Model-free learning (directly optimizes policy/value function)
 
-    (3) **Event Timeout**: This means that the maximum training cycles for an episode are reached and the actual episode is ended.
+    (6) Repeat Until Terminal State → This loop continues until an episode ends.
 
-If none of the events is satisfied, then the training continues. The goal of the training is to maximize the score of the repetitive evaluations.
-In this case, a `stagnation detection functionality <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_ can be incorporated to avoid a long training time without any more improvements.
-The training can be ended, once the stagnation is detected. For more information, you can read `Section 4.3 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
+**Training in MLPro-RL**
 
-In MLPro-RL, we simplify the process of setting up an RL scenario and training for both single-agent and multi-agent RL, as shown below:
+In MLPro-RL, the **RLTraining** class inherits from the Training class at the basic function level.
+This class is used for training RL agents and hyperparameter tuning.
 
-- **Single-Agent Scenario Creation**
+Key Features of **RLTraining**:
+
+    - Episodic Training → Training progresses through multiple episodes
+
+    - Training Data Storage → Extended training data and results are stored in the file system
+
+    - Support for Single & Multi-Agent RL → Easily train different types of agents
+    
+    - Stagnation Detection → Prevents unnecessary long training times without improvement
+
+**Training Termination Conditions**
+
+An RL training session in MLPro-RL continues until one of the following events occurs:
+
+    (1) Event Success
+        
+        - The agent reaches the defined target state → Episode ends
+
+    (2) Event Broken
+
+        - The target state is no longer reachable → Episode ends
+
+    (3) Event Timeout
+
+        - The maximum training cycles are reached → Episode ends
+
+If none of these events occur, training continues to maximize the score over repeated evaluations.
+
+
+**Stagnation Detection in Training**
+
+To prevent unnecessary long training sessions, MLPro-RL provides a `stagnation detection functionality <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_.
+
+If no further improvements are detected over time, training can be terminated early.
+
+For more information, you can read `Section 4.3 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
+
+
+**Simplifying RL Training with MLPro-RL**
+
+MLPro-RL makes it easy to set up and train RL agents by automating the process.
+Whether you are working with single-agent or multi-agent RL, MLPro-RL provides a structured and efficient training framework.
+
+Next Step: Define your own RL scenario and start training your agent!
+Here is an example for doing it:
+
+- **Single-agent scenario creation**
 
     .. code-block:: python
         
@@ -69,7 +114,7 @@ In MLPro-RL, we simplify the process of setting up an RL scenario and training f
         training    = Training(....)
         training.run()
 
-- **Multi-Agent Scenario Creation**
+- **Multi-agent scenario creation**
 
     .. code-block:: python
         
@@ -122,13 +167,13 @@ In MLPro-RL, we simplify the process of setting up an RL scenario and training f
         training.run()
 
 
-**Cross Reference**
+**Cross reference**
 
     - `A sample application video of MLPro-RL on a UR5 robot <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc2.mp4>`_
-    - `Howto RL-AGENT-002: Train an Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.html>`_
-    - `Howto RL-AGENT-004: Train Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
-    - `Howto RL-AGENT-001: Train and Reload Single Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
-    - `Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_
-    - `Howto RL-MB-001: Train and Reload Model Based Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_001_train_and_reload_model_based_agent_gym%20copy.html>`_
-    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
-    - :ref:`MLPro-BF-ML: Training and Tuning <target_bf_ml_train_and_tune>`
+    - `Howto RL-AGENT-002: Train an agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.html>`_
+    - `Howto RL-AGENT-004: Train multi-agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
+    - `Howto RL-AGENT-001: Train and reload single agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
+    - `Howto RL-ATT-001: Train and reload single agent using stagnation detection (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/03_howtos_att/howto_rl_att_001_train_and_reload_single_agent_gym_sd.html>`_
+    - `Howto RL-MB-001: Train and reload model-based agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_001_train_and_reload_model_based_agent_gym%20copy.html>`_
+    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World environment <Howto MB RL 001>`
+    - :ref:`MLPro-BF-ML: Training and tuning <target_bf_ml_train_and_tune>`

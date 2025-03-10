@@ -44,7 +44,7 @@ loaded as following:
     stream_handling/stream_handling.rst
 
 
-**Cross Reference**
+**Cross reference**
 
-    + :ref:`Howto BF-STREAMS-101: Basics of Streams <Howto BF STREAMS 101>`
-    + :ref:`API Reference: Streams <target_ap_bf_streams>`
+    + :ref:`Howto BF-STREAMS-101: Basics of streams <Howto BF STREAMS 101>`
+    + :ref:`API reference: Streams <target_ap_bf_streams>`

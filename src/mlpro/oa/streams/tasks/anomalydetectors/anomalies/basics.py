@@ -14,27 +14,32 @@
 ## -- 2024-05-07  1.3.1     SK       Bug fix related to p_instances
 ## -- 2024-05-09  1.3.2     DA       Bugfix in method Anomaly._update_plot()
 ## -- 2024-05-22  1.4.0     SK       Refactoring
+## -- 2025-02-12  1.4.1     DA       Code reduction
+## -- 2025-02-18  2.0.0     DA       Class Anomaly:
+## --                                - refactoring and simplification
+## --                                - new attribute event_id
+## --                                - new parent Renormalizable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-05-22)
+Ver. 2.0.0 (2025-02-18)
 
 This module provides a template class for anomalies to be used in anomaly detection algorithms.
 """
 
+from datetime import datetime
+
 from mlpro.bf.various import Id
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
-from mlpro.bf.streams import Instance
-from mlpro.bf.math.properties import PropertyDefinitions, Properties
-
+from mlpro.bf.math.normalizers import Renormalizable
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Anomaly (Id, Event, Plottable):
+class Anomaly (Id, Event, Plottable, Renormalizable):
     """
     This is the base class for anomaly events which can be raised by the anomaly detectors when an
     anomaly is detected.
@@ -43,11 +48,7 @@ class Anomaly (Id, Event, Plottable):
     ----------
     p_id : int
         Anomaly ID. Default value = 0.
-    p_instances : Instance
-        List of instances. Default value = None.
-    p_ano_scores : list
-        List of anomaly scores of instances. Default = None.
-    p_det_time : str
+    p_tstamp : datetime
         Time of occurance of anomaly. Default = None.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
@@ -56,8 +57,6 @@ class Anomaly (Id, Event, Plottable):
     **p_kwargs
         Further optional keyword arguments.
     """
-
-    C_TYPE                  = 'Anomaly'
 
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
@@ -69,58 +68,18 @@ class Anomaly (Id, Event, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id : int = 0,
-                 p_instances: list[Instance] = None,
-                 p_ano_scores : list = None,
-                 p_det_time : str = None,
+                 p_tstamp : datetime = None,
                  p_visualize : bool = False,
                  p_raising_object : object = None,
                  **p_kwargs):
         
         Id.__init__( self, p_id = p_id )
-        Event.__init__( self, p_raising_object=p_raising_object,
-                        p_tstamp=p_det_time, **p_kwargs)
+
+        Event.__init__( self, 
+                        p_raising_object=p_raising_object,
+                        p_tstamp=p_tstamp, 
+                        **p_kwargs )
+        
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self._instances : list[Instance] = p_instances
-        self._ano_scores = p_ano_scores
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_instances(self) -> list[Instance]:
-        """
-        Method that returns the instances associated with the anomaly.
-        
-        Returns
-        -------
-        list[Instance]
-            The list of instances.
-        """
-        return self._instances
-    
-
-## -------------------------------------------------------------------------------------------------
-    def get_detection_time(self) -> float:
-        """
-        Method that returns the time at which the anomaly/anomalies were detection.
-        
-        Returns
-        -------
-        float
-            The time of detection.
-        """
-        return self._instances
-    
-
-## -------------------------------------------------------------------------------------------------
-    def get_ano_scores(self):
-        """
-        Method that returns the anomaly scores associated with the instances of the anomaly.
-        
-        Returns
-        -------
-        list
-            The list of anomaly scores.
-        """
-        return self._ano_scores
-    
-
+        self.event_id   = type(self).__name__

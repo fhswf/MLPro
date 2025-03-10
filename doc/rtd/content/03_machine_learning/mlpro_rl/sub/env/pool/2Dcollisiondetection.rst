@@ -1,6 +1,6 @@
 .. _coldec:
 2D Collision Avoidance
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.collisionavoidance_2D
 
@@ -42,7 +42,7 @@ Please install below packages to use the MLPro's 2D collision avoidance environm
 
 
 
-**General Information**
+**General information**
 
 +------------------------------------+------------------------------------------------------------------------+
 |         Parameter                  |                         Value                                          |
@@ -67,7 +67,7 @@ Please install below packages to use the MLPro's 2D collision avoidance environm
 +------------------------------------+------------------------------------------------------------------------+
     
 
-**Action Space**
+**Action space**
 
 In this environment, we control the movement of the "x" nodes along the x- and y-axes, which is defined as the action of the agent.
 Therefore, the action space dimension of the agent is [p_num_point-2, 2].
@@ -76,14 +76,14 @@ Additionally, the action boundaries are defined by the parameter **p_action_boun
 This means that each "x" node can only move within these boundaries along the x- and y-axes at each time step.
   
   
-**State Space**
+**State space**
 
 The state information in this environment consists of the positions of each node, including the starting node, the current positions of the "x" nodes, and the current target node.
 Each position includes both x- and y-coordinates.
 Therefore, the state space dimension is [p_num_point, 2]. For example, if **p_num_point** is 5, the state space dimension is [5, 2].
   
   
-**Reward Structure**
+**Reward structure**
 
 Currently, there is no predefined reward function in this environment.
 Users who wish to create a custom reward function can refer to the following code snippet as a guide:
@@ -120,9 +120,10 @@ The provided code snippet outlines parameters that can assist in calculating cus
 
 Users can define their own reward function by replacing **total_rewards=0** with their specific logic.
 
-**Cross Reference**
 
-    + :ref:`API Reference <target_pool_rl_env_2dcol>`
+**Cross reference**
+
+    + :ref:`API reference <target_pool_rl_env_2dcol>`
 
 
 **Citation**
