@@ -33,7 +33,7 @@ from mlpro.bf.systems.pool import DoublePendulumSystemS4, DoublePendulumSystemS7
 if __name__=='__main__':
     logging = Log.C_LOG_ALL
     visualize = True
-    cycle_limit = 10
+    cycle_limit = 1000
 else:
     logging = Log.C_LOG_NOTHING
     visualize = False

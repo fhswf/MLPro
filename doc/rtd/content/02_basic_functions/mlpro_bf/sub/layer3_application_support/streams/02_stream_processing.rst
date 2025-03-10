@@ -1,5 +1,5 @@
 .. _target_bf_streams_processing:
-Stream Processing
+Stream processing
 =================
 Handling streaming data sources and mining knowledge from them requires special types of processing tasks because of
 their live behaviour. Stream operations process new instances as they are available at every step. Along with a
@@ -17,6 +17,7 @@ As shown in the above figure the scenario fetches new :math:`I_{tn}` instances f
 then processes a list of new instances :math:`I_{tn}` and deleted/obsolete instances :math:`I_{td}` as shown in the
 figure. The processed instances are stored in the shared object for further accessibility.
 
+
 **Learn more**
 
 .. toctree::
@@ -24,8 +25,8 @@ figure. The processed instances are stored in the shared object for further acce
     stream_processing/stream_processing.rst
 
 
-**Cross References**
+**Cross references**
 
-- :ref:`Howto BF-STREAMS-102: Tasks Workflows And Stream Scenarios <Howto BF STREAMS 102>`
+- :ref:`Howto BF-STREAMS-102: Tasks, workflows and stream scenarios <Howto BF STREAMS 102>`
 - :ref:`BF-MT - Multitasking <target_bf_mt>`
-- :ref:`API Reference: Streams <target_ap_bf_streams>`
+- :ref:`API reference: Streams <target_ap_bf_streams>`

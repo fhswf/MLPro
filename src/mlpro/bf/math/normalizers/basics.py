@@ -129,7 +129,7 @@ class Normalizer:
 
         elif isinstance(p_data, np.ndarray):
             p_data = np.multiply(p_data, 1 / self._param[0]) + \
-                     (self._param[1] / self._param[0])
+                    (self._param[1] / self._param[0])
             p_data = np.nan_to_num(p_data)
         else:
             raise ParamError('Wrong datatype provided for denormalization')

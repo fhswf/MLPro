@@ -1,5 +1,5 @@
 .. _target_bf_ml_model:
-The Adaptive Model
+The adaptive model
 ==================
 
 MLPro provides the central template class **Model** for adaptive models. This bundles all 
@@ -11,7 +11,7 @@ and possibilities for application-specific adjustments to them.
    :scale: 50%
 
 
-**Performant Execution**
+**Performant execution**
 
 As shown in the simplified class diagram above, the Model class is made up of numerous base classes of the 
 lower levels through inheritance. So, from :ref:`Layer 1 - Computation <target_bf_computation>`, it inherits
@@ -43,11 +43,11 @@ Model class. These, in turn, take up the concepts of **Dimension**, **Set/Space*
 :ref:`Layer 2 - Mathematics <target_bf_mathematics>`.
 
 
-**Cross Reference**
+**Cross reference**
 
-- :ref:`Howto BF-ML-001: Adaptive Model <Howto BF ML 001>`
+- :ref:`Howto BF-ML-001: Adaptive model <Howto BF ML 001>`
 - :ref:`Howto BF-ML-010: Hyperparameters <Howto BF ML 010>`
-- :ref:`Models in Reinforcement Learning: Policy, Agent, MultiAgent <target_agents_RL>`
-- :ref:`Models in Game Theory: Player, MultiPlayer <target_players_GT>`
-- :ref:`BF-Events - Event Handling <target_bf_event>`
+- :ref:`Models in reinforcement learning: Policy, Agent, MultiAgent <target_agents_RL>`
+- :ref:`Models in game theory: Player, MultiPlayer <target_players_GT>`
+- :ref:`BF-Events - Event handling <target_bf_event>`
 - :ref:`API Reference BF-ML <target_api_bf_ml>`

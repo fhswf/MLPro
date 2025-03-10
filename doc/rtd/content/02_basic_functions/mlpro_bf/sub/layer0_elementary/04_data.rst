@@ -1,8 +1,8 @@
-Data Management
+Data management
 ===============
 
 Data management in a framework is extremely important, which mostly refers to the organization, storage, and retrieval of data within the framework.
-In MLPro, our team also provides such functionalities as saving data, loading data, storing data, creating a buffer, and plotting data.
+MLPro also provides such functionalities as saving data, loading data, storing data, creating a buffer, and plotting data.
 This involves defining a data model that describes the structure and relationships between data elements, implementing mechanisms for storing and retrieving data, and managing data consistency and integrity.
 A well-designed data management system is essential for the efficient and effective processing of data within the framework.
 
@@ -14,12 +14,12 @@ The related data management classes can be accessed as follows:
 
     from mlpro.bf.data import * 
 
-In general, there are two main functionalities of data management in MLPro:
+In general, there are three main functionalities of data management in MLPro:
 
-    1) **Data Storing**
+    1) **Data storing**
         The second possibility is to store a bunch of data in MLPro's **DataStoring** class with three different layers, as follows:
 
-            - **Layer 1 - Data Names** : the labels or the feature names of the data.
+            - **Layer 1 - Data names** : the labels or the feature names of the data.
 
             - **Layer 2 - Frames** : the frames can be added to each label or feature name. If none, then the frame id can be set to '0' all the time.
 
@@ -53,8 +53,13 @@ In general, there are two main functionalities of data management in MLPro:
                 - Clearing the buffer. 
         
         For better understanding : :ref:`Howto BF-004: Buffers <Howto BF 004>`
+
+
+    3) **Configuration data**
+        A further class named **ConfigFile** enables persistent storage of program configuration data in a local JSON file.
+        
     
-**Cross Reference**
+**Cross reference**
     + :ref:`Howto BF-003: Store and plot data <Howto BF 003>`
     + :ref:`Howto BF-004: Buffers <Howto BF 004>`
     + :ref:`API Reference <target_api_bf_data>`

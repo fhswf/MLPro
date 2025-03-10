@@ -2,29 +2,59 @@
 Scenarios
 ------------
 
-A scenario in reinforcement learning refers to a specific problem or task that the agent is trying to learn how to solve.
-A scenario defines the environment in which the agent operates, including the state space, the action space, the reward function, and the transition dynamics.
+In RL, a scenario refers to a specific problem or task that an agent is trying to learn how to solve. It defines the environment in which the agent operates, including:
 
-In RL, the agent interacts with the environment over a sequence of time steps.
-At each time step, the agent receives an observation of the current state of the environment and selects an action.
-The environment then transitions to a new state and returns a reward signal to the agent.
+  - State Space – All possible states the environment can be in
 
-The scenario provides the agent with a set of goals to be achieved, and the reward function quantifies how well the agent is doing in terms of achieving these goals.
-The reward function can be designed to encourage certain behaviors, such as reaching a specific target state, or penalize certain behaviors, such as taking actions that lead to a state of low reward.
+  - Action Space – The set of actions the agent can take
 
-The scenario also defines the state and action spaces, which are the sets of all possible states and actions that the agent can experience and take, respectively.
-The transition dynamics describe how the environment changes in response to the agent's actions.
+  - Reward Function – A signal that quantifies the agent’s performance
+  
+  - Transition Dynamics – The rules governing how the environment evolves
 
-Overall, a scenario in RL defines the problem that the agent is trying to solve, and provides the necessary information for the agent to learn a policy that maps states to actions and maximizes the cumulative reward signal.
+**How an RL Scenario Works**
 
-In MLPro-RL, a class **RLScenario** inherits the functionality from class **Scenario** in the basic function level, where the **RLScenario** class combines RL agents and an environment into an executable unit.
+  (1) Interaction Over Time → The agent interacts with the environment step by step
+  
+  (2) State Observation → The agent receives information about the environment’s current state
+  
+  (3) Action Selection → The agent chooses an action based on its policy
+  
+  (4) State Transition → The environment updates its state based on the agent’s action
+  
+  (5) Reward Signal → The agent receives a reward based on its performance
 
-One of the MLPro's features is enabling the user to apply a template class for an RL scenario consisting of an environment and agents.
-Moreover, the users can create either a single-agent scenario or a multi-agent scenario in a simple manner by inheriting **RLScenario** base class and redefining its **_setup** function.
+The goal? Learn an optimal policy that maps states to actions in a way that maximizes cumulative rewards over time.
+
+**RL Scenarios in MLPro**
+
+In MLPro-RL, the **RLScenario** class inherits from **Scenario** (a basic function-level class), combining agents and environments into an executable unit.
+
+Here are some of their key features:
+
+  - Template-Based Setup – Users can easily define RL scenarios
+
+  - Single & Multi-Agent Support – Easily switch between single-agent and multi-agent RL
+
+  - Customizable Setup – Inherit RLScenario and redefine the **_setup** function
+
+This flexibility allows users to implement and experiment with different RL problems effortlessly.
+
+**Further Exploration**
+
+MLPro-RL makes it easy to structure and run custom RL scenarios. You can:
+
+  - Define an RL scenario using the RLScenario base class
+
+  - Customize environments and agents to fit your task
+
+  - Experiment with different policies and learning algorithms
+
+Want to get started? Try defining your own RL scenario by inheriting RLScenario and implementing its **_setup** function!
 
 
-**Cross Reference**
+**Cross reference**
 
   - :ref:`MLPro-RL: Training <target_training_RL>`
-  - `Howto RL-AGENT-001: Run an Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment.html>`_
-  - `Howto RL-AGENT-003: Run Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment.html>`_
+  - `Howto RL-AGENT-001: Run an agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment.html>`_
+  - `Howto RL-AGENT-003: Run multi-agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment.html>`_

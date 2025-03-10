@@ -2,50 +2,73 @@
 Agents
 ------
 
-In RL, an agent is an autonomous entity that interacts with an environment,
-receiving rewards for performing certain actions and updates its behavior based on that feedback.
+In RL, an agent is an autonomous entity that interacts with an environment.
+It receives rewards for performing specific actions and adjusts its behavior based on the feedback received.
 The agent's goal is to learn a policy that maximizes its cumulative reward over time.
 
-From a scientific perspective, the agent is typically modeled as a decision-making system that maps states of the environment to actions through a policy.
-The policy can be deterministic or probabilistic and can be learned through various RL algorithms such as Q-Learning, SARSA, or Policy Gradient methods.
-The agent's performance is evaluated using metrics such as reward, cumulative reward, and value functions.
-Overall, an agent in RL provides an algorithm that makes decisions and learns from experience to optimize its performance in a given task.
+From a scientific perspective, the agent is typically modeled as a decision-making system that maps environmental states to actions through a policy.
+This policy can be either deterministic or probabilistic, and it can be learned using various RL algorithms such as Q-Learning, SARSA, or Policy Gradient methods.
+The agent’s performance is evaluated using metrics such as the reward, cumulative reward, and value functions.
 
-MLPro-RL supplies a special agent model landscape, which covers different RL scenarios including a simple single-agent RL, a multi-agent RL, and model-based agents with an optional action planner.
-For the multi-agent RL, the structure is constructed by assigning multiple single agents in a group.
-The main component of each single-agent (either single-agent or multi-agent RL) is the policy.
-The basic class of the policy is inherited from the ML Model of basic MLPro functionality and extended by the RL-related function of the action calculation.
-The users can inherit the basic class of the policy to implement their :ref:`own custom algorithms <target_custom_policies_RL>` or simply use algorithms from third-party packages via :ref:`wrapper classes <target-package-third>`.
-The other possibility would be :ref:`importing algorithms from the pool object <target_agents_pool_RL>`.
-For an overview, the simplified class diagram of agents in MLPro is described below.
+Overall, an agent in RL is an algorithm that makes decisions and learns from experience, aiming to optimize its performance in a given task.
 
-.. figure:: images/MLPro-RL_agents.png
-  :width: 600
+**MLPro-RL Agent Models**
+
+MLPro-RL provides a specialized agent model landscape, which supports different RL scenarios, including single-agent RL, multi-agent RL, and model-based agents with an optional action planner.
+
+  - **Single-Agent RL**: This scenario features a single agent that interacts with an environment.
+
+  - **Multi-Agent RL**: Here, the structure involves assigning multiple single agents within a group, where agents may interact or collaborate.
+
+  - **Model-Based RL**: In this case, the agent incorporates a model of the environment to make more informed decisions. Additionally, an action planner can be used to enhance the decision-making process.
+
+
+The core component of each agent, whether in single-agent or multi-agent RL, is the policy.
+The basic policy class inherits from the MLPro Model and is extended with RL-specific functions for action calculation.
+Users can either:
+
+  - Extend the policy class to implement their own custom algorithms (see :ref:`own custom algorithms <target_custom_policies_RL>`).
   
-  This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
+  - Use third-party algorithms via the provided wrapper classes (see :ref:`wrapper classes <target-package-third>`).
 
-Moreover, an environment model (known as :ref:`EnvModel class <target_agents_MBRL>`) can be supplemented to a single agent, i.e. for model-based RL cases.
-This class can be used for model-based learning, which learns the behaviour or dynamics of the environment. Another possible extension of the model-based agent is an action planner.
-Action planner uses the environment model (or EnvModel) to plan the next action by predicting the output on a certain horizon.
-An example of action planner algorithms is :ref:`Model Predictive Control (MPC) <target_mpc_RL>`, which is also provided in MLPro.
+  - Import algorithms from the agent pool (see :ref:`importing algorithms from the pool object <target_agents_pool_RL>`).
 
-Additionally, you can find more comprehensive explanations of agents in MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
+For a visual overview, the simplified class diagram of agents in MLPro is shown below:
+
+  .. figure:: images/MLPro-RL_agents.png
+    :width: 600
+    
+    This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
+
+**Model-Based RL and Action Planning**
+
+For model-based RL scenarios, an environment model (known as the :ref:`EnvModel class <target_agents_MBRL>`) can be added to a single agent.
+This class allows the agent to learn the dynamics or behavior of the environment.
+Another extension of model-based agents is the action planner, which uses the environment model (or EnvModel) to plan the next action by predicting the output over a certain horizon.
+
+An example of an action planning algorithm is :ref:`Model Predictive Control (MPC) <target_mpc_RL>`, which is also available in MLPro.
+
+**Further Reading**
+
+For a more comprehensive explanation of agents in MLPro-RL, including a sample application for controlling a UR5 Robot, refer to the paper:
 `MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
-Here are some subsections of the agent model landscape of MLPro-RL, which might be interesting for the users:
+Here are some relevant subsections of the agent model landscape in MLPro-RL that may be of interest:
 
-.. toctree::
-   :maxdepth: 1
-   
-   agents/custompolicies
-   agents/pool
-   agents/mbagents   
-   agents/multiagents
-   
-The following flowchart describes the adaptation procedure of an agent. In the beginning, the loop checks whether it is model-based RL or model-free RL.
-If it is a model-free RL, then the loop is jumped to a direct policy adaptation. Then, the current step ended after the policy adaptation.
-Meanwhile, in the model-based RL, the EnvModel is first adapted, and then the loop checks whether the accuracy of the EnvModel exceeds a given threshold.
-This activity is to make sure that the EnvModel is accurate enough for policy adaptation. If the accuracy is higher than the threshold, then the policy adaptation takes place with EnvModel.
-Otherwise, the current step is ended without any policy adaptations.
+  .. toctree::
+    :maxdepth: 1
+    
+    agents/custompolicies
+    agents/pool
+    agents/mbagents   
+    agents/multiagents
+
+**Agent Adaptation Flowchart**
+
+The following flowchart illustrates the agent adaptation procedure. Initially, the loop checks whether it is a model-based RL or model-free RL.
+
+  - If it is **model-free RL**, the loop proceeds directly to policy adaptation, and the current step ends after the adaptation.
+
+  - For **model-based RL**, the EnvModel is first adapted. Then, the loop checks whether the accuracy of the EnvModel exceeds a specified threshold. This ensures that the model is sufficiently accurate for policy adaptation. If the accuracy is above the threshold, policy adaptation occurs using the EnvModel; otherwise, the current step ends without any policy adaptation.
    
 .. image:: agents/images/MLPro-RL-Agents_flowchart_adaptation.png
