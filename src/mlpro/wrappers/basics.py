@@ -31,14 +31,16 @@
 ## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
 ## -- 2022-07-21  1.8.0     DA       New class Wrapper
 ## -- 2023-01-14  1.8.1     MRD      Save installed version
+## -- 2025-03-10  1.9.0     DA       Replaced outdated package pkg_resources with importlib
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.1 (2023-01-14)
+Ver. 1.9.0 (2025-03-10)
 
 This module provides model classes for wrappers in the MLPro project.
 """
 
+from importlib.metadata import version as pkg_version
 
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
@@ -57,12 +59,11 @@ class Wrapper (Log):
     ----------
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-
     """
 
-    C_TYPE              = 'Wrapper'
-    C_WRAPPED_PACKAGE   = None
-    C_MINIMUM_VERSION   = None
+    C_TYPE                      = 'Wrapper'
+    C_WRAPPED_PACKAGE : str     = None
+    C_MINIMUM_VERSION : str     = None
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL):
@@ -71,10 +72,8 @@ class Wrapper (Log):
         if self.C_WRAPPED_PACKAGE is None:
             raise Error('Please specify the wrapped package')
 
-        import pkg_resources
-
         try:
-            version = pkg_resources.get_distribution(self.C_WRAPPED_PACKAGE).version
+            version = pkg_version(self.C_WRAPPED_PACKAGE)
             self.log(Log.C_LOG_TYPE_I, 'Wrapped package ' + self.C_WRAPPED_PACKAGE + ' installed in version ' + version)
             self.installed_version = version
 
