@@ -116,7 +116,7 @@ The reward is 1 minus the euclidean distance between goal states and current sta
 
   
 **Cross reference**
-    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World environment <Howto MB RL 001>`
+    + :ref:`Howto RL-MB-001: MBRL with MPC on Grid World environment <Howto MB RL 001>`
     + :ref:`API reference <target_pool_rl_env_grid_world>`
 
 

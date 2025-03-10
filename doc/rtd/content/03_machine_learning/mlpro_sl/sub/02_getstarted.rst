@@ -34,7 +34,7 @@ After following the below step-by-step guideline, we expect the user understands
 
    (a) `Howto RL-MB-001: Train and Reload Model Based Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_001_train_and_reload_model_based_agent_gym%20copy.html>`_
 
-   (b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
+   (b) :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
 
    For more advanced supervised learning techniques in model-based RL, such as using a native model-based RL network, you can refer to the following example:
 

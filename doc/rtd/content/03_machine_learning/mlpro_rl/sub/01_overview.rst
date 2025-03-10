@@ -2,39 +2,54 @@
 Overview
 --------
 
-MLPro-RL is the first ready-to-use subpackage in MLPro that is intended for reinforcement learning (RL)-related activities.
-MLPro-RL provides complete base classes of the main RL components, e.g. agent, environment, policy, multiagent, and training.
-The training loop is developed based on the Markov Decision Process (MDP) model, as shown in the following diagram.
+MLPro-RL is the first ready-to-use subpackage in MLPro, designed specifically for reinforcement learning (RL)-related activities.
+It provides comprehensive base classes for core RL components, including agents, environments, policies, multi-agent systems, and training frameworks.
+The training loop follows the Markov Decision Process (MDP) model, as illustrated in the diagram below.
 
 .. figure:: images/MDP.png
   :width: 600
   
-  This figure is taken from `Sutton and Barto, licensed by CC BY-NC-ND 2.0 <https://dl.acm.org/doi/10.5555/3312046>`_.
+  This figure is adapted from `Sutton and Barto, licensed by CC BY-NC-ND 2.0 <https://dl.acm.org/doi/10.5555/3312046>`_.
 
-An MDP model contains two major components, such as the environment and the agent.
-The agent can be considered as the decision maker, who chooses actions based on its policy by taking into account the current state of the environment.
-The environment is the surrounding where the agent lives and interacts. The actual condition in the environment is represented by states.
-MDP formulates the interaction between the agent and the environment, where the agent selects an action and sends the action to the environment.
-The environment reacts to the given action that makes the condition in the environment change.
-Then, the environment sends back the information in the form of states and reward to indicate the actual condition in the environment and the impact of the taken action on the environment respectively.
-Afterwards, the agent can adapt its policy and repeat the interactions until reaching optimality.
 
-MLPro-RL can handle a broad scope of RL training, including model-free RL or model-based RL, single-agent or multi-agent, and simulation or real hardware mode.
-Hence, this subpackage can be a one-stop solution for students, educators, RL engineers or RL researchers to support their RL-related tasks.
-The structure of MLPro-RL can be found in the following figure.
+**Markov Decision Process (MDP)**
+
+An MDP consists of two primary components: the environment and the agent.
+
+- **Agent**: The decision-maker that selects actions based on its policy, considering the current state of the environment.
+
+- **Environment**: The surrounding system in which the agent operates and interacts. The environment’s condition is represented by states.
+
+MDP models the interaction between the agent and the environment.
+The agent chooses an action and submits it to the environment, which then reacts by altering its state.
+The environment provides feedback in the form of a new state and a reward, indicating the consequences of the action.
+Through continuous interactions, the agent refines its policy to achieve optimal performance.
+
+**Why Choose MLPro-RL?**
+
+MLPro-RL supports a wide range of RL training configurations, including:
+
+- Model-free and model-based RL
+
+- Single-agent and multi-agent systems
+
+- Simulated and real hardware implementations
+
+This versatility makes MLPro-RL a valuable tool for students, educators, RL engineers, and researchers looking for a standardized and flexible RL framework.
+The structure of MLPro-RL is depicted in the following figure:
 
 .. figure:: images/MLPro-RL_overview.png
   :width: 600
   
-  This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
+  This figure is sourced from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
-If you are interested to utilize MLPro-RL, you can easily access the RL modules, as follows:
+To begin using MLPro-RL, you can easily import the RL modules with the following command:
 
     .. code-block:: python
 
         from mlpro.rl import *
 
-Additionally, you can find the more comprehensive explanations of MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
+For a more comprehensive explanation of MLPro-RL, including a sample application on controlling a UR5 robot, refer to the paper:
 `MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
 
