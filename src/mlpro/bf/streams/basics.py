@@ -69,6 +69,7 @@
 ## -- 2024-07-19  2.0.3     DA       Class StreamTask: excluded non-numeric feature data from default
 ## --                                visualization 2D,3D,ND
 ## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
+## -- 2024-10-01  2.1.1     DA       Method StreamScenario.__init__(): simplification
 ## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
@@ -399,7 +400,9 @@ class Sampler (ScientificObject):
 
         Parameters
         ----------
-        p_inst : Instance
+        p_inst : Instancep_set = {}
+p_set[0] = tuple([1,Instance(12)])
+print(p_set)
             An input instance to be filtered.
 
         Returns
@@ -1663,10 +1666,6 @@ class StreamScenario (ScenarioBase):
                   p_visualize:bool=False, 
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
-
-        self._stream : Stream           = None
-        self._iterator : Stream         = None
-        self._workflow : StreamWorkflow = None
 
         ScenarioBase.__init__( self,
                                p_mode, 
