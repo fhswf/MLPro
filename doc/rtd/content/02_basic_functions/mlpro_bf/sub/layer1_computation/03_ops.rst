@@ -17,8 +17,8 @@ All scenario classes in MLPro are ultimately template classes for implementing y
 Therefore, special attention should be paid to the custom methods that are already introduced here.
 
 
-**Cross Reference**
+**Cross reference**
 
-- :ref:`API Reference BF-OPS - Operations <target_api_bf_ops>`
+- :ref:`API reference BF-OPS - Operations <target_api_bf_ops>`
 - :ref:`BF-Various - Persistence <target_bf_persistence>`
 

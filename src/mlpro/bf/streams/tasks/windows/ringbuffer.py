@@ -25,19 +25,28 @@
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
 ## -- 2024-05-22  1.2.0     DA       Refactoring, splitting, and renaming to RingBuffer
 ## -- 2024-05-23  1.2.1     DA       Bugfixes on plotting
+## -- 2024-10-31  1.2.2     DA       Bugfix in RingBuffer.get_boundaries()
+## -- 2024-12-11  1.2.3     DA       Pseudo classes if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-05-23)
+Ver. 1.2.3 (2024-12-11)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
 
-from matplotlib.axes import Axes
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from matplotlib.patches import Rectangle
 import numpy as np
+
+try:
+    from matplotlib.axes import Axes
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    from matplotlib.patches import Rectangle
+except:
+    class Axes : pass
+    class Poly3DCollection : pass
+    class Rectangle : pass
+
 from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
 from mlpro.bf.streams.tasks.windows.basics import Window
@@ -124,7 +133,7 @@ class RingBuffer (Window):
 
 
         # 1 Main processing loop
-        for inst_id, (inst_type, inst)  in sorted(inst.items()):
+        for inst_id, (inst_type, inst) in sorted(inst.items()):
 
             if inst_type != InstTypeNew: 
                 # Obsolete instances need to be removed from the buffer (not yet implemented)
@@ -205,8 +214,13 @@ class RingBuffer (Window):
             Current window boundaries in the form of a Numpy array.
         """
 
-        boundaries = np.stack(([np.min(self._numeric_buffer, axis=0),
-                      np.max(self._numeric_buffer, axis=0)]), axis=1)
+        if not self._buffer_full:
+            boundaries = np.stack( ( [ np.min(self._numeric_buffer[0:self._buffer_pos], axis=0),
+                                       np.max(self._numeric_buffer[0:self._buffer_pos], axis=0) ] ), axis=1)
+        else:
+            boundaries = np.stack( ( [ np.min(self._numeric_buffer, axis=0),
+                                       np.max(self._numeric_buffer, axis=0) ] ), axis=1)
+            
         return boundaries
 
 

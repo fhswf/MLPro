@@ -1,5 +1,5 @@
 {% set name = "mlpro" %}
-{% set version = "1.9.0" %}
+{% set version = "1.9.7" %}
 
 package:
   name: "{{ name|lower }}"
@@ -31,5 +31,5 @@ about:
   home: https://github.com/fhswf/MLPro
   license: Apache-2.0
   license_family: Apache
-  summary: MLPro - The Integrative Middleware Framework for Standardized Machine Learning
+  summary: MLPro - The integrative middleware framework for standardized machine learning
   description: MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational tasks or industrial projects in machine learning.

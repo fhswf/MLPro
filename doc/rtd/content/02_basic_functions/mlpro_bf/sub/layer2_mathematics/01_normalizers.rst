@@ -25,6 +25,6 @@ Both the normalizers provide following operations:
  * Renormalize : MLPro's normalizers also provide the possibility to renormalize the previously normalized data elements on new normalization parameters.
 
 
-**Cross Reference**
+**Cross reference**
     + :ref:`Howto BF-MATH-010: Normalizers <Howto BF MATH 010>`
-    + :ref:`API Reference <target_ap_bf_math_norm>`
+    + :ref:`API reference <target_ap_bf_math_norm>`

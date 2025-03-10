@@ -1,0 +1,9 @@
+.. _target_api_oa_systems:
+MLPro-OA-Systems - Online-adaptive state-based systems
+======================================================
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+   
+   systems/*

@@ -36,25 +36,33 @@
 ## --                                - new method _get_cluster_relations()
 ## --                                - new method get_cluster_influences()
 ## -- 2024-06-16  1.2.1     DA       Bugfix in ClusterAnalyzer.align_cluster_properties()
+## -- 2024-08-20  1.3.0     DA       Raising of events Cluster.C_CLUSTER_ADDED, Cluster.C_CLUSTER_REMOVED
+## -- 2024-08-21  1.3.1     DA       Resolved name collision of class mlpro.bf.events.Event
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-06-16)
+Ver. 1.3.1 (2024-08-21)
 
 This module provides a template class for online cluster analysis.
 """
 
 
-from matplotlib.figure import Figure
+from typing import List, Tuple
+
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
+
+from mlpro.bf.events import Event as MLProEvent
 from mlpro.bf.math.properties import *
 from mlpro.bf.mt import PlotSettings
 from mlpro.bf.streams import Instance, InstDict
 from mlpro.bf.various import *
 from mlpro.bf.plot import *
-from mlpro.oa.streams import OATask
+from mlpro.oa.streams import OAStreamTask
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster, ClusterId
-from typing import List, Tuple
 
 
 
@@ -64,7 +72,7 @@ ResultItem = Tuple[ClusterId, float, object]
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ClusterAnalyzer (OATask):
+class ClusterAnalyzer (OAStreamTask):
     """
     Base class for online cluster analysis. It raises an event when a cluster was added or removed.
 
@@ -130,7 +138,7 @@ class ClusterAnalyzer (OATask):
                   p_cls_cluster : type = Cluster,
                   p_cluster_limit : int = 0,
                   p_name: str = None, 
-                  p_range_max = OATask.C_RANGE_THREAD, 
+                  p_range_max = OAStreamTask.C_RANGE_THREAD, 
                   p_ada: bool = True, 
                   p_duplicate_data: bool = False, 
                   p_visualize: bool = False, 
@@ -247,6 +255,10 @@ class ClusterAnalyzer (OATask):
         if self.get_visualization(): 
             p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
 
+        self._raise_event( p_event_id = self.C_EVENT_CLUSTER_ADDED, 
+                           p_event_object = MLProEvent( p_raising_object = self,
+                                                        p_cluster = p_cluster ) )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_cluster(self, p_cluster:Cluster):
@@ -261,6 +273,10 @@ class ClusterAnalyzer (OATask):
 
         p_cluster.remove_plot(p_refresh=True)
         del self._clusters[p_cluster.id]
+
+        self._raise_event( p_event_id = self.C_EVENT_CLUSTER_REMOVED, 
+                           p_event_object = MLProEvent( p_raising_object = self,
+                                                        p_cluster = p_cluster ) )
 
 
 ## -------------------------------------------------------------------------------------------------

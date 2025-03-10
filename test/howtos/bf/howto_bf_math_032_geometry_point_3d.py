@@ -40,6 +40,7 @@ from mlpro.bf.math.geometry import Point
 
 
 
+
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode

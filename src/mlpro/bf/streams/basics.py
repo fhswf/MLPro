@@ -68,22 +68,30 @@
 ## -- 2024-06-07  2.0.2     LSB      Fixing timedelta handling in ND plotting
 ## -- 2024-07-19  2.0.3     DA       Class StreamTask: excluded non-numeric feature data from default
 ## --                                visualization 2D,3D,ND
+## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
+## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
+## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
+## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
+## -- 2024-12-11  2.4.1     DA       Pseudo class Figure if matplotlib is not installed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.3 (2024-07-19)
+Ver. 2.4.1 (2024-12-11)
 
-This module provides classes for standardized stream processing. 
+This module provides classes for standardized data stream processing. 
 
 """
-import datetime
 
-from matplotlib.figure import Figure
 import random
 from typing import Dict, Tuple
 
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
+
 from mlpro.bf.math.basics import *
-from mlpro.bf.various import *
+from mlpro.bf.various import Id, TStamp, KWArgs
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import Dimension, Element
@@ -113,7 +121,7 @@ InstId = int
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Instance (Id, TStamp):
+class Instance (Id, TStamp, KWArgs):
     """
     Instance class to store the current instance and the corresponding labels of the stream
 
@@ -141,8 +149,7 @@ class Instance (Id, TStamp):
         self._feature_data = p_feature_data
         self._label_data   = p_label_data
         TStamp.__init__(self, p_tstamp=p_tstamp)
-        # Id.__init__(self, p_id = 0)
-        self._kwargs       = p_kwargs.copy()
+        KWArgs.__init__(self, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -173,7 +180,7 @@ class Instance (Id, TStamp):
 
 ## -------------------------------------------------------------------------------------------------
     def get_kwargs(self):
-        return self._kwargs
+        return self._get_kwargs()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -181,7 +188,7 @@ class Instance (Id, TStamp):
         duplicate = self.__class__( p_feature_data=self.get_feature_data().copy(),
                                     p_label_data=self.get_label_data(),
                                     p_tstamp=self.get_tstamp(),
-                                    p_kwargs=self._kwargs )
+                                    p_kwargs=self._get_kwargs() )
         duplicate.id = self.id
         return duplicate
 
@@ -189,10 +196,12 @@ class Instance (Id, TStamp):
 
 
 
-# Type aliases for instance handling
-InstType    = int
-InstTypeNew = 0
-InstTypeDel = 1
+## -------------------------------------------------------------------------------------------------
+## -- Type aliases for instance handling
+## -------------------------------------------------------------------------------------------------
+InstType    = str
+InstTypeNew = '+'
+InstTypeDel = '-'
 InstDict    = Dict[InstId, Tuple[InstType, Instance]]
 
 
@@ -1095,21 +1104,18 @@ class StreamTask (Task):
         else:
             inst = p_inst
 
-        if len(inst) == 0: return
-
         try:
             self._plot_view_finalized
         except:
-            if self._plot_settings.view_autoselect:
+            if self._plot_settings.view_autoselect and ( len(inst) > 0 ):
                 self._finalize_plot_view(p_inst_ref=next(iter(inst.values()))[1])
-
-            self._plot_view_finalized = True
+                self._plot_view_finalized = True
 
         Task.update_plot(self, p_inst=inst, **p_kwargs)
 
         self._plot_num_inst += len(inst)
 
-
+            
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d( self, 
                          p_settings : PlotSettings, 
@@ -1225,8 +1231,10 @@ class StreamTask (Task):
 
         # 5 Update of ax limits
         if ax_limits_changed:
-            p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
-            p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
+            if self._plot_2d_xmin != self._plot_2d_xmax:
+                p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
+            if self._plot_2d_ymin != self._plot_2d_ymax:
+                p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1365,9 +1373,12 @@ class StreamTask (Task):
 
         # 5 Update of ax limits
         if ax_limits_changed:
-            p_settings.axes.set_xlim( self._plot_3d_xmin, self._plot_3d_xmax )
-            p_settings.axes.set_ylim( self._plot_3d_ymin, self._plot_3d_ymax )
-            p_settings.axes.set_zlim( self._plot_3d_zmin, self._plot_3d_zmax )
+            if self._plot_3d_xmin != self._plot_3d_xmax:
+                p_settings.axes.set_xlim( self._plot_3d_xmin, self._plot_3d_xmax )
+            if self._plot_3d_ymin != self._plot_3d_ymax:
+                p_settings.axes.set_ylim( self._plot_3d_ymin, self._plot_3d_ymax )
+            if self._plot_3d_zmin != self._plot_3d_zmax:
+                p_settings.axes.set_zlim( self._plot_3d_zmin, self._plot_3d_zmax )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1563,11 +1574,6 @@ class StreamWorkflow (StreamTask, Workflow):
                    p_figure: Figure = None, 
                    p_plot_settings : PlotSettings = None ):
 
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
-
         self._plot_num_inst = 0
 
         return Workflow.init_plot( self, 
@@ -1643,6 +1649,8 @@ class StreamScenario (ScenarioBase):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    p_kwargs : dict
+        Custom keyword parameters handed over to custom method setup().
     """
     
     C_TYPE              = 'Stream-Scenario'
@@ -1653,7 +1661,8 @@ class StreamScenario (ScenarioBase):
                   p_mode, 
                   p_cycle_limit=0, 
                   p_visualize:bool=False, 
-                  p_logging=Log.C_LOG_ALL ):
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
 
         self._stream : Stream           = None
         self._iterator : Stream         = None
@@ -1664,23 +1673,30 @@ class StreamScenario (ScenarioBase):
                                p_cycle_limit=p_cycle_limit, 
                                p_auto_setup=True, 
                                p_visualize=p_visualize, 
-                               p_logging=p_logging )
+                               p_logging=p_logging,
+                               **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self):
+    def setup(self, **p_kwargs):
         """
         Specialized method to set up a stream scenario. It is automatically called by the constructor
         and calls in turn the custom method _setup().
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Custom keyword parameters
         """
 
         self._stream, self._workflow = self._setup( p_mode=self.get_mode(), 
                                                     p_visualize=self.get_visualization(),
-                                                    p_logging=self.get_log_level() )
+                                                    p_logging=self.get_log_level(),
+                                                    **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize:bool, p_logging):
+    def _setup(self, p_mode, p_visualize:bool, p_logging, **p_kwargs):
         """
         Custom method to set up a stream scenario consisting of a stream and a processing stream
         workflow.
@@ -1693,6 +1709,8 @@ class StreamScenario (ScenarioBase):
             Boolean switch for visualisation.
         p_logging
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+        p_kwargs : dict
+            Custom keyword parameters
 
         Returns
         -------
@@ -1778,6 +1796,11 @@ class StreamScenario (ScenarioBase):
         Plot updates take place during workflow/task processing and are disabled here...
         """
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh = True):
+        self._workflow.remove_plot(p_refresh=p_refresh)
 
 
 ## -------------------------------------------------------------------------------------------------

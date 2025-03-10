@@ -5,5 +5,5 @@ Geometry
 ...
 
 
-**Cross Reference**
-    + :ref:`API Reference <target_ap_bf_math_geo>`
+**Cross reference**
+    + :ref:`API reference <target_ap_bf_math_geo>`

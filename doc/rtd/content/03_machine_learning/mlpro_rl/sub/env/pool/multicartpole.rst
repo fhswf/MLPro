@@ -1,6 +1,6 @@
 .. _MultiCartpole:
 Multi-Cartpole
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.multicartpole
 
@@ -53,7 +53,7 @@ For the multicartpole environment to run properly please install the following p
 
 
   
-**General Information**
+**General information**
 
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value per sub-environment     |
@@ -75,7 +75,8 @@ For the multicartpole environment to run properly please install the following p
 | Reward Structure                   | Overall reward                                        |
 +------------------------------------+-------------------------------------------------------+
   
-**Action Space**
+
+**Action space**
 
 Since the goal of the environment is to maintain the upright position of the cart, the cart is pushed to right or left for every run of the scenario. The action space for the multicartpole environment consists of push actions +1 and 0, denoting push towards right and left respectively. The size of the action space however is directly proportional to the number of child cartpole-v1 environments running within the multicartpole environment, for example a multicartpole environment for 3 sub environments has an action space of size 3.
 
@@ -91,7 +92,7 @@ Since the goal of the environment is to maintain the upright position of the car
   The action space for muticartpole environment consists of action spaces for all the sub-environments within the environment. Each of the action space actuates the assigned agent or muti-agent for the subenvironment. To know more about the the multi-agent class functionality native to MLPro refer to the :ref:`appendix section <Howto RL 4>`.
 
   
-**State Space**
+**State space**
 
 The state space for the muticartpole environment returns state of every subenvironment within the environment including position of cart, velocity of cart, position of angel and the angular velocity of the pole. The states for a single cartpole environment running inside the multicartpole environment can be understood by the table below.
 
@@ -116,17 +117,18 @@ The states of the muticartpole environment also return some flags giving additio
 
 More information about these state parameters related to the multi-cartpole environment can be found in the :ref:`module descriptions <Multi Cartpole>`.
 
-**Reward Structure**
+
+**Reward structure**
 
 For multicartpole environment, an overall reward is awarded to the multi-agent. In a single sub-environment of cartpole-v1 a reward value of 1 is returned for every successful cycle run, keeping the states within boundaries. Subsequently, the reward awarded by the multi-cartpole environment is the weighted average of the rewards returned by every internal cartpole-v1 environment. 
 
 
 
         
-**Cross Reference**
-  + `Howto RL-AGENT-003: Run Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment.html>`_
-  + `Howto RL-AGENT-004: Train Multi-Agent with Own Policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
-  + :ref:`API Reference <target_pool_rl_env_multi_cartpole>`
+**Cross reference**
+  + `Howto RL-AGENT-003: Run multi-agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment.html>`_
+  + `Howto RL-AGENT-004: Train multi-agent with own policy <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment.html>`_
+  + :ref:`API reference <target_pool_rl_env_multi_cartpole>`
 
 
 

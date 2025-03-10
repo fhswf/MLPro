@@ -1,17 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.systems.pool
 ## -- Module  : doublependulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-03-05  0.0.0     LSB       Creation
-## -- 2023-03-05  1.0.0     LSB       Release
-## -- 2023-03-08  1.0.1     LSB       Refactoring for visualization
+## -- 2023-03-05  0.0.0     LSB      Creation
+## -- 2023-03-05  1.0.0     LSB      Release
+## -- 2023-03-08  1.0.1     LSB      Refactoring for visualization
+## -- 2024-12-11  1.0.2     DA       Refactoring      
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-03-08)
+Ver. 1.0.2 (2024-12-11)
 
 The Double Pendulum System is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -21,15 +22,14 @@ Pendulum consists of an input motor providing the torque in either directions to
 """
 
 import random
-from mlpro.bf.systems import *
-from mlpro.bf.various import *
 import numpy as np
 from numpy import sin, cos
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
 
-
+from mlpro.bf.various import *
+from mlpro.bf.systems import *
 
 
 
@@ -498,15 +498,22 @@ class DoublePendulumSystemRoot (System):
                               theta2=250, color='crimson')
         endX = (0.5 * self._l1 / 2) * np.cos(np.radians(0))
         endY = (0.5 * self._l1 / 2) * np.sin(np.radians(0))
-        self._cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(180),
-                                           color='crimson')
+        self._cw_arrow = RegularPolygon( xy = (endX, endY), 
+                                         numVertices = 3, 
+                                         radius = 0.5 * self._l1 / 9, 
+                                         orientation = np.radians(180),
+                                         color='crimson' )
 
         self._ccw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=70, theta1=0,
                                theta2=320, color='crimson')
         endX = (0.5 * self._l1 / 2) * np.cos(np.radians(70 + 320))
         endY = (0.5 * self._l1 / 2) * np.sin(np.radians(70 + 320))
-        self._ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(70 + 320),
-                                            color='crimson')
+
+        self._ccw_arrow = RegularPolygon( xy = (endX, endY), 
+                                          numVertices = 3, 
+                                          radius = 0.5 * self._l1 / 9, 
+                                          orientation = np.radians(70 + 320),
+                                          color='crimson' )
 
         p_settings.axes[0].add_patch(self._cw_arc)
         p_settings.axes[0].add_patch(self._cw_arrow)

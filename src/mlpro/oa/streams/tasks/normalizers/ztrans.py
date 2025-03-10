@@ -21,10 +21,12 @@
 ## -- 2024-05-27  1.3.2     LSB      Fixed Plotting
 ## -- 2024-05-28  1.3.3     LSB      Fixing the plotting bugs
 ## -- 2024-05-28  1.3.4     LSB      Fixed the denormalizing method when zero std
+## -- 2024-12-05  1.3.5     DA       Bugfix in method NormalizersZTransform._run()
+## -- 2024-12-06  1.3.6     DA       Fixes and optimization 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2024-05-27)
+Ver. 1.3.6 (2024-12-06)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
@@ -37,7 +39,7 @@ from mlpro.bf.math import normalizers as Norm
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
+class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
     """
     Online adaptive normalization of instances with Z-Transformation
 
@@ -70,7 +72,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
-        OATask.__init__(self,
+        OAStreamTask.__init__(self,
             p_name=p_name,
             p_range_max=p_range_max,
             p_ada=p_ada,
@@ -87,6 +89,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
             self._plot_data_3d = None
             self._plot_data_nd = None
 
+
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict):
         """
@@ -99,8 +102,11 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         """
 
+        if len( p_inst ) == 0: return
+
         # 1 Online update of transformation parameters
         self.adapt( p_inst = p_inst )
+
         for inst_id, (inst_type, inst) in sorted(p_inst.items()):
 
             feature_data = inst.get_feature_data()
@@ -108,10 +114,10 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
             if self._param is None:
                 if inst_type == InstTypeNew:
                     self.update_parameters( p_data_new = feature_data )
-                    self.update_plot_data()
                 else:
                     self.update_parameters( p_data_del = feature_data )
-                    self.update_plot_data()
+
+            self.update_plot_data()
             feature_data.set_values( p_values = self.normalize(feature_data).get_values() )
 
 
@@ -210,10 +216,11 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         self.update_plot_data()
 
-        OATask._update_plot_2d( self,
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
+        OAStreamTask._update_plot_2d( self,
+                                      p_settings = p_settings,
+                                      p_inst = p_inst,
+                                      **p_kwargs )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_3d(self):
@@ -240,6 +247,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
             self._parameters_updated = False
 
+
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d( self,
                          p_settings : PlotSettings,
@@ -261,10 +269,10 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         self._update_plot_data_3d()
 
-        OATask._update_plot_3d( self,
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
+        OAStreamTask._update_plot_3d( self,
+                                      p_settings = p_settings,
+                                      p_inst = p_inst,
+                                      **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -308,11 +316,10 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
         self._update_plot_data_nd()
 
-        OATask._update_plot_nd( self,
+        OAStreamTask._update_plot_nd( self,
                                 p_settings = p_settings,
                                 p_inst = p_inst,
                                 **p_kwargs )
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -320,6 +327,9 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
         """
         Updates the plot data.
         """
+
+        if not self.get_visualization(): return
+
         try:
             self._update_plot_data_2d()
         except:

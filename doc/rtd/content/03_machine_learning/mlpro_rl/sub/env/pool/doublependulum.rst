@@ -1,6 +1,6 @@
 .. _DoublePendulum:
 Double Pendulum
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.doublependulum
 
@@ -37,7 +37,7 @@ Please install below packages to use the MLPro's double pendulum environment
 
 
 
-**General Information**
+**General information**
 
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -57,7 +57,8 @@ Please install below packages to use the MLPro's double pendulum environment
 | Reward Structure                   | Overall reward                                        |
 +------------------------------------+-------------------------------------------------------+
  
-**Action Space**
+
+**Action space**
 The goal of the environment is to maintain the vertical position of both the poles. The inner pole is actuated by a motor, and thus the action space of Double Pendulum environment is a continuous variable ranging between the negative maximum torque and positive maximum torque, where positive torque refers to clockwise torque and vice versa. The max torque can be passed as a :ref:`parameter <Double Pendulum>` in the initialisation of environment. 
 
 +------------------------------------+-------------------------------------------------------+
@@ -66,7 +67,8 @@ The goal of the environment is to maintain the vertical position of both the pol
 | Torque                             | [-max_torque, max_torque]                             |
 +------------------------------------+-------------------------------------------------------+
 
-**State Space**
+
+**State space**
 
 The state space for the double pendulum environment returns state of poles in the system including angles of both poles, velocity of poles, angular acceleration of the poles. The states for double pendulum environment can be understood by the table below.
 
@@ -93,7 +95,8 @@ The state space for the double pendulum environment returns state of poles in th
 
 Current implementation of DP environment in MLPro returns success when the current state of the environment is within a distance lesser than threshold distance from the goal state. 
 
-**Reward Structure**
+
+**Reward structure**
 
 The goal of the environment is to reach a complete vertical position for both the inner and outer pole, i.e.
 the goal state is given as vector :math:`S_g = (0,0,0,0,0,0)`. The environment delivers a continuous reward to the
@@ -107,7 +110,7 @@ position of the inner and outer pole.
 
 As shown in the figure above, the three zones and the reward strategies corresponding to the zone are:
 
-1. **Red Zone** : The swing up zone for angle of inner pole less than :math:`-90^o` or more than :math:`+90^o`. The
+1. **Red zone** : The swing up zone for angle of inner pole less than :math:`-90^o` or more than :math:`+90^o`. The
 reward signal in this zone maximizes the motion of the inner pole of the double pendulum.
 
 ..
@@ -122,7 +125,7 @@ reward signal in this zone maximizes the motion of the inner pole of the double 
         :math:`\theta_{2n}` is normalized angle of outer pole
 
 
-2. **Yellow Zone** : Outer pole swing up zone for angle of inner pole more than :math:`-90^o` or less than
+2. **Yellow zone** : Outer pole swing up zone for angle of inner pole more than :math:`-90^o` or less than
 :math:`+90^o`. The reward is based on the euclidean distance between new and old states, with 75% weight to the
 states of outer pole and 25% to that of inner pole.
 
@@ -135,7 +138,7 @@ states of outer pole and 25% to that of inner pole.
 
         :math:`s_{gb}` is the goal state in Yellow zone, i.e. :math:`(0,0,0,0)`
 
-3. **Green Zone** : Balancing zone for angle of either or both inner or outer pole more than :math:`-36^o` or less than
+3. **Green zone** : Balancing zone for angle of either or both inner or outer pole more than :math:`-36^o` or less than
 :math:`+36^o`. The reward in this zone is proportional to the environments progress towards the goal state.
 
 ..
@@ -147,7 +150,8 @@ states of outer pole and 25% to that of inner pole.
 
         :math:`s_n` is the normalized state
 
-**Cross Reference**
+
+**Cross reference**
     + :ref:`API Reference <target_pool_rl_env_double_pendulum>`
 
 

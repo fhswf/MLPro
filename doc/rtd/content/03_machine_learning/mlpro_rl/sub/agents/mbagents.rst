@@ -1,18 +1,28 @@
 .. _target_agents_MBRL:
-Model-Based Agents
+Model-based agents
 ==================
 
-Model-Based Agents have a dissimilar learning target as Model-Free Agents, whereas learning the environment model is not required in the model-free RL.
-An environment model can be incorporated into a single agent, as **EnvModel**.
-Then, this model learns the behaviour and dynamics of the environment.
-After learning the environment, the model is optimized to be able to accurately predict the output states, rewards, or status of the environment with respect to the calculated actions.
-As a result, if the predictions of the subsequent state and reward diverge too far from the actual values of the environment, the environment model itself is incorporated into the agent's adaptation process and is always retrained.
-An adaptation in the environment model necessitates an adaptation in the policy.
-The foundation for this is an internal episodic training of the policy in interaction with the environment model.
+Model-based agents differ from model-free agents in that they require learning an environment model, which is unnecessary in model-free RL.
+In MLPro, this environment model is represented as **EnvModel**, which learns the behavior and dynamics of the environment.
 
-After having a model that can accurately predict the behaviour of the environment, the single agent is optionally extended as an action planner.
-The action planner can be used by the environment to plan the next actions, e.g. using Model Predictive Control.
-In MLPro-RL, we have also provided a base class for ActionPlanner, where only the action planner method (**_plan_action**) and an optional custom setup method (**_setup**) are needed to be adjusted, as shown below:
+Once trained, the environment model predicts output states, rewards, or status changes based on input actions.
+If the predictions significantly deviate from the actual environment values, the environment model is retrained and incorporated into the agent's adaptation process.
+This ensures that the policy remains optimized and accurate.
+
+A key component of model-based RL is internal episodic training, where the policy interacts with the learned environment model instead of the real environment to speed up learning.
+
+**Action Planning in Model-Based RL**
+
+Once a reliable environment model is obtained, the agent can optionally be extended into an action planner.
+An action planner helps the environment plan future actions, such as using Model Predictive Control (MPC).
+
+MLPro-RL provides a base class for ActionPlanner, which users can extend by defining:
+
+    - **_plan_action** → The core planning algorithm
+
+    - **_setup (optional)** → Custom setup steps
+
+Here is an example of creating a custom action planner:
 
 .. code-block:: python
 
@@ -49,14 +59,18 @@ In MLPro-RL, we have also provided a base class for ActionPlanner, where only th
 
             raise NotImplementedError
  
-**Environment Model (EnvModel)**
 
-To set up environment model, the adaptive function needs to created first. In this case, our adaptive function will
-predict the next state of the environment based on provided action.
-After that, we need to create another class that is inherited from the actual environment module and **EnvModel**, in this case
-RobotHTM. For now, we only use the state transition model. The reward, success and broken model are taken from
-the original environment module.  
+**Developing an Environment Model (EnvModel)**
 
+To create an environment model, follow these steps:
+
+    - Implement an adaptive function that predicts the next environment state given an action.
+
+    - Extend the **EnvModel** class from MLPro while inheriting from the actual environment.
+
+    - Use the state transition model from the adaptive function while relying on the original environment for reward, success, and failure calculations.
+
+Here is an example of creating an environment model:
 
 .. code-block:: python
 
@@ -110,10 +124,10 @@ the original environment module.
             self.reset()
 
 
-**Cross Reference**
+**Cross reference**
 
-    - `Howto RL-AGENT-001: Train and Reload Single Agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
-    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
-    - `Howto RL-MB-002: MBRL on RobotHTM Environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
+    - `Howto RL-AGENT-001: Train and reload single agent (Gymnasium) <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/01_howtos_agent/howto_rl_agent_001_train_and_reload_single_agent_gym.html>`_
+    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World environment <Howto MB RL 001>`
+    - `Howto RL-MB-002: MBRL on RobotHTM environment <https://mlpro-int-sb3.readthedocs.io/en/latest/content/01_example_pool/04_howtos_mb/howto_rl_mb_002_robothtm_environment.html>`_
     - :ref:`MLPro-SL <target_bf_sl_afct>`
 

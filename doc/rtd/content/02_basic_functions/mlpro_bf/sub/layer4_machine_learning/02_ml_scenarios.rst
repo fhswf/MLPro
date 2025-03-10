@@ -1,6 +1,6 @@
 .. _target_bf_ml_scenario:
-ML Scenarios
-============
+Machine learning scenarios
+==========================
 
 As already mentioned, adaptive models in MLPro are combined with their concrete context to form an ML scenario.
 MLPro provides the abstract template class **bf.ml.Scenario** for this. At this level, this is not yet intended for use in 
@@ -18,7 +18,8 @@ From the root class of all scenarios in MLPro :ref:`bf.ops.ScenarioBase <target_
 
 and adds at this level the management of an internal adaptive model.
 
-**Cross Reference**
+
+**Cross reference**
 
 - :ref:`Class bf.ops.ScenarioBase <target_bf_ops>`
-- :ref:`API Reference BF-ML <target_api_bf_ml>`
+- :ref:`API reference BF-ML <target_api_bf_ml>`

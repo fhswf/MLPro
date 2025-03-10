@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf
 ## -- Module  : ops
 ## -------------------------------------------------------------------------------------------------
@@ -14,18 +14,20 @@
 ## -- 2022-11-12  1.2.1     DA       Class ScenarioBase: minor changes on logging
 ## -- 2022-11-21  1.2.2     DA       Eliminated all uses of super()
 ## -- 2023-03-25  1.2.3     DA       Class ScenarioBase: new parent class Persistent
+## -- 2024-11-09  1.3.0     DA       Class ScenarioBase: new parent class KWArgs
+## -- 2024-12-29  1.4.0     DA       Method ScenarioBase.run(): logging of duration/speed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2023-03-25)
+Ver. 1.4.0 (2024-12-29)
 
 This module provides classes for operation.
 """
 
 
 import sys
-from datetime import timedelta
-from mlpro.bf.various import Log, Persistent, Timer
+from datetime import timedelta, datetime
+from mlpro.bf.various import Log, Persistent, Timer, KWArgs
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
 
@@ -99,7 +101,7 @@ class Mode (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ScenarioBase (Mode, Persistent, Plottable):
+class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
     """
     Base class for executable scenarios in MLPro. To be inherited and specialized in higher layers.
     
@@ -123,6 +125,8 @@ class ScenarioBase (Mode, Persistent, Plottable):
         Boolean switch for visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    p_kwargs : dict
+        Custom keyword parameters handed over to custom method setup().
     """
 
     C_TYPE          = 'Scenario Base'
@@ -135,12 +139,14 @@ class ScenarioBase (Mode, Persistent, Plottable):
                  p_cycle_limit=0,  
                  p_auto_setup:bool = True,
                  p_visualize:bool=True,              
-                 p_logging=Log.C_LOG_ALL ):    
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs ):    
 
         # 1 Initialization
-        Persistent.__init__(self, p_id = p_id, p_logging=p_logging )
-        Mode.__init__(self, p_mode, p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
+        KWArgs.__init__( self, **p_kwargs )
+        Persistent.__init__( self, p_id = p_id, p_logging = p_logging )
+        Mode.__init__( self, p_mode, p_logging )
+        Plottable.__init__( self, p_visualize = p_visualize )
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize
@@ -148,7 +154,7 @@ class ScenarioBase (Mode, Persistent, Plottable):
         self._timer         = None
 
         # 2 Optional automatic custom setup
-        if p_auto_setup: self.setup()
+        if p_auto_setup: self.setup( **self._get_kwargs() )
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -162,9 +168,14 @@ class ScenarioBase (Mode, Persistent, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self):
+    def setup(self, **p_kwargs):
         """
         Custom method to set up all components of the scenario.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Custom keyword parameters.
         """
 
         raise NotImplementedError
@@ -395,11 +406,18 @@ class ScenarioBase (Mode, Persistent, Plottable):
         if self._timer is None: self._init_timer()
         self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': Start of processing')
 
+
         # 2 Late initialization of visualization with default parameters
-        if self._visualize:
+        if self.get_visualization():
             self.init_plot()
 
-        # 3 Main loop 
+
+        # 3 Time measurement, if logging is active and a cycle limit is set
+        if ( self.get_log_level() in [ Log.C_LOG_ALL, Log.C_LOG_WE ] ) and ( self._cycle_limit > 0 ):
+            tp_before = datetime.now()
+
+
+        # 4 Main loop 
         while True:
             success, error, timeout, limit, adapted_cycle, end_of_data = self.run_cycle()
             adapted = adapted or adapted_cycle
@@ -408,6 +426,17 @@ class ScenarioBase (Mode, Persistent, Plottable):
             if p_term_on_timeout and timeout: break
             if limit or end_of_data: break
 
-        # 4 Outro
+
+        # 5 Outro
         self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': End of processing')
+
+        if ( self.get_log_level() in [ Log.C_LOG_ALL, Log.C_LOG_WE ] ) and ( self._cycle_limit > 0 ):
+            tp_after = datetime.now()
+            tp_delta = tp_after - tp_before
+            duration_musec = ( tp_delta.seconds * 1000000 + tp_delta.microseconds )
+            if duration_musec == 0: duration_musec = 1
+            duration_sec = duration_musec / 1000000
+
+            self.log(Log.C_LOG_TYPE_W, str(self._cycle_id + 1),'cycles in', round(duration_sec,2), 's (' + str(round( (self._cycle_id + 1) / duration_sec,1)), 'cycles/s)', p_type_col='S')
+
         return success, error, timeout, limit, adapted, end_of_data, self._cycle_id

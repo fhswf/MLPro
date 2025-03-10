@@ -1,5 +1,5 @@
 .. _target_mlpro_getstarted:
-Getting Started
+Getting started
 ===============
 
 Installation from PyPI
@@ -60,7 +60,7 @@ Which packages are actually required depends on the functionalities of MLPro tha
   :header: "Package", "Version"
 
       
-First Steps
+First steps
 -----------
 
 The easiest way to become familiar with the concepts and functions of MLPro is to browse 

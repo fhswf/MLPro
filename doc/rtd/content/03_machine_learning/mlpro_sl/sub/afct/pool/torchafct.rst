@@ -10,5 +10,5 @@ At the moment, we provide only PyTorch-based multilayer perceptron in the pool, 
 
 **Cross Reference**
     - :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
-    - :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+    - :ref:`Howto RL-MB-001: MBRL with MPC on Grid World Environment <Howto MB RL 001>`
     - :ref:`API Reference: MLPro-SL Pool of Objects <target_api_pool_sl>`

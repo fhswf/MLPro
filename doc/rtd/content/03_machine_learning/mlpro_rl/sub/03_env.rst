@@ -2,48 +2,77 @@
 Environments
 ------------
 
-In RL, the environment refers to the physical, virtual, or abstract system in which the agent interacts and learns.
-The environment is the source of stimuli that the agent perceives and the arena in which it takes actions.
+In RL, the environment represents the system—whether physical, virtual, or abstract—in which an agent interacts and learns.
+It provides the stimuli that the agent perceives and serves as the arena where actions are taken.
 
-The environment is defined by a set of states, actions, and transition dynamics.
-The state space is the set of all possible states that the agent can observe, and the action space is the set of all possible actions that the agent can take.
-The transition dynamics describe how the environment changes in response to the agent's actions.
+An environment is defined by a set of states, actions, and transition dynamics:
 
-The environment also provides the agent with a reward signal that indicates how well it is doing in terms of achieving its goals.
-The reward function is a mapping from states and actions to real-valued scalars that quantifies the desirability of each state-action pair.
+   - State Space: The collection of all possible states that the agent can observe.
 
-The agent interacts with the environment over a sequence of time steps.
-At each time step, the agent observes the current state of the environment and selects an action.
-The environment then transitions to a new state and returns a reward signal to the agent.
+   - Action Space: The set of all possible actions the agent can take.
 
-Overall, the environment in RL provides the agent with the necessary information to learn a policy that maps states to actions and maximizes the cumulative reward signal.
-The environment can be real-world or simulated, and can be described by a mathematical model or a black box.
+   - Transition Dynamics: The rules that dictate how the environment changes in response to the agent's actions.
 
-MLPro-RL supplies two main classes for an environment to support model-free and model-based RL.
-The first base class is Environment, which has a role as a template for designing environments for both approaches.
-The second base class is EnvModel, which is adaptive and utilized in model-based RL.
-Both Environment and EnvModel classes inherit a common base class EnvBase and its fundamental properties, e.g.
-state and action space definition, reset the corresponding environment method, state transition method, etc.
+Additionally, the environment supplies a reward signal to indicate the agent's performance in achieving its objectives.
+The reward function maps states and actions to real-valued scalars, quantifying the desirability of each state-action pair.
 
-There are two main possibilities to set up an environment in MLPro, such as,
+The agent interacts with the environment over sequential time steps:
 
-.. toctree::
-   :maxdepth: 1
+   (1) The agent observes the current state of the environment.
+
+   (2) It selects an action.
+
+   (3) The environment transitions to a new state and returns a reward signal.
+
+Ultimately, the environment enables the agent to learn a policy that maps states to actions, with the goal of maximizing cumulative rewards.
+Environments can be real-world or simulated, and they may be represented using mathematical models or treated as black boxes.
+
+**MLPro-RL Environment Classes**
+
+MLPro-RL provides two primary base classes to support both model-free and model-based RL:
+
+   - Environment: A template for designing environments in either RL approach.
+
+   - EnvModel: An adaptive class used in model-based RL.
+
+Both classes inherit from the common base class **EnvBase**, which provides fundamental properties such as:
+
+   - State and action space definitions.
+
+   - Resetting the environment.
+
+   - State transition methods.
+
+**Setting Up an Environment in MLPro-RL**
+
+There are two main ways to set up an environment in MLPro-RL:
+
+   .. toctree::
+      :maxdepth: 1
+      
+      env/customenv
+      env/pool
+
+**Third-Party Environment Wrappers**
+
+Alternatively, you can also reuse environments from third-party packages via :ref:`wrapper classes <target_extension_hub>`.
    
-   env/customenv
-   env/pool
+MLPro-RL includes wrapper technology to integrate external environments with MLPro's framework.
+Additionally, wrappers are available for converting MLPro environments into third-party formats.
+Currently, MLPro-RL offers two ready-to-use wrapper classes:
 
-Alternatively, you can also :ref:`reuse available environments from 3rd-party packages via wrapper classes <target_extension_hub>` (currently available: Gymnasium or PettingZoo).
-   
-For reusing the 3rd packages, we develop a wrapper technology to transform the environment from the 3rd-party package to the MLPro-compatible environment.
-Additionally, we also provide the wrapper for the other way around, which is from MLPro Environment to the 3rd-party package.
-At the moment, there are two ready-to-use wrapper classes. The first wrapper class is intended for Gymnasium and the second wrapper is intended for PettingZoo.
-The guide to using the wrapper classes is step-by-step explained in our how-to files, as follows:
+   - Gymnasium Wrapper
 
-(1) `Gymnasium to MLPro <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_002_gymnasium_environment_to_mlpro_environment.html>`_,
+   - PettingZoo Wrapper
 
-(2) `MLPro to Gymnasium <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_001_mlpro_environment_to_gymnasium_environment.html>`_,
+Step-by-step guides for using these wrappers are available:
 
-(3) `PettingZoo to MLPro <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_002_run_multiagent_with_own_policy_on_petting_zoo_environment.html>`_, and
+   (1) `Gymnasium to MLPro <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_002_gymnasium_environment_to_mlpro_environment.html>`_,
 
-(4) `MLPro to PettingZoo <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_001_mlpro_environment_to_petting_zoo_environment.html>`_.
+   (2) `MLPro to Gymnasium <https://mlpro-int-gymnasium.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_001_mlpro_environment_to_gymnasium_environment.html>`_,
+
+   (3) `PettingZoo to MLPro <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_002_run_multiagent_with_own_policy_on_petting_zoo_environment.html>`_, and
+
+   (4) `MLPro to PettingZoo <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/content/01_example_pool/01_howtos_rl/howto_rl_wp_001_mlpro_environment_to_petting_zoo_environment.html>`_.
+
+By leveraging MLPro-RL's environment capabilities, you can seamlessly integrate, design, and deploy RL environments suited to your needs.

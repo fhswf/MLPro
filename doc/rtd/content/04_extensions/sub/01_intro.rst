@@ -1,5 +1,5 @@
 .. _target_extension_hub_intro:
-General Information
+General information
 ===================
 
 All extensions currently available in GitHub are listed in the MLPro extension hub. 

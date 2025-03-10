@@ -10,9 +10,9 @@ MLPro: Integration scikit-learn
     * - **Topics**
       - machine-learning, mlpro-extension, online-machine-learning, scikit-learn, wrapper
     * - **Version**
-      - v0.1.2  - Alignment with MLPro 1.4.3
+      - v0.3.0  - Alignment with MLPro 1.9.6
     * - **Last update**
-      - Thu, 09 May 2024 06:55:53 GMT
+      - Fri, 07 Mar 2025 16:04:49 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-scikit-learn
     * - **URL**

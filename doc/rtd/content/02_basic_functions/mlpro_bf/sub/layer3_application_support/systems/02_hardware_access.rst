@@ -1,5 +1,5 @@
 .. _target_bf_systems_hardware:
-Hardware Access
+Hardware access
 ===============
 
 MLPro also provides possibility to use the standardized Systems API with real world systems. It manages the
@@ -26,7 +26,7 @@ As shown in the above figure, the controller class in MLPro registers a number o
 
 
 
-**Cross Reference**
+**Cross reference**
 
 - :ref:`Howto BF-SYSTEMS-001: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 001>`
-- :ref:`API Reference BF-Systems <target_ap_bf_systems>`
+- :ref:`API reference BF-Systems <target_ap_bf_systems>`
