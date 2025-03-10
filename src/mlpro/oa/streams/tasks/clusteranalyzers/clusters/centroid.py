@@ -41,7 +41,7 @@
 """
 Ver. 1.3.0 (2024-06-18)
 
-This module provides templates for cluster analysis to be used in the context of online adaptivity.
+This module provides a template class for clusters with a centroid.
 """
 
 import sys
