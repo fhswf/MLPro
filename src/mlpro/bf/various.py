@@ -56,10 +56,11 @@
 ## -- 2024-12-29  2.7.0     DA       - Method Log.log(): new parameter p_type_col
 ## --                                - Class Log: code optimization
 ## -- 2025-01-17  2.7.1     DA/SY    Correction of method Persistent.save()
+## -- 2025-03-11  2.7.2     SY       Enable recurse while pickling 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.7.1 (2025-01-17)
+Ver. 2.7.2 (2025-03-11)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -511,7 +512,8 @@ class Persistent (Id, Log):
         with open(p_path + os.sep + filename, "wb") as file:
             pkl.dump( obj=self, 
                     file=file,
-                    protocol=pkl.HIGHEST_PROTOCOL )
+                    protocol=pkl.HIGHEST_PROTOCOL,
+                    recurse=True )
         
         self.log(Log.C_LOG_TYPE_I, 'Object saved to file "' + p_path + os.sep + filename + '"')
         return True
