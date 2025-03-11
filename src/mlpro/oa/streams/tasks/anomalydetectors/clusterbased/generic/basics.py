@@ -16,11 +16,11 @@ This module provides template classes for generic cluster-based anomaly detectio
 
 from mlpro.bf.various import Log
 from mlpro.bf.math.properties import *
-from mlpro.bf.streams import InstDict
+from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.anomalydetectors.clusterbased import AnomalyDetectorCB
-
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import AnomalyCB
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -67,29 +67,44 @@ class AnomalyDetectorCBGeneric(AnomalyDetectorCB):
                           p_logging= p_logging,
                           p_anomaly_buffer_size = p_anomaly_buffer_size,
                           **p_kwargs )
+
+
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
 
-        #1 Get the clusters
+        # 0 Get time stamp of the newest instance
+        tstamp = None
+        for inst_id, (inst_type, inst) in p_inst.items():
+            if inst_type == InstTypeNew:
+                tstamp = inst.tstamp
+
+        if tstamp is None:
+            raise NotImplementedError
+
+
+        # 1 Get the clusters
         clusters = self._clusterer.get_clusters()
 
-        #2 Observation of the clusters
+        # 2 Observation of the clusters
         for cluster in clusters.values():
 
-            #2.1 Determie the current anomaly status of the cluster
-            anomaly_status = self._get_anomaly_status( p_cluster = cluster,
-                                                       p_properties = self.C_REQ_CLUSTER_PROPERTIES,
-                                                       p_kwargs = self.kwargs )
+            # 2.1 Determine the current anomaly status of the cluster
+            new_anomaly : AnomalyCB = self._detect_anomaly( p_cluster = cluster,
+                                                            p_properties = self.C_REQ_CLUSTER_PROPERTIES,
+                                                            p_kwargs = self.kwargs )
+            
+            if new_anomaly is not None:
+                new_anomaly.tstamp = tstamp
+                self._raise_anomaly_event( p_anomaly = new_anomaly )
             
 
-            pass
 ## -------------------------------------------------------------------------------------------------
-    def _get_anomaly_status( self, 
-                             p_cluster : Cluster, 
-                             p_properties : PropertyDefinitions, 
-                             **p_kwargs ) -> bool:
+    def _detect_anomaly( self, 
+                         p_cluster : Cluster, 
+                         p_properties : PropertyDefinitions, 
+                         **p_kwargs ) -> bool:
         """
-        Custom method to determine the anomaly status of the given cluster.
+        Custom method to detect an anomaly of the given cluster.
 
         Parameters
         ----------
@@ -105,7 +120,13 @@ class AnomalyDetectorCBGeneric(AnomalyDetectorCB):
         bool
             True, if the cluster is an anomaly. False otherwise.
         """
+        
         raise NotImplementedError
+
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AnomalyDetectorCBGenSingle(AnomalyDetectorCBGeneric):
@@ -125,7 +146,6 @@ class AnomalyDetectorCBGenSingle(AnomalyDetectorCBGeneric):
     C_TYPE = 'Cluster-based Generic Single Property Anomaly Detector'
 
 ## -------------------------------------------------------------------------------------------------
-
     def __init__( self, 
                   p_clusterer : ClusterAnalyzer,
                   p_property : PropertyDefinition,
@@ -148,7 +168,11 @@ class AnomalyDetectorCBGenSingle(AnomalyDetectorCBGeneric):
                           p_visualize = p_visualize,
                           p_logging= p_logging,
                           **p_kwargs ) 
-        
+
+
+
+
+
 ## ------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------
 class AnomalyDetectorCBGenMulti(AnomalyDetectorCBGeneric):
@@ -168,7 +192,6 @@ class AnomalyDetectorCBGenMulti(AnomalyDetectorCBGeneric):
     C_TYPE = 'Cluster-based Generic Multi Property Anomaly Detector'
 
 ## -------------------------------------------------------------------------------------------------
-
     def __init__( self, 
                   p_clusterer : ClusterAnalyzer,
                   p_properties : PropertyDefinitions,

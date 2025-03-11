@@ -18,7 +18,7 @@ This module provides cluster density change detector algorithm.
 """
 
 from mlpro.oa.streams.basics import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
+from mlpro.oa.streams.tasks.anomalydetectors.clusterbased.basics import AnomalyDetectorCB
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.density import ClusterDensityVariation
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.streams import Instance, InstDict
@@ -70,7 +70,7 @@ class ClusterDensityChangeDetector(AnomalyDetectorCB):
         self._thresh_l      = p_density_lower_thresh
         self._thresh        = {"thresh":p_density_thresh_factor}
         self._roc_thresh    = {"thresh":p_roc_density_thresh_factor}
-        self._ema = p_ema
+        self._ema           = p_ema_alpha
 
         self._rel_thresh = p_relative_thresh
         self._visualize = p_visualize

@@ -35,7 +35,7 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class CBAnomaly (Anomaly):
+class AnomalyCB (Anomaly):
     """
     Event class to be raised when cluster-based anomalies are detected.
     
