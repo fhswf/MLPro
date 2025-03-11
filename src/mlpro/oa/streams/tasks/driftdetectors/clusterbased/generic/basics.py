@@ -173,4 +173,3 @@ class DriftDetectorCBGenMulti ( DriftDetectorCBGeneric ):
     """
 
     C_TYPE = 'Cluster-based Generic Drift Detector (Multi)'
-

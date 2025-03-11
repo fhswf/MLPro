@@ -18,8 +18,9 @@ from mlpro.bf.various import Log
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size_prev
 from mlpro.oa.streams.tasks.anomalydetectors.clusterbased.generic.basics import AnomalyDetectorCBGenSingle
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import AnomalyCB, PointAnomaly, GroupAnomaly
 
 
 
@@ -44,8 +45,10 @@ class AnomalyDetectorCBGenPAGA ( AnomalyDetectorCBGenSingle ):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_clusterer : ClusterAnalyzer,
-                  p_property : PropertyDefinition = cprop_size,
-                  p_cls_anomaly : type,
+                  p_property : PropertyDefinition = cprop_size_prev,
+                  p_group_anomaly_det : bool = True,
+                  p_cls_point_anomaly : type = PointAnomaly,
+                  p_cls_group_anomaly : type = GroupAnomaly,
                   p_name : str = None,
                   p_range_max = OAStreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
@@ -55,9 +58,12 @@ class AnomalyDetectorCBGenPAGA ( AnomalyDetectorCBGenSingle ):
                   p_anomaly_buffer_size : int = 100,
                   **p_kwargs ):
         
+        self._cls_group_anomaly = p_cls_group_anomaly
+        self._group_anomaly_det = p_group_anomaly_det
+
         super().__init__( p_clusterer=p_clusterer,
                           p_property = p_property,
-                          p_cls_anomaly = p_cls_anomaly,
+                          p_cls_anomaly = p_cls_point_anomaly,
                           p_name = p_name,
                           p_range_max = p_range_max,
                           p_ada = p_ada,
@@ -72,23 +78,21 @@ class AnomalyDetectorCBGenPAGA ( AnomalyDetectorCBGenSingle ):
     def _detect_anomaly( self, 
                          p_cluster : Cluster, 
                          p_properties : PropertyDefinitions, 
-                         **p_kwargs ) -> bool:
+                         **p_kwargs ) -> AnomalyCB:
         """
-        Custom method to detect an anomaly of the given cluster.
-
-        Parameters
-        ----------
-        p_cluster : Cluster
-            Cluster to be observed.
-        p_properties : PropertyDefinitions
-            List of cluster properties to be processed.
-        **p_kwargs
-            Dictionary with further keyword arguments parameterizing the detection.
-
-        Returns
-        -------
-        bool
-            True, if the cluster is an anomaly. False otherwise.
+        ...
         """
+
+        # 1 Locate cluster property to be examined
+        cluster_size : Property = getattr(p_cluster, p_properties[0][0])
         
-        raise NotImplementedError
+        # 2 Check whether the cluster size 1 remains for at least 
+        if cluster_size.value != 1: return None
+        if ( cluster_size.value_prev is None ) or ( cluster_size.value_prev != 1 ): return None
+
+        # 3 Create a new point anomaly object
+        return self._cls_anomaly( p_clusters = { p_cluster.id : p_cluster },
+                                  # p_properties : dict = ,
+                                  # p_tstamp : datetime = None,
+                                  p_visualize : bool = self.get_visualization(),
+                                  p_raising_object : object = self )
