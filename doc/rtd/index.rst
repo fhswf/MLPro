@@ -94,7 +94,7 @@ MLPro - Elevate your machine learning journey
    :scale: 2 %
 
 
-🌐 MLPro is available on...
+📦 MLPro is available on...
 
 .. list-table::
    :widths: 33 33 33
