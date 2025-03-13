@@ -15,25 +15,11 @@ This module provides a template class for the cluster property 'body'.
 
 """
 
-try:
-    from matplotlib.figure import Figure
-    from matplotlib.text import Text
-    from mpl_toolkits.mplot3d.art3d import Line3D, Text3D
-except:
-    class Figure : pass
-    class Text : pass
-    class Line3D : pass
-    class Text3D : pass
 
-from mlpro.bf.mt import Figure, PlotSettings
-from mlpro.bf.various import *
-from mlpro.bf.plot import *
-from mlpro.bf.streams import *
-from mlpro.bf.various import Id
-#from mlpro.bf.math.geometry import Crosshair
+from mlpro.bf.streams import Instance
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.geometry import cprop_size_geo
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_center_geo
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_center_geo, cprop_deformation_index
 
 
 
@@ -59,14 +45,8 @@ class Body (MultiProperty):
     """
 
     C_PROPERTIES : PropertyDefinitions = [ cprop_center_geo,
-                                           cprop_size_geo ]
-
-    C_PLOT_ACTIVE                      = True
-    C_PLOT_STANDALONE                  = False
-    C_PLOT_VALID_VIEWS                 = [ PlotSettings.C_VIEW_2D, 
-                                           PlotSettings.C_VIEW_3D, 
-                                           PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW                = PlotSettings.C_VIEW_ND
+                                           cprop_size_geo,
+                                           cprop_deformation_index ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -77,17 +57,35 @@ class Body (MultiProperty):
                   p_visualize: bool = False,
                   **p_kwargs ):
 
-        MultiProperty.__init__( self, 
-                                p_name = p_name, 
-                                p_derivative_order_max = p_derivative_order_max,
-                                p_value_prev = p_value_prev, 
-                                p_properties = p_properties,
-                                p_visualize = p_visualize,
-                                **p_kwargs )
+        self.__init__( p_name = p_name, 
+                       p_derivative_order_max = p_derivative_order_max,
+                       p_value_prev = p_value_prev, 
+                       p_properties = p_properties,
+                       p_visualize = p_visualize,
+                       **p_kwargs )
         
-        Id.__init__( self, p_id = 0 )
-
         self.color = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_membership(self, p_inst : Instance ) -> float:
+        """
+        Custom method to determine a scalar membership value for the given instance.
+
+        Parameters
+        ----------
+        p_inst : Instance
+            Instance.
+
+        Returns
+        -------
+        float
+            A scalar value in [0,1] that determines the given instance's membership in this cluster. 
+            A value of 0 means that the given instance is not a member of the cluster at all while
+            a value of 1 confirms full membership.
+        """
+
+        raise NotImplementedError
   
 
 
