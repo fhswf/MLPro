@@ -80,6 +80,17 @@ class AnomalyDetectorCBGenPAGA ( AnomalyDetectorCBGenSingle ):
                          p_properties : PropertyDefinitions, 
                          **p_kwargs ) -> AnomalyCB:
         """
+        Detect anomalies in the given cluster based on the specified properties.
+
+        Parameters
+        ----------
+        ...
+        p_cluster : Cluster
+            The cluster to be examined.
+        p_properties : PropertyDefinitions
+            The properties to be observed.
+        **p_kwargs : dict
+            Additional keyword arguments.
         ...
         """
 
@@ -94,5 +105,5 @@ class AnomalyDetectorCBGenPAGA ( AnomalyDetectorCBGenSingle ):
         return self._cls_anomaly( p_clusters = { p_cluster.id : p_cluster },
                                   # p_properties : dict = ,
                                   # p_tstamp : datetime = None,
-                                  p_visualize : bool = self.get_visualization(),
-                                  p_raising_object : object = self )
+                                  p_visualize = self.get_visualization(),
+                                  p_raising_object = self )
