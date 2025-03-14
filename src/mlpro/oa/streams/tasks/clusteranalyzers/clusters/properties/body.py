@@ -57,12 +57,12 @@ class Body (MultiProperty):
                   p_visualize: bool = False,
                   **p_kwargs ):
 
-        self.__init__( p_name = p_name, 
-                       p_derivative_order_max = p_derivative_order_max,
-                       p_value_prev = p_value_prev, 
-                       p_properties = p_properties,
-                       p_visualize = p_visualize,
-                       **p_kwargs )
+        super().__init__( p_name = p_name, 
+                          p_derivative_order_max = p_derivative_order_max,
+                          p_value_prev = p_value_prev, 
+                          p_properties = p_properties,
+                          p_visualize = p_visualize,
+                          **p_kwargs )
         
         self.color = None
 
