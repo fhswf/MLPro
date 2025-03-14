@@ -1,22 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies.clusterbased
-## -- Module  : disappearance.py
+## -- Module  : deformation.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-06-08  0.0.0     SK       Creation
-## -- 2023-09-12  1.0.0     SK       Release
-## -- 2023-11-21  1.0.1     SK       Time Stamp update
-## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-28  1.3.0     SK       Refactoring
+## -- 2025-02-11  0.0.0     DS       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-28)
+Ver. 0.0.0 (2025-02-11)
 
-This module provides a template class for cluster disappearances to be used in anomaly detection algorithms.
+This module provides a template class for cluster deformation to be used in anomaly detection algorithms.
 """
 
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
@@ -27,12 +22,13 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics impor
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ClusterDisappearance (AnomalyCB):
+class ClusterDeformation (AnomalyCB):
     """
-    Event class to be raised when a cluster disappears.
+    Event class to be raised when a cluster deforms.
     
     """
 
-    C_NAME      = 'Cluster disappearance'
+    pass
+
 
 
