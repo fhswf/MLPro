@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-13  0.1.0     DA       Creation
+## -- 2025-03-18  0.1.1     DA       Bugfix in ClusterBody.__init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-03-13)
+Ver. 0.1.1 (2025-03-18)
 
 This module provides a template class for clusters with a centroid and a body.
 
@@ -53,9 +54,9 @@ class ClusterBody (ClusterCentroid):
                           p_visualize = p_visualize, 
                           **p_kwargs )
         
-        self._link_property( p_attr = cprop_size_geo[0], p_prop = self.body.size_geo )
-        self._link_property( p_attr = cprop_center_geo[0], p_prop = self.body.center_geo )
-        self._link_property( p_attr = cprop_deformation_index[0], p_prop = self.body.deformation_index )
+        self._link_property( p_attr = cprop_size_geo[0], p_prop = self.body )
+        self._link_property( p_attr = cprop_center_geo[0], p_prop = self.body )
+        self._link_property( p_attr = cprop_deformation_index[0], p_prop = self.body )
 
 
 ## -------------------------------------------------------------------------------------------------
