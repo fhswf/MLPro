@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-04  0.1.0     DA/DS    Creation
+## -- 2025-03-18  0.2.0     DA/DS    Completion of method DriftDetectorCBGenSingleMovement._get_drift_status()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-03-04)
+Ver. 0.2.0 (2025-03-18)
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
@@ -17,7 +18,6 @@ This module provides a generic cluster-based drift detector for movement drift d
 
 from mlpro.bf.various import Log
 from mlpro.bf.math.properties import *
-from mlpro.bf.streams import InstDict
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGenSingle
@@ -77,15 +77,25 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
                            **p_kwargs ):
         
         # 1 Get property of interest from the cluster
-        prop : Property = getattr( p_cluster, p_properties[0] )
+        prop : Property = getattr( p_cluster, p_properties[0][0] )
 
 
-        # 2 Determine movement per dimension
+        # 2 Get current drift status
+        try:
+            cluster_drifting = self.cluster_drifts[p_cluster.id].drift_status
+        except:
+            cluster_drifting = False
+
+
+        # 3 Determine movement per dimension
         drift_status = False
 
         for d in range( prop.dim ):
-            if prop.derivatives[1][d] >= p_thrs_upper:
-                # 2.2.1 Cluster is drifting in this dimension
+
+            if ( cluster_drifting and ( prop.derivatives[1][d] > p_thrs_lower ) ) or \
+               ( ( not cluster_drifting ) and ( prop.derivatives[1][d] > p_thrs_upper ) ):
+            
+                # 3.1 Cluster is drifting in this dimension
                 drift_status = True
                 break
 

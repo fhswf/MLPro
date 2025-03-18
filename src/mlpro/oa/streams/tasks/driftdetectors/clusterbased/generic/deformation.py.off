@@ -19,19 +19,20 @@ from mlpro.oa.streams.tasks.driftdetectors.drifts.clusterbased import DriftCBDef
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import DeformationIndex
 
+from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGenSingle
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBDeformation (DriftDetectorCB):
+class DriftDetectorCBGenDeformation (DriftDetectorCBGenSingle):
     """
     This is the class for detecting the deformation of clusters.
 
     """
 
-    C_TYPE = 'Cluster-based Drift Detector (Deformation)'
+    C_TYPE = 'Generic cluster-based Drift Detector ()'
     C_PROPERTY_DEFINITIONS : PropertyDefinitions = []
 
 ## -------------------------------------------------------------------------------------------------

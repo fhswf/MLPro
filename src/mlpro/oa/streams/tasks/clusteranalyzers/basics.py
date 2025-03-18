@@ -184,9 +184,12 @@ class ClusterAnalyzer (OAStreamTask):
         for p_ext in p_properties:
             try:
                 p_int = self._cluster_properties[p_ext[0]]
-                p_int[1] = p_ext[1]   # alignment of maximum order of derivatives
-                p_int[2] = p_ext[2]   # alignment of storage of previous values
-                p_int[3] = p_ext[3]   # alignment of property class
+
+                # If the property is basically provided it is aligned with external settings
+                self._cluster_properties[p_ext[0]] = p_ext
+                # p_int[1] = p_ext[1]   # alignment of maximum order of derivatives
+                # p_int[2] = p_ext[2]   # alignment of storage of previous values
+                # p_int[3] = p_ext[3]   # alignment of property class
             except:
                 # Property not supported by cluster algorithm
                 unknown_properties.append(p_ext[0])
