@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-12  0.1.0     DA       Creation
+## -- 2025-03-19  0.1.1     DA       Refactoring (cprop_center_geo)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-03-12)
+Ver. 0.1.1 (2025-03-19)
 
 This module provides a template class for the cluster property 'body'.
 
@@ -18,8 +19,8 @@ This module provides a template class for the cluster property 'body'.
 
 from mlpro.bf.streams import Instance
 from mlpro.bf.math.properties import *
-from mlpro.bf.math.geometry import cprop_size_geo
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_center_geo, cprop_deformation_index
+from mlpro.bf.math.geometry import cprop_size_geo, cprop_center_geo
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_deformation_index
 
 
 

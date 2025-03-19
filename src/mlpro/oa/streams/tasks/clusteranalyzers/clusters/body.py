@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-13  0.1.0     DA       Creation
 ## -- 2025-03-18  0.1.1     DA       Bugfix in ClusterBody.__init__()
+## -- 2025-03-19  0.1.2     DA       Refactoring (cprop_center_geo)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2025-03-18)
+Ver. 0.1.1 (2025-03-19)
 
 This module provides a template class for clusters with a centroid and a body.
 
@@ -18,12 +19,14 @@ This module provides a template class for clusters with a centroid and a body.
 
 
 from mlpro.bf.math.properties import PropertyDefinitions
-from mlpro.bf.math.geometry import cprop_size_geo
+from mlpro.bf.math.geometry import cprop_size_geo, cprop_center_geo
 from mlpro.bf.streams import Instance
+
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterId
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterCentroid, cprop_centroid
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_center_geo, cprop_body, cprop_deformation_index
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_body, cprop_deformation_index
+
 
 
 

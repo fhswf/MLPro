@@ -80,20 +80,27 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
         prop : Property = getattr( p_cluster, p_properties[0][0] )
 
 
-        # 2 Get current drift status
+        # 2 Get the absolute first order derivative from the property
+        try:
+            abs_derivative_o1 = abs( prop.derivatives[1] )
+        except:
+            return False
+        
+
+        # 3 Get current drift status
         try:
             cluster_drifting = self.cluster_drifts[p_cluster.id].drift_status
         except:
             cluster_drifting = False
 
 
-        # 3 Determine movement per dimension
+        # 4 Determine movement per dimension
         drift_status = False
 
         for d in range( prop.dim ):
 
-            if ( cluster_drifting and ( prop.derivatives[1][d] > p_thrs_lower ) ) or \
-               ( ( not cluster_drifting ) and ( prop.derivatives[1][d] > p_thrs_upper ) ):
+            if ( cluster_drifting and ( abs_derivative_o1[d] > p_thrs_lower ) ) or \
+               ( ( not cluster_drifting ) and ( abs_derivative_o1[d] > p_thrs_upper ) ):
             
                 # 3.1 Cluster is drifting in this dimension
                 drift_status = True
