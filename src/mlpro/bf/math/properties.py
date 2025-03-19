@@ -39,10 +39,11 @@
 ## -- 2026-07-08  1.6.0     DA       Introduction of kwargs
 ## -- 2024-07-27  1.7.0     DA       Class Property: introduction of self._value_bak
 ## -- 2024-12-11  1.7.1     DA       Pseudo class Figure if matplotlib is not installed
+## -- 2025-03-19  1.7.2     DA       Corrections in method Property.set()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2024-12-11)
+Ver. 1.7.2 (2025-03-19)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -223,6 +224,8 @@ class Property (Plottable, Renormalizable, KWArgs):
                     delta_t = delta_t.total_seconds()
                 except:
                     pass
+            else:
+                return
 
             
             # 3.2 Derivation
