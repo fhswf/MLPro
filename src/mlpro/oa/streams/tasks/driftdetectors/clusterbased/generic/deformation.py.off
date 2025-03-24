@@ -1,15 +1,15 @@
 ## -- ----------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.tasks.driftdetectors.clusterbased
-## -- Module  : movement.py
+## -- Module  : deformation.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 202         0.0.0              Creation
+## -- 2025-03-18  0.0.0     DS       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (202)
+Ver. 0.0.0 (2025-03-18)
 
 This module provides a cluster-based drift detector algorithm determining cluster deformation.
 """
