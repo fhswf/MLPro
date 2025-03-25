@@ -73,10 +73,11 @@
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
 ## -- 2024-12-11  2.4.1     DA       Pseudo class Figure if matplotlib is not installed
+## -- 2025-03-25  2.5.0     DA       New class MultiStream
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.1 (2024-12-11)
+Ver. 2.5.0 (2025-03-25)
 
 This module provides classes for standardized data stream processing. 
 
@@ -461,7 +462,7 @@ class Stream (Mode, Id, ScientificObject):
                   **p_kwargs ):
 
         if p_name != '':
-            self.C_NAME         = self.C_SCIREF_TITLE = p_name
+            self.C_NAME = self.C_SCIREF_TITLE = p_name
 
         self._num_instances = p_num_instances
         self._version       = p_version
@@ -479,7 +480,7 @@ class Stream (Mode, Id, ScientificObject):
             except:
                 self._sampler = None
         else:
-            self._sampler   = p_sampler
+            self._sampler = p_sampler
  
 
 ## -------------------------------------------------------------------------------------------------
@@ -494,6 +495,11 @@ class Stream (Mode, Id, ScientificObject):
         """
 
         return self.C_NAME
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_version(self) -> str:
+        return self._version
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -669,7 +675,7 @@ class Stream (Mode, Id, ScientificObject):
         else:
             inst = self._get_next()
             
-        inst.set_id(self._next_inst_id)
+        inst.id = self._next_inst_id
         self._next_inst_id += 1
         return inst
 
@@ -688,6 +694,61 @@ class Stream (Mode, Id, ScientificObject):
         """
 
         raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiStream (Stream):
+
+    C_TYPE = 'Multi-Stream'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_id = None,
+                  p_name : str = '',
+                  p_num_instances : int = 0,
+                  p_version : str = '',
+#                  p_feature_space : MSpace = None,
+#                  p_label_space : MSpace = None,
+                  p_sampler : Sampler = None,
+                  p_mode = Mode.C_MODE_SIM,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
+
+        super().__init__( p_id = p_id,
+                          p_name = p_name,
+                          p_num_instances = p_num_instances,
+                          p_version = p_version,
+                          p_sampler = p_sampler,
+                          p_mode = p_mode,
+                          p_logging = p_logging )
+
+        self._streams = []
+    
+
+## -------------------------------------------------------------------------------------------------
+    def add_stream( p_stream : Stream, p_batch_size : int = 1 ):
+        """
+        Adds a stream object to the multi-stream.
+
+        Parameters
+        ----------
+        p_stream : stream
+            Stream object to be added.
+        p_batch_size : int = 1
+            Number of instances to be taken from the stream in sequence, before moving on to the next
+            stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
+            the next stream.
+        """
+
+        self._streams.append( (p_stream, p_batch_size) )
+
+
+
+
 
 
 
