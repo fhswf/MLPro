@@ -11,7 +11,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2025-03-19)
+Ver. 0.1.2 (2025-03-19)
 
 This module provides a template class for clusters with a centroid and a body.
 

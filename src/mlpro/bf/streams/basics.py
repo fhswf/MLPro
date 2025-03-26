@@ -74,10 +74,11 @@
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
 ## -- 2024-12-11  2.4.1     DA       Pseudo class Figure if matplotlib is not installed
 ## -- 2025-03-25  2.5.0     DA       New class MultiStream
+## -- 2025-03-26  2.5.1     DA       Class Instance: redefinition of property attribute id 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2025-03-25)
+Ver. 2.5.1 (2025-03-26)
 
 This module provides classes for standardized data stream processing. 
 
@@ -192,6 +193,10 @@ class Instance (Id, TStamp, KWArgs):
                                     p_kwargs=self._get_kwargs() )
         duplicate.id = self.id
         return duplicate
+
+
+## -------------------------------------------------------------------------------------------------
+    id = property( fget=Id.get_id, fset=set_id )
 
 
 
