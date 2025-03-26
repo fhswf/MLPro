@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-04  0.1.0     DA/DS    Creation
 ## -- 2025-03-18  0.2.0     DA/DS    Completion of method DriftDetectorCBGeneric._run()
+## -- 2025-03-26  0.2.1     DA       Bugfix in method DriftDetectorCBGeneric._run()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-03-18)
+Ver. 0.2.1 (2025-03-26)
 
 This module provides template classes for generic cluster-based drift detection
 """
@@ -120,7 +121,8 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
 
             # 2.3 Raise a new drift event, whenever a drift of this cluster is determined for the first time
             #     or if the drift status changes.
-            if ( existing_drift is None ) or ( existing_drift.drift_status != drift_status ):
+            if ( ( existing_drift is None ) and ( drift_status == True ) ) or \
+               ( ( existing_drift is not None ) and ( existing_drift.drift_status != drift_status ) ):
                 new_drift = self._cls_drift( p_drift_status = drift_status,
                                              p_tstamp = tstamp,
                                              p_visualize = self.get_visualization(),
