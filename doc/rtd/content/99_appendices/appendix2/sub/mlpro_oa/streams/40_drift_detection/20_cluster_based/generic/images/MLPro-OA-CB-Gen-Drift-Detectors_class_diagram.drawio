@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-03-24T07:33:03.785Z" etag="Aub6QDtPUUOdl9Vzq1P8" version="24.4.13" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-03-28T10:32:11.352Z" etag="a8-3XNkuKzn-uGXhWhNb" version="24.4.13" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1050" dy="621" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="955" dy="565" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -65,7 +65,7 @@
         <mxCell id="4use4ZCXdNiZSNTW99xv-6" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;               p_properties : PropertyDefinitions,&#xa;               p_cls_drift : type,&#xa;               p_name : str = None,&#xa;               p_range_max=OAStreamTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               p_drift_buffer_size : int = 100,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
           <mxGeometry y="73" width="350" height="167" as="geometry" />
         </mxCell>
-        <mxCell id="P0o-UU5mflxz0BrF-H9d-0" value="_buffer_drift(p_drift)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" vertex="1" parent="4use4ZCXdNiZSNTW99xv-1">
+        <mxCell id="P0o-UU5mflxz0BrF-H9d-0" value="_buffer_drift(p_drift)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
           <mxGeometry y="240" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="N38WU9mJ-Era6qwWuLtT-0" value="_run( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
@@ -114,7 +114,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="zF4HePlpcSUoJaMaPsfT-13" value="DriftDetectorCBGenSingleMovement&#xa;(DriftDetectorCBGenSingle)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="40" y="900" width="350" height="160" as="geometry">
+          <mxGeometry x="40" y="900" width="350" height="327" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -124,30 +124,28 @@
         <mxCell id="zF4HePlpcSUoJaMaPsfT-15" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" parent="zF4HePlpcSUoJaMaPsfT-13" vertex="1">
           <mxGeometry y="65" width="350" height="8" as="geometry" />
         </mxCell>
+        <mxCell id="uGPTfJO8ILNx7dQ7Za8x-12" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;               p_property : PropertyDefinition,&#xa;               p_thrs_lower = float,&#xa;               p_thrs_upper = float,               &#xa;               p_cls_drift : type = DriftCBMovement,&#xa;               p_name : str = None,&#xa;               p_range_max=OAStreamTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="zF4HePlpcSUoJaMaPsfT-13">
+          <mxGeometry y="73" width="350" height="167" as="geometry" />
+        </mxCell>
         <mxCell id="zF4HePlpcSUoJaMaPsfT-18" value="_get_drift_status( p_cluster : Cluster,&#xa;                             p_properties : PropertyDefinitons,&#xa;                             p_thrs_lower : float,&#xa;                             p_thrs_upper : float,&#xa;                             **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#FF0000;" parent="zF4HePlpcSUoJaMaPsfT-13" vertex="1">
-          <mxGeometry y="73" width="350" height="87" as="geometry" />
+          <mxGeometry y="240" width="350" height="87" as="geometry" />
         </mxCell>
-        <mxCell id="k4-4c3lbV6zGnRoqYRIn-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="k4-4c3lbV6zGnRoqYRIn-0" target="zF4HePlpcSUoJaMaPsfT-0" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="685" y="840" />
-              <mxPoint x="215" y="840" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="k4-4c3lbV6zGnRoqYRIn-0" value="DriftDetectorCBGenSingleDeformation&#xa;(DriftDetectorCBGenSingle)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="510" y="900" width="350" height="160" as="geometry">
+        <mxCell id="uGPTfJO8ILNx7dQ7Za8x-4" value="DriftDetectorCBGenDeformation&#xa;(DriftDetectorCBGenSingleMovement)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="40" y="1310" width="350" height="290" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="k4-4c3lbV6zGnRoqYRIn-1" value="C_NAME = &#39;Deformation&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="k4-4c3lbV6zGnRoqYRIn-0" vertex="1">
+        <mxCell id="uGPTfJO8ILNx7dQ7Za8x-5" value="C_NAME = &#39;Deformation&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="uGPTfJO8ILNx7dQ7Za8x-4">
           <mxGeometry y="41" width="350" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="k4-4c3lbV6zGnRoqYRIn-2" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" parent="k4-4c3lbV6zGnRoqYRIn-0" vertex="1">
+        <mxCell id="uGPTfJO8ILNx7dQ7Za8x-6" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" vertex="1" parent="uGPTfJO8ILNx7dQ7Za8x-4">
           <mxGeometry y="65" width="350" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="k4-4c3lbV6zGnRoqYRIn-3" value="_get_drift_status( p_cluster : Cluster,&#xa;                             p_properties : PropertyDefinitons,&#xa;                             p_thrs_lower : float,&#xa;                             p_thrs_upper : float,&#xa;                             **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#FF0000;" parent="k4-4c3lbV6zGnRoqYRIn-0" vertex="1">
-          <mxGeometry y="73" width="350" height="87" as="geometry" />
+        <mxCell id="uGPTfJO8ILNx7dQ7Za8x-17" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;               p_property : PropertyDefinition,&#xa;               p_thrs_lower = float,&#xa;               p_thrs_upper = float,               &#xa;               p_cls_drift : type,&#xa;               p_name : str = None,&#xa;               p_range_max=OAStreamTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="uGPTfJO8ILNx7dQ7Za8x-4">
+          <mxGeometry y="73" width="350" height="167" as="geometry" />
+        </mxCell>
+        <mxCell id="uGPTfJO8ILNx7dQ7Za8x-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.502;entryY=1.009;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=block;endFill=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="uGPTfJO8ILNx7dQ7Za8x-4" target="zF4HePlpcSUoJaMaPsfT-18">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
