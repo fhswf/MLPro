@@ -19,12 +19,12 @@ from mlpro.bf.math.properties import *
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.anomalydetectors.clusterbased.generic import AnomalyDetectorCBGeneric
+from mlpro.oa.streams.tasks.anomalydetectors.clusterbased.basics import AnomalyDetectorCB
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBPAGA(AnomalyDetectorCBGeneric):
+class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
     """
     Implementation of a cluster-based detector for point and group anomalies.
 
@@ -38,8 +38,9 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCBGeneric):
     ...
     """
 
-    C_NAME = 'Point and group'
-
+    C_NAME = 'Point and Group'
+    C_PROPERTY_DEFINITIONS : PropertyDefinition = []
+    
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_clusterer : ClusterAnalyzer,
@@ -63,16 +64,14 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCBGeneric):
         self._group_anomaly_det = p_group_anomaly_det
 
         super().__init__( p_clusterer=p_clusterer,
-                          p_property = p_property,
-                          p_cls_anomaly = p_cls_point_anomaly,
                           p_name = p_name,
                           p_range_max = p_range_max,
                           p_ada = p_ada,
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
-                          p_logging= p_logging,
-                          p_anomaly_buffer_size = p_anomaly_buffer_size,
-                          **p_kwargs )
+                          p_logging= p_logging,                        
+                          **p_kwargs)
+
 
 ## -------------------------------------------------------------------------------------------------
 def _run(self, p_inst: InstDict):
