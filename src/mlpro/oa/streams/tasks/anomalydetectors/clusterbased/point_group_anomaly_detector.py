@@ -65,6 +65,7 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
         self._cls_spatial_group_anomaly = p_cls_spatial_group_anomaly
         self._cls_temporal_group_anomaly = p_cls_temporal_group_anomaly
         self._group_anomaly_det = p_group_anomaly_det
+        self._cb_anomalies = {}
 
         super().__init__( p_clusterer=p_clusterer,
                           p_name = p_name,
@@ -77,42 +78,72 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------    
-def _run(self, 
+    def _run(self, 
          p_inst: InstDict, 
          p_cluster : Cluster, 
          p_property : Property):
 
     # 1 Get all the clusters from the clusterer
-    clusters = self._clusterer.get_clusters()
+        clusters = self._clusterer.get_clusters()
 
     # 2 Get the cluster property to be observed
-    cluster_size : Property = getattr(p_cluster, p_property)
+        cluster_size : Property = getattr(p_cluster, p_property)
 
-    # 3 Get average cluster size
-    avg_cluster_size = sum([getattr(c, cprop_size)[0] for c in clusters]) / len(clusters)
+        # 3 Get average cluster size
+        avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in clusters]) / len(clusters)
 
-    # 4 Calculater the threshold for the cluster size
-    thres_size = avg_cluster_size * 0.05 
+        # 4 Calculater the threshold for the cluster size
+        thres_size = avg_cluster_size * 0.05 
 
-    # 5 Check for the  anomaly clusters
-    if 1 <= cluster_size <= thres_size:
-        # 5.1 Create a new spatial group anomaly 
-        t_stamp = datetime.now()
-        spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {p_cluster.id : p_cluster},
-                                                                 p_tstamp = t_stamp,
-                                                                 p_visualize = self.get_visualize,
-                                                                 p_raising_object = self)
-        return spatial_group_anomaly
+        # 5 Check for the  anomaly clusters
+        if 1 < cluster_size <= thres_size:
+            # 5.1 Create a new spatial group anomaly 
+            t_stamp = datetime.now()
+            try:
+                cb_anomaly = self._cb_anomalies[p_cluster.id]
 
-    elif cluster_size == 1:
-        # 5.2 Create a new point anomaly 
-        t_stamp = datetime.now()
-        point_anomaly = self._cls_point_anomaly( p_clusters = {p_cluster.id : p_cluster},
-                                                     p_tstamp = t_stamp,
-                                                     p_visualize = self.get_visualize,
-                                                     p_raising_object = self)
-        return point_anomaly
+                create_anomaly = type(cb_anomaly) == self._cls_point_anomaly
+                    
+            except:
+
+                create_anomaly = True
+
+            if create_anomaly:
+                # 5.1.1 Create a new spatial group anomaly
+
+                spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {p_cluster.id : p_cluster},
+                                                                    p_tstamp = t_stamp,
+                                                                    p_visualize = self.get_visualize,
+                                                                    p_raising_object = self)
+                                                            
+                # 5.2 Raise an anomaly event
+                self._raise_anomaly_event( p_anomaly = spatial_group_anomaly)
+
+        elif cluster_size == 1:
+            # 5.2 Create a new point anomaly 
+            t_stamp = datetime.now()
+
+            
+            point_anomaly = self._cls_point_anomaly( p_clusters = {p_cluster.id : p_cluster},
+                                                    p_tstamp = t_stamp,
+                                                    p_visualize = self.get_visualize,
+                                                    p_raising_object = self)
+
+            self._raise_anomaly_event(p_anomaly = point_anomaly)
 
 
+## -------------------------------------------------------------------------------------------------
+
+    def _buffer_anomaly(self, p_anomaly:AnomalyCB):
+        """
+        Method to be used to add a new anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : AnomalyCB
+            Anomaly object to be added.
+        """
+        super()._buffer_anomaly(p_anomaly)
+        self._cb_anomalies[p_anomaly.clusters.values()[0].id] = p_anomaly
 
     
