@@ -3,7 +3,7 @@ name: Bug report
 about: Bug report
 title: 'Bug: ...'
 labels: bug
-assignees: detlefarend
+assignees: ''
 
 ---
 
