@@ -99,7 +99,7 @@ except:
 from mlpro.bf.various import Id, TStamp, KWArgs
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.math import Dimension, Element
+from mlpro.bf.math import Dimension, Element, MSpace
 from mlpro.bf.mt import *
 
 
