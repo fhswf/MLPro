@@ -8,10 +8,12 @@
 ## -- 2025-03-04  0.1.0     DA/DS    Creation
 ## -- 2025-03-18  0.2.0     DA/DS    Completion of method DriftDetectorCBGeneric._run()
 ## -- 2025-03-26  0.2.1     DA       Bugfix in method DriftDetectorCBGeneric._run()
+## -- 2025-04-01  0.3.0     DA       Class DriftDetectorCBGeneric: integration of new method 
+## --                                _get_tstamp()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.1 (2025-03-26)
+Ver. 0.3.0 (2025-04-01)
 
 This module provides template classes for generic cluster-based drift detection
 """
@@ -90,16 +92,6 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst : InstDict ):
 
-        # 0 Get time stamp of the newest instance
-        tstamp = None
-        for inst_id, (inst_type, inst) in p_inst.items():
-            if inst_type == InstTypeNew:
-                tstamp = inst.tstamp
-
-        if tstamp is None:
-            raise NotImplementedError
-        
-
         # 1 Get current list of clusters
         clusters = self._clusterer.get_clusters()
 
@@ -124,7 +116,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
             if ( ( existing_drift is None ) and ( drift_status == True ) ) or \
                ( ( existing_drift is not None ) and ( existing_drift.drift_status != drift_status ) ):
                 new_drift = self._cls_drift( p_drift_status = drift_status,
-                                             p_tstamp = tstamp,
+                                             p_tstamp = self._get_tstamp(),
                                              p_visualize = self.get_visualization(),
                                              p_raising_object = self,
                                              p_clusters = { cluster.id : cluster },
@@ -144,7 +136,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
                 # 3.2 Cluster disappered
                 if drift.drift_status == True:
                     new_drift = self._cls_drift( p_drift_status = False,
-                                                 p_tstamp = tstamp,
+                                                 p_tstamp = self._get_tstamp(),
                                                  p_visualize = self.get_visualization(),
                                                  p_raising_object = self,
                                                  p_clusters = { cluster_id : cluster },

@@ -83,10 +83,10 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
          p_cluster : Cluster, 
          p_property : Property):
 
-    # 1 Get all the clusters from the clusterer
+        # 1 Get all the clusters from the clusterer
         clusters = self._clusterer.get_clusters()
 
-    # 2 Get the cluster property to be observed
+        # 2 Get the cluster property to be observed
         cluster_size : Property = getattr(p_cluster, p_property)
 
         # 3 Get average cluster size
@@ -98,7 +98,6 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
         # 5 Check for the  anomaly clusters
         if 1 < cluster_size <= thres_size:
             # 5.1 Create a new spatial group anomaly 
-            t_stamp = datetime.now()
             try:
                 cb_anomaly = self._cb_anomalies[p_cluster.id]
 
@@ -112,9 +111,9 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
                 # 5.1.1 Create a new spatial group anomaly
 
                 spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {p_cluster.id : p_cluster},
-                                                                    p_tstamp = t_stamp,
-                                                                    p_visualize = self.get_visualize,
-                                                                    p_raising_object = self)
+                                                                         p_tstamp = self._get_tstamp(),
+                                                                         p_visualize = self.get_visualize,
+                                                                         p_raising_object = self)
                                                             
                 # 5.2 Raise an anomaly event
                 self._raise_anomaly_event( p_anomaly = spatial_group_anomaly)
@@ -125,9 +124,9 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
 
             
             point_anomaly = self._cls_point_anomaly( p_clusters = {p_cluster.id : p_cluster},
-                                                    p_tstamp = t_stamp,
-                                                    p_visualize = self.get_visualize,
-                                                    p_raising_object = self)
+                                                     p_tstamp = self._get_tstamp(),
+                                                     p_visualize = self.get_visualize,
+                                                     p_raising_object = self)
 
             self._raise_anomaly_event(p_anomaly = point_anomaly)
 

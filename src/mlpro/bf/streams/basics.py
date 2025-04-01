@@ -73,31 +73,35 @@
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
 ## -- 2024-12-11  2.4.1     DA       Pseudo class Figure if matplotlib is not installed
-## -- 2025-03-25  2.5.0     DA       New class MultiStream
-## -- 2025-03-26  2.5.1     DA       Class Instance: redefinition of property attribute id 
+## -- 2025-04-01  2.5.0     DA       - New class MultiStream
+## --                                - Class Stream: new parent class TStamp 
+## --                                - Class StreamTask: new method _get_tstamp()
+## --                                - Class StreamShared: new parent TStamp, new methods 
+## --                                  assign_stream(), get_tstamp() 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.1 (2025-03-26)
+Ver. 2.5.0 (2025-04-01)
 
 This module provides classes for standardized data stream processing. 
 
 """
 
 import random
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Iterable
+from collections.abc import Iterator
 
 try:
     from matplotlib.figure import Figure
 except:
     class Figure : pass
 
-from mlpro.bf.math.basics import *
 from mlpro.bf.various import Id, TStamp, KWArgs
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import Dimension, Element
 from mlpro.bf.mt import *
+
 
 
 
@@ -216,106 +220,6 @@ InstDict    = Dict[InstId, Tuple[InstType, Instance]]
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamShared (Shared):
-    """
-    Template class for shared objects in the context of stream processing.
-
-    Attributes
-    ----------
-    _instances : dict        
-        Dictionary of new/deleted instances per task. At the beginning of a cycle it contains the incoming
-        instance of a stream. The dictionalry evolves due to the manipulations of the stream tasks.
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
-        Shared.__init__(self, p_range=p_range)
-        self._instances = {}
-    
-
-## -------------------------------------------------------------------------------------------------
-    def reset(self, p_inst : InstDict):
-        """
-        Resets the shared object and prepares the processing of the given set of new instances.
-
-        Parameters
-        ----------
-        p_inst : List[Instance]
-            List of new instances to be processed.
-        """
-
-        self._instances.clear()
-        self._instances['wf'] = p_inst
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_instances(self, p_task_ids:list):
-        """
-        Provides the result instances of all given task ids.
-
-        Parameters
-        ----------
-        p_task_ids : list
-            List of task ids.
-
-        Returns
-        -------
-        inst : InstDict
-            Instances of all given task ids.
-        """
-
-        len_task_ids = len(p_task_ids)
-
-        if len_task_ids == 1:
-            # Most likely case: result instances of one predecessor are requested
-            try:
-                instances = self._instances[p_task_ids[0]]
-            except KeyError:
-                # Predecessor is the workflow
-                instances = self._instances['wf']
-
-            inst = instances.copy()
-
-        elif len_task_ids > 1:
-            # Result instances of more than one predecessors are requested
-            inst : InstDict = {}
-
-            for task_id in p_task_ids:
-                try:
-                    inst_task = self._instances[task_id]
-                except KeyError:
-                    inst_task = self._instances['wf']
-
-                inst.update(inst_task)
-
-        else:
-            # No predecessor task id -> origin incoming instances on workflow level are forwarded
-            inst = self._instances['wf'].copy()
-
-        return inst
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_instances(self, p_task_id, p_inst:InstDict):
-        """
-        Stores result instances of a task in the shared object.
-
-        Parameters
-        ----------
-        p_task_id
-            Id of related task.
-        p_inst : InstDict
-            Instances of related task.
-        """
-
-        self._instances[p_task_id] = p_inst
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 class Sampler (ScientificObject):
     """
     Template class for data streams sampler. This object can be used in Stream.
@@ -423,7 +327,7 @@ class Sampler (ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream (Mode, Id, ScientificObject):
+class Stream (Mode, Id, TStamp, ScientificObject):
     """
     Template class for data streams. Objects of this type can be used as iterators.
 
@@ -476,6 +380,7 @@ class Stream (Mode, Id, ScientificObject):
 
         Id.__init__(self, p_id = p_id)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
+        TStamp.__init__(self)
 
         self.set_options(**p_kwargs)
         
@@ -617,14 +522,51 @@ class Stream (Mode, Id, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __iter__(self):
+    def get_tstamp(self) -> datetime:
+        """
+        Returns the current streaming time. Depending on the stream mode (sim/real) the method
+        _get_tstamp_sim() or the custom method _get_tstamp_real() are called.
+
+        Returns
+        -------
+        datetime
+            Current streaming time as a datetime object.
+        """
+        
+        if self.get_mode() == Mode.C_MODE_REAL:
+            return self._get_tstamp_real()
+        else:
+            return self._get_tstamp_sim()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_tstamp_sim(self) -> datetime:
+        """
+        Custom method to determine the current time stamp of the running simulation.
+
+        Returns
+        -------
+        datetime
+            Current streaming time as a datetime object.
+        """
+
+        return datetime.now()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_tstamp_real(self) -> datetime:
+        return datetime.now()
+
+
+## -------------------------------------------------------------------------------------------------
+    def __iter__(self) -> Iterator[Instance]:
         """
         Resets the stream by calling custom method _reset().
 
         Returns
         -------
-        iter
-            Iterable stream object
+        Iterator
+            Iterator object
         """
 
         self.log(self.C_LOG_TYPE_I, 'Reset')
@@ -671,6 +613,10 @@ class Stream (Mode, Id, ScientificObject):
         instance : Instance
             Next instance of data stream or None.
         """
+
+        if ( self._num_instances > 0) and ( self._next_inst_id == self._num_instances ):
+            raise StopIteration
+
         
         if self._sampler is not None:
             ret = True
@@ -680,8 +626,13 @@ class Stream (Mode, Id, ScientificObject):
         else:
             inst = self._get_next()
             
+
+        if inst.tstamp is None:
+            inst.tstamp = self.get_tstamp()
+
         inst.id = self._next_inst_id
         self._next_inst_id += 1
+
         return inst
 
 
@@ -701,6 +652,125 @@ class Stream (Mode, Id, ScientificObject):
         raise NotImplementedError
 
 
+## -------------------------------------------------------------------------------------------------
+    tstamp = property( fget = get_tstamp )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamShared (Shared, TStamp):
+    """
+    Template class for shared objects in the context of stream processing.
+
+    Attributes
+    ----------
+    _instances : dict        
+        Dictionary of new/deleted instances per task. At the beginning of a cycle it contains the incoming
+        instance of a stream. The dictionalry evolves due to the manipulations of the stream tasks.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+        Shared.__init__(self, p_range=p_range)
+        TStamp.__init__(self)
+        self._instances = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def assign_stream(self, p_stream : Stream):
+        self._stream : Stream = p_stream
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_tstamp(self) -> datetime:
+        return self._stream.tstamp
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_inst : InstDict):
+        """
+        Resets the shared object and prepares the processing of the given set of new instances.
+
+        Parameters
+        ----------
+        p_inst : List[Instance]
+            List of new instances to be processed.
+        """
+
+        self._instances.clear()
+        self._instances['wf'] = p_inst
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_instances(self, p_task_ids:list):
+        """
+        Provides the result instances of all given task ids.
+
+        Parameters
+        ----------
+        p_task_ids : list
+            List of task ids.
+
+        Returns
+        -------
+        inst : InstDict
+            Instances of all given task ids.
+        """
+
+        len_task_ids = len(p_task_ids)
+
+        if len_task_ids == 1:
+            # Most likely case: result instances of one predecessor are requested
+            try:
+                instances = self._instances[p_task_ids[0]]
+            except KeyError:
+                # Predecessor is the workflow
+                instances = self._instances['wf']
+
+            inst = instances.copy()
+
+        elif len_task_ids > 1:
+            # Result instances of more than one predecessors are requested
+            inst : InstDict = {}
+
+            for task_id in p_task_ids:
+                try:
+                    inst_task = self._instances[task_id]
+                except KeyError:
+                    inst_task = self._instances['wf']
+
+                inst.update(inst_task)
+
+        else:
+            # No predecessor task id -> origin incoming instances on workflow level are forwarded
+            inst = self._instances['wf'].copy()
+
+        return inst
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_instances(self, p_task_id, p_inst:InstDict):
+        """
+        Stores result instances of a task in the shared object.
+
+        Parameters
+        ----------
+        p_task_id
+            Id of related task.
+        p_inst : InstDict
+            Instances of related task.
+        """
+
+        self._instances[p_task_id] = p_inst
+
+
+## -------------------------------------------------------------------------------------------------
+    tstamp = property( fget = get_tstamp )
+
+
 
 
 
@@ -716,8 +786,6 @@ class MultiStream (Stream):
                   p_name : str = '',
                   p_num_instances : int = 0,
                   p_version : str = '',
-#                  p_feature_space : MSpace = None,
-#                  p_label_space : MSpace = None,
                   p_sampler : Sampler = None,
                   p_mode = Mode.C_MODE_SIM,
                   p_logging = Log.C_LOG_ALL,
@@ -731,8 +799,21 @@ class MultiStream (Stream):
                           p_mode = p_mode,
                           p_logging = p_logging )
 
-        self._streams = []
-    
+        self._streams     = {}
+        self._iterables   = {}
+        self._num_streams = 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self):
+        self._batch_counter : int     = 0
+        self._current_stream_id : int = 0
+
+        for stream_id, stream_entry in self._streams.items():
+            self._iterables[stream_id] = iter(stream_entry[0])
+
+        self._switch_stream()
+        
 
 ## -------------------------------------------------------------------------------------------------
     def add_stream( p_stream : Stream, p_batch_size : int = 1 ):
@@ -749,15 +830,47 @@ class MultiStream (Stream):
             the next stream.
         """
 
-        self._streams.append( (p_stream, p_batch_size) )
+        self._streams[self._num_streams] = [p_stream, p_batch_size]
+        self._num_streams += 1
+
+
+## -------------------------------------------------------------------------------------------------
+    def _switch_stream(self):
+
+        
+
+        try:
+            self._current_stream_id, self._current_iterable = next(self._iter_iterables)
+        except StopIteration:
+            del self._
+            self._iter_iterables = iter(self._iterables.values())
 
 
 
 
+        self._current_stream_id = ( self._current_stream_id + 1 ) % self._num_streams
+        self._current_stream, self._batch_size, self._current_iterable = self._streams[self._current_stream_id]
+        self._batch_counter = 0
 
 
+## -------------------------------------------------------------------------------------------------
+    def _get_next(self) -> Instance:
 
+        if ( self._batch_size > 0 ) and ( self._batch_counter >= self._batch_size ):
+            self._switch_stream()
 
+        # for i in range(self._num_streams):
+        #     try:
+        #         return next(self._current_iterable)
+        #     except StopIteration:
+        #         del 
+        #         self._switch_stream()
+
+        raise StopIteration
+
+        
+
+        
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -952,6 +1065,11 @@ class StreamTask (Task):
 ## -------------------------------------------------------------------------------------------------
     def _get_custom_run_method(self):
         return self._run_wrapper
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_tstamp(self):
+        return self.get_so().tstamp
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1759,6 +1877,8 @@ class StreamScenario (ScenarioBase):
                                                     p_visualize=self.get_visualization(),
                                                     p_logging=self.get_log_level(),
                                                     **p_kwargs )
+
+        self._workflow.get_so().assign_stream( p_stream = self._stream )
 
 
 ## -------------------------------------------------------------------------------------------------

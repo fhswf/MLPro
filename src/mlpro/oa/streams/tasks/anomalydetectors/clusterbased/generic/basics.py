@@ -7,10 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-05  0.1.0     DS       Creation
 ## -- 2025-03-11  0.2.0     DA       Removed method AnomalyDetectorCBGenMulti.__init__()
+## -- 2025-04-01  0.3.0     DA       Class AnomalyDetectorCBGeneric: integration of new method 
+## --                                _get_tstamp()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-03-11)
+Ver. 0.3.0 (2025-04-01)
 
 This module provides template classes for generic cluster-based anomaly detection
 """
@@ -74,16 +76,6 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict):
 
-        # 0 Get time stamp of the newest instance
-        tstamp = None
-        for inst_id, (inst_type, inst) in p_inst.items():
-            if inst_type == InstTypeNew:
-                tstamp = inst.tstamp
-
-        if tstamp is None:
-            raise NotImplementedError
-
-
         # 1 Get the clusters
         clusters = self._clusterer.get_clusters()
 
@@ -96,7 +88,7 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
                                                             p_kwargs = self.kwargs )
             
             if new_anomaly is not None:
-                new_anomaly.tstamp = tstamp
+                new_anomaly.tstamp = self._get_tstamp()
                 self._raise_anomaly_event( p_anomaly = new_anomaly )
             
 
