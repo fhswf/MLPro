@@ -33,28 +33,5 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics impor
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class TemporalGroupAnomaly (AnomalyCB):
-    """
-    Event class for anomaly events when temporal group anomalies are detected.
-    
-    Parameters
-    ----------
-    p_instances : Instance
-        List of instances. Default value = None.
-    p_id : int
-        Anomaly ID. Default value = 0.
-    p_tstamp : datetime = None
-        Time of occurance of anomaly. Default = None.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_raising_object : object
-        Reference of the object raised. Default = None.
-    p_mean : float
-        The mean value of the anomaly. Default = None.
-    p_mean_deviation : float
-        The mean deviation of the anomaly. Default = None.
-    **p_kwargs
-        Further optional keyword arguments.
-    """
-
     pass
 
