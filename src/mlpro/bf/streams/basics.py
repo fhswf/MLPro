@@ -1853,11 +1853,11 @@ class StreamScenario (ScenarioBase):
         self._workflow : StreamWorkflow = None
 
         ScenarioBase.__init__( self,
-                               p_mode, 
-                               p_cycle_limit=p_cycle_limit, 
-                               p_auto_setup=True, 
-                               p_visualize=p_visualize, 
-                               p_logging=p_logging,
+                               p_mode = p_mode, 
+                               p_cycle_limit = p_cycle_limit, 
+                               p_auto_setup = True, 
+                               p_visualize = p_visualize, 
+                               p_logging = p_logging,
                                **p_kwargs )
 
 
