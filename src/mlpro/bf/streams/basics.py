@@ -774,99 +774,99 @@ class StreamShared (Shared, TStamp):
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MultiStream (Stream):
+# ## -------------------------------------------------------------------------------------------------
+# ## -------------------------------------------------------------------------------------------------
+# class MultiStream (Stream):
 
-    C_TYPE = 'Multi-Stream'
+#     C_TYPE = 'Multi-Stream'
 
-## -------------------------------------------------------------------------------------------------
-    def __init__( self,
-                  p_id = None,
-                  p_name : str = '',
-                  p_num_instances : int = 0,
-                  p_version : str = '',
-                  p_sampler : Sampler = None,
-                  p_mode = Mode.C_MODE_SIM,
-                  p_logging = Log.C_LOG_ALL,
-                  **p_kwargs ):
+# ## -------------------------------------------------------------------------------------------------
+#     def __init__( self,
+#                   p_id = None,
+#                   p_name : str = '',
+#                   p_num_instances : int = 0,
+#                   p_version : str = '',
+#                   p_sampler : Sampler = None,
+#                   p_mode = Mode.C_MODE_SIM,
+#                   p_logging = Log.C_LOG_ALL,
+#                   **p_kwargs ):
 
-        super().__init__( p_id = p_id,
-                          p_name = p_name,
-                          p_num_instances = p_num_instances,
-                          p_version = p_version,
-                          p_sampler = p_sampler,
-                          p_mode = p_mode,
-                          p_logging = p_logging )
+#         super().__init__( p_id = p_id,
+#                           p_name = p_name,
+#                           p_num_instances = p_num_instances,
+#                           p_version = p_version,
+#                           p_sampler = p_sampler,
+#                           p_mode = p_mode,
+#                           p_logging = p_logging )
 
-        self._streams     = {}
-        self._iterables   = {}
-        self._num_streams = 0
+#         self._streams     = {}
+#         self._iterables   = {}
+#         self._num_streams = 0
 
 
-## -------------------------------------------------------------------------------------------------
-    def _reset(self):
-        self._batch_counter : int     = 0
-        self._current_stream_id : int = 0
+# ## -------------------------------------------------------------------------------------------------
+#     def _reset(self):
+#         self._batch_counter : int     = 0
+#         self._current_stream_id : int = 0
 
-        for stream_id, stream_entry in self._streams.items():
-            self._iterables[stream_id] = iter(stream_entry[0])
+#         for stream_id, stream_entry in self._streams.items():
+#             self._iterables[stream_id] = iter(stream_entry[0])
 
-        self._switch_stream()
+#         self._switch_stream()
         
 
-## -------------------------------------------------------------------------------------------------
-    def add_stream( p_stream : Stream, p_batch_size : int = 1 ):
-        """
-        Adds a stream object to the multi-stream.
+# ## -------------------------------------------------------------------------------------------------
+#     def add_stream( p_stream : Stream, p_batch_size : int = 1 ):
+#         """
+#         Adds a stream object to the multi-stream.
 
-        Parameters
-        ----------
-        p_stream : stream
-            Stream object to be added.
-        p_batch_size : int = 1
-            Number of instances to be taken from the stream in sequence, before moving on to the next
-            stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
-            the next stream.
-        """
+#         Parameters
+#         ----------
+#         p_stream : stream
+#             Stream object to be added.
+#         p_batch_size : int = 1
+#             Number of instances to be taken from the stream in sequence, before moving on to the next
+#             stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
+#             the next stream.
+#         """
 
-        self._streams[self._num_streams] = [p_stream, p_batch_size]
-        self._num_streams += 1
+#         self._streams[self._num_streams] = [p_stream, p_batch_size]
+#         self._num_streams += 1
 
 
-## -------------------------------------------------------------------------------------------------
-    def _switch_stream(self):
+# ## -------------------------------------------------------------------------------------------------
+#     def _switch_stream(self):
 
         
 
-        try:
-            self._current_stream_id, self._current_iterable = next(self._iter_iterables)
-        except StopIteration:
-            del self._
-            self._iter_iterables = iter(self._iterables.values())
+#         try:
+#             self._current_stream_id, self._current_iterable = next(self._iter_iterables)
+#         except StopIteration:
+#             del self._
+#             self._iter_iterables = iter(self._iterables.values())
 
 
 
 
-        self._current_stream_id = ( self._current_stream_id + 1 ) % self._num_streams
-        self._current_stream, self._batch_size, self._current_iterable = self._streams[self._current_stream_id]
-        self._batch_counter = 0
+#         self._current_stream_id = ( self._current_stream_id + 1 ) % self._num_streams
+#         self._current_stream, self._batch_size, self._current_iterable = self._streams[self._current_stream_id]
+#         self._batch_counter = 0
 
 
-## -------------------------------------------------------------------------------------------------
-    def _get_next(self) -> Instance:
+# ## -------------------------------------------------------------------------------------------------
+#     def _get_next(self) -> Instance:
 
-        if ( self._batch_size > 0 ) and ( self._batch_counter >= self._batch_size ):
-            self._switch_stream()
+#         if ( self._batch_size > 0 ) and ( self._batch_counter >= self._batch_size ):
+#             self._switch_stream()
 
-        # for i in range(self._num_streams):
-        #     try:
-        #         return next(self._current_iterable)
-        #     except StopIteration:
-        #         del 
-        #         self._switch_stream()
+#         # for i in range(self._num_streams):
+#         #     try:
+#         #         return next(self._current_iterable)
+#         #     except StopIteration:
+#         #         del 
+#         #         self._switch_stream()
 
-        raise StopIteration
+#         raise StopIteration
 
         
 
