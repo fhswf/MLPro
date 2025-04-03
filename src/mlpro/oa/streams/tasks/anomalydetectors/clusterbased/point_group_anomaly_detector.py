@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-28  0.0.0     DS       Creation
+## -- 2025-04-03  0.0.1     DS/DA      Buffering of anomalies added.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2025-03-28)
+Ver. 0.0.0 (2025-04-03)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
