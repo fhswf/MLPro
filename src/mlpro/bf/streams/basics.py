@@ -73,7 +73,7 @@
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
 ## -- 2024-12-11  2.4.1     DA       Pseudo class Figure if matplotlib is not installed
-## -- 2025-04-01  2.5.0     DA       - New class MultiStream
+## -- 2025-04-03  2.5.0     DA       - New class MultiStream
 ## --                                - Class Stream: new parent class TStamp 
 ## --                                - Class StreamTask: new method _get_tstamp()
 ## --                                - Class StreamShared: new parent TStamp, new methods 
@@ -81,7 +81,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2025-04-01)
+Ver. 2.5.0 (2025-04-03)
 
 This module provides classes for standardized data stream processing. 
 
@@ -90,6 +90,7 @@ This module provides classes for standardized data stream processing.
 import random
 from typing import Dict, Tuple, Iterable
 from collections.abc import Iterator
+from itertools import cycle
 
 try:
     from matplotlib.figure import Figure
@@ -774,103 +775,152 @@ class StreamShared (Shared, TStamp):
 
 
 
-# ## -------------------------------------------------------------------------------------------------
-# ## -------------------------------------------------------------------------------------------------
-# class MultiStream (Stream):
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiStream (Stream):
+    """
+    Container class for multiple stream objects that can be streamed in sequence or parallel. Just
+    instantiate and use the add_stream method to add streams.
 
-#     C_TYPE = 'Multi-Stream'
+    Pararmeters
+    -----------
+    p_id
+        Optional id of the stream. Default = None.
+    p_name : str
+        Optional name of the stream. Default = ''.
+    p_num_instances : int
+        Optional number of instances in the stream. Default = 0.
+    p_version : str
+        Optional version of the stream. Default = ''.
+    p_feature_space : MSpace
+        Optional feature space. Default = None.
+    p_label_space : MSpace
+        Optional label space. Default = None.
+    p_sampler
+        Optional sampler. Default: None.
+    p_mode
+        Operation mode. Default: Mode.C_MODE_SIM.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further stream specific parameters.
+    """
 
-# ## -------------------------------------------------------------------------------------------------
-#     def __init__( self,
-#                   p_id = None,
-#                   p_name : str = '',
-#                   p_num_instances : int = 0,
-#                   p_version : str = '',
-#                   p_sampler : Sampler = None,
-#                   p_mode = Mode.C_MODE_SIM,
-#                   p_logging = Log.C_LOG_ALL,
-#                   **p_kwargs ):
+    C_TYPE = 'Multi-Stream'
 
-#         super().__init__( p_id = p_id,
-#                           p_name = p_name,
-#                           p_num_instances = p_num_instances,
-#                           p_version = p_version,
-#                           p_sampler = p_sampler,
-#                           p_mode = p_mode,
-#                           p_logging = p_logging )
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_id = None,
+                  p_name : str = '',
+                  p_num_instances : int = 0,
+                  p_version : str = '',
+                  p_sampler : Sampler = None,
+                  p_mode = Mode.C_MODE_SIM,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
-#         self._streams     = {}
-#         self._iterables   = {}
-#         self._num_streams = 0
+        super().__init__( p_id = p_id,
+                          p_name = p_name,
+                          p_num_instances = p_num_instances,
+                          p_version = p_version,
+                          p_sampler = p_sampler,
+                          p_mode = p_mode,
+                          p_logging = p_logging )
+
+        self.streams               = {}
+        self._iterables            = {}
+        self._num_streams          = 0
+        self._stream_cycle : cycle = None
 
 
-# ## -------------------------------------------------------------------------------------------------
-#     def _reset(self):
-#         self._batch_counter : int     = 0
-#         self._current_stream_id : int = 0
+## -------------------------------------------------------------------------------------------------
+    def add_stream( self, p_stream : Stream, p_batch_size : int = 1 ):
+        """
+        Adds a stream object to the multi-stream.
 
-#         for stream_id, stream_entry in self._streams.items():
-#             self._iterables[stream_id] = iter(stream_entry[0])
+        Parameters
+        ----------
+        p_stream : stream
+            Stream object to be added.
+        p_batch_size : int = 1
+            Number of instances to be taken from the stream in sequence, before moving on to the next
+            stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
+            the next stream.
+        """
 
-#         self._switch_stream()
+        self.streams[self._num_streams] = [p_stream, p_batch_size, None]
+        self._num_streams += 1
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self):
+        for stream_entry in self.streams.values():
+            stream_entry[2] = iter( stream_entry[0] )
+
+        self._stream_cycle = cycle( self.streams.values() )
+
+        self._switch_stream()
         
 
-# ## -------------------------------------------------------------------------------------------------
-#     def add_stream( p_stream : Stream, p_batch_size : int = 1 ):
-#         """
-#         Adds a stream object to the multi-stream.
+## -------------------------------------------------------------------------------------------------
+    def _switch_stream(self):
 
-#         Parameters
-#         ----------
-#         p_stream : stream
-#             Stream object to be added.
-#         p_batch_size : int = 1
-#             Number of instances to be taken from the stream in sequence, before moving on to the next
-#             stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
-#             the next stream.
-#         """
+        for i in range(self._num_streams):
+            self._current_stream = next( self._stream_cycle )
+            self._current_iterable = self._current_stream[2]
+            if self._current_iterable is None: continue
+            self._batch_counter = 0
+            self._batch_size    = self._current_stream[1]
+            return
 
-#         self._streams[self._num_streams] = [p_stream, p_batch_size]
-#         self._num_streams += 1
+        raise StopIteration
 
 
-# ## -------------------------------------------------------------------------------------------------
-#     def _switch_stream(self):
+## -------------------------------------------------------------------------------------------------
+    def _get_next(self) -> Instance:
 
-        
+        if ( self._batch_size > 0 ) and ( self._batch_counter >= self._batch_size ):
+            self._switch_stream()
 
-#         try:
-#             self._current_stream_id, self._current_iterable = next(self._iter_iterables)
-#         except StopIteration:
-#             del self._
-#             self._iter_iterables = iter(self._iterables.values())
+        while True:
+            try:
+                next_inst = next( self._current_iterable )
+                self._batch_counter += 1
+                break
+            except StopIteration:
+                self._current_stream[2] = None
+                self._switch_stream()
 
-
-
-
-#         self._current_stream_id = ( self._current_stream_id + 1 ) % self._num_streams
-#         self._current_stream, self._batch_size, self._current_iterable = self._streams[self._current_stream_id]
-#         self._batch_counter = 0
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _get_next(self) -> Instance:
-
-#         if ( self._batch_size > 0 ) and ( self._batch_counter >= self._batch_size ):
-#             self._switch_stream()
-
-#         # for i in range(self._num_streams):
-#         #     try:
-#         #         return next(self._current_iterable)
-#         #     except StopIteration:
-#         #         del 
-#         #         self._switch_stream()
-
-#         raise StopIteration
+        return next_inst
 
         
+## -------------------------------------------------------------------------------------------------
+    def get_tstamp( self ) -> datetime:
+        return self._streams[0][0].tstamp
 
-        
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed( self, p_seed = None ):
+        for stream_entry in self.streams.values():
+            stream_entry[0].set_random_seed( p_seed = p_seed )
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_feature_space( self ) -> MSpace:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_label_space( self ) -> MSpace:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    tstamp = property( fget = get_tstamp )
+
+
+
+       
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
