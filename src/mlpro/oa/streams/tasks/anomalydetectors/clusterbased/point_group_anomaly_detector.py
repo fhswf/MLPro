@@ -120,15 +120,23 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
 
         elif cluster_size == 1:
             # 5.2 Create a new point anomaly 
-            t_stamp = datetime.now()
+            try:
+                cb_anomaly = self._cb_anomalies[p_cluster.id]
 
+                create_anomaly = (type(cb_anomaly) == self._cls_group_anomaly or type(cb_anomaly) == self._cls_spatial_group_anomaly)
+
+            except:
+                create_anomaly = True
+
+            # t_stamp = datetime.now() # _get_tstamp()
             
-            point_anomaly = self._cls_point_anomaly( p_clusters = {p_cluster.id : p_cluster},
-                                                     p_tstamp = self._get_tstamp(),
-                                                     p_visualize = self.get_visualize,
-                                                     p_raising_object = self)
+            if create_anomaly:
+                point_anomaly = self._cls_point_anomaly( p_clusters = {p_cluster.id : p_cluster},
+                                                        p_tstamp = self._get_tstamp(),
+                                                        p_visualize = self.get_visualize,
+                                                        p_raising_object = self)
 
-            self._raise_anomaly_event(p_anomaly = point_anomaly)
+                self._raise_anomaly_event(p_anomaly = point_anomaly)
 
 
 ## -------------------------------------------------------------------------------------------------
