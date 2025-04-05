@@ -1,5 +1,5 @@
-.. _Howto BF MATH 010:
-Howto BF-MATH-010: Normalizers
+.. _Howto BF MATH 011:
+Howto BF-MATH-011: Normalizers
 ==============================
 
 **Prerequisites**
@@ -12,7 +12,7 @@ Please install following packages to run this howto
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../test/howtos/bf/howto_bf_math_010_normalizers.py
+.. literalinclude:: ../../../../../../../../test/howtos/bf/math/howto_bf_math_011_normalizers.py
 	:language: python
 
 

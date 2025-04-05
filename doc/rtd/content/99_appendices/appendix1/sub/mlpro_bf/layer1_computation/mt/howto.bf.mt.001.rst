@@ -12,7 +12,7 @@ Please install following packages to run this howto
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_mt_001_parallel_algorithms.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/mt/howto_bf_mt_001_parallel_algorithms.py
 	:language: python
 
 
