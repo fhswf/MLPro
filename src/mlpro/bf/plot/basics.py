@@ -358,8 +358,11 @@ class Plottable:
 
             try:
                 from matplotlib.backends.qt_compat import QtCore
-                qtcore_test = QtCore.__version__
-                matplotlib.use('qtagg')
+                qtcore_test = QtCore.PYQT_VERSION_STR
+                try:
+                    matplotlib.use('qtagg')
+                except:
+                    matplotlib.use('QtAgg') 
             except:
                 import tkinter
                 matplotlib.use('TkAgg')
