@@ -12,7 +12,7 @@ Please install following packages to run this howto
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../test/howtos/bf/howto_bf_math_001_spaces_and_elements.py
+.. literalinclude:: ../../../../../../../../test/howtos/bf/math/howto_bf_math_001_spaces_and_elements.py
 	:language: python
 
 
