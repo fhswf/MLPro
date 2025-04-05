@@ -9,15 +9,16 @@
 """
 Ver. 1.0.0 (2025-04-05)
 
-...
+This howto demonstates the use of MLPro's multi-streams that combine and orchestrate several single 
+streams. In detail, it combines two random point cloud streams. The first one generates 5 static
+random point clouds while the second one creates one dynamic point cloud. By varying the 
+batch sizes of both streams, the plot priority and order can be changed.
 
 You will learn:
 
-1) The properties and use of native stream Clouds3D8C10000Dynamic.
+1) How to set up a multi-stream as part of a simple stream scenario.
 
-2) How to set up a stream workflow without a stream task.
-
-3) How to set up a stream scenario based on a stream and a processing stream workflow.
+2) The meaning of batch sizes of single streams as part of the multi-stream.
 
 """
 
@@ -39,7 +40,13 @@ class MyScenario (StreamScenario):
     C_NAME      = 'My stream scenario'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize:bool, p_logging, **p_kwargs):
+    def _setup( self, 
+                p_mode, 
+                p_visualize:bool, 
+                p_logging, 
+                p_batch_size1 : int, 
+                p_batch_size2 : int, 
+                **p_kwargs ):
 
         # 1 Set up a multi stream container
         multistream = MultiStream( p_name = 'Multi-stream',
@@ -50,25 +57,27 @@ class MyScenario (StreamScenario):
 
         # 1.1 Set up and add the first native stream for random point clouds
         stream1 = StreamMLProClouds( p_num_dim = 3,
-                                     p_num_instances = self._cycle_limit,
+                                     p_num_instances = self._cycle_limit * 0.5,
                                      p_num_clouds = 5,
                                      p_seed = 1,
-                                     p_radii = [100, 150, 200, 250, 300],
-                                     p_weights = [2,3,4,5,6],
+                                     p_radii = [100,200,300,400,500],
+                                     p_weights = [1,2,3,4,5],
                                      p_logging=p_logging )
 
-        multistream.add_stream( p_stream = stream1, p_batch_size = 1 )
+        multistream.add_stream( p_stream = stream1, p_batch_size = p_batch_size1 )
 
 
         # 1.2 Set up and add the second native stream
-        stream2 = StreamMLProPOutliers( p_num_dim = 3,
-                                        p_num_instances = self._cycle_limit,
-                                        p_functions = [ 'sin', 'cos', 'const' ],
-                                        p_outlier_rate = 0.05,
-                                        p_seed = 1,                                    
-                                        p_logging = p_logging )
+        stream2 = StreamMLProClouds( p_num_dim = 3,
+                                     p_num_instances = self._cycle_limit * 0.5,
+                                     p_num_clouds = 1,
+                                     p_seed = 2,
+                                     p_radii = [200],
+                                     p_velocity = 2,
+                                     p_weights = [1],
+                                     p_logging=p_logging )
 
-        multistream.add_stream( p_stream = stream2, p_batch_size = 1 )
+        multistream.add_stream( p_stream = stream2, p_batch_size = p_batch_size2 )
 
 
         # 2 Set up a stream workflow
@@ -92,6 +101,17 @@ if __name__ == "__main__":
     logging     = Log.C_LOG_ALL
     visualize   = True
     step_rate   = 5
+
+    i = input('\n\nEnter the batch size of the first stream (ENTER = 1): ')
+    if i != '':
+        batch_size1 = int(i)
+    else:
+        batch_size1 = 1
+    i = input('Enter the batch size of the second stream (ENTER = 1): ')
+    if i != '':
+        batch_size2 = int(i)
+    else:
+        batch_size2 = 1
   
 else:
     # 1.2 Parameters for internal unit test
@@ -99,13 +119,17 @@ else:
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     step_rate   = 1
+    batch_size1 = 1
+    batch_size2 = 1
 
 
 # 2 Instantiate the stream scenario
-myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
-                         p_cycle_limit=cycle_limit,
-                         p_visualize=visualize,
-                         p_logging=logging )
+myscenario = MyScenario( p_mode = Mode.C_MODE_SIM,
+                         p_cycle_limit = cycle_limit,
+                         p_batch_size1 = batch_size1,
+                         p_batch_size2 = batch_size2,
+                         p_visualize = visualize,
+                         p_logging = logging )
 
 
 # 3 Reset and run own stream scenario
