@@ -4,7 +4,7 @@ Howto BF-STREAMS-002: Accessing Data From CSV Files
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_002_accessing_data_from_csv_files.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_002_accessing_data_from_csv_files.py
 	:language: python
 
 

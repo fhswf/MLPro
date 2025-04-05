@@ -4,7 +4,7 @@ Howto BF-EH-001: Event Handling
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bfs/howto_bf_eh_001_event_handling.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/eh/howto_bf_eh_001_event_handling.py
 	:language: python
 
 

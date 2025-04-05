@@ -39,10 +39,11 @@
 ## -- 2026-07-08  1.6.0     DA       Introduction of kwargs
 ## -- 2024-07-27  1.7.0     DA       Class Property: introduction of self._value_bak
 ## -- 2024-12-11  1.7.1     DA       Pseudo class Figure if matplotlib is not installed
+## -- 2025-03-19  1.7.2     DA       Corrections in method Property.set()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2024-12-11)
+Ver. 1.7.2 (2025-03-19)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -198,48 +199,45 @@ class Property (Plottable, Renormalizable, KWArgs):
             self._value = p_value
 
 
-        # 2 Preparation of time stamp
-        if p_upd_time_stamp:
+        # 2 Update time stamps and derivatives
+        if p_upd_time_stamp and ( p_time_stamp is not None ):
+
+            # 2.1 Update time stamps
             self._time_stamp_prev = self._time_stamp
+            self._time_stamp      = p_time_stamp
 
-            if p_time_stamp is None:
+
+            # 2.2 Numeric derivation
+            if p_upd_derivatives and ( self._derivative_order_max > 0 ):
+
+                # 2.2.1 Computation of time delta
                 try:
-                    self._time_stamp = self._time_stamp_prev + 1
+                    delta_t = self._time_stamp - self._time_stamp_prev
+                
+                    try: 
+                        delta_t = delta_t.total_seconds()
+                    except:
+                        pass
+                    
                 except:
-                    self._time_stamp = 0
-            else:
-                self._time_stamp = p_time_stamp
+                    return
 
+                
+                # 2.2.2 Derivation
+                self._derivatives_prev = self._derivatives
+                self._derivatives      = {}
+                
+                if np.isscalar(p_value):
+                    self._derivatives[0]  = p_value
+                else:
+                    self._value           = np.array( p_value )
+                    self._derivatives[0]  = self._value
 
-        # 3 Numeric derivation
-        if p_upd_derivatives and ( self._derivative_order_max > 0 ):
-
-            # 3.1 Computation of time delta
-            if self._time_stamp_prev is not None:
-
-                delta_t = self._time_stamp - self._time_stamp_prev
-            
-                try: 
-                    delta_t = delta_t.total_seconds()
-                except:
-                    pass
-
-            
-            # 3.2 Derivation
-            self._derivatives_prev = self._derivatives
-            self._derivatives      = {}
-            
-            if np.isscalar(p_value):
-                self._derivatives[0]  = p_value
-            else:
-                self._value           = np.array( p_value )
-                self._derivatives[0]  = self._value
-
-            for order in range(self._derivative_order_max):
-                try:
-                    self._derivatives[order+1] = ( self._derivatives[order] - self._derivatives_prev[order] ) / delta_t
-                except:
-                    break
+                for order in range(self._derivative_order_max):
+                    try:
+                        self._derivatives[order+1] = ( self._derivatives[order] - self._derivatives_prev[order] ) / delta_t
+                    except:
+                        break
 
 
 ## -------------------------------------------------------------------------------------------------

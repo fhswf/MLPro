@@ -115,7 +115,7 @@ class Cluster (Id, Properties, KWArgs):
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst : Instance ) -> float:
         """
-        Custom method to compute a scalar membership value for the given instance.
+        Custom method to determine a scalar membership value for the given instance.
 
         Parameters
         ----------

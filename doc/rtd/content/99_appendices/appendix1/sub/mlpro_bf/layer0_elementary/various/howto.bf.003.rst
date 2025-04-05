@@ -12,7 +12,7 @@ PLease install following packages to run this howto
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_003_store_plot_and_save_variables.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/various/howto_bf_003_store_plot_and_save_variables.py
 	:language: python
 
 

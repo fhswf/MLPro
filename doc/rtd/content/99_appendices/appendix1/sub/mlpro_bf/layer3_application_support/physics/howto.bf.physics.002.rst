@@ -4,7 +4,7 @@ Howto BF-PHYSICS-002: Unit Converter
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_physics_002_unit_converter.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/physics/howto_bf_physics_002_unit_converter.py
 	:language: python
 
 

@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-03-04  0.2.0     DA       Simplification
+## -- 2025-03-19  0.3.0     DA       Methods DriftCB._update_plot*: recovery of origin color
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-03-04)
+Ver. 0.3.0 (2025-03-19)
 
 This module provides a template class for cluster-based drifts to be used in cluster-based drift 
 detection algorithms.
@@ -85,9 +86,13 @@ class DriftCB (Drift):
 
         for cluster in self.clusters.values(): 
             if self.drift_status:
+                cluster.color_bak = cluster.color
                 cluster.color = "red"
             else:
-                raise NotImplementedError
+                try:
+                    cluster.color = cluster.color_bak
+                except:
+                    pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -98,6 +103,10 @@ class DriftCB (Drift):
 
         for cluster in self.clusters.values(): 
             if self.drift_status:
+                cluster.color_bak = cluster.color
                 cluster.color = "red"
             else:
-                raise NotImplementedError
+                try:
+                    cluster.color = cluster.color_bak
+                except:
+                    pass

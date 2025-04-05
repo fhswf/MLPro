@@ -4,7 +4,7 @@ Howto BF-STREAMS-009: Visualizing Dynamic 3D Random Point Clouds Provided By MLP
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_009_native_stream_Clouds3D8C10000Dynamic.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_009_native_stream_Clouds3D8C10000Dynamic.py
 	:language: python
 
 

@@ -4,7 +4,7 @@ Howto BF-ML-001: Adaptive Model
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_ml_001_adaptive_model.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/ml/howto_bf_ml_001_adaptive_model.py
 	:language: python
 
 

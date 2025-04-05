@@ -4,7 +4,7 @@ Howto BF-STREAMS-020: Streams Sampler
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_020_sampler.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_020_sampler.py
 	:language: python
 
 

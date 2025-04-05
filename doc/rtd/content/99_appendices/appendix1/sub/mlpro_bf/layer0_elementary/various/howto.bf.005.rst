@@ -4,7 +4,7 @@ Howto BF-005: Persistence
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_005_persistence.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/various/howto_bf_005_persistence.py
 	:language: python
 
 

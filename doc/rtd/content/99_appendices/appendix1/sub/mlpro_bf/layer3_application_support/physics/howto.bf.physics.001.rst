@@ -12,7 +12,7 @@ Please install following packages to run this how to
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_physics_001_set_up_transfer_functions.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/physics/howto_bf_physics_001_set_up_transfer_functions.py
 	:language: python
 
 

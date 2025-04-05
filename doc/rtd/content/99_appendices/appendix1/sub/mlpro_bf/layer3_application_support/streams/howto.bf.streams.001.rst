@@ -4,7 +4,7 @@ Howto BF-STREAMS-001: Accessing Native Data From MLPro
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_001_accessing_native_data_from_mlpro.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_001_accessing_native_data_from_mlpro.py
 	:language: python
 
 

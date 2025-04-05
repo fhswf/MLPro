@@ -13,7 +13,7 @@ Please install the following packages to run this example properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_123_stream_task_rearranger_nd.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_123_stream_task_rearranger_nd.py
 	:language: python
 
 

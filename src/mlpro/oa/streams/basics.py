@@ -391,6 +391,8 @@ class OAStreamScenario (StreamScenario):
                                                     p_visualize = self.get_visualization(),
                                                     p_logging = self.get_log_level() )
 
+        self._workflow.get_so().assign_stream( p_stream = self._stream )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging):
