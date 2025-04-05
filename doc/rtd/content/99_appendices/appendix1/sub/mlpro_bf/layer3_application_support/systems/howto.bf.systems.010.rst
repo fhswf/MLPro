@@ -4,7 +4,7 @@ Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_systems_010_systems_controllers_actuators_sensors.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/systems/howto_bf_systems_010_systems_controllers_actuators_sensors.py
 	:language: python
 
 

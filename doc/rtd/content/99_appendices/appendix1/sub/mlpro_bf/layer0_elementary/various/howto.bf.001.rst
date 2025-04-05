@@ -4,7 +4,7 @@ Howto BF-001: Logging
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_001_logging.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/various/howto_bf_001_logging.py
 	:language: python
 
 

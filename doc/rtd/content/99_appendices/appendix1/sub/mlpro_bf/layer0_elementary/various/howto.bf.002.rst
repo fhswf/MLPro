@@ -4,7 +4,7 @@ Howto BF-002: Timer
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_002_timer.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/various/howto_bf_002_timer.py
 	:language: python
 
 

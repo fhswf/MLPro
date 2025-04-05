@@ -4,7 +4,7 @@ Howto BF-004: Buffers
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_004_buffers.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/various/howto_bf_004_buffers.py
 	:language: python
 
 

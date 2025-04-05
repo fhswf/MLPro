@@ -14,12 +14,13 @@
 ## -- 2024-07-13  0.7.0     DA       Refactoring
 ## -- 2024-10-31  0.8.0     DA       New parent class Crosshair
 ## -- 2024-12-11  0.8.1     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-03-19  0.8.2     DA       Removed property definitions cprop_center_geo*
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.1 (2024-12-11)
+Ver. 0.8.2 (2025-03-19)
 
-This module provides ...
+This module provides the cluster property class 'Centroid'.
 
 """
 
@@ -311,8 +312,3 @@ cprop_centroid2      : PropertyDefinition = ( 'centroid', 2, False, Centroid )
 cprop_centroid_prev  : PropertyDefinition = ( 'centroid', 0, True, Centroid )
 cprop_centroid_prev1 : PropertyDefinition = ( 'centroid', 1, True, Centroid )
 cprop_centroid_prev2 : PropertyDefinition = ( 'centroid', 2, True, Centroid )
-
-# Geometric center with 0,1,2 order derivatives and plot functionality
-cprop_center_geo     : PropertyDefinition = ( 'center_geo', 0, False, Centroid )
-cprop_center_geo1    : PropertyDefinition = ( 'center_geo', 1, False, Centroid )
-cprop_center_geo2    : PropertyDefinition = ( 'center_geo', 2, False, Centroid )
