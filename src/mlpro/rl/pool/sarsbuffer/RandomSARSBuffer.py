@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro.pool.sarbuffer
-## -- Module  : RandomSARSBuffer
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Package : mlpro.rl.pool.sarsbuffer
+## -- Module  : RandomSARSBuffer.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
