@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.pool.policies
-## -- Module  : randomgenerator
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Package : mlpro.rl.pool.policies
+## -- Module  : randomgenerator.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
