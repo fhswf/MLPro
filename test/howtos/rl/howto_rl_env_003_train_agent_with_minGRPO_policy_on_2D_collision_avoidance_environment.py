@@ -101,7 +101,7 @@ class ScenarioTrajectoryPlanning(RLScenario):
             p_optimizer=grpo_optim,
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
-            p_buffer_size=500,
+            p_buffer_size=512,
             p_visualize=p_visualize,
             p_logging=p_logging
             )
