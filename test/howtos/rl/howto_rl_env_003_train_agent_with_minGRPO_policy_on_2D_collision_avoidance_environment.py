@@ -121,7 +121,7 @@ class ScenarioTrajectoryPlanning(RLScenario):
 # 3 Create scenario and start training
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit             = 1000
+    cycle_limit             = 10000
     cycles_per_epi_limit    = 500
     logging                 = Log.C_LOG_WE
     visualize               = False

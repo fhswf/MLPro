@@ -375,19 +375,24 @@ class MinGRPO(Policy):
             A sampled action encapsulated in MLPro's Action object.
         """
         
-        state       = torch.tensor(p_state.get_values(), dtype=torch.float32).unsqueeze(0)
+        state           = torch.tensor(p_state.get_values(), dtype=torch.float32).unsqueeze(0)
         (action_mean, action_logstd), state_value = self._network(state)
-        dist        = Normal(action_mean, action_logstd.exp())
-        action      = dist.sample()
-        action      = torch.clamp(action, self._network.low_bound, self._network.high_bound)
+        dist            = Normal(action_mean, action_logstd.exp())
+        raw_action      = dist.rsample()
+        squashed_action = torch.tanh(raw_action)
+        action_low      = self._network.low_bound
+        action_high     = self._network.high_bound
+        scaled_action   = action_low+(squashed_action+1)*(action_high-action_low)/2
         
-        log_probs   = dist.log_prob(action).sum(dim=-1)
+        log_probs       = dist.log_prob(raw_action).sum(dim=-1)
+        log_probs       -= torch.log(1-squashed_action.pow(2)+1e-6).sum(dim=-1)
+        
         self._log_probs_elem    = dict(log_prob=log_probs.item())
         self._values_elem       = dict(value=state_value.item())
         
         my_action_values        = []
         for d in range(self._action_space.get_num_dim()):
-            my_action_values.append(action[0][d].item()) 
+            my_action_values.append(scaled_action[0][d].item()) 
 
         return Action(self._id, self._action_space, my_action_values)
 
