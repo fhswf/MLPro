@@ -76,7 +76,7 @@ class MinGRPOPolicyNetwork(nn.Module):
         self.actor_logstd   = nn.Parameter(torch.zeros(1, self.action_space.get_num_dim()))
         self.critic         = nn.Linear(input_dim, 1)
         
-        self.lower_bound    = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
+        self.low_bound      = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
         self.high_bound     = torch.tensor([act.get_boundaries()[1] for act in self.action_space.get_dims()])
 
 
@@ -116,7 +116,7 @@ class MinGRPOPolicyNetwork(nn.Module):
 
         Returns
         -------
-        action_mean : torch.Tensor of shape (batch_size, action_dim)
+        action : torch.Tensor of shape (batch_size, action_dim)
             The mean of the Gaussian distribution for each action dimension.
         action_logstd : torch.Tensor of shape (batch_size, action_dim)
             The log standard deviation of the Gaussian distribution. It is expanded from a
@@ -130,7 +130,7 @@ class MinGRPOPolicyNetwork(nn.Module):
         action_logstd   = self.actor_logstd.expand_as(action_mean)
         state_value     = self.critic(state)
 
-        action = action_mean*(self.high_bound-self.lower_bound)/2+(self.high_bound+self.lower_bound)/2
+        action          = action_mean*(self.high_bound-self.low_bound)/2+(self.high_bound+self.low_bound)/2
         
         return (action, action_logstd), state_value                 
 
@@ -379,8 +379,9 @@ class MinGRPO(Policy):
         (action_mean, action_logstd), state_value = self._network(state)
         dist        = Normal(action_mean, action_logstd.exp())
         action      = dist.sample()
-        log_probs   = dist.log_prob(action).sum(dim=-1)
+        action      = torch.clamp(action, self._network.low_bound, self._network.high_bound)
         
+        log_probs   = dist.log_prob(action).sum(dim=-1)
         self._log_probs_elem    = dict(log_prob=log_probs.item())
         self._values_elem       = dict(value=state_value.item())
         
