@@ -381,7 +381,7 @@ class MinGRPO(Policy):
         self.add_buffer(p_kwargs["p_sars_elem"])
         new_state               = p_kwargs["p_sars_elem"].get_data()["state_new"]
                 
-        if self._buffer.is_full() or new_state.get_terminal():
+        if (self._buffer.is_full() or new_state.get_terminal()) and (self._buffer.__len__()!=1):
             buffer_data         = self._buffer.get_all()
             
             if buffer_data["reward"][0].type == 0:
@@ -412,12 +412,6 @@ class MinGRPO(Policy):
                 
             self._old_network   = copy.deepcopy(old_network)
             self._old_network.eval()
-            
-            # with torch.no_grad():
-            #     self._old_network.load_state_dict(self._network.state_dict())
-            #     for param in self._old_network.parameters():
-            #         param.requires_grad_(False)
-            # self._old_network.eval()
             
             self._buffer.clear()
             return True

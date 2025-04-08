@@ -75,7 +75,7 @@ class MyDynamicTrajectoryPlanner(DynamicTrajectoryPlanner):
 class ScenarioTrajectoryPlanning(RLScenario):
     C_NAME = 'Trajectory Planning'
 
-    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         # 1.1 Setup environment
         self._env = MyDynamicTrajectoryPlanner(
             p_visualize=p_visualize,
