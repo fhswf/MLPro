@@ -398,7 +398,10 @@ class MinGRPO(Policy):
             states_np           = np.array([st.get_values() for st in buffer_data["state"]])
             states_tensor       = torch.from_numpy(states_np).float()
             actions_np          = np.array([act.get_sorted_values() for act in buffer_data["action"]])
-            actions_tensor       = torch.from_numpy(actions_np).float()
+            actions_tensor      = torch.from_numpy(actions_np).float()
+            
+            old_network         = copy.deepcopy(self._network)
+            old_network.eval()
             
             self._optimizer.zero_grad()
             loss                = self._grpo_loss(states_tensor, actions_tensor, returns, advantages)
@@ -406,9 +409,16 @@ class MinGRPO(Policy):
             max_norm            = self.get_hyperparam().get_value(self._hp_ids[3])
             torch.nn.utils.clip_grad_norm_(self._network.parameters(), max_norm=max_norm)
             self._optimizer.step()
-            
-            self._old_network   = copy.deepcopy(self._network)
+                
+            self._old_network   = copy.deepcopy(old_network)
             self._old_network.eval()
+            
+            # with torch.no_grad():
+            #     self._old_network.load_state_dict(self._network.state_dict())
+            #     for param in self._old_network.parameters():
+            #         param.requires_grad_(False)
+            # self._old_network.eval()
+            
             self._buffer.clear()
             return True
         else:
