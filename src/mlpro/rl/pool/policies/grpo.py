@@ -348,7 +348,7 @@ class MinGRPO(Policy):
         action      = dist.sample()
         log_probs   = dist.log_prob(action).sum(dim=-1)
         
-        self._log_probs_elem    = dict(log_prob=log_probs)
+        self._log_probs_elem    = dict(log_prob=log_probs.item())
         self._values_elem       = dict(value=state_value.item())
         
         my_action_values        = []
@@ -383,14 +383,22 @@ class MinGRPO(Policy):
                 
         if self._buffer.is_full() or new_state.get_terminal():
             buffer_data         = self._buffer.get_all()
-            rewards_tensor      = torch.FloatTensor(buffer_data["reward"])
+            
+            if buffer_data["reward"][0].type == 0:
+                raw_rewards = [r.get_overall_reward() for r in buffer_data["reward"]]
+            else:
+                raw_rewards = [sum(r.rewards) for r in buffer_data["reward"]]
+            rewards_tensor      = torch.FloatTensor(raw_rewards)
             values_tensor       = torch.FloatTensor(buffer_data["value"]+[0.0])
             returns             = self._compute_gae(rewards_tensor, values_tensor)
             advantages          = returns-values_tensor[:-1]
             epsilon             = self.get_hyperparam().get_value(self._hp_ids[2])
             advantages          = (advantages-advantages.mean())/(advantages.std()+epsilon)
-            states_tensor       = torch.FloatTensor(np.array(buffer_data["state"]))
-            actions_tensor      = torch.stack(buffer_data["action"])
+            
+            states_np           = np.array([st.get_values() for st in buffer_data["state"]])
+            states_tensor       = torch.from_numpy(states_np).float()
+            actions_np          = np.array([act.get_sorted_values() for act in buffer_data["action"]])
+            actions_tensor       = torch.from_numpy(actions_np).float()
             
             self._optimizer.zero_grad()
             loss                = self._grpo_loss(states_tensor, actions_tensor, returns, advantages)
@@ -402,7 +410,6 @@ class MinGRPO(Policy):
             self._old_network   = copy.deepcopy(self._network)
             self._old_network.eval()
             self._buffer.clear()
-            
             return True
         else:
             return False
