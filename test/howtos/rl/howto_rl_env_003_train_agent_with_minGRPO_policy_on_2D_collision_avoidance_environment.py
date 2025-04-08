@@ -88,8 +88,8 @@ class ScenarioTrajectoryPlanning(RLScenario):
         
         # Algorithm : Minimal GRPO
         grpo_net = MinGRPOPolicyNetwork(
-            state_dim=len(self._env.get_state_space().get_dims()),
-            action_dim=len(self._env.get_action_space().get_dims()),
+            state_dim=self._env.get_state_space().get_num_dim(),
+            action_dim=self._env.get_action_space().get_num_dim(),
             hidden_layers=[128,128]
             )
         

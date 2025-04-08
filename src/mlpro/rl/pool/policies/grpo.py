@@ -345,15 +345,15 @@ class MinGRPO(Policy):
         state       = torch.tensor(p_state.get_values(), dtype=torch.float32).unsqueeze(0)
         (action_mean, action_logstd), state_value = self._network(state)
         dist        = Normal(action_mean, action_logstd.exp())
-        action      = dist.sample().numpy()
-        log_probs   = dist.log_probs(action).sum(dim=-1)
+        action      = dist.sample()
+        log_probs   = dist.log_prob(action).sum(dim=-1)
         
         self._log_probs_elem    = dict(log_prob=log_probs)
         self._values_elem       = dict(value=state_value.item())
         
         my_action_values        = []
         for d in range(self._action_space.get_num_dim()):
-            my_action_values.append(action[d].item()) 
+            my_action_values.append(action[0][d].item()) 
 
         return Action(self._id, self._action_space, my_action_values)
 
@@ -378,12 +378,10 @@ class MinGRPO(Policy):
             True if a policy update was performed, False otherwise.
         """
         
+        self.add_buffer(p_kwargs["p_sars_elem"])
         new_state               = p_kwargs["p_sars_elem"].get_data()["state_new"]
                 
-        if not (self._buffer.is_full() or new_state.get_terminal()):
-            self.add_buffer(p_sars_elem)
-            return False
-        else:
+        if self._buffer.is_full() or new_state.get_terminal():
             buffer_data         = self._buffer.get_all()
             rewards_tensor      = torch.FloatTensor(buffer_data["reward"])
             values_tensor       = torch.FloatTensor(buffer_data["value"]+[0.0])
@@ -404,8 +402,10 @@ class MinGRPO(Policy):
             self._old_network   = copy.deepcopy(self._network)
             self._old_network.eval()
             self._buffer.clear()
-
+            
             return True
+        else:
+            return False
 
 
 ## -------------------------------------------------------------------------------------------------
