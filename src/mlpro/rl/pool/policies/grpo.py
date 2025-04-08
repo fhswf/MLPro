@@ -25,6 +25,7 @@ import torch.optim as optim
 from torch.distributions import Normal
 import numpy as np
 import copy
+import random
          
 
 
@@ -41,31 +42,61 @@ class MinGRPOPolicyNetwork(nn.Module):
 
     Parameters
     ----------
-    state_dim : int
-        The dimension of the state space.
-    action_dim : int
-        The dimension of the action space.
-    hidden_layers : list
+    p_state_space : MSpace
+        MLPro-compatible definition of the observation (state) space.
+    p_action_space : MSpace
+        MLPro-compatible definition of the continuous action space.
+    p_hidden_layers : list
         A list specifying the number of neurons in each hidden layer. For example, [128, 128]
         indicates two hidden layers, each with 128 neurons. Default value: [128, 128].
+    p_seed : int
+        Seeding (optional). Default value: None.
     """
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, state_dim:int, action_dim:int, hidden_layers=[128, 128]):
+    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_hidden_layers:list=[128, 128], p_seed:int=None):
+        
         super().__init__()
+        self.state_space = p_state_space
+        self.action_space = p_action_space
+        
+        if p_seed is not None:
+            self.set_seed(p_seed)
         
         layers              = []
-        input_dim           = state_dim
-        for hidden_dim in hidden_layers:
+        input_dim           = self.state_space.get_num_dim()
+        for hidden_dim in p_hidden_layers:
             layers.append(nn.Linear(input_dim, hidden_dim))
             layers.append(nn.ReLU())
             input_dim = hidden_dim
             
         self.fc             = nn.Sequential(*layers)
-        self.actor          = nn.Linear(input_dim, action_dim)
-        self.actor_logstd   = nn.Parameter(torch.zeros(1, action_dim))
+        self.actor          = nn.Linear(input_dim, self.action_space.get_num_dim())
+        self.actor_logstd   = nn.Parameter(torch.zeros(1, self.action_space.get_num_dim()))
         self.critic         = nn.Linear(input_dim, 1)
+        
+        self.lower_bound    = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
+        self.high_bound     = torch.tensor([act.get_boundaries()[1] for act in self.action_space.get_dims()])
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_seed(self, seed):
+        """
+        Sets the random seed for reproducibility.
+
+        Parameters
+        ----------
+        seed : int
+            The seed to be set for random number generation.
+        """
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -98,8 +129,10 @@ class MinGRPOPolicyNetwork(nn.Module):
         action_mean     = torch.tanh(self.actor(state))
         action_logstd   = self.actor_logstd.expand_as(action_mean)
         state_value     = self.critic(state)
+
+        action = action_mean*(self.high_bound-self.lower_bound)/2+(self.high_bound+self.lower_bound)/2
         
-        return (action_mean, action_logstd), state_value                 
+        return (action, action_logstd), state_value                 
 
 
                 

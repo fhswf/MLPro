@@ -88,9 +88,10 @@ class ScenarioTrajectoryPlanning(RLScenario):
         
         # Algorithm : Minimal GRPO
         grpo_net = MinGRPOPolicyNetwork(
-            state_dim=self._env.get_state_space().get_num_dim(),
-            action_dim=self._env.get_action_space().get_num_dim(),
-            hidden_layers=[128,128]
+            p_state_space=self._env.get_state_space(),
+            p_action_space=self._env.get_action_space(),
+            p_hidden_layers=[128,128],
+            p_seed=20
             )
         
         grpo_optim = optim.Adam(grpo_net.parameters(), lr=3e-4)
@@ -120,7 +121,7 @@ class ScenarioTrajectoryPlanning(RLScenario):
 # 3 Create scenario and start training
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit             = 10000
+    cycle_limit             = 1000
     cycles_per_epi_limit    = 500
     logging                 = Log.C_LOG_WE
     visualize               = False
