@@ -19,7 +19,7 @@ You will learn:
     
 1) How to set up a reward function for 2D collision avoidance environment
 
-2) How to set up a scenario for 2D collision avoidance environment and also with SB3 wrapper
+2) How to set up a scenario for 2D collision avoidance environment and also minimal GRPO policy
 
 3) How to run the scenario and train the agent
     
@@ -31,10 +31,8 @@ You will learn:
 from mlpro.bf.plot import DataPlotting
 from mlpro.rl import *
 from mlpro.rl.pool.envs.collisionavoidance_2D import DynamicTrajectoryPlanner
-from stable_baselines3 import PPO, DDPG, A2C
-from stable_baselines3.common.noise import NormalActionNoise
-from mlpro_int_sb3.wrappers import WrPolicySB32MLPro
-from mlpro_int_gymnasium.wrappers import WrEnvMLPro2GYM
+from mlpro.rl.pool.policies.grpo import MinGRPOPolicyNetwork, MinGRPO
+import torch.optim as optim
 from pathlib import Path
 
 
@@ -86,64 +84,30 @@ class ScenarioTrajectoryPlanning(RLScenario):
             p_action_boundaries=[-0.05,0.05],
             p_dt=0.01,
             p_cycle_limit=500
+            )        
+        
+        # Algorithm : Minimal GRPO
+        grpo_net = MinGRPOPolicyNetwork(
+            state_dim=len(self._env.get_state_space().get_dims()),
+            action_dim=len(self._env.get_action_space().get_dims()),
+            hidden_layers=[128,128]
             )
         
-        # Algorithm : PPO
-        # policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-        #                       net_arch=dict(pi=[128, 128], vf=[128, 128]))
-        # policy_sb3 = PPO(
-        #     policy="MlpPolicy",
-        #     n_steps=100,
-        #     env=None,
-        #     _init_setup_model=False,
-        #     policy_kwargs=policy_kwargs,
-        #     device="cpu",
-        #     seed=2)
+        grpo_optim = optim.Adam(grpo_net.parameters(), lr=3e-4)
         
-        # Algorithm : A2C
-        # policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-        #                       net_arch=dict(pi=[128, 128], vf=[128, 128]))
-        # policy_sb3 = A2C(
-        #     policy="MlpPolicy",
-        #     learning_rate=3e-4,
-        #     n_steps=100,
-        #     policy_kwargs=policy_kwargs,
-        #     env=None,
-        #     _init_setup_model=False,
-        #     device="cpu",
-        #     seed=2)
-        
-        
-        # Algorithm : DDPG
-        action_space = WrEnvMLPro2GYM.recognize_space(self._env.get_action_space())
-        n_actions = action_space.shape[-1]
-        action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
-        policy_kwargs = dict(net_arch=dict(pi=[128, 128], qf=[128, 128]))
-        policy_sb3 = DDPG(
-            policy="MlpPolicy",
-            learning_rate=3e-4,
-            buffer_size=1000,
-            batch_size=128,
-            learning_starts=1001,
-            action_noise=action_noise,
-            policy_kwargs=policy_kwargs,
-            env=None,
-            _init_setup_model=False,
-            device="cpu",
-            seed=3)
-
-        policy_wrapped = WrPolicySB32MLPro(
-            p_sb3_policy=policy_sb3,
-            p_cycle_limit=self._cycle_limit,
+        grpo_policy = MinGRPO(
+            p_network=grpo_net,
+            p_optimizer=grpo_optim,
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
-            p_ada=p_ada,
+            p_buffer_size=500,
             p_visualize=p_visualize,
-            p_logging=p_logging)
+            p_logging=p_logging
+            )
 
         # 2.2 Setup standard single-agent with own policy
         return Agent(
-            p_policy=policy_wrapped,
+            p_policy=grpo_policy,
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
@@ -159,7 +123,7 @@ if __name__ == "__main__":
     cycle_limit             = 10000
     cycles_per_epi_limit    = 500
     logging                 = Log.C_LOG_WE
-    visualize               = True
+    visualize               = False
     path                    = str(Path.home())
     plotting                = True
 
