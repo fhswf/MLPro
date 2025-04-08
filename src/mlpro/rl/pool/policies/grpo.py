@@ -433,7 +433,7 @@ class MinGRPO(Policy):
                 
         if self._buffer.is_full() or new_state.get_terminal():
             minibatch_size = int(self.get_hyperparam().get_value(self._hp_ids[10]))
-            if self._buffer.__len__ < minibatch_size:
+            if self._buffer.__len__() < minibatch_size:
                 pass
             else:
                 for _ in range(int(self.get_hyperparam().get_value(self._hp_ids[11]))):
