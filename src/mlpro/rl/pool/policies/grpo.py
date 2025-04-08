@@ -432,38 +432,42 @@ class MinGRPO(Policy):
         new_state               = p_kwargs["p_sars_elem"].get_data()["state_new"]
                 
         if self._buffer.is_full() or new_state.get_terminal():
-            for _ in range(int(self.get_hyperparam().get_value(self._hp_ids[11]))):
-                buffer_idx          = self._buffer._gen_sample_ind(int(self.get_hyperparam().get_value(self._hp_ids[10])))
-                buffer_data         = self._buffer._extract_rows(buffer_idx)
-                
-                if buffer_data["reward"][0].type == 0:
-                    raw_rewards     = [r.get_overall_reward() for r in buffer_data["reward"]]
-                else:
-                    raw_rewards     = [sum(r.rewards) for r in buffer_data["reward"]]
-                rewards_tensor      = torch.FloatTensor(raw_rewards)
-                values_tensor       = torch.FloatTensor(buffer_data["value"]+[0.0])
-                returns             = self._compute_gae(rewards_tensor, values_tensor)
-                advantages          = returns-values_tensor[:-1]
-                epsilon             = self.get_hyperparam().get_value(self._hp_ids[2])
-                advantages          = (advantages-advantages.mean())/(advantages.std()+epsilon)
-                
-                states_np           = np.array([st.get_values() for st in buffer_data["state"]])
-                states_tensor       = torch.from_numpy(states_np).float()
-                actions_np          = np.array([act.get_sorted_values() for act in buffer_data["action"]])
-                actions_tensor      = torch.from_numpy(actions_np).float()
-                
-                old_network         = copy.deepcopy(self._network)
-                old_network.eval()
-                
-                self._optimizer.zero_grad()
-                loss                = self._grpo_loss(states_tensor, actions_tensor, returns, advantages)
-                loss.backward()
-                max_norm            = self.get_hyperparam().get_value(self._hp_ids[3])
-                torch.nn.utils.clip_grad_norm_(self._network.parameters(), max_norm=max_norm)
-                self._optimizer.step()
+            minibatch_size = int(self.get_hyperparam().get_value(self._hp_ids[10]))
+            if self._buffer.__len__ < minibatch_size:
+                pass
+            else:
+                for _ in range(int(self.get_hyperparam().get_value(self._hp_ids[11]))):
+                    buffer_idx          = self._buffer._gen_sample_ind(minibatch_size)
+                    buffer_data         = self._buffer._extract_rows(buffer_idx)
                     
-                self._old_network   = copy.deepcopy(old_network)
-                self._old_network.eval()
+                    if buffer_data["reward"][0].type == 0:
+                        raw_rewards     = [r.get_overall_reward() for r in buffer_data["reward"]]
+                    else:
+                        raw_rewards     = [sum(r.rewards) for r in buffer_data["reward"]]
+                    rewards_tensor      = torch.FloatTensor(raw_rewards)
+                    values_tensor       = torch.FloatTensor(buffer_data["value"]+[0.0])
+                    returns             = self._compute_gae(rewards_tensor, values_tensor)
+                    advantages          = returns-values_tensor[:-1]
+                    epsilon             = self.get_hyperparam().get_value(self._hp_ids[2])
+                    advantages          = (advantages-advantages.mean())/(advantages.std()+epsilon)
+                    
+                    states_np           = np.array([st.get_values() for st in buffer_data["state"]])
+                    states_tensor       = torch.from_numpy(states_np).float()
+                    actions_np          = np.array([act.get_sorted_values() for act in buffer_data["action"]])
+                    actions_tensor      = torch.from_numpy(actions_np).float()
+                    
+                    old_network         = copy.deepcopy(self._network)
+                    old_network.eval()
+                    
+                    self._optimizer.zero_grad()
+                    loss                = self._grpo_loss(states_tensor, actions_tensor, returns, advantages)
+                    loss.backward()
+                    max_norm            = self.get_hyperparam().get_value(self._hp_ids[3])
+                    torch.nn.utils.clip_grad_norm_(self._network.parameters(), max_norm=max_norm)
+                    self._optimizer.step()
+                        
+                    self._old_network   = copy.deepcopy(old_network)
+                    self._old_network.eval()
             
             if self._buffer.is_full():
                 self._buffer.clear()
