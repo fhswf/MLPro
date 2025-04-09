@@ -76,7 +76,7 @@ class ScenarioTrajectoryPlanning(RLScenario):
     C_NAME = 'Trajectory Planning'
 
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
-        # 1.1 Setup environment
+        # 1.1 Setup environment and agent with GRPO
         self._env = MyDynamicTrajectoryPlanner(
             p_visualize=p_visualize,
             p_logging=p_logging,
@@ -114,7 +114,7 @@ class ScenarioTrajectoryPlanning(RLScenario):
             p_ada=p_ada,
             p_visualize=p_visualize,
             p_logging=p_logging
-        )
+            )
 
 
 
@@ -146,7 +146,7 @@ training = RLTraining(
     p_path=path,
     p_visualize=visualize,
     p_logging=logging
-)
+    )
 
 training.run()
 
@@ -154,14 +154,18 @@ training.run()
 # 5 Plotting with MLPro rewards
 if __name__ == "__main__":  
     mem = training.get_results().ds_rewards
-    data_printing = {mem.names[0]: [False],
-                     mem.names[1]: [False],
-                     mem.names[2]: [False],
-                     mem.names[3]: [False],
-                     mem.names[4]: [True, 0, -1]}
-    mem_plot = DataPlotting(mem,
-                            p_showing=plotting,
-                            p_printing=data_printing,
-                            p_type=DataPlotting.C_PLOT_TYPE_EP,
-                            p_window=100)
+    data_printing = {
+        mem.names[0]: [False],
+        mem.names[1]: [False],
+        mem.names[2]: [False],
+        mem.names[3]: [False],
+        mem.names[4]: [True, 0, -1]
+        }
+    mem_plot = DataPlotting(
+        mem,
+        p_showing=plotting,
+        p_printing=data_printing,
+        p_type=DataPlotting.C_PLOT_TYPE_EP,
+        p_window=100
+        )
     mem_plot.get_plots()

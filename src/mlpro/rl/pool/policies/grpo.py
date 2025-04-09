@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-02  0.0.0     SY       Creation
-## -- 2025-04-07  1.0.0     SY       Release of first version
+## -- 2025-04-09  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-07)
+Ver. 1.0.0 (2025-04-09)
 
 This module implements a minimal version of Group Relative Policy Optimization (GRPO) for continuous
 action spaces, as described in the paper published on arXiv:2402.03300.
@@ -76,6 +76,17 @@ class MinGRPOPolicyNetwork(nn.Module):
         self.actor_logstd   = nn.Parameter(torch.zeros(1, self.action_space.get_num_dim()))
         self.critic         = nn.Linear(input_dim, 1)
         
+        for layer in self.fc:
+            if isinstance(layer, nn.Linear):
+                nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
+                nn.init.constant_(layer.bias, 0.0)
+        
+        nn.init.orthogonal_(self.actor.weight, gain=0.01)
+        nn.init.constant_(self.actor.bias, 0.0)
+        nn.init.orthogonal_(self.critic.weight, gain=1.0)
+        nn.init.constant_(self.critic.bias, 0.0)
+        nn.init.constant_(self.actor_logstd, -1.0) 
+        
         self.low_bound      = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
         self.high_bound     = torch.tensor([act.get_boundaries()[1] for act in self.action_space.get_dims()])
 
@@ -130,8 +141,6 @@ class MinGRPOPolicyNetwork(nn.Module):
         action_logstd   = self.actor_logstd.expand_as(action_mean)
         state_value     = self.critic(state)
 
-        # action          = action_mean*(self.high_bound-self.low_bound)/2+(self.high_bound+self.low_bound)/2
-        
         return (action_mean, action_logstd), state_value                 
 
 
@@ -298,6 +307,12 @@ class MinGRPO(Policy):
         self._hyperparam_space.add_dim(HyperParam('kl_weight','R'))
         self._hyperparam_space.add_dim(HyperParam('minibatch_size','Z'))
         self._hyperparam_space.add_dim(HyperParam('n_epochs ','Z'))
+        self._hyperparam_space.add_dim(HyperParam('logstd_min','R'))
+        self._hyperparam_space.add_dim(HyperParam('logstd_max','R'))
+        self._hyperparam_space.add_dim(HyperParam('log_epsilon','R'))
+        self._hyperparam_space.add_dim(HyperParam('std_epsilon','R'))
+        self._hyperparam_space.add_dim(HyperParam('ratio_min','R'))
+        self._hyperparam_space.add_dim(HyperParam('ratio_max','R'))
         self._hyperparam_tuple = HyperParamTuple(self._hyperparam_space)
         
         ids_ = self._hyperparam_tuple.get_dim_ids()
@@ -313,6 +328,12 @@ class MinGRPO(Policy):
         self._hyperparam_tuple.set_value(ids_[9], 0.01)
         self._hyperparam_tuple.set_value(ids_[10], 64)
         self._hyperparam_tuple.set_value(ids_[11], 10)
+        self._hyperparam_tuple.set_value(ids_[12], -20.0)
+        self._hyperparam_tuple.set_value(ids_[13], 2.0)
+        self._hyperparam_tuple.set_value(ids_[14], 1e-6)
+        self._hyperparam_tuple.set_value(ids_[15], 1e-8)
+        self._hyperparam_tuple.set_value(ids_[16], 0.1)
+        self._hyperparam_tuple.set_value(ids_[17], 10.0)
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -388,6 +409,11 @@ class MinGRPO(Policy):
         
         state           = torch.tensor(p_state.get_values(), dtype=torch.float32).unsqueeze(0)
         (action_mean, action_logstd), state_value = self._network(state)
+        action_logstd   = torch.clamp(
+            action_logstd,
+            min=self.get_hyperparam().get_value(self._hp_ids[12]),
+            max=self.get_hyperparam().get_value(self._hp_ids[13])
+            )
         dist            = Normal(action_mean, action_logstd.exp())
         raw_action      = dist.rsample()
         action          = torch.tanh(raw_action)
@@ -396,7 +422,7 @@ class MinGRPO(Policy):
         scaled_action   = action_low+(action+1)*(action_high-action_low)/2
         
         log_probs       = dist.log_prob(raw_action).sum(dim=-1)
-        log_probs       -= torch.log(1-action.pow(2)+1e-6).sum(dim=-1)
+        log_probs       -= torch.log(1-action.pow(2)+self.get_hyperparam().get_value(self._hp_ids[14])).sum(dim=-1)
         
         self._log_probs_elem    = dict(log_prob=log_probs.item())
         self._values_elem       = dict(value=state_value.item())
@@ -463,7 +489,7 @@ class MinGRPO(Policy):
                     loss                = self._grpo_loss(states_tensor, actions_tensor, returns, advantages)
                     loss.backward()
                     max_norm            = self.get_hyperparam().get_value(self._hp_ids[3])
-                    torch.nn.utils.clip_grad_norm_(self._network.parameters(), max_norm=max_norm)
+                    torch.nn.utils.clip_grad_norm_(self._network.parameters(), max_norm=max_norm, norm_type=2.0)
                     self._optimizer.step()
                         
                     self._old_network   = copy.deepcopy(old_network)
@@ -495,6 +521,7 @@ class MinGRPO(Policy):
             Tensor of return values used for policy gradient and value function updates.
         """
         
+        rewards     = (rewards-rewards.mean())/(rewards.std()+self.get_hyperparam().get_value(self._hp_ids[15]))
         T           = len(rewards)
         advantages  = torch.zeros_like(rewards)
         gae         = 0.0
@@ -568,13 +595,19 @@ class MinGRPO(Policy):
         value_loss          = (returns-new_values).pow(2).mean()
             
         # 4. Group-relative policy loss
+        ratio_min           = self.get_hyperparam().get_value(self._hp_ids[16])
+        ratio_max           = self.get_hyperparam().get_value(self._hp_ids[17])
+        
+        advantages          = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
         group_adv           = advantages[high_group]
-        ratio               = (new_log_probs[high_group]-old_log_probs[high_group]).exp()
+        ratio               = torch.exp((new_log_probs[high_group]-old_log_probs[high_group]))
+        ratio               = torch.clamp(ratio, ratio_min, ratio_max)
         clip_adv            = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv
         high_loss           = -torch.min(ratio*group_adv, clip_adv).mean()
         
         group_adv           = advantages[low_group]
-        ratio               = (new_log_probs[low_group]-old_log_probs[low_group]).exp()
+        ratio               = torch.exp((new_log_probs[low_group]-old_log_probs[low_group]))
+        ratio               = torch.clamp(ratio, ratio_min, ratio_max)
         clip_adv            = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv
         low_loss            = -torch.min(ratio*group_adv, clip_adv).mean()
         
