@@ -241,50 +241,41 @@ class SbPG(Policy):
 ## -------------------------------------------------------------------------------------------------
     def _adapt_br(self, p_kwargs) -> bool:
         
-        prev_states = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
+        prev_states         = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
+        x_disc, y_disc      = self._discretization(prev_states[0], prev_states[1])
         
-        x_disc, y_disc = self._discretization(
-            prev_states[0],
-            prev_states[1]
-            )
-        
-        rwd = p_kwargs["p_sars_elem"].get_data()["reward"].get_agent_reward(self._id)[0]
-        
-        if rwd > (self.performance_map[1,x_disc,y_disc]).item():
+        self.exploration    *= self.get_hyperparam().get_value(self._hp_ids[1])
+        self._counter       += 1
+
+        rwd                 = p_kwargs["p_sars_elem"].get_data()["reward"].get_agent_reward(self._id)[0]
+        if rwd > (self.performance_map[1, x_disc, y_disc]).item():
             self.performance_map[1,x_disc,y_disc] = rwd
             self.performance_map[0,x_disc,y_disc] = p_kwargs["p_sars_elem"].get_data()["action"].get_sorted_values().item()
-        
-        self.exploration *= self.get_hyperparam().get_value(self._hp_ids[1])
-        self._counter += 1
-        
-        return True
+            return True
+        else:
+            return False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_gb(self, p_kwargs) -> bool:
         
-        prev_states = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
+        prev_states     = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
+        x_disc, y_disc  = self._discretization(prev_states[0], prev_states[1])
+        prev_action     = self.performance_map[0, x_disc, y_disc]
+        prev_util       = self.performance_map[1, x_disc, y_disc]
         
-        x_disc, y_disc = self._discretization(
-            prev_states[0],
-            prev_states[1]
-            )
+        act             = p_kwargs["p_sars_elem"].get_data()["action"].get_sorted_values().item()
+        util            = p_kwargs["p_sars_elem"].get_data()["reward"].get_agent_reward(self._id)[0]
         
-        prev_action = self.performance_map[0, x_disc, y_disc]
-        prev_util = self.performance_map[1, x_disc, y_disc]
-        
-        act = p_kwargs["p_sars_elem"].get_data()["action"].get_sorted_values().item()
-        util = p_kwargs["p_sars_elem"].get_data()["reward"].get_agent_reward(self._id)[0]
-               
         if (act-prev_action) == 0:
-            gradient = (util-prev_util)
+            gradient    = (util-prev_util)
         else:
-            gradient = (util-prev_util)/(act-prev_action)
+            gradient    = (util-prev_util)/(act-prev_action)
         if util > self.performance_map[1, x_disc, y_disc]:
             self.performance_map[0, x_disc, y_disc] = act
             self.performance_map[1, x_disc, y_disc] = util
             
-        lr_gradient = self.get_hyperparam().get_value(self._hp_ids[2])
+        lr_gradient     = self.get_hyperparam().get_value(self._hp_ids[2])
         self.map_nxt_action[x_disc, y_disc] = min(1,max(0,act)+(lr_gradient*gradient))
         
         self.exploration *= self.get_hyperparam().get_value(self._hp_ids[1])
@@ -295,28 +286,23 @@ class SbPG(Policy):
 ## -------------------------------------------------------------------------------------------------
     def _adapt_gb_mom(self, p_kwargs) -> bool:
         
-        prev_states = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
+        prev_states     = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
+        x_disc, y_disc  = self._discretization(prev_states[0], prev_states[1])
+        prev_action     = self.performance_map[0, x_disc, y_disc]
+        prev_util       = self.performance_map[1, x_disc, y_disc]
         
-        x_disc, y_disc = self._discretization(
-            prev_states[0],
-            prev_states[1]
-            )
-        
-        prev_action = self.performance_map[0, x_disc, y_disc]
-        prev_util = self.performance_map[1, x_disc, y_disc]
-        
-        act = p_kwargs["p_sars_elem"].get_data()["action"].get_sorted_values().item()
-        util = p_kwargs["p_sars_elem"].get_data()["reward"].get_agent_reward(self._id)[0]
+        act             = p_kwargs["p_sars_elem"].get_data()["action"].get_sorted_values().item()
+        util            = p_kwargs["p_sars_elem"].get_data()["reward"].get_agent_reward(self._id)[0]
                
         if (act-prev_action) == 0:
-            gradient = (util-prev_util)
+            gradient    = (util-prev_util)
         else:
-            gradient = (util-prev_util)/(act-prev_action)
+            gradient    = (util-prev_util)/(act-prev_action)
         if util > self.performance_map[1, x_disc, y_disc]:
             self.performance_map[0, x_disc, y_disc] = act
             self.performance_map[1, x_disc, y_disc] = util
             
-        lr_gradient = self.get_hyperparam().get_value(self._hp_ids[2])
+        lr_gradient     = self.get_hyperparam().get_value(self._hp_ids[2])
         if self.map_nxt_action[x_disc, y_disc] == 0:
             self.map_nxt_action[x_disc, y_disc] = min(1,max(0,act)+(lr_gradient*gradient))
         else:
@@ -331,19 +317,19 @@ class SbPG(Policy):
         
         
 ## -------------------------------------------------------------------------------------------------        
-    def _discretization(self, x_fill_level, y_fill_level):
+    def _discretization(self, p_x_fill_level, p_y_fill_level):
                
         num_states  = self.get_hyperparam().get_value(self._hp_ids[0])
-        x_disc      = min(m.floor(x_fill_level*num_states), int(num_states-1))
-        y_disc      = min(m.floor(y_fill_level*num_states), int(num_states-1))
+        x_disc      = min(m.floor(p_x_fill_level*num_states), int(num_states-1))
+        y_disc      = min(m.floor(p_y_fill_level*num_states), int(num_states-1))
         
         return x_disc, y_disc
     
     
 ## -------------------------------------------------------------------------------------------------    
-    def interpolate_maps(self, pos_x, pos_y):
+    def interpolate_maps(self, p_pos_x, p_pos_y):
                 
-        distances = torch.sqrt(((pos_x-self.grid_x)**2) + ((pos_y-self.grid_y)**2))
+        distances = torch.sqrt(((p_pos_x-self.grid_x)**2) + ((p_pos_y-self.grid_y)**2))
         distances[distances == 0] = 0.0001
         weights = 1/((distances**2)+self.get_hyperparam().get_value(self._hp_ids[6]))
         DistancesTotal = sum(sum(weights))
