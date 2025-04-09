@@ -199,6 +199,29 @@ class MinGRPO(Policy):
         Entropy bonus to encourage exploration (default: 0.01).
     p_kl_weight : float, optional
         Weight for KL divergence between new and old policies (default: 0.01).
+    p_minibatch_size : int, optional
+        Number of samples per gradient update. Larger values increase stability but reduce learning
+        speed (default: 64).
+    p_n_epochs : int, optional
+        Number of passes through the buffer data during optimization. Higher values enable better
+        data utilization but risk overfitting (default: 10).
+    p_logstd_min : float, optional
+        Minimum allowed value for log standard deviation of action distribution. Prevents numerical
+        underflow in policy updates (default: -20.0).
+    p_logstd_max : float, optional
+        Maximum allowed value for log standard deviation of action distribution. Prevents numerical
+        overflow in policy updates (default: 2.0).
+    p_log_epsilon : float, optional
+        Small constant to stabilize log-probability calculations for bounded actions. Used in
+        tanh-transformed action probability calculations (default: 1e-6).
+    p_std_epsilon : float, optional
+        Small constant to avoid division by zero in reward/advantage normalization (default: 1e-8).
+    p_ratio_min : float, optional
+        Minimum clipping value for importance sampling ratio. Controls conservative policy updates
+        (default: 0.1).
+    p_ratio_max : float, optional
+        Maximum clipping value for importance sampling ratio. Limits maximum policy update steps
+        (default: 10.0).
     """
 
     C_NAME          = "Minimal GRPO"
@@ -227,7 +250,13 @@ class MinGRPO(Policy):
             p_entropy_weight:float=None,
             p_kl_weight:float=None,
             p_minibatch_size:int=None,
-            p_n_epochs:int=None
+            p_n_epochs:int=None,
+            p_logstd_min:float=None,
+            p_logstd_max:float=None,
+            p_log_epsilon:float=None,
+            p_std_epsilon:float=None,
+            p_ratio_min:float=None,
+            p_ratio_max:float=None
             ):
 
         super().__init__ ( p_observation_space=p_observation_space, 
@@ -286,6 +315,18 @@ class MinGRPO(Policy):
             self._hyperparam_tuple.set_value(ids_[10], p_minibatch_size)
         if p_n_epochs is not None:
             self._hyperparam_tuple.set_value(ids_[11], p_n_epochs)
+        if p_logstd_min is not None:
+            self._hyperparam_tuple.set_value(ids_[12], p_logstd_min)
+        if p_logstd_max is not None:
+            self._hyperparam_tuple.set_value(ids_[13], p_logstd_max)
+        if p_log_epsilon is not None:
+            self._hyperparam_tuple.set_value(ids_[14], p_log_epsilon)
+        if p_std_epsilon is not None:
+            self._hyperparam_tuple.set_value(ids_[15], p_std_epsilon)
+        if p_ratio_min is not None:
+            self._hyperparam_tuple.set_value(ids_[16], p_ratio_min)
+        if p_ratio_max is not None:
+            self._hyperparam_tuple.set_value(ids_[17], p_ratio_max)
         self._hp_ids            = self.get_hyperparam().get_dim_ids()
         
         
