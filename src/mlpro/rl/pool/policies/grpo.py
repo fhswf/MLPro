@@ -639,7 +639,7 @@ class MinGRPO(Policy):
         ratio_min           = self.get_hyperparam().get_value(self._hp_ids[16])
         ratio_max           = self.get_hyperparam().get_value(self._hp_ids[17])
         
-        advantages          = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
+        advantages          = (advantages-advantages.mean())/(advantages.std()+self.get_hyperparam().get_value(self._hp_ids[15]))
         group_adv           = advantages[high_group]
         ratio               = torch.exp((new_log_probs[high_group]-old_log_probs[high_group]))
         ratio               = torch.clamp(ratio, ratio_min, ratio_max)
