@@ -38,15 +38,26 @@ class SbPG(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self,
-                  p_observation_space:MSpace,
-                  p_action_space:MSpace,
-                  p_id=None,
-                  p_buffer_size : int = 1,
-                  p_ada : bool = True,
-                  p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL,
-                  p_algo = 0):
+    def __init__(
+            self,
+            p_observation_space:MSpace,
+            p_action_space:MSpace,
+            p_id:str=None,
+            p_buffer_size:int=1,
+            p_ada:bool=True,
+            p_visualize:bool=False,
+            p_logging=Log.C_LOG_ALL,
+            p_algo:int=0,
+            p_num_states:int=None,
+            p_exploration_decay:float=None,
+            p_alpha:float=None,
+            p_ou_noise:float=None,
+            p_kick_off_eps:int=None,
+            p_cycles_per_ep:int=None,
+            p_smoothing:float=None,
+            p_ep_max:int=None,
+            p_beta:float=None
+            ):
         
         Policy.__init__(
             self,
@@ -56,15 +67,36 @@ class SbPG(Policy):
             p_buffer_size=p_buffer_size,
             p_ada=p_ada,
             p_visualize=p_visualize,
-            p_logging=p_logging)
+            p_logging=p_logging
+            )
         
         self._hyperparam_space  = HyperParamSpace()
         self._hyperparam_tuple  = None
         self._init_hyperparam()
-        
-        ids_        = self.get_hyperparam().get_dim_ids()
-        num_states  = int(self.get_hyperparam().get_value(ids_[0]))
-        self._algo  = p_algo
+    	
+        ids_                    = self._hyperparam_tuple.get_dim_ids()
+        if p_num_states is not None:
+            self._hyperparam_tuple.set_value(ids_[0], p_num_states)
+        if p_exploration_decay is not None:
+            self._hyperparam_tuple.set_value(ids_[1], p_exploration_decay)
+        if p_alpha is not None:
+            self._hyperparam_tuple.set_value(ids_[2], p_alpha)
+        if p_ou_noise is not None:
+            self._hyperparam_tuple.set_value(ids_[3], p_ou_noise)
+        if p_kick_off_eps is not None:
+            self._hyperparam_tuple.set_value(ids_[4], p_kick_off_eps)
+        if p_cycles_per_ep is not None:
+            self._hyperparam_tuple.set_value(ids_[5], p_cycles_per_ep)
+        if p_smoothing is not None:
+            self._hyperparam_tuple.set_value(ids_[6], p_smoothing)
+        if p_ep_max is not None:
+            self._hyperparam_tuple.set_value(ids_[7], p_ep_max)
+        if p_beta is not None:
+            self._hyperparam_tuple.set_value(ids_[8], p_beta)
+
+        self._hp_ids            = self.get_hyperparam().get_dim_ids()
+        num_states              = int(self.get_hyperparam().get_value(self._hp_ids[0]))
+        self._algo              = p_algo
         
         self.exploration         = 1
         self.performance_map     = torch.zeros((2, num_states, num_states))
