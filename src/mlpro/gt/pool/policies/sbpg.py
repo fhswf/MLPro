@@ -12,12 +12,14 @@
 """
 Ver. 1.0.0 (2025-04-09)
 
-This module implements a state-based potential games (SbPG) with best response and two types of 
-gradient-based learning for dynamic games.
+This module implements a dynamic game policy class for State-Based Potential Games (SbPG),
+including three learning algorithms:
+    - Best Response (BR) -  DOI: 10.1109/TCYB.2020.3006620
+    - Gradient-Based (GB) - DOI: 10.1109/IECON55916.2024.10905619
+    - Gradient-Based with Momentum (GB_MOM) - DOI: 10.1109/IECON55916.2024.10905619
 
-Here are the related papers for citations:
-    - Best response learning (DOI: 10.1109/TCYB.2020.3006620)
-    - Gradient-based learning (DOI: 10.1109/IECON55916.2024.10905619)
+The class SbPG supports learning in multi-agent environments where agents update their actions
+based on individual utility gradients or best-response dynamics over discretized states.
 """
 
 from mlpro.rl.models import *
@@ -33,6 +35,68 @@ import torch
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SbPG(Policy):
+    """
+    State-Based Potential Games (SbPG) Policy Class.
+
+    This class implements a learning policy for multi-agent systems in SbPG. It supports three
+    algorithms for policy adaptation:
+        - ALG_SbPG_BR: Best Response Learning
+        - ALG_SbPG_GB: Gradient-Based Learning
+        - ALG_SbPG_GB_MOM: Gradient-Based Learning with Momentum
+
+    The environment is discretized into a 2D grid of states, and the player learns a performance map
+    and optimal action per state via adaptation methods.
+
+    Parameters
+    ----------
+    p_observation_space : MSpace
+        Observation space (state space) of the player.
+    p_action_space : MSpace
+        Action space of the player.
+    p_id : str, optional
+        Identifier of the policy.
+    p_buffer_size : int, optional
+        Size of the internal buffer for learning, default is 1.
+    p_ada : bool, optional
+        Whether adaptive learning is enabled.
+    p_visualize : bool, optional
+        Enable visualization.
+    p_logging : int, optional
+        Logging level.
+    p_algo : int, optional
+        Algorithm selection (0: BR, 1: GB, 2: GB_MOM).
+    p_num_states : int, optional
+        Number of discretized states per axis.
+    p_exploration_decay : float, optional
+        Decay rate of exploration over time.
+    p_alpha : float, optional
+        Learning rate for GB adaptation.
+    p_ou_noise : float, optional
+        OU noise factor for exploration in GB mode.
+    p_kick_off_eps : int, optional
+        Number of episodes before exploitation begins in GB.
+    p_cycles_per_ep : int, optional
+        Steps per episode.
+    p_smoothing : float, optional
+        Smoothing factor in interpolation.
+    p_ep_max : int, optional
+        Maximum number of episodes.
+    p_beta : float, optional
+        Momentum coefficient for GB_MOM.
+
+    Attributes
+    ----------
+    performance_map : torch.Tensor
+        Stores actions and utilities for each state in a 2D grid.
+    map_nxt_action : torch.Tensor
+        Stores next recommended action for each state (GB only).
+    exploration : float
+        Current exploration probability.
+    _counter : int
+        Step counter within an episode.
+    _current_ep : int
+        Current episode number.
+    """
     
     C_NAME          = 'SbPG'
     
@@ -123,6 +187,9 @@ class SbPG(Policy):
         
 ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self):
+        """
+        Initializes the hyperparameter space with default values.
+        """
         
         self._hyperparam_space.add_dim(HyperParam('num_states','Z'))
         self._hyperparam_space.add_dim(HyperParam('exploration_decay','R'))
@@ -149,12 +216,33 @@ class SbPG(Policy):
         
 ## -------------------------------------------------------------------------------------------------
     def get_hyperparam(self) -> HyperParamTuple:
+        """
+        Returns the current set of hyperparameters used by the policy.
+
+        Returns
+        -------
+        HyperParamTuple
+            A tuple containing all hyperparameter values.
+        """
 
         return self._hyperparam_tuple
 
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state:State) -> Action:
+        """
+        Computes the next action based on the current state and learning strategy.
+
+        Parameters
+        ----------
+        p_state : State
+            Current environment state.
+
+        Returns
+        -------
+        Action
+            Selected action according to the chosen algorithm (BR or GB).
+        """
         
         if self._algo == self.ALG_SbPG_BR:
             return self.compute_action_br(p_state)
@@ -164,6 +252,22 @@ class SbPG(Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action_br(self, p_state:State) -> Action:
+        """
+        Computes the player's action using BR learning strategy.
+
+        With a probability of `exploration`, the agent takes a random action. Otherwise, it chooses
+        the best known action based on the performance map using interpolation.
+
+        Parameters
+        ----------
+        p_state : State
+            Current environment state.
+
+        Returns
+        -------
+        Action
+            Computed action for the current state.
+        """
         
         my_action_values        = np.zeros(self._action_space.get_num_dim())
         actual_states           = p_state.get_values()
@@ -194,6 +298,23 @@ class SbPG(Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action_gb(self, p_state:State) -> Action:
+        """
+        Computes the player's action using GB learning strategy.
+
+        If the player is still in the "kick-off" phase, it explores randomly. Otherwise, it exploits
+        the learned gradient with optional noise (OU noise). Outside the exploration phase, it uses
+        interpolated action values.
+
+        Parameters
+        ----------
+        p_state : State
+            Current environment state.
+
+        Returns
+        -------
+        Action
+            Computed action for the current state.
+        """
         
         my_action_values        = np.zeros(self._action_space.get_num_dim())
         actual_states           = p_state.get_values()
@@ -229,6 +350,19 @@ class SbPG(Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
+        """
+        Adapts the policy based on the selected algorithm (BR, GB, or GB_MOM).
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Keyword arguments, must include a SARSElement.
+
+        Returns
+        -------
+        bool
+            True if the policy was updated successfully.
+        """
         
         if self._algo == self.ALG_SbPG_BR:
             return self._adapt_br(p_kwargs)
@@ -240,6 +374,19 @@ class SbPG(Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_br(self, p_kwargs) -> bool:
+        """
+        Performs policy update using BR learning.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Dictionary containing SARSElement.
+
+        Returns
+        -------
+        bool
+            True if a better reward was found and map updated.
+        """
         
         prev_states         = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
         x_disc, y_disc      = self._discretization(prev_states[0], prev_states[1])
@@ -258,6 +405,22 @@ class SbPG(Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_gb(self, p_kwargs) -> bool:
+        """
+        Performs policy update using GB learning.
+
+        Updates the action using utility gradient and learning rate. Stores the best known action
+        and utility in the performance map.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Keyword arguments, must include a SARSElement.
+
+        Returns
+        -------
+        bool
+            Always returns True to indicate the learning step was performed.
+        """
         
         prev_states     = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
         x_disc, y_disc  = self._discretization(prev_states[0], prev_states[1])
@@ -285,6 +448,22 @@ class SbPG(Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_gb_mom(self, p_kwargs) -> bool:
+        """
+        Performs policy update using Gradient-Based learning with Momentum (GB_MOM).
+
+        A moving average of the gradient is computed using the beta parameter, which introduces
+        momentum into the learning process.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Keyword arguments, must include a SARSElement.
+
+        Returns
+        -------
+        bool
+            Always returns True to indicate the learning step was performed.
+        """
         
         prev_states     = p_kwargs["p_sars_elem"].get_data()["state"].get_values()
         x_disc, y_disc  = self._discretization(prev_states[0], prev_states[1])
@@ -318,6 +497,21 @@ class SbPG(Policy):
         
 ## -------------------------------------------------------------------------------------------------        
     def _discretization(self, p_x_fill_level, p_y_fill_level):
+        """
+        Discretizes continuous state values into grid coordinates.
+
+        Parameters
+        ----------
+        p_x_fill_level : float
+            X-coordinate value (between 0 and 1).
+        p_y_fill_level : float
+            Y-coordinate value (between 0 and 1).
+
+        Returns
+        -------
+        tuple of int
+            Discretized (x, y) indices into the performance map.
+        """
                
         num_states  = self.get_hyperparam().get_value(self._hp_ids[0])
         x_disc      = min(m.floor(p_x_fill_level*num_states), int(num_states-1))
@@ -328,6 +522,21 @@ class SbPG(Policy):
     
 ## -------------------------------------------------------------------------------------------------    
     def interpolate_maps(self, p_pos_x, p_pos_y):
+        """
+        Interpolates the performance map using inverse distance weighting.
+
+        Parameters
+        ----------
+        p_pos_x : float
+            X-position in the state space.
+        p_pos_y : float
+            Y-position in the state space.
+
+        Returns
+        -------
+        float
+            Interpolated action value for the given state position.
+        """
                 
         distances = torch.sqrt(((p_pos_x-self.grid_x)**2) + ((p_pos_y-self.grid_y)**2))
         distances[distances == 0] = 0.0001
