@@ -36,10 +36,11 @@ Depending on the number of planning horizon, but we believe that this reduces th
 
 **Cross reference**
 
-    + :ref:`Howto RL-MB-001: MBRL with MPC on Grid World environment <Howto MB RL 001>`
-    + :ref:`API reference <target_pool_mpc>`
+    + :ref:`Howto GT-DG-003: Train Multi-Player with SbPG on the BGLP <Howto GT 003>`
+    + :ref:`API reference <target_pool_dg_sbpg>`
 
 **Citation**
 
-If you apply this policy in your research or work, please :ref:`cite <target_publications>` us and the `original paper <https://ieeexplore.ieee.org/document/10185716>`_.
+If you apply this policy in your research or work, please :ref:`cite <target_publications>` us and
+the original papers: `for gradient-based learning <https://ieeexplore.ieee.org/document/10905619>`_ and `for best response learning <https://ieeexplore.ieee.org/document/9152119>`_.
 
