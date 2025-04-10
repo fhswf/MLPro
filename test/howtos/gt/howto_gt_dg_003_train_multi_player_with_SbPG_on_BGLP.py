@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-09  0.0.0     SY       Creation
-## -- 2025-04-09  1.0.0     SY       Release of first version
+## -- 2025-04-10  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-09)
+Ver. 1.0.0 (2025-04-10)
  
 This module shows how to train a multi-player in SbPG on the BGLP game board.
 
@@ -23,14 +23,10 @@ You will learn:
 """
 
 
-from mlpro.rl import *
 from mlpro.gt import *
 from mlpro.gt.dynamicgames.potential import *
-from mlpro.rl.models import Reward
-from mlpro.rl.pool.envs.bglp import BGLP
+from mlpro.gt.pool.boards.bglp import BGLP_GT
 from mlpro.gt.pool.policies.sbpg import SbPG
-import random
-import numpy as np
 from pathlib import Path
 
 
@@ -38,7 +34,7 @@ from pathlib import Path
 
 
 # 1 Setting up the utility function in the BGLP
-class MyBGLP(BGLP):
+class MyBGLP(BGLP_GT):
 
     C_NAME          = 'MyBGLP'
 
@@ -49,16 +45,18 @@ class MyBGLP(BGLP):
             demand=0.11,
             lr_margin=1.0,
             lr_demand=4.0,
-            lr_power=0.0010
+            lr_power=0.0010,
+            cycle_limit=0
             ):
-        BGLP.__init__(
+        BGLP_GT.__init__(
             self,
             p_logging=p_logging,
             t_set=t_set,
             demand=demand,
             lr_margin=lr_margin,
             lr_demand=lr_demand,
-            lr_power=lr_power
+            lr_power=lr_power,
+            cycle_limit=cycle_limit
             )
                           
 
@@ -259,8 +257,8 @@ else:
     stagnant_limit  = 0
     score_ma_hor    = 0
     
-training = RLTraining(
-    p_scenario_cls=SbPG_Scenario,
+training = GTTraining(
+    p_game_cls=SbPG_Scenario,
     p_cycle_limit=cycle_limit,
     p_cycles_per_epi_limit=cycle_per_ep,
     p_eval_frequency=eval_freq,
