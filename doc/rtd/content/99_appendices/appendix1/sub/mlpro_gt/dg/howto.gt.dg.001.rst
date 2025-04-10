@@ -1,96 +1,83 @@
 .. _Howto GT 001:
-Howto GT-DG-001: Run Multi-Player with Own Policy
+Howto GT-DG-001: Train Multi-Player in Potential Games
 ===========================================================================
 
 **Prerequisites**
 
+
 Please install the following packages to run this examples properly:
     - `NumPy <https://pypi.org/project/numpy/>`_
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../test/howtos/gt/howto_gt_dg_001_run_multi_player_with_own_policy_on_multicartpole_game_board.py
+.. literalinclude:: ../../../../../../../../test/howtos/gt/howto_gt_dg_001_train_own_multi_player_in_potential_games.py
 	:language: python
 
 
-  
+
 **Results**
-
-.. image:: images/howto.gt.001/Cartpole.png
-
-Three Gym Cartpole game board windows should appear and the following output should be expected in the console.
 
 .. code-block:: bash
 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1": Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Reset 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1" (0): Reset 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1" (1): Reset 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  OpenAI Gym Env Env "CartPole-v1" (2): Reset 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player Neo: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player Neo: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player Neo: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Player 0 Neo added. 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player Trinity: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player Trinity: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player Trinity: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Player 1 Trinity added. 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:00 Start of processing 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:00 : Start of cycle 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:00 : Agent computes action... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Start of action computation for all agents... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player 0 Neo: Action computation started 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player 0 Neo: Action computation finished 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player 1 Trinity: Action computation started 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player 1 Trinity: Action computation finished 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: End of action computation for all agents... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:00 : Env processes action... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Start processing action 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Actions of agent 0 = [0.02821633] 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Actions of agent 1 = [0.5796828  0.73351315] 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Potential Game Board MultiCartPole(PGT): Action processing finished successfully 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:01 : Agent adapts policy... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Adaptation started 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Start of adaptation for all agents... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Start adaption for agent 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player 0 Neo: Adaptation started 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptation started 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Policy MyPolicy: Sorry, I am a stupid agent... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Start adaption for agent 1 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Player 1 Trinity: Adaptation started 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Policy MyPolicy: Adaptation started 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Policy MyPolicy: Sorry, I am a stupid agent... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: End of adaptation for all agents... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:01 : End of cycle 0 
-    ... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Start vizualization for all agents... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:12 End of processing 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training run 0 started... 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training episode 0 started... 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  E  GT Game "Matrix": Process time 0:01:40 : Environment terminated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": Limit of 100 cycles per episode reached (Environment) 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training episode 0 finished after 100 cycles 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training cycles finished: 100 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training episode 1 started... 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  E  GT Game "Matrix": Process time 0:01:40 : Environment terminated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": Limit of 100 cycles per episode reached (Environment) 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training episode 1 finished after 100 cycles 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training cycles finished: 200 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": Training cycle limit 200 reached 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": -- Training run 0 finished 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Results stored in : "C:\Users\%username%\YYYY-MM-DD  HH:MM:SS Training GT" 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Training Results of run 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Scenario          : GT Game Matrix 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Model             : GT Multi-Player BGLP Players with Random Policies 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Start time stamp  : YYYY-MM-DD  HH:MM:SS.SSSSSS  
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- End time stamp    : YYYY-MM-DD  HH:MM:SS.SSSSSS 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Duration          : 0:00:01.664187 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Start cycle id    : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- End cycle id      : 199 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Training cycles   : 200 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Evaluation cycles : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Adaptations       : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- High score        : None 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Training Episodes : 2 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Evaluations       : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
 
 
 
