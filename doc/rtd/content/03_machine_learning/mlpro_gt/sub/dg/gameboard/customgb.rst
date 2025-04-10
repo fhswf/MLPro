@@ -168,8 +168,6 @@ Custom Game boards
     2. **C_TYPE_EVERY_AGENT** is a scalar for every player, and
     
     3. **C_TYPE_EVERY_ACTION** is a scalar for every player and action.
-    
-    To set up state- and action spaces using our basic functionalities, please refer to :ref:`Howto GT-002: Train Multi-Player <Howto GT 002>`.
 
 - **Game Board Creation for Real Hardware Mode**
 
