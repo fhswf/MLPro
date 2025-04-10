@@ -24,7 +24,6 @@ You will learn:
 
 
 from mlpro.gt import *
-from mlpro.gt.dynamicgames.potential import *
 from mlpro.gt.pool.boards.bglp import BGLP_GT
 from mlpro.gt.pool.policies.sbpg import SbPG
 from pathlib import Path
@@ -87,7 +86,7 @@ class SbPG_Scenario(Game):
         self._env       = MyBGLP(p_logging=p_logging)
         multi_player    = MultiPlayer(
             p_name='SbPG Players',
-            p_ada=p_ada,
+            p_ada=1,
             p_logging=p_logging,
             p_visualize=p_visualize
             )
@@ -162,7 +161,7 @@ class SbPG_Scenario(Game):
             p_buffer_size=1,
             p_ada=1, 
             p_logging=p_logging,
-            p_algo=_algo
+            p_algo=SbPG.ALG_SbPG_BR
             )
         multi_player.add_player(
             p_player=Player(
