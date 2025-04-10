@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-02  0.0.0     SY       Creation
-## -- 2025-04-09  1.0.0     SY       Release of first version
+## -- 2025-04-10  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-09)
+Ver. 1.0.0 (2025-04-10)
 
 This module implements a minimal version of Group Relative Policy Optimization (GRPO) for continuous
 action spaces, as described in the paper published on arXiv:2402.03300.
@@ -643,14 +643,22 @@ class MinGRPO(Policy):
         group_adv           = advantages[high_group]
         ratio               = torch.exp((new_log_probs[high_group]-old_log_probs[high_group]))
         ratio               = torch.clamp(ratio, ratio_min, ratio_max)
-        clip_adv            = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv
-        high_loss           = -torch.min(ratio*group_adv, clip_adv).mean()
+        try:
+            clip_adv        = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv
+            high_loss       = -torch.min(ratio*group_adv, clip_adv).mean()
+        except:
+            clip_adv        = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv[:,0]
+            high_loss       = -torch.min(ratio*group_adv[:,0], clip_adv).mean()
         
         group_adv           = advantages[low_group]
         ratio               = torch.exp((new_log_probs[low_group]-old_log_probs[low_group]))
         ratio               = torch.clamp(ratio, ratio_min, ratio_max)
-        clip_adv            = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv
-        low_loss            = -torch.min(ratio*group_adv, clip_adv).mean()
+        try:
+            clip_adv        = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv
+            low_loss        = -torch.min(ratio*group_adv, clip_adv).mean()
+        except:
+            clip_adv        = torch.clamp(ratio, 1-clip_eps, 1+clip_eps)*group_adv[:,0]
+            low_loss        = -torch.min(ratio*group_adv[:,0], clip_adv).mean()
         
         # 5. Total loss and KL divergence loss
         total_loss          = (
