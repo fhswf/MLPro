@@ -1,37 +1,37 @@
 .. _target_player_sbpg:
-Model Predictive Control (MPC) 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+State-Based Potential Games (SbPG)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: mlpro.rl.pool.actionplanner.mpc
+.. automodule:: mlpro.gt.pool.policies.sbpg
 
 
 **Prerequisites**
 
-    - `NumPy <https://pypi.org/project/numpy/>`_
+    - `PyTorch <https://pypi.org/project/torch/>`_
 
 
 
 **General information**
 
-We introduce an MPC method as action planner in the model-based RL territory.
-Monte Carlo MPC is a control algorithm that uses a Monte Carlo simulation-based approach to generate control actions for a dynamic system.
-It is a type of MPC, which is a well-established control algorithm that predicts the future behavior of a system based on a mathematical model and uses this information to generate optimal control actions.
+State-Based Potential Games (SbPG) are a class of multi-agent learning frameworks that extend the concept of potential games to environments with explicitly modeled states.
+In traditional potential games, each agent’s incentive aligns with a global potential function, meaning any improvement in an individual agent’s utility corresponds to an improvement in the shared objective.
+SbPG adapts this principle by introducing a state space that discretizes the environment, allowing agents to adapt their behavior not just based on actions, but also on spatial or situational context.
+This is particularly useful in complex dynamic environments like manufacturing systems, smart grids, or logistics networks, where the state of the system plays a crucial role in decision-making.
 
-In this Monte Carlo MPC, instead of using a single action prediction of the future system behavior, a large number of simulations are run, each with different random actions variations in the model parameters.
-Based on these trials, Monte Carlo MPC generates control actions that minimize a defined cost function, taking into account the control objectives.
-The control actions are updated at each time step based on new measurements of the system state.
+In an SbPG setup, the environment is divided into a dsicrete grid of states, and agents maintain a performance map that records the best-known action and corresponding utility for each state.
+Over time, agents use reinforcement learning techniques to update this map, either by using Best Response learning or by estimating the gradient of the utility landscape (Gradient-Based learning).
+This process allows agents to refine their strategies iteratively, seeking actions that maximize their individual payoff while collectively steering the system toward more optimal global behavior.
 
-Monte Carlo MPC is particularly useful in situations where the system is uncertain, unpredictable, or subject to significant external disturbances, as it allows for a probabilistic treatment of these uncertainties.
-It has found applications in a variety of fields, including autonomous systems, robotics, and process control.
-    
-This MPC policy can be imported via:
+The SbPG framework supports several learning algorithms to update policies, notably Best Response (BR), Gradient-Based (GB), and Gradient-Based with Momentum (GB_MOM).
+BR is a simpler approach where agents always sample random actions during exploring.
+GB uses the utility gradient to suggest better actions over time, while GB_MOM adds a momentum term, smoothing learning and improving convergence stability.
+
+The SbPG can be imported via:
 
 .. code-block:: python
 
-    from mlpro.rl.pool.actionplanner.mpc import MPC
+    from mlpro.gt.pool.policies.sbpg import SbPG
 
-Multiprocessing has also been incorporated into MPC, which allows parallel computations.
-Depending on the number of planning horizon, but we believe that this reduces the training time massively.
 
 
 **Cross reference**
