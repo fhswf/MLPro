@@ -1,4 +1,7 @@
 Players Pool
 -------------------
 
-This will be available soon!
+.. toctree::
+   :maxdepth: 1
+   
+   pool/sbpg
