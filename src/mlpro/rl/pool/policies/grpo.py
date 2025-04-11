@@ -55,7 +55,13 @@ class MinGRPOPolicyNetwork(nn.Module):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_hidden_layers:list=[128, 128], p_seed:int=None):
+    def __init__(
+            self,
+            p_state_space:MSpace,
+            p_action_space:MSpace,
+            p_hidden_layers:list=[128, 128],
+            p_seed:int=None
+            ):
         
         super().__init__()
         self.state_space = p_state_space
@@ -68,7 +74,7 @@ class MinGRPOPolicyNetwork(nn.Module):
         input_dim           = self.state_space.get_num_dim()
         for hidden_dim in p_hidden_layers:
             layers.append(nn.Linear(input_dim, hidden_dim))
-            layers.append(nn.ReLU())
+            layers.append(nn.LeakyReLU(negative_slope=0.01))
             input_dim = hidden_dim
             
         self.fc             = nn.Sequential(*layers)
@@ -76,16 +82,27 @@ class MinGRPOPolicyNetwork(nn.Module):
         self.actor_logstd   = nn.Parameter(torch.zeros(1, self.action_space.get_num_dim()))
         self.critic         = nn.Linear(input_dim, 1)
         
+        # for layer in self.fc:
+        #     if isinstance(layer, nn.Linear):
+        #         nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
+        #         nn.init.constant_(layer.bias, 0.0)
+        
+        # nn.init.orthogonal_(self.actor.weight, gain=0.01)
+        # nn.init.constant_(self.actor.bias, 0.0)
+        # nn.init.orthogonal_(self.critic.weight, gain=1.0)
+        # nn.init.constant_(self.critic.bias, 0.0)
+        # nn.init.constant_(self.actor_logstd, -1.0) 
+        
         for layer in self.fc:
             if isinstance(layer, nn.Linear):
-                nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
+                nn.init.xavier_normal_(layer.weight)
                 nn.init.constant_(layer.bias, 0.0)
-        
-        nn.init.orthogonal_(self.actor.weight, gain=0.01)
+
+        nn.init.xavier_normal_(self.actor.weight)
         nn.init.constant_(self.actor.bias, 0.0)
-        nn.init.orthogonal_(self.critic.weight, gain=1.0)
+        nn.init.xavier_normal_(self.critic.weight)
         nn.init.constant_(self.critic.bias, 0.0)
-        nn.init.constant_(self.actor_logstd, -1.0) 
+        nn.init.constant_(self.actor_logstd, -1.0)
         
         self.low_bound      = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
         self.high_bound     = torch.tensor([act.get_boundaries()[1] for act in self.action_space.get_dims()])
@@ -141,7 +158,7 @@ class MinGRPOPolicyNetwork(nn.Module):
         action_logstd   = self.actor_logstd.expand_as(action_mean)
         state_value     = self.critic(state)
 
-        return (action_mean, action_logstd), state_value                 
+        return (action_mean, action_logstd), state_value          
 
 
                 
@@ -616,9 +633,22 @@ class MinGRPO(Policy):
         # 1. Evaluate both policies on the same states
         (new_mean, new_logstd), new_values = self._network(states)
         (old_mean, old_logstd), old_values = self._old_network(states)
+        new_logstd   = torch.clamp(
+            new_logstd,
+            min=self.get_hyperparam().get_value(self._hp_ids[12]),
+            max=self.get_hyperparam().get_value(self._hp_ids[13])
+            )
+        old_logstd   = torch.clamp(
+            old_logstd,
+            min=self.get_hyperparam().get_value(self._hp_ids[12]),
+            max=self.get_hyperparam().get_value(self._hp_ids[13])
+            )
         
-        new_dist            = Normal(new_mean, new_logstd.exp())
-        old_dist            = Normal(old_mean, old_logstd.exp())
+        try:
+            new_dist            = Normal(new_mean, new_logstd.exp())
+            old_dist            = Normal(old_mean, old_logstd.exp())
+        except:
+            pass
     
         new_log_probs       = new_dist.log_prob(actions).sum(dim=-1)
         old_log_probs       = old_dist.log_prob(actions).sum(dim=-1)
