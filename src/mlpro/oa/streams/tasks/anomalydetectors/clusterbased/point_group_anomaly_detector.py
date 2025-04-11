@@ -6,18 +6,18 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-28  0.0.0     DS       Creation
-## -- 2025-04-03  0.0.1     DS/DA      Buffering of anomalies added.
+## -- 2025-04-03  0.0.1     DS/DA    Buffering of anomalies added.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2025-04-03)
+Ver. 0.0.1 (2025-04-03)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
 
 from mlpro.bf.various import Log
 from mlpro.bf.math.properties import *
-from mlpro.bf.streams import InstDict, InstTypeNew
+from mlpro.bf.streams import InstDict, InstTypeNew, Stream
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size
@@ -34,10 +34,32 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
     Parameters
     ----------
     ...
+    p_clusterer : ClusterAnalyzer
+        The cluster analyzer to be used for detecting anomalies.
     p_property : PropertyDefinition
         Cluster property to be observed.
-    p_cls_anomaly : type
-        Type of anomaly events to be raised.
+    p_group_anomaly_det : bool
+        Whether to enable group anomaly detection.
+    p_cls_point_anomaly : type
+        Type of point anomaly events to be raised.
+    p_cls_spatial_group_anomaly : type
+        Type of spatial group anomaly events to be raised.
+    p_cls_temporal_group_anomaly : type
+        Type of temporal group anomaly events to be raised.
+    p_name : str
+        Name of the anomaly detector.
+    p_range_max : int
+        Maximum range for the task.
+    p_ada : bool
+        Whether to enable adaptive behavior.
+    p_duplicate_data : bool
+        Whether to allow duplicate data.
+    p_visualize : bool
+        Whether to enable visualization.
+    p_logging : int
+        Logging level.
+    p_anomaly_buffer_size : int
+        Size of the anomaly buffer.
     ...
     """
 
@@ -81,6 +103,7 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
 ## -------------------------------------------------------------------------------------------------    
     def _run(self, 
          p_inst: InstDict, 
+         p_tstamp: float,
          p_cluster : Cluster, 
          p_property : Property):
 
@@ -112,7 +135,7 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
                 # 5.1.1 Create a new spatial group anomaly
 
                 spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {p_cluster.id : p_cluster},
-                                                                         p_tstamp = self._get_tstamp(),
+                                                                         p_tstamp = self.get_tstamp(),
                                                                          p_visualize = self.get_visualize,
                                                                          p_raising_object = self)
                                                             
@@ -133,7 +156,7 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
             
             if create_anomaly:
                 point_anomaly = self._cls_point_anomaly( p_clusters = {p_cluster.id : p_cluster},
-                                                        p_tstamp = self._get_tstamp(),
+                                                        p_tstamp = self.get_tstamp(),
                                                         p_visualize = self.get_visualize,
                                                         p_raising_object = self)
 
