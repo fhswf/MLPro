@@ -303,7 +303,7 @@ class ClusterAnalyzer (OAStreamTask):
         list_results_rel    = []
         cluster_max_results = None
 
-        for cluster in self.get_clusters().values():
+        for cluster in self.clusters.values():
 
             if p_relation_type == 0:
                 result_abs  = cluster.get_membership( p_inst = p_inst )
