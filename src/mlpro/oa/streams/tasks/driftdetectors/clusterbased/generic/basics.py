@@ -10,10 +10,11 @@
 ## -- 2025-03-26  0.2.1     DA       Bugfix in method DriftDetectorCBGeneric._run()
 ## -- 2025-04-01  0.3.0     DA       Class DriftDetectorCBGeneric: integration of new method 
 ## --                                _get_tstamp()
+## -- 2025-04-13  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-04-01)
+Ver. 0.4.0 (2025-04-13)
 
 This module provides template classes for generic cluster-based drift detection
 """
@@ -93,7 +94,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
     def _run(self, p_inst : InstDict ):
 
         # 1 Get current list of clusters
-        clusters = self._clusterer.get_clusters()
+        clusters = self._clusterer.clusters
 
 
         # 2 Observation of clusters
