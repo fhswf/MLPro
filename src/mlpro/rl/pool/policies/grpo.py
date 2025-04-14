@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-02  0.0.0     SY       Creation
-## -- 2025-04-10  1.0.0     SY       Release of first version
+## -- 2025-04-14  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-10)
+Ver. 1.0.0 (2025-04-14)
 
 This module implements a minimal version of Group Relative Policy Optimization (GRPO) for continuous
 action spaces, as described in the paper published on arXiv:2402.03300.
@@ -82,25 +82,14 @@ class MinGRPOPolicyNetwork(nn.Module):
         self.actor_logstd   = nn.Parameter(torch.zeros(1, self.action_space.get_num_dim()))
         self.critic         = nn.Linear(input_dim, 1)
         
-        # for layer in self.fc:
-        #     if isinstance(layer, nn.Linear):
-        #         nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
-        #         nn.init.constant_(layer.bias, 0.0)
-        
-        # nn.init.orthogonal_(self.actor.weight, gain=0.01)
-        # nn.init.constant_(self.actor.bias, 0.0)
-        # nn.init.orthogonal_(self.critic.weight, gain=1.0)
-        # nn.init.constant_(self.critic.bias, 0.0)
-        # nn.init.constant_(self.actor_logstd, -1.0) 
-        
         for layer in self.fc:
             if isinstance(layer, nn.Linear):
-                nn.init.xavier_normal_(layer.weight)
+                nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
                 nn.init.constant_(layer.bias, 0.0)
-
-        nn.init.xavier_normal_(self.actor.weight)
+        
+        nn.init.orthogonal_(self.actor.weight, gain=0.01)
         nn.init.constant_(self.actor.bias, 0.0)
-        nn.init.xavier_normal_(self.critic.weight)
+        nn.init.orthogonal_(self.critic.weight, gain=1.0)
         nn.init.constant_(self.critic.bias, 0.0)
         nn.init.constant_(self.actor_logstd, -1.0)
         
@@ -644,11 +633,8 @@ class MinGRPO(Policy):
             max=self.get_hyperparam().get_value(self._hp_ids[13])
             )
         
-        try:
-            new_dist            = Normal(new_mean, new_logstd.exp())
-            old_dist            = Normal(old_mean, old_logstd.exp())
-        except:
-            pass
+        new_dist            = Normal(new_mean, new_logstd.exp())
+        old_dist            = Normal(old_mean, old_logstd.exp())
     
         new_log_probs       = new_dist.log_prob(actions).sum(dim=-1)
         old_log_probs       = old_dist.log_prob(actions).sum(dim=-1)
