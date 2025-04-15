@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-02  0.0.0     SY       Creation
-## -- 2025-04-14  1.0.0     SY       Release of first version
+## -- 2025-04-15  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-14)
+Ver. 1.0.0 (2025-04-15)
 
 This module implements a minimal version of Group Relative Policy Optimization (GRPO) for continuous
 action spaces, as described in the paper published on arXiv:2402.03300.
@@ -51,6 +51,20 @@ class MinGRPOPolicyNetwork(nn.Module):
         indicates two hidden layers, each with 128 neurons. Default value: [128, 128].
     p_seed : int
         Seeding (optional). Default value: None.
+    p_activation_slope : float, optional
+        Negative slope for LeakyReLU activation. Default: 0.01.
+    p_actor_gain : float, optional
+        Gain used for orthogonal initialization of actor weights. Default: 0.01.
+    p_critic_gain : float, optional
+        Gain used for orthogonal initialization of critic weights. Default: 1.0.
+    p_init_std : float, optional
+        Initial value for the log standard deviation of the action distribution. Default: -1.0.
+    p_hidden_bias : float, optional
+        Constant value to initialize biases in hidden layers. Default: 0.0.
+    p_actor_bias : float, optional
+        Constant value to initialize bias in the actor layer. Default: 0.0.
+    p_critic_bias : float, optional
+        Constant value to initialize bias in the critic layer. Default: 0.0.
     """
 
 
@@ -60,7 +74,14 @@ class MinGRPOPolicyNetwork(nn.Module):
             p_state_space:MSpace,
             p_action_space:MSpace,
             p_hidden_layers:list=[128, 128],
-            p_seed:int=None
+            p_seed:int=None,
+            p_activation_slope:float=0.01,
+            p_actor_gain:float=0.01,
+            p_critic_gain:float=1.0,
+            p_init_std:float=-1.0,
+            p_hidden_bias:float=0.0,
+            p_actor_bias:float=0.0,
+            p_critic_bias:float=0.0
             ):
         
         super().__init__()
@@ -74,7 +95,7 @@ class MinGRPOPolicyNetwork(nn.Module):
         input_dim           = self.state_space.get_num_dim()
         for hidden_dim in p_hidden_layers:
             layers.append(nn.Linear(input_dim, hidden_dim))
-            layers.append(nn.LeakyReLU(negative_slope=0.01))
+            layers.append(nn.LeakyReLU(negative_slope=p_activation_slope))
             input_dim = hidden_dim
             
         self.fc             = nn.Sequential(*layers)
@@ -85,13 +106,13 @@ class MinGRPOPolicyNetwork(nn.Module):
         for layer in self.fc:
             if isinstance(layer, nn.Linear):
                 nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
-                nn.init.constant_(layer.bias, 0.0)
+                nn.init.constant_(layer.bias, p_hidden_bias)
         
-        nn.init.orthogonal_(self.actor.weight, gain=0.01)
-        nn.init.constant_(self.actor.bias, 0.0)
-        nn.init.orthogonal_(self.critic.weight, gain=1.0)
-        nn.init.constant_(self.critic.bias, 0.0)
-        nn.init.constant_(self.actor_logstd, -1.0)
+        nn.init.orthogonal_(self.actor.weight, gain=p_actor_gain)
+        nn.init.constant_(self.actor.bias, p_actor_bias)
+        nn.init.orthogonal_(self.critic.weight, gain=p_critic_gain)
+        nn.init.constant_(self.critic.bias, p_critic_bias)
+        nn.init.constant_(self.actor_logstd, p_init_std)
         
         self.low_bound      = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
         self.high_bound     = torch.tensor([act.get_boundaries()[1] for act in self.action_space.get_dims()])
