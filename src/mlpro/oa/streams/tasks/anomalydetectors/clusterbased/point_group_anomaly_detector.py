@@ -81,6 +81,8 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
+                  p_thres_percent : float = 0.05,
+                  p_thres_temporal : int = 2,
                   **p_kwargs ):
         
         self._cls_point_anomaly = p_cls_point_anomaly
@@ -89,6 +91,9 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
         self._cls_temporal_group_anomaly = p_cls_temporal_group_anomaly
         self._group_anomaly_det = p_group_anomaly_det
         self._cb_anomalies = {}
+        self._thres_precent = p_thres_percent
+        self._thres_temporal = p_thres_temporal
+        self._temporal_anomalies = {}
 
         super().__init__( p_clusterer=p_clusterer,
                           p_name = p_name,
@@ -117,9 +122,9 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
         avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in clusters]) / len(clusters)
 
         # 4 Calculater the threshold for the cluster size
-        thres_size = avg_cluster_size * 0.05 
+        thres_size = avg_cluster_size * self._thres_percent 
 
-        # 5 Check for the  anomaly clusters
+        # 5 Check for the  spatial group anomalies
         if 1 < cluster_size <= thres_size:
             # 5.1 Create a new spatial group anomaly 
             try:
@@ -152,7 +157,6 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
             except:
                 create_anomaly = True
 
-            # t_stamp = datetime.now() # _get_tstamp()
             
             if create_anomaly:
                 point_anomaly = self._cls_point_anomaly( p_clusters = {p_cluster.id : p_cluster},
@@ -161,7 +165,26 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
                                                         p_raising_object = self)
 
                 self._raise_anomaly_event(p_anomaly = point_anomaly)
+        
+        # 6 Check for the temporal group anomalies
+        if len(self._temporal_anomalies[p_cluster.id]) >= self._thres_temporal:
+            # 6.1 Create a new temporal group anomaly 
+            try:
+                cb_anomaly = self._cb_anomalies[p_cluster.id]
 
+                create_anomaly = (type(cb_anomaly) == self._cls_group_anomaly or type(cb_anomaly) == self._cls_temporal_group_anomaly)
+
+            except:
+                create_anomaly = True
+
+            
+            if create_anomaly:
+                temporal_anomaly = self._cls_temporal_group_anomaly( p_clusters = {p_cluster.id : p_cluster},
+                                                                     p_tstamp = self.get_tstamp(),
+                                                                     p_visualize = self.get_visualize,
+                                                                     p_raising_object = self)
+                # 6.2 Raise an anomaly event
+                self._raise_anomaly_event(p_anomaly = temporal_anomaly)
 
 ## -------------------------------------------------------------------------------------------------
 
