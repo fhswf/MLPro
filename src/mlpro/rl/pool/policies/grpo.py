@@ -95,7 +95,6 @@ class MinGRPOPolicyNetwork(nn.Module):
         input_dim           = self.state_space.get_num_dim()
         for hidden_dim in p_hidden_layers:
             layers.append(nn.Linear(input_dim, hidden_dim))
-            layers.append(nn.LayerNorm(hidden_dim))
             layers.append(nn.LeakyReLU(negative_slope=p_activation_slope))
             input_dim = hidden_dim
             
