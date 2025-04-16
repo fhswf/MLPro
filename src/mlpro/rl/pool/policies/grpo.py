@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-02  0.0.0     SY       Creation
-## -- 2025-04-15  1.0.0     SY       Release of first version
+## -- 2025-04-16  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-15)
+Ver. 1.0.0 (2025-04-16)
 
 This module implements a minimal version of Group Relative Policy Optimization (GRPO) for continuous
 action spaces, as described in the paper published on arXiv:2402.03300.
@@ -117,7 +117,6 @@ class MinGRPOPolicyNetwork(nn.Module):
         
         self.low_bound      = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
         self.high_bound     = torch.tensor([act.get_boundaries()[1] for act in self.action_space.get_dims()])
-        self._func_error    = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -168,31 +167,31 @@ class MinGRPOPolicyNetwork(nn.Module):
         state           = self.fc(state)
         
         if torch.isnan(state).any() or torch.isinf(state).any():
-            if not self._func_error:
-                print(
-                    "Detected NaN or Inf in the network output after `fc(state)`. "
-                    "This usually happens due to numerical instability in training. "
-                    "Potential causes:\n"
-                    "  - Learning rate too high (try lowering/highering it)\n"
-                    "  - Input values are exploding or not normalized\n"
-                    "  - Gradients may have exploded (check with gradient clipping)\n"
-                    "  - Loss function might be unstable for certain samples\n\n"
-                    "Recommended actions:\n"
-                    "  - Print inputs to `fc` to see if they contain extreme values\n"
-                    "  - Lower the learning rate (or reduce the training time)\n"
-                    "  - Add gradient clipping\n"
-                    "  - Add clamping or normalization to input features\n\n"
-                    "The training will remain running, where NaN/Inf values are replaced with 0.\n"
-                    "Hence, this function is basically broken from this point.\n"
-                    )
-                self._func_error = True
-            else:
-                print("NaN/Inf values are replaced with 0.\n")
-            state = torch.nan_to_num(state, nan=0.0, posinf=0.0, neginf=0.0)
+            print(
+                "Detected NaN or Inf in the network output after `fc(state)`. "
+                "This usually happens due to numerical instability in training. "
+                "Potential causes:\n"
+                "  - Learning rate too high (try lowering/highering it)\n"
+                "  - Input values are exploding or not normalized\n"
+                "  - Gradients may have exploded (check with gradient clipping)\n"
+                "  - Loss function might be unstable for certain samples\n\n"
+                "Recommended actions:\n"
+                "  - Print inputs to `fc` to see if they contain extreme values\n"
+                "  - Lower the learning rate (or reduce the training time)\n"
+                "  - Add gradient clipping\n"
+                "  - Add clamping or normalization to input features\n\n"
+                "The training will remain running, where NaN/Inf values are replaced with 0.\n"
+                "Hence, this function is basically broken from this point.\n"
+                )
         
         action_mean     = self.actor(state)
         action_logstd   = self.actor_logstd.expand_as(action_mean)
         state_value     = self.critic(state)
+        
+        if torch.isnan(state).any() or torch.isinf(state).any():
+            action_mean = torch.nan_to_num(action_mean, nan=0.0, posinf=0.0, neginf=0.0)
+            action_logstd = torch.nan_to_num(action_logstd, nan=0.0, posinf=0.0, neginf=0.0)
+            state_value = torch.nan_to_num(state_value, nan=0.0, posinf=0.0, neginf=0.0)
 
         return (action_mean, action_logstd), state_value          
 
