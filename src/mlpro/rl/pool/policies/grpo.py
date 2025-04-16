@@ -95,6 +95,7 @@ class MinGRPOPolicyNetwork(nn.Module):
         input_dim           = self.state_space.get_num_dim()
         for hidden_dim in p_hidden_layers:
             layers.append(nn.Linear(input_dim, hidden_dim))
+            layers.append(nn.LayerNorm(hidden_dim))
             layers.append(nn.LeakyReLU(negative_slope=p_activation_slope))
             input_dim = hidden_dim
             
@@ -116,6 +117,7 @@ class MinGRPOPolicyNetwork(nn.Module):
         
         self.low_bound      = torch.tensor([act.get_boundaries()[0] for act in self.action_space.get_dims()])
         self.high_bound     = torch.tensor([act.get_boundaries()[1] for act in self.action_space.get_dims()])
+        self._func_error    = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -164,6 +166,30 @@ class MinGRPOPolicyNetwork(nn.Module):
         """
         
         state           = self.fc(state)
+        
+        if torch.isnan(state).any() or torch.isinf(state).any():
+            if not self._func_error:
+                print(
+                    "Detected NaN or Inf in the network output after `fc(state)`. "
+                    "This usually happens due to numerical instability in training. "
+                    "Potential causes:\n"
+                    "  - Learning rate too high (try lowering/highering it)\n"
+                    "  - Input values are exploding or not normalized\n"
+                    "  - Gradients may have exploded (check with gradient clipping)\n"
+                    "  - Loss function might be unstable for certain samples\n\n"
+                    "Recommended actions:\n"
+                    "  - Print inputs to `fc` to see if they contain extreme values\n"
+                    "  - Lower the learning rate (or reduce the training time)\n"
+                    "  - Add gradient clipping\n"
+                    "  - Add clamping or normalization to input features\n\n"
+                    "The training will remain running, where NaN/Inf values are replaced with 0.\n"
+                    "Hence, this function is basically broken from this point.\n"
+                    )
+                self._func_error = True
+            else:
+                print("NaN/Inf values are replaced with 0.\n")
+            state = torch.nan_to_num(state, nan=0.0, posinf=0.0, neginf=0.0)
+        
         action_mean     = self.actor(state)
         action_logstd   = self.actor_logstd.expand_as(action_mean)
         state_value     = self.critic(state)
@@ -656,7 +682,7 @@ class MinGRPO(Policy):
         
         new_dist            = Normal(new_mean, new_logstd.exp())
         old_dist            = Normal(old_mean, old_logstd.exp())
-    
+        
         new_log_probs       = new_dist.log_prob(actions).sum(dim=-1)
         old_log_probs       = old_dist.log_prob(actions).sum(dim=-1)
         entropy             = new_dist.entropy().mean()
