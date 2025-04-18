@@ -107,30 +107,34 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------    
     def _run(self, 
-         p_inst: InstDict, 
-         p_tstamp: float,
-         p_cluster : Cluster, 
-         p_property : Property):
+             p_inst: InstDict):
+
 
         # 1 Get all the clusters from the clusterer
-        clusters = self._clusterer.get_clusters()
+        clusters = self._clusterer.clusters
+
+        for cluster in clusters.values():
 
         # 2 Get the cluster property to be observed
-        cluster_size : Property = getattr(p_cluster, p_property)
+            prop_cluster_size : Property = getattr(p_cluster, p_property)
 
         # 3 Get average cluster size
-        avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in clusters]) / len(clusters)
+            avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in clusters]) / len(clusters)
 
         # 4 Calculater the threshold for the cluster size
         thres_size = avg_cluster_size * self._thres_percent 
 
         # 5 Check for the  spatial group anomalies
-        if 1 < cluster_size <= thres_size:
+        if 1 < prop_cluster_size.value <= thres_size:
             # 5.1 Create a new spatial group anomaly 
             try:
                 cb_anomaly = self._cb_anomalies[p_cluster.id]
 
-                create_anomaly = type(cb_anomaly) == self._cls_point_anomaly
+                if  type(cb_anomaly) == self._cls_point_anomaly:
+                    self._remove_anomaly(p_anomaly = cb_anomaly)
+                    create_anomaly = True
+                else:
+                    create_anomaly = False
                     
             except:
 
@@ -143,16 +147,17 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
                                                                          p_tstamp = self.get_tstamp(),
                                                                          p_visualize = self.get_visualize,
                                                                          p_raising_object = self)
-                                                            
+
+
                 # 5.2 Raise an anomaly event
                 self._raise_anomaly_event( p_anomaly = spatial_group_anomaly)
 
-        elif cluster_size == 1:
+        elif (prop_cluster_size.value == 1) and (prop_cluster_size.value_prev is None):
             # 5.2 Create a new point anomaly 
             try:
                 cb_anomaly = self._cb_anomalies[p_cluster.id]
 
-                create_anomaly = (type(cb_anomaly) == self._cls_group_anomaly or type(cb_anomaly) == self._cls_spatial_group_anomaly)
+                create_anomaly = ((type(cb_anomaly) == self._cls_temporal_group_anomaly) or (type(cb_anomaly) == self._cls_spatial_group_anomaly))
 
             except:
                 create_anomaly = True
@@ -167,12 +172,12 @@ class AnomalyDetectorCBPAGA(AnomalyDetectorCB):
                 self._raise_anomaly_event(p_anomaly = point_anomaly)
         
         # 6 Check for the temporal group anomalies
-        if len(self._temporal_anomalies[p_cluster.id]) >= self._thres_temporal:
+        if len(self._temporal_anomalies[point_anomaly]) >= self._thres_temporal:
             # 6.1 Create a new temporal group anomaly 
             try:
                 cb_anomaly = self._cb_anomalies[p_cluster.id]
 
-                create_anomaly = (type(cb_anomaly) == self._cls_group_anomaly or type(cb_anomaly) == self._cls_temporal_group_anomaly)
+                create_anomaly = (type(cb_anomaly) == self._cls_point_anomaly or type(cb_anomaly) == self._cls_temporal_group_anomaly)
 
             except:
                 create_anomaly = True
