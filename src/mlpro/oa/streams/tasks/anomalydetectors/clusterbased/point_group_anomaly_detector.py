@@ -242,7 +242,7 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class AnomalyDetectorCBTGA(AnomalyDetectorCBPA):
+class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
     """
     Implementation of a cluster-based detector for temporal group anomalies.
 
