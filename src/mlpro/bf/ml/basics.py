@@ -1215,14 +1215,14 @@ class Training (Log):
 
         # 3 Setup scenario
         if self._hpt is None:
-            # try:
-            self._scenario = scenario_cls( p_mode=env_mode, 
+            try:
+                self._scenario = scenario_cls( p_mode=env_mode, 
                                                p_ada=True,
                                                p_cycle_limit=self._cycle_limit,
                                                p_visualize=visualize,
                                                p_logging=logging )
-            # except:
-            #     raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
+            except:
+                raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 
 
 ## -------------------------------------------------------------------------------------------------
