@@ -19,6 +19,7 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.deformation_index import cprop_deformation_index
 from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleMovement
 
 ## -------------------------------------------------------------------------------------------------
@@ -33,7 +34,6 @@ class DriftDetectorCBGenDeformation (DriftDetectorCBGenSingleMovement):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_clusterer : ClusterAnalyzer,
-                  p_property : PropertyDefinition,
                   p_thrs_lower : float,
                   p_thrs_upper : float,
                   p_cls_drift : type,
@@ -45,7 +45,7 @@ class DriftDetectorCBGenDeformation (DriftDetectorCBGenSingleMovement):
                   p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_clusterer = p_clusterer,
-                          p_property = p_property,
+                          p_property = cprop_deformation_index,
                           p_thrs_lower = p_thrs_lower,
                           p_thrs_upper = p_thrs_upper,
                           p_cls_drift = p_cls_drift,

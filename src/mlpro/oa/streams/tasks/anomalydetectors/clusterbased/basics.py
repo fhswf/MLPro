@@ -11,10 +11,12 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.3.0     SK       Refactoring
+## -- 2025-04-22  1.3.1     DA/DS    New methods - _run_algorithm & _run added
+## -- 2025-04-24  1.3.2     DS       New classes - AnomalyDetectorCBSingle & AnomalyDetectorCBMulti added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-28)
+Ver. 1.3.2 (2025-04-24)
 
 This module provides template for cluster-based anomaly detection algorithms to be used in the context of online adaptivity.
 """
@@ -67,3 +69,76 @@ class AnomalyDetectorCB (AnomalyDetector):
 
         if len(unknown_prop) >0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+
+## -------------------------------------------------------------------------------------------------
+    def _run_algorithm(self, p_inst: InstDict) -> None:
+        pass
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst: InstDict) -> None:
+        """
+        This method is called by the stream task to process the incoming instance.
+
+        Parameters
+        ----------
+        p_inst : InstDict
+            The incoming instance to be processed.
+
+        Returns
+        -------
+        None
+
+        """
+    self._run_algorithm(p_inst=p_inst)
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AnomalyDetectorCBSingle(AnomalyDetectorCB):
+    """
+    This is the class for detect anomalies related to a single cluster.
+
+    """
+
+    C_TYPE = 'Cluster based Anomaly Detector - Single Cluster'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_clusterer : ClusterAnalyzer,
+                 p_name : str = None,
+                 p_range_max = StreamTask.C_RANGE_THREAD,
+                 p_ada : bool = True,
+                 p_duplicate_data : bool = False,
+                 p_visualize : bool = False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+        
+        self.cb_anomalies ={}
+
+        super().__init__(p_clusterer = p_clusterer,
+                         p_name = p_name,
+                         p_range_max = p_range_max,
+                         p_ada = p_ada,
+                         p_duplicate_data = p_duplicate_data,
+                         p_visualize = p_visualize,
+                         p_logging= p_logging,
+                         **p_kwargs)
+
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(p_inst: InstDict) -> None:
+       
+       pass
+## -------------------------------------------------------------------------------------------------
+    def _triage_anomaly(self, 
+                        p_anomaly: AnomalyCB,
+                        **p_kwargs) -> bool:
+        pass
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AnomalyDetectorCBMulti(AnomalyDetectorCB):
+    """
+    This is the class for detect anomalies related to multiple clusters.
+
+    """
+    pass

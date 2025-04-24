@@ -124,7 +124,7 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBGenSingle (AnomalyDetectorCBGeneric):
+class AnomalyDetectorCBGenSingleProp (AnomalyDetectorCBGeneric):
     """
     Template for generic cluster-based anomaly detectors observing a single property.
 
@@ -170,7 +170,7 @@ class AnomalyDetectorCBGenSingle (AnomalyDetectorCBGeneric):
 
 ## ------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBGenMulti(AnomalyDetectorCBGeneric):
+class AnomalyDetectorCBGenMultiProp(AnomalyDetectorCBGeneric):
     """
     Template for generic cluster-based anomaly detectors observing multiple properties.
 

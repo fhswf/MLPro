@@ -26,7 +26,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import Anoma
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBGenPAGA ( AnomalyDetectorCBGenSingle ):
+class AnomalyDetectorCBGenPAGA ( AnomalyDetectorCBGenSingleProp ):
     """
     Implementation of a generic cluster-based detector for point and group anomalies.
 
