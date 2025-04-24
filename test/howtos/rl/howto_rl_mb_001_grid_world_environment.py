@@ -74,74 +74,72 @@ class ScenarioGridWorld(RLScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env   = GridWorld(p_logging=p_logging,
-                                p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D,
-                                p_max_step=100)
+        self._env   = GridWorld( p_action_type = GridWorld.C_ACTION_TYPE_DISC_2D,
+                                 p_max_step = 100,
+                                 p_logging = p_logging,
+                                 p_visualize = p_visualize )
 
 
         # 1.2 Setup and return random action agent
-        policy_random = RandomGenerator(p_observation_space=self._env.get_state_space(), 
-                                        p_action_space=self._env.get_action_space(),
-                                        p_buffer_size=1,
-                                        p_ada=1,
-                                        p_logging=p_logging)
+        policy_random = RandomGenerator( p_observation_space = self._env.get_state_space(), 
+                                         p_action_space = self._env.get_action_space(),
+                                         p_buffer_size = 1,
+                                         p_ada = 1,
+                                         p_logging = p_logging,
+                                         p_visualize = p_visualize )
         
         # Setup Adaptive Function
-        afct_strans = AFctSTrans(
-            PyTorchMLP,
-            p_state_space=self._env._state_space,
-            p_action_space=self._env._action_space,
-            p_threshold=0.1,
-            p_buffer_size=100,
-            p_batch_size=10,
-            p_ada=p_ada,
-            p_logging=p_logging,
-            p_update_rate=1,
-            p_num_hidden_layers=3,
-            p_hidden_size=128,
-            p_activation_fct=torch.nn.ReLU(),
-            p_output_activation_fct=torch.nn.ReLU(),
-            p_optimizer=torch.optim.Adam,
-            p_loss_fct=torch.nn.MSELoss,
-            p_learning_rate=3e-4
-        )
+        afct_strans = AFctSTrans( p_afct_cls = PyTorchMLP,
+                                  p_state_space = self._env._state_space,
+                                  p_action_space = self._env._action_space,
+                                  p_threshold = 0.1,
+                                  p_buffer_size = 100,
+                                  p_batch_size = 10,
+                                  p_ada = p_ada,
+                                  p_logging = p_logging,
+                                  p_update_rate = 1,
+                                  p_num_hidden_layers = 3,
+                                  p_hidden_size = 128,
+                                  p_activation_fct = torch.nn.ReLU(),
+                                  p_output_activation_fct = torch.nn.ReLU(),
+                                  p_optimizer = torch.optim.Adam,
+                                  p_loss_fct = torch.nn.MSELoss,
+                                  p_learning_rate = 3e-4,
+                                  p_visualize = p_visualize )
 
-        envmodel = EnvModel(
-            p_observation_space=self._env._state_space,
-            p_action_space=self._env._action_space,
-            p_latency=self._env.get_latency(),
-            p_afct_strans=afct_strans,
-            p_afct_reward=self._env,
-            p_afct_success=self._env,
-            p_afct_broken=self._env,
-            p_ada=p_ada,
-            p_init_states=self._env.get_state(),
-            p_logging=p_logging
-        )
+        envmodel = EnvModel( p_observation_space = self._env._state_space,
+                             p_action_space = self._env._action_space,
+                             p_latency = self._env.get_latency(),
+                             p_afct_strans = afct_strans,
+                             p_afct_reward = self._env,
+                             p_afct_success = self._env,
+                             p_afct_broken = self._env,
+                             p_ada = p_ada,
+                             p_init_states = self._env.get_state(),
+                             p_logging = p_logging,
+                             p_visualize = p_visualize )
 
-        mb_training_param = dict(p_cycle_limit=100,
-                                 p_cycles_per_epi_limit=100,
-                                 p_max_stagnations=0,
-                                 p_collect_states=False,
-                                 p_collect_actions=False,
-                                 p_collect_rewards=False,
-                                 p_collect_training=False)
+        mb_training_param = dict( p_cycle_limit = 100,
+                                  p_cycles_per_epi_limit = 100,
+                                  p_max_stagnations = 0,
+                                  p_collect_states = False,
+                                  p_collect_actions = False,
+                                  p_collect_rewards = False,
+                                  p_collect_training = False )
 
-        return Agent(
-            p_policy=policy_random,  
-            p_envmodel=envmodel,
-            p_em_acc_thsld=0.8,
-            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_THREAD,
-                                 p_logging=p_logging),
-            p_predicting_horizon=5,
-            p_controlling_horizon=1,
-            p_planning_width=50,
-            p_name='Smith',
-            p_ada=p_ada,
-            p_visualize=p_visualize,
-            p_logging=p_logging,
-            **mb_training_param
-        )
+        return Agent( p_policy = policy_random,  
+                      p_envmodel = envmodel,
+                      p_em_acc_thsld = 0.8,
+                      p_action_planner = MPC( p_range_max = mt.Async.C_RANGE_THREAD,
+                                              p_logging = p_logging ),
+                      p_predicting_horizon = 5,
+                      p_controlling_horizon = 1,
+                      p_planning_width = 50,
+                      p_name = 'Smith',
+                      p_ada = p_ada,
+                      p_visualize = p_visualize,
+                      p_logging = p_logging,
+                      **mb_training_param )
               
 
             
@@ -166,17 +164,15 @@ else:
     path        = None
     plotting    = False
 
-training = RLTraining(
-    p_scenario_cls=ScenarioGridWorld,
-    p_cycle_limit=cycle_limit,
-    p_cycles_per_epi_limit=100,
-    p_collect_states=True,
-    p_collect_actions=True,
-    p_collect_rewards=True,
-    p_collect_training=True,
-    p_path=path,
-    p_logging=logging,
-)
+training = RLTraining( p_scenario_cls=ScenarioGridWorld,
+                       p_cycle_limit=cycle_limit,
+                       p_cycles_per_epi_limit=100,
+                       p_collect_states=True,
+                       p_collect_actions=True,
+                       p_collect_rewards=True,
+                       p_collect_training=True,
+                       p_path=path,
+                       p_logging=logging )
 
 training.run()
               
