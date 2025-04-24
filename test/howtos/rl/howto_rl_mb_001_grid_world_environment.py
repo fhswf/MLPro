@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.examples
 ## -- Module  : howto_rl_mb_001_grid_world_environment.py
 ## -------------------------------------------------------------------------------------------------
@@ -19,10 +19,11 @@
 ## -- 2023-05-04  2.0.3     SY       Refactoring
 ## -- 2023-05-04  2.0.4     LSB      Refactoring
 ## -- 2024-02-16  2.0.5     SY       Renaming Module
+## -- 2025-04-24  2.0.6     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.5 (2024-02-16)
+Ver. 2.0.6 (2025-04-24)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem as well as using
 PyTorch-based MLP network from MLPro-SL's pool of objects.
@@ -42,6 +43,9 @@ You will learn:
 
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
+
+
 from mlpro.bf.plot import DataPlotting
 from mlpro.bf.math import *
 from mlpro.rl import *
