@@ -70,7 +70,6 @@ class ScenarioGridWorld(RLScenario):
 
     C_NAME      = 'Grid World with Random Actions'
 
-
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
@@ -185,7 +184,6 @@ training.run()
 
 # 3 Plotting with MLpro
 class MyDataPlotting(DataPlotting):
-
 
 ## -------------------------------------------------------------------------------------------------
     def get_plots(self):
