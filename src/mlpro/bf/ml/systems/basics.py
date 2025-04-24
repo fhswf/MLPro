@@ -102,8 +102,8 @@ class AFctBase (Model):
 
         self._setup_spaces(self._state_space, self._action_space, self._input_space, self._output_space)
 
-        try:
-            self._afct = p_afct_cls( p_input_space=self._input_space,
+        # try:
+        self._afct = p_afct_cls( p_input_space=self._input_space,
                                      p_output_space=self._output_space,
                                      p_output_elem_cls=p_output_elem_cls,
                                      p_threshold=p_threshold,
@@ -112,8 +112,8 @@ class AFctBase (Model):
                                      p_visualize=p_visualize,
                                      p_logging=p_logging,
                                      **p_kwargs )
-        except:
-            raise ParamError('Class ' + str(p_afct_cls) + ' is not compatible to class mlpro.sl.SLAdaptiveFunction')
+        # except:
+        #     raise ParamError('Class ' + str(p_afct_cls) + ' is not compatible to class mlpro.sl.SLAdaptiveFunction')
 
         super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
 
