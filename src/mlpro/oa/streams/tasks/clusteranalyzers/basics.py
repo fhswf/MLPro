@@ -42,10 +42,11 @@
 ## --                                - provision of current clusters as public attribute clusters
 ## --                                - removed the get_clusters() method
 ## --                                - renamed the _get_next_cell_id() method to _get_next_cluster_id()
+## -- 2025-04-24  1.5.0     DA       Added method _get_clusters() since needed for wrappers(!!)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-04-13)
+Ver. 1.5.0 (2025-04-24)
 
 This module provides a template class for online cluster analysis.
 """
@@ -158,7 +159,7 @@ class ClusterAnalyzer (OAStreamTask):
                           **p_kwargs )
 
         self._cls_cluster   = p_cls_cluster
-        self.clusters       = {}
+        self._clusters      = {}
         self._cluster_limit = p_cluster_limit
         self._next_cluster_id : ClusterId = -1
 
@@ -221,6 +222,11 @@ class ClusterAnalyzer (OAStreamTask):
     def get_cluster_cls(self):
         return self._cls_cluster
     
+
+## -------------------------------------------------------------------------------------------------
+    def _get_clusters(self):
+        return self._clusters
+
 
 ## -------------------------------------------------------------------------------------------------
     def _get_next_cluster_id(self) -> ClusterId:
@@ -452,3 +458,6 @@ class ClusterAnalyzer (OAStreamTask):
         for cluster in self.clusters.values():
             cluster.renormalize( p_normalizer=p_normalizer )
  
+
+## -------------------------------------------------------------------------------------------------
+    clusters = property( fget = _get_clusters )
