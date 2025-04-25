@@ -307,4 +307,3 @@ class BoundaryDetector (OAStreamTask):
                 plot_boundary[1] = upper_boundary
 
         p_settings.axes.set_ylim(plot_boundary)
-

@@ -78,10 +78,12 @@
 ## --                                - Class StreamTask: new method _get_tstamp()
 ## --                                - Class StreamShared: new parent TStamp, new methods 
 ## --                                  assign_stream(), get_tstamp() 
+## -- 2025-04-25  2.5.1     DA       Method Stream._get_tstamp_real(): 
+## --                                - replaced datetime.now() by time.perf_counter()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2025-04-03)
+Ver. 2.5.1 (2025-04-25)
 
 This module provides classes for standardized data stream processing. 
 
@@ -91,13 +93,14 @@ import random
 from typing import Dict, Tuple, Iterable
 from collections.abc import Iterator
 from itertools import cycle
+import time
 
 try:
     from matplotlib.figure import Figure
 except:
     class Figure : pass
 
-from mlpro.bf.various import Id, TStamp, KWArgs
+from mlpro.bf.various import Id, TStampType, TStamp, KWArgs
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import Dimension, Element, MSpace
@@ -523,15 +526,15 @@ class Stream (Mode, Id, TStamp, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_tstamp(self) -> datetime:
+    def get_tstamp(self) -> TStampType:
         """
         Returns the current streaming time. Depending on the stream mode (sim/real) the method
         _get_tstamp_sim() or the custom method _get_tstamp_real() are called.
 
         Returns
         -------
-        datetime
-            Current streaming time as a datetime object.
+        TStampType
+            Current streaming time.
         """
         
         if self.get_mode() == Mode.C_MODE_REAL:
@@ -541,22 +544,22 @@ class Stream (Mode, Id, TStamp, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_tstamp_sim(self) -> datetime:
+    def _get_tstamp_sim(self) -> TStampType:
         """
         Custom method to determine the current time stamp of the running simulation.
 
         Returns
         -------
-        datetime
-            Current streaming time as a datetime object.
+        TStampType
+            Current streaming time.
         """
 
-        return datetime.now()
+        return self._next_inst_id 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_tstamp_real(self) -> datetime:
-        return datetime.now()
+    def _get_tstamp_real(self) -> TStampType:
+        return time.perf_counter() - self._perf_counter0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -571,7 +574,8 @@ class Stream (Mode, Id, TStamp, ScientificObject):
         """
 
         self.log(self.C_LOG_TYPE_I, 'Reset')
-        self._next_inst_id = 0
+        self._next_inst_id  = 0
+        self._perf_counter0 = time.perf_counter()
         self._reset()
         
         if self._sampler is not None:
@@ -1722,6 +1726,7 @@ class StreamTask (Task):
                 raise Error("time delta could not be processed")
         else:
             p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id], self._plot_nd_xdata[-1])
+
         p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
                     
 
