@@ -163,7 +163,7 @@ class MinGRPOPolicyNetwork(nn.Module):
             The estimated value of each input state.
         """
         
-        state           = self.fc(state)
+        state = self.fc(state)
         
         if torch.isnan(state).any() or torch.isinf(state).any():
             print(
@@ -183,14 +183,14 @@ class MinGRPOPolicyNetwork(nn.Module):
                 "Hence, this function is basically broken from this point.\n"
                 )
         
-        action_mean     = self.actor(state)
-        action_logstd   = self.actor_logstd.expand_as(action_mean)
-        state_value     = self.critic(state)
+        action_mean         = self.actor(state)
+        action_logstd       = self.actor_logstd.expand_as(action_mean)
+        state_value         = self.critic(state)
         
         if torch.isnan(state).any() or torch.isinf(state).any():
-            action_mean = torch.nan_to_num(action_mean, nan=0.0, posinf=0.0, neginf=0.0)
-            action_logstd = torch.nan_to_num(action_logstd, nan=0.0, posinf=0.0, neginf=0.0)
-            state_value = torch.nan_to_num(state_value, nan=0.0, posinf=0.0, neginf=0.0)
+            action_mean     = torch.nan_to_num(action_mean, nan=0.0, posinf=0.0, neginf=0.0)
+            action_logstd   = torch.nan_to_num(action_logstd, nan=0.0, posinf=0.0, neginf=0.0)
+            state_value     = torch.nan_to_num(state_value, nan=0.0, posinf=0.0, neginf=0.0)
 
         return (action_mean, action_logstd), state_value          
 
