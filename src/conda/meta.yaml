@@ -7,6 +7,12 @@ package:
 
 source:
   path: ../../..
+  include:
+    - pyproject.toml
+    - setup.cfg
+    - README.md
+    - LICENSE
+    - src/
 
 build:
   number: 0
