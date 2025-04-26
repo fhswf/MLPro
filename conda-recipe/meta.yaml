@@ -6,12 +6,12 @@ package:
   version: "{{ version }}"
 
 source:
-  path: .
+  path: ../..
 
 build:
   number: 0
   script:
-    - "python -m pip install . --no-deps --ignore-installed -vv"
+    - python -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
@@ -26,10 +26,10 @@ requirements:
     - dill
 
 test:
-  requires:
-    - pip
   commands:
     - python -c "import mlpro"
+  requires:
+    - pip
 
 about:
   home: https://github.com/fhswf/MLPro
