@@ -30,7 +30,7 @@ MLPro is a modular, open-source middleware framework for standardized machine le
 #### d) Documentation
 Learn more: [MLPro online documentation](https://mlpro.readthedocs.io/)
 
-#### e) Extension hub for 3rd-party and custom extensions
+#### e) [Extension Hub](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html) Extension hub for 3rd-party and custom extensions
 Learn more: [MLPro Extension Hub](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html)
 
 
@@ -38,7 +38,7 @@ Learn more: [MLPro Extension Hub](https://mlpro.readthedocs.io/en/latest/content
 - Consequent object-oriented design and programming (OOD/OOP)
 - Quality assurance by test-driven development
 - Agile CI/CD approach with automated test and deployment
-- Clean code paradigma
+- Clean code paradigm
 
 
 ## Project and Team
