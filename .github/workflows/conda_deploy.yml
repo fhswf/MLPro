@@ -7,6 +7,7 @@
 ## -- 2021        1.0.0     MRD      Creation 
 ## -- 2024-10-09  1.1.0     DA       Updated Python version to 3.10
 ## -- 2024-11-21  1.2.0     DA       Updated versions of actions/checkout, actions/setup-python
+## -- 2025-04-26  1.3.0     DA       Updates
 ## -------------------------------------------------------------------------------------------------
 
 name: Deployment Conda
@@ -22,21 +23,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: .
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
+
     - name: Add conda to system path
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
+
     - name: Install dependencies
       run: |
         conda install conda-build anaconda-client conda-verify
+
     - name: Build Package
       run: |
         conda build --output-folder src/conda conda-recipe
+
     - name: Convert Package
       run: |
         conda convert -p win-64 -o src/conda src/conda/linux-64/*.tar.bz2
@@ -45,6 +54,7 @@ jobs:
         conda convert -p linux-aarch64 -o src/conda src/conda/linux-64/*.tar.bz2
         conda convert -p linux-armv7l -o src/conda src/conda/linux-64/*.tar.bz2
         conda convert -p linux-armv6l -o src/conda src/conda/linux-64/*.tar.bz2
+
     - name: Upload Conda Package
       env: 
         ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
