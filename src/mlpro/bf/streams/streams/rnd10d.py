@@ -8,10 +8,11 @@
 ## -- 2022-12-13  0.0.0     DA       Creation 
 ## -- 2022-12-13  1.0.0     DA       First implementation
 ## -- 2024-06-04  1.0.1     DA       Bugfix: ESpace instead of MSpace
+## -- 2025-04-02  1.0.2     DA       Little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-06-03)
+Ver. 1.0.2 (2025-04-02)
 
 This module provides the native stream class StreamMLProRnd10D. This stream provides 1000 instances
 with 10-dimensional random feature data and 2-dimensional random label data.
@@ -19,6 +20,7 @@ with 10-dimensional random feature data and 2-dimensional random label data.
 
 import numpy as np
 from mlpro.bf.streams.basics import *
+from mlpro.bf.math import ESpace, MSpace
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 

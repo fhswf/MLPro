@@ -4,7 +4,7 @@ Howto BF-STREAMS-007: Visualizing Dynamic 2D Random Point Clouds Provided By MLP
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_007_native_stream_Clouds2D4C5000Dynamic.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_007_native_stream_Clouds2D4C5000Dynamic.py
 	:language: python
 
 

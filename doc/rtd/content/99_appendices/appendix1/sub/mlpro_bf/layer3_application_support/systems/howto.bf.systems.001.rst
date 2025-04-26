@@ -4,7 +4,7 @@ Howto BF-SYSTEMS-001: Demonstrating Native Systems
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_systems_001_demonstrating_native_systems.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/systems/howto_bf_systems_001_demonstrating_native_systems.py
 	:language: python
 
 

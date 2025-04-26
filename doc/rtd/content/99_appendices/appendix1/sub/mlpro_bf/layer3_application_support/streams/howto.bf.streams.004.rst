@@ -4,7 +4,7 @@ Howto BF-STREAMS-004: Visualizing 2D Double Spiral Stream Provided By MLPro
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_004_native_stream_DoubleSpiral2D.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_004_native_stream_DoubleSpiral2D.py
 	:language: python
 
 

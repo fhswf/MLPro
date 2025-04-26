@@ -10,3 +10,15 @@ BF-SYSTEMS - State-based Systems
    :undoc-members:
    :private-members:
    :show-inheritance:
+
+
+
+.. _target_pool_bf_systems:
+Pool objects
+------------
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   bf_systems_pool/*

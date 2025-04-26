@@ -12,7 +12,7 @@ Please install the following packages to run this example properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_121_stream_task_rearranger_2d.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_121_stream_task_rearranger_2d.py
 	:language: python
 
 
