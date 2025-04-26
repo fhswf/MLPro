@@ -27,11 +27,9 @@ MLPro is a modular, open-source middleware framework for standardized machine le
 
 #### c) Online documentation ([learn more](https://mlpro.readthedocs.io/))
 
-#### d) Example pool
-Learn more: [https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html](https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html)
+#### d) Example pool ([learn more](https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html))
 
-#### e) Extension hub
-Learn more: [https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html)
+#### e) Extension hub ([learn more](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html))
 
 
 ## Development
