@@ -7,7 +7,7 @@
 [![Anaconda-Downloads Badge](https://img.shields.io/conda/dn/mlpro/mlpro?color=green&label=Anaconda.org%20Total%20downloads&style=flat-square)](https://anaconda.org/mlpro/mlpro)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6653484.svg)](https://doi.org/10.5281/zenodo.6653484)
 
-<img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
+<img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="30%"/>
 
 # MLPro - The integrative middleware framework for standardized machine learning in Python
 
