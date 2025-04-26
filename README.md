@@ -19,19 +19,17 @@ MLPro is a modular, open-source middleware framework for standardized machine le
 - Fundamental ML classes for adaptive models and their training and hyperparameter tuning
 
 #### b) Growing number of dedicated sub-frameworks
-- MLPro-BF: Powerful substructure with numerous cross-sectional functions
-- MLPro-RL: Reinforcement learning
-- MLPro-GT: Game theory
-- MLPro-OA: Online machine learning
-- MLPro-SL: Supervised learning
+- **MLPro-BF:** Powerful substructure with numerous cross-sectional functions
+- **MLPro-RL:** Reinforcement learning
+- **MLPro-GT:** Game theory
+- **MLPro-OA:** Online machine learning
+- **MLPro-SL:** Supervised learning
 
-#### c) Numerous executable self-study examples
+#### c) [Online documentation](https://mlpro.readthedocs.io/)
 
-#### d) Documentation
-Learn more: [MLPro online documentation](https://mlpro.readthedocs.io/)
+#### d) [Example pool](https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html)
 
-#### e) [Extension Hub](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html) Extension hub for 3rd-party and custom extensions
-Learn more: [MLPro Extension Hub](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html)
+#### e) [Extension Hub](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html) for 3rd-party and custom extensions
 
 
 ## Development
