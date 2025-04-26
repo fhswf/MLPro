@@ -12,7 +12,7 @@ To run this howto please install the following packages
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_mt_002_tasks_and_workflows.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/mt/howto_bf_mt_002_tasks_and_workflows.py
 	:language: python
 
 

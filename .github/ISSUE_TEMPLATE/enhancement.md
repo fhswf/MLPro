@@ -3,7 +3,7 @@ name: Enhancement
 about: Specification of a new enhancement
 title: ''
 labels: enhancement
-assignees: detlefarend, steveyuwono
+assignees: ''
 
 ---
 

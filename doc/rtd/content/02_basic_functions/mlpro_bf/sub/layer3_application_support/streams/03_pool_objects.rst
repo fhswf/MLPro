@@ -1,5 +1,5 @@
 .. _target_stream_tasks_pool:
-Pool ojects
+Pool objects
 ============
 
 .. toctree::

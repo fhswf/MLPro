@@ -35,7 +35,7 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class CBAnomaly (Anomaly):
+class AnomalyCB (Anomaly):
     """
     Event class to be raised when cluster-based anomalies are detected.
     
@@ -67,14 +67,14 @@ class CBAnomaly (Anomaly):
     C_ANOMALY_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_id : int = 0,
-                 p_clusters : dict[Cluster] = None,
-                 p_properties : dict = None,
-                 p_tstamp : datetime = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
-                 **p_kwargs):
+    def __init__( self,
+                  p_id : int = 0,
+                  p_clusters : dict[Cluster] = None,
+                  p_properties : dict = None,
+                  p_tstamp : datetime = None,
+                  p_visualize : bool = False,
+                  p_raising_object : object = None,
+                  **p_kwargs ):
         
         super().__init__( p_id = p_id,
                           p_tstamp = p_tstamp,
