@@ -36,7 +36,7 @@ jobs:
         conda install conda-build anaconda-client conda-verify
     - name: Build Package
       run: |
-        conda build --output-folder src/conda src/conda
+        conda build --output-folder src/conda conda-recipe
     - name: Convert Package
       run: |
         conda convert -p win-64 -o src/conda src/conda/linux-64/*.tar.bz2
