@@ -25,8 +25,7 @@ MLPro is a modular, open-source middleware framework for standardized machine le
 - **MLPro-OA:** Online machine learning
 - **MLPro-SL:** Supervised learning
 
-#### c) Online documentation
-Learn more: [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
+#### c) Online documentation ([learn more](https://mlpro.readthedocs.io/))
 
 #### d) Example pool
 Learn more: [https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html](https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html)
