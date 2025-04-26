@@ -26,9 +26,11 @@ requirements:
     - dill
 
 test:
-  imports:
-    - mlpro
-
+  requires:
+    - pip
+  commands:
+    - python -c "import mlpro"
+    
 about:
   home: https://github.com/fhswf/MLPro
   license: Apache-2.0
