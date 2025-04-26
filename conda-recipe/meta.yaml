@@ -6,13 +6,7 @@ package:
   version: "{{ version }}"
 
 source:
-  path: ../../..
-  include:
-    - pyproject.toml
-    - setup.cfg
-    - README.md
-    - LICENSE
-    - src/
+  path: ..
 
 build:
   number: 0
@@ -20,12 +14,14 @@ build:
 
 requirements:
   host:
+    - python >=3.11
     - pip
-    - python
+    - setuptools
+    - wheel
   run:
     - python
-    - matplotlib
     - numpy
+    - matplotlib
     - dill
 
 test:
@@ -39,5 +35,10 @@ about:
   license_file: LICENSE
   summary: MLPro - The integrative middleware framework for standardized machine learning
   description: |
-    MLPro provides complete, standardized, and reusable functionalities to support
-    your scientific research, educational tasks, or industrial projects in machine learning.
+    MLPro provides complete, standardized, and reusable functionalities
+    to support your scientific research, educational tasks, or industrial projects
+    in machine learning.
+
+extra:
+  copy_test_source_files: true
+  final: true
