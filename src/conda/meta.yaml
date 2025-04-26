@@ -6,12 +6,11 @@ package:
   version: "{{ version }}"
 
 source:
-  path: ..
-
+  path: ../../..
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
   host:
@@ -31,5 +30,8 @@ about:
   home: https://github.com/fhswf/MLPro
   license: Apache-2.0
   license_family: Apache
+  license_file: LICENSE
   summary: MLPro - The integrative middleware framework for standardized machine learning
-  description: MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational tasks or industrial projects in machine learning.
+  description: |
+    MLPro provides complete, standardized, and reusable functionalities to support
+    your scientific research, educational tasks, or industrial projects in machine learning.
