@@ -31,7 +31,7 @@ Learn more: [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
 #### d) Example pool
 Learn more: [https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html](https://mlpro.readthedocs.io/en/latest/content/99_appendices/appendix1/main.html)
 
-#### e) Extension Hub
+#### e) Extension hub
 Learn more: [https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html](https://mlpro.readthedocs.io/en/latest/content/04_extensions/main.html)
 
 
