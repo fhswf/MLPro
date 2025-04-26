@@ -44,7 +44,8 @@ jobs:
 
     - name: Build Package
       run: |
-        conda build --output-folder src/conda conda-recipe
+        conda build conda-recipe
+
 
     - name: Convert Package
       run: |
