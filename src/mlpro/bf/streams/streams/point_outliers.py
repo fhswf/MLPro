@@ -23,6 +23,8 @@ additional random point outliers.
 
 import random
 import math
+
+from mlpro.bf.math import ESpace
 from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 

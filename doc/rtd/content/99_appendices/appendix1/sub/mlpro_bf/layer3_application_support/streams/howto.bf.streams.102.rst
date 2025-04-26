@@ -4,7 +4,7 @@ Howto BF-STREAMS-102: Tasks Workflows And Stream Scenarios
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_102_tasks_workflows_and_stream_scenarios.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_102_tasks_workflows_and_stream_scenarios.py
 	:language: python
 
 

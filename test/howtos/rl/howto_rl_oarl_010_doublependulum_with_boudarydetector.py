@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.examples
 ## -- Module  : howto_rl_oarl_010_doublependulum_with_boudarydetector.py
 ## -------------------------------------------------------------------------------------------------

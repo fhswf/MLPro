@@ -38,10 +38,15 @@
 ## -- 2024-06-16  1.2.1     DA       Bugfix in ClusterAnalyzer.align_cluster_properties()
 ## -- 2024-08-20  1.3.0     DA       Raising of events Cluster.C_CLUSTER_ADDED, Cluster.C_CLUSTER_REMOVED
 ## -- 2024-08-21  1.3.1     DA       Resolved name collision of class mlpro.bf.events.Event
+## -- 2025-04-13  1.4.0     DA       Refactoring of ClusterAnalyzer:
+## --                                - provision of current clusters as public attribute clusters
+## --                                - removed the get_clusters() method
+## --                                - renamed the _get_next_cell_id() method to _get_next_cluster_id()
+## -- 2025-04-24  1.5.0     DA       Added method _get_clusters() since needed for wrappers(!!)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2024-08-21)
+Ver. 1.5.0 (2025-04-24)
 
 This module provides a template class for online cluster analysis.
 """
@@ -184,9 +189,9 @@ class ClusterAnalyzer (OAStreamTask):
         for p_ext in p_properties:
             try:
                 p_int = self._cluster_properties[p_ext[0]]
-                p_int[1] = p_ext[1]   # alignment of maximum order of derivatives
-                p_int[2] = p_ext[2]   # alignment of storage of previous values
-                p_int[3] = p_ext[3]   # alignment of property class
+
+                # If the property is basically provided it is aligned with external settings
+                self._cluster_properties[p_ext[0]] = p_ext
             except:
                 # Property not supported by cluster algorithm
                 unknown_properties.append(p_ext[0])
@@ -210,7 +215,7 @@ class ClusterAnalyzer (OAStreamTask):
            True, if adding a new cluster allowed. False otherwise.
         """
 
-        return ( self._cluster_limit == 0 ) or ( len(self._clusters.keys()) < self._cluster_limit )
+        return ( self._cluster_limit == 0 ) or ( len(self.clusters.keys()) < self._cluster_limit )
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -219,21 +224,12 @@ class ClusterAnalyzer (OAStreamTask):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> dict[Cluster]:
-        """
-        This method returns the current list of clusters. 
-
-        Returns
-        -------
-        dict_of_clusters : dict[Cluster]
-            Current dictionary of clusters.
-        """
-
+    def _get_clusters(self):
         return self._clusters
-    
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_next_cell_id(self) -> ClusterId:
+    def _get_next_cluster_id(self) -> ClusterId:
         self._next_cluster_id += 1
         return self._next_cluster_id
     
@@ -250,7 +246,7 @@ class ClusterAnalyzer (OAStreamTask):
             Cluster object to be added.
         """
 
-        self._clusters[p_cluster.id] = p_cluster
+        self.clusters[p_cluster.id] = p_cluster
 
         if self.get_visualization(): 
             p_cluster.init_plot( p_figure=self._figure, p_plot_settings=self.get_plot_settings() )
@@ -272,7 +268,7 @@ class ClusterAnalyzer (OAStreamTask):
         """
 
         p_cluster.remove_plot(p_refresh=True)
-        del self._clusters[p_cluster.id]
+        del self.clusters[p_cluster.id]
 
         self._raise_event( p_event_id = self.C_EVENT_CLUSTER_REMOVED, 
                            p_event_object = MLProEvent( p_raising_object = self,
@@ -313,7 +309,7 @@ class ClusterAnalyzer (OAStreamTask):
         list_results_rel    = []
         cluster_max_results = None
 
-        for cluster in self.get_clusters().values():
+        for cluster in self.clusters.values():
 
             if p_relation_type == 0:
                 result_abs  = cluster.get_membership( p_inst = p_inst )
@@ -415,7 +411,7 @@ class ClusterAnalyzer (OAStreamTask):
 
         super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
 
-        for cluster in self._clusters.values():
+        for cluster in self.clusters.values():
             cluster.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
 
 
@@ -426,7 +422,7 @@ class ClusterAnalyzer (OAStreamTask):
 
         if not self.get_visualization(): return
 
-        for cluster in self._clusters.values():
+        for cluster in self.clusters.values():
             cluster.update_plot(p_inst = p_inst, **p_kwargs)
 
 
@@ -443,7 +439,7 @@ class ClusterAnalyzer (OAStreamTask):
 
         if not self.get_visualization(): return
 
-        for cluster in self._clusters.values():
+        for cluster in self.clusters.values():
             cluster.remove_plot( p_refresh = False)
 
         
@@ -459,6 +455,9 @@ class ClusterAnalyzer (OAStreamTask):
             Normalizer object to be applied on task-specific 
         """
 
-        for cluster in self._clusters.values():
+        for cluster in self.clusters.values():
             cluster.renormalize( p_normalizer=p_normalizer )
  
+
+## -------------------------------------------------------------------------------------------------
+    clusters = property( fget = _get_clusters )

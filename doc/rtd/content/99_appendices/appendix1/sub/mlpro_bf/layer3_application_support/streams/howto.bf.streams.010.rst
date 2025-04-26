@@ -4,7 +4,7 @@ Howto BF-STREAMS-010: Visualizing Multivariate Random Cloud Generator in 3D Mode
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_010_native_stream_CloudsNDim.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_010_native_stream_CloudsNDim.py
 	:language: python
 
 

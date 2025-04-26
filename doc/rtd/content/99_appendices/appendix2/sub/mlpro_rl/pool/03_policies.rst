@@ -5,4 +5,4 @@ Policies
    :maxdepth: 2
    :glob:
    
-   policiies/*
+   policies/*

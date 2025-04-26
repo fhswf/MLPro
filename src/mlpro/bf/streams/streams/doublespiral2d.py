@@ -8,10 +8,11 @@
 ## -- 2022-12-14  0.0.0     DA       Creation 
 ## -- 2022-12-14  1.0.0     DA       First implementation
 ## -- 2024-06-04  1.0.1     DA       Bugfix: ESpace instead of MSpace
+## -- 2025-04-02  1.0.2     DA       Little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-06-04)
+Ver. 1.0.2 (2025-04-02)
 
 This module provides the native stream class DoubleSpiral2D. It provides 721 instances with 
 2-dimensional feature data that follow a double spiral pattern.
@@ -19,7 +20,7 @@ This module provides the native stream class DoubleSpiral2D. It provides 721 ins
 
 import numpy as np
 from math import sin, cos, pi
-from mlpro.bf.math import MSpace
+from mlpro.bf.math import MSpace, ESpace
 from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 

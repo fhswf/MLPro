@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.tasks
 ## -- Module  : deriver.py
 ## -------------------------------------------------------------------------------------------------
@@ -11,10 +11,11 @@
 ## -- 2024-05-22  1.1.0     DA       Refactoring
 ## -- 2024-07-17  1.1.1     SY       Method Deriver._prepare_derivation(): takeover of feature 
 ## --                                and label space from first instance
+## -- 2025-04-25  1.1.2     DA       Bugfix in DerivativeFunction._custom_function()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-07-17)
+Ver. 1.1.2 (2025-04-25)
 
 This module provides a stream task class Deriver to derive the data of instances.
 """
@@ -227,8 +228,10 @@ class DerivativeFunction(TransferFunction):
                 output.append(0)
             else:
                 try:
-                    delta_t = (p_range[x]-p_range[x-1]).seconds
+                    delta_t = (p_range[x]-p_range[x-1]).total_seconds() #seconds
                 except:
                     delta_t = 1
+
                 output.append((p_input[x]-p_input[x-1])/delta_t)
+
         return output
