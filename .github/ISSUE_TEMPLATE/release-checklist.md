@@ -38,7 +38,6 @@ Release Checklist
   - [ ] 3.1.2 All auto-generated code descriptions there?
   - [ ] 3.1.3 Logo there?
 - [ ] 3.2 Check [MLPro in PyPI](https://pypi.org/project/mlpro/)
-- [ ] 3.3 Check [MLPro in Anaconda](https://anaconda.org/mlpro/mlpro/)
-- [ ] 3.4 Check [MLPro in Zenodo](https://zenodo.org/account/settings/github/repository/fhswf/MLPro)
-- [ ] 3.5 Update all open branches from main
-- [ ] 3.6 Inform the team on slack
+- [ ] 3.3 Check [MLPro in Zenodo](https://zenodo.org/account/settings/github/repository/fhswf/MLPro)
+- [ ] 3.4 Update all open branches from main
+- [ ] 3.5 Inform the team on slack
