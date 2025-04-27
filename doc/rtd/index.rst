@@ -85,10 +85,6 @@ MLPro - Elevate your machine learning journey
    :target: https://pypi.org/project/mlpro
    :scale: 50 %
 
-.. |mlpro_anaconda| image:: content/00_start_page/images/anaconda.png
-   :target: https://anaconda.org/mlpro/mlpro
-   :scale: 10 %
-
 .. |mlpro_github| image:: content/00_start_page/images/github.png
    :target: https://github.com/fhswf/MLPro
    :scale: 2 %
@@ -97,10 +93,9 @@ MLPro - Elevate your machine learning journey
 📦 MLPro is available on...
 
 .. list-table::
-   :widths: 33 33 33
+   :widths: 50 50
 
    * - |mlpro_pypi|     `PyPI <https://pypi.org/project/mlpro>`_
-     - |mlpro_anaconda| `Anaconda <https://anaconda.org/mlpro/mlpro>`_
      - |mlpro_github|   `GitHub <https://github.com/fhswf/MLPro>`_
 
 
