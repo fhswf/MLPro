@@ -62,10 +62,11 @@
 ## --                                - Class Plottable: memory function for plot window geometries
 ## -- 2024-12-12  3.1.0     DA       Method Plottable._init_figure(): optimization
 ## -- 2024-12-29  3.2.0     DA       Import of all plot packages moved to class Plottable
+## -- 2025-04-13  3.2.1     DA       Improved Qt support in method Plottable._import_plot_packages
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.2.0 (2024-12-29)
+Ver. 3.2.1 (2025-04-13)
 
 This module provides various classes related to data plotting.
 
@@ -358,8 +359,10 @@ class Plottable:
 
             try:
                 from matplotlib.backends.qt_compat import QtCore
-                qtcore_test = QtCore.__version__
-                matplotlib.use('qtagg')
+                try:
+                    matplotlib.use('qtagg')
+                except:
+                    matplotlib.use('QtAgg') 
             except:
                 import tkinter
                 matplotlib.use('TkAgg')

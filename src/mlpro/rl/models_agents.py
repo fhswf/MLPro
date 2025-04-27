@@ -54,10 +54,11 @@
 ## -- 2023-02-21  1.6.6     DA       Class MultiAgent: removed methods load(), save()
 ## -- 2023-03-10  1.6.7     SY       Class Agent and RLScenarioMBInt : update logging
 ## -- 2023-03-27  1.7.0     DA       Refactoring of persistence
+## -- 2025-04-24  1.7.1     DA       Bugfix in Policy.__init__(): param p_name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2023-03-27) 
+Ver. 1.7.1 (2025-04-24) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -126,6 +127,7 @@ class Policy (Model):
                  
         Model.__init__( self, 
                         p_id = p_id,
+                        p_name = self.get_name(),
                         p_buffer_size = p_buffer_size, 
                         p_ada = p_ada,  
                         p_visualize = p_visualize, 

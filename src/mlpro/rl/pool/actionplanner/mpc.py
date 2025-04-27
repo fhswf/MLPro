@@ -10,10 +10,11 @@
 ## -- 2022-10-08  1.0.1     SY       Bug fixing
 ## -- 2023-01-02  1.1.0     SY       Add multiprocessing functionality
 ## -- 2023-02-04  1.1.1     SY       Bug fixing
+## -- 2025-04-24  1.1.2     DA       Bugfix in method MPC._async_subtask()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-02-04)
+Ver. 1.1.2 (2025-04-24)
 
 This module provides a default implementation of model predictive control (MPC).
 """
@@ -162,7 +163,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
 
 ## -------------------------------------------------------------------------------------------------
     def _async_subtask(self, p_tid:int, p_obs:State):
-        self._so.checkin(p_id=p_tid)
+        self._so.checkin(p_tid=p_tid)
         
         state = p_obs
         path = SARSBuffer(p_size=self._prediction_horizon)
@@ -204,5 +205,5 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
             # adjust the current state with next state
             state = next_state
 
-        self._so.add_result(p_id=p_tid, p_result=[overall_reward, path])
-        self._so.checkout(p_id=p_tid)
+        self._so.add_result( p_tid=p_tid, p_result=[overall_reward, path] )
+        self._so.checkout( p_tid = p_tid )

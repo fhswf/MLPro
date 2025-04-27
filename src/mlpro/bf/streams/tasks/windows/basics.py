@@ -24,10 +24,11 @@
 ## -- 2022-12-31  1.1.4     LSB      Refactoring
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
 ## -- 2024-05-22  1.2.0     DA       Refactoring and splitting
+## -- 2025-04-11  1.2.1     DA       Code review/cleanup
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-22)
+Ver. 1.2.1 (2025-04-11)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -67,9 +68,6 @@ class Window (StreamTask):
     C_NAME                  = 'Window'
 
     C_PLOT_STANDALONE       = False
-
-    C_PLOT_IN_WINDOW        = 'In Window'
-    C_PLOT_OUTSIDE_WINDOW   = 'Out Window'
 
     C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'     # raised the first time the buffer runs full
     C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'    # raised whenever data were removed from the buffer

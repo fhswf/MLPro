@@ -19,7 +19,7 @@ Ver. 1.3.9 (2024-05-28)
 This module provides a template class for cluster enlargement to be used in anomaly detection algorithms.
 """
 
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import CBAnomaly
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
 
 
 
@@ -27,7 +27,7 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics impor
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ClusterEnlargement (CBAnomaly):
+class ClusterEnlargement (AnomalyCB):
     """
     Event class to be raised when a cluster enlarges.
     

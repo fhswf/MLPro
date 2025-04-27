@@ -4,7 +4,7 @@ Howto BF-STREAMS-006: Visualizing Static 2D Random Point Clouds Provided By MLPr
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_006_native_stream_Clouds2D4C1000Static.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_006_native_stream_Clouds2D4C1000Static.py
 	:language: python
 
 

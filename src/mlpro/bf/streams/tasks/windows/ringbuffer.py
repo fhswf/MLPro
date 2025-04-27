@@ -27,10 +27,12 @@
 ## -- 2024-05-23  1.2.1     DA       Bugfixes on plotting
 ## -- 2024-10-31  1.2.2     DA       Bugfix in RingBuffer.get_boundaries()
 ## -- 2024-12-11  1.2.3     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-04-11  1.2.4     DA       - Code review/cleanup
+## --                                - Method RingBuffer._update_plot_nd(): support of time stamps
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2024-12-11)
+Ver. 1.2.4 (2025-04-11)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -42,6 +44,7 @@ try:
     from matplotlib.axes import Axes
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     from matplotlib.patches import Rectangle
+    import matplotlib.dates as mdates
 except:
     class Axes : pass
     class Poly3DCollection : pass
@@ -78,17 +81,9 @@ class RingBuffer (Window):
             Log level for the object. Default is log everything.
     """
 
-    C_NAME                  = 'Ring Buffer'
+    C_NAME      = 'Ring Buffer'
 
-    C_PLOT_STANDALONE       = False
-
-    C_PLOT_IN_WINDOW        = 'In Window'
-    C_PLOT_OUTSIDE_WINDOW   = 'Out Window'
-
-    C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'     # raised the first time the buffer runs full
-    C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'    # raised whenever data were removed from the buffer
-
-## -------------------------------------------------------------------------------------------------
+ ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_buffer_size:int,
                  p_delay:bool = False,
@@ -241,7 +236,6 @@ class RingBuffer (Window):
         Plottable._init_plot_2d(self, p_figure=p_figure, p_settings=p_settings)
 
         self._patch_windows: dict = None
-        self._window_patch2D = Rectangle((0, 0),0,0)
         p_settings.axes.grid(True)
 
 
@@ -261,8 +255,7 @@ class RingBuffer (Window):
         Plottable._init_plot_3d(self, p_figure=p_figure, p_settings=p_settings)
 
         self._patch_windows: dict = None
-        self._window_patch3D = Poly3DCollection([])
-
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
@@ -421,7 +414,12 @@ class RingBuffer (Window):
         inst_oldest = self._buffer[self._buffer_pos]
         x = p_settings.axes.get_xlim()[0]
         y = p_settings.axes.get_ylim()[0]
-        w = inst_oldest.tstamp - x
+
+        try:
+            w = mdates.date2num(inst_oldest.tstamp) - x
+        except:
+            w = inst_oldest.tstamp - x
+
         h = p_settings.axes.get_ylim()[1] - y
         self._patch_windows['nD'].set_bounds(x, y, w, h)
         self._patch_windows['nD'].set_visible(True)
