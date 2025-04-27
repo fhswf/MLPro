@@ -93,7 +93,7 @@ MLPro - Elevate your machine learning journey
 📦 MLPro is available on...
 
 .. list-table::
-   :widths: 33 33 33
+   :widths: 50 50
 
    * - |mlpro_pypi|     `PyPI <https://pypi.org/project/mlpro>`_
      - |mlpro_github|   `GitHub <https://github.com/fhswf/MLPro>`_
