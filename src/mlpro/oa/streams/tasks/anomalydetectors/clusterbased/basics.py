@@ -13,10 +13,11 @@
 ## -- 2024-05-28  1.3.0     SK       Refactoring
 ## -- 2025-04-22  1.3.1     DA/DS    New methods - _run_algorithm & _run added
 ## -- 2025-04-24  1.3.2     DS       New classes - AnomalyDetectorCBSingle & AnomalyDetectorCBMulti added
+## -- 2025-04-27  1.4.0     DA/DS    Design extensions/refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2025-04-24)
+Ver. 1.4.0 (2025-04-27)
 
 This module provides template for cluster-based anomaly detection algorithms to be used in the context of online adaptivity.
 """
@@ -70,9 +71,22 @@ class AnomalyDetectorCB (AnomalyDetector):
         if len(unknown_prop) >0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
 
+
 ## -------------------------------------------------------------------------------------------------
     def _run_algorithm(self, p_inst: InstDict) -> None:
+        """
+        Custom method for the main detection algorithm.
+
+        Parameters
+        ----------
+        p_inst : InstDict
+            The incoming instance to be processed.
+
+        """
+
         pass
+
+
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst: InstDict) -> None:
         """
@@ -89,6 +103,10 @@ class AnomalyDetectorCB (AnomalyDetector):
 
         """
         self._run_algorithm(p_inst=p_inst)
+
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -123,16 +141,81 @@ class AnomalyDetectorCBSingle(AnomalyDetectorCB):
                          **p_kwargs)
 
 
+## -------------------------------------------------------------------------------------------------
+
+    def _buffer_anomaly(self, p_anomaly:AnomalyCB):
+        """
+        Method to be used to add a new anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : AnomalyCB
+            Anomaly object to be added.
+        """
+
+        super()._buffer_anomaly(p_anomaly)
+        self.cb_anomalies[p_anomaly.clusters.values()[0].id] = p_anomaly
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(p_inst: InstDict) -> None:
-       
-       pass
+    def _remove_anomaly(self, p_anomaly:AnomalyCB):
+        """
+        Method to remove an existing anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : AnomalyCB
+            Anomaly object to be removed.
+        """
+
+        super()._remove_anomaly(p_anomaly)
+        del self.cb_anomalies[p_anomaly.clusters.values()[0].id]
+
+
 ## -------------------------------------------------------------------------------------------------
-    def _triage_anomaly(self, 
-                        p_anomaly: AnomalyCB,
-                        **p_kwargs) -> bool:
+    def _triage_anomaly( self, 
+                         p_anomaly: AnomalyCB,
+                         **p_kwargs ) -> bool:
+        """
+        Custom method for extended anomaly triage.
+        """
+
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run( p_inst: InstDict ):
+       
+        # 1 Main detection algorithm
+        super()._run( p_inst = p_inst )
+
+
+        # 2 Clean-up loop ('triage')
+        clusters    = self._clusterer.clusters
+        triage_list = []
+
+        # 2.1 Collect anomalies to be deleted
+        for anomaly in self.cb_anomalies.values():
+
+            # 2.1.1 Check whether the related cluster still exists
+            related_cluster = next(iter(anomaly.clusters.keys()))
+            try:
+                clusters[related_cluster.id]
+                remove_anomaly = self._triage_anomaly( p_anomaly = anomaly )
+            except:
+                remove_anomaly = True
+
+            if remove_anomaly:
+                # 2.1.2 Anomaly is prepared to be removed
+                triage_list.append( anomaly )
+
+        # 2.2 Remove all obsolete anomalies from the triage list
+        for anomaly in triage_list:
+            self._remove_anomaly( p_anomaly = p_anomaly )
+
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------

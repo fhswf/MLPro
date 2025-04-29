@@ -8,10 +8,11 @@
 ## -- 2025-03-28  0.0.0     DS       Creation
 ## -- 2025-04-03  0.0.1     DS/DA    Buffering of anomalies added.
 ## -- 2025-04-18  0.0.2     DS       Refactoring - New seperate classes for spatial and temporal group anomalies.  
+## -- 2025-04-29  0.1.0     DS/DA    Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.2 (2025-04-18)
+Ver. 0.1.0 (2025-04-27)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -83,7 +84,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCBSingle):
         self._property = p_property
         self._cls_point_anomaly = p_cls_point_anomaly
         #self._thres_percent = p_thres_percent
-        self._cb_anomalies = {}
+        #self._cb_anomalies = {}
         
 
         super().__init__( p_clusterer=p_clusterer,
@@ -97,8 +98,8 @@ class AnomalyDetectorCBPA(AnomalyDetectorCBSingle):
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def _run(self, 
-             p_inst: InstDict):
+    def _run_algorithm( self, 
+                        p_inst: InstDict) :
 
 
         # 1 Get all the clusters from the clusterer
@@ -136,32 +137,6 @@ class AnomalyDetectorCBPA(AnomalyDetectorCBSingle):
             self._raise_anomaly_event(p_anomaly = point_anomaly)
         
 
-## -------------------------------------------------------------------------------------------------
-
-    def _buffer_anomaly(self, p_anomaly:AnomalyCB):
-        """
-        Method to be used to add a new anomaly. Please use as part of your algorithm.
-
-        Parameters
-        ----------
-        p_anomaly : AnomalyCB
-            Anomaly object to be added.
-        """
-        super()._buffer_anomaly(p_anomaly)
-        self._cb_anomalies[p_anomaly.clusters.values()[0].id] = p_anomaly
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_anomaly(self, p_anomaly:AnomalyCB):
-        """
-        Method to remove an existing anomaly. Please use as part of your algorithm.
-
-        Parameters
-        ----------
-        p_anomaly : AnomalyCB
-            Anomaly object to be removed.
-        """
-        super()._remove_anomaly(p_anomaly)
-        del self._cb_anomalies[p_anomaly.clusters.values()[0].id]
 
 
 
@@ -210,60 +185,72 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                           **p_kwargs)
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self,
-             p_inst: InstDict):
+    def _run_algorithm( self,
+                        p_inst: InstDict):
 
-        super()._run(p_inst)
+        super()._run_algorithm( p_inst = p_inst )
+
+
         # 1 Get all the clusters from the clusterer
         clusters = self._clusterer.clusters
 
-        for cluster in clusters.values():
-
-        # 2 Get the cluster property to be observed
-            prop_cluster_size : Property = getattr(cluster, p_property)
-
         # 3 Get average cluster size
-            avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in clusters]) / len(clusters)
+        avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in clusters]) / len(clusters)
 
         # 4 Calculater the threshold for the cluster size
-            thres_size = avg_cluster_size * self._thres_percent 
+        self._thres_size = avg_cluster_size * self._thres_percent 
 
-        # 5 Check for the  spatial group anomalies
-        if 1 < prop_cluster_size.value <= thres_size:
-            # 5.1 Create a new spatial group anomaly 
-            try:
-                cb_anomaly = self._cb_anomalies[cluster.id]
 
-                if  type(cb_anomaly) == self._cls_point_anomaly:
-                    self._remove_anomaly(p_anomaly = cb_anomaly)
+        for cluster in clusters.values():
+
+            # 2 Get the cluster property to be observed
+            prop_cluster_size : Property = getattr(cluster, p_property)
+
+
+            # 5 Check for the  spatial group anomalies
+            if 1 < prop_cluster_size.value <= self._thres_size:
+
+                # 5.1 Create a new spatial group anomaly 
+                try:
+                    cb_anomaly = self.cb_anomalies[cluster.id]
+
+                    if  type(cb_anomaly) == self._cls_point_anomaly:
+                        self._remove_anomaly(p_anomaly = cb_anomaly)
+                        create_anomaly = True
+                    else:
+                        create_anomaly = False
+                        
+                except:
+
                     create_anomaly = True
-                else:
-                    create_anomaly = False
-                    
-            except:
 
-                create_anomaly = True
+                if create_anomaly:
+                    # 5.1.1 Create a new spatial group anomaly
 
-            if create_anomaly:
-                # 5.1.1 Create a new spatial group anomaly
-
-                spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {cluster.id : cluster},
-                                                                         p_tstamp = self.get_tstamp(),
-                                                                         p_visualize = self.get_visualize,
-                                                                         p_raising_object = self)
+                    spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {cluster.id : cluster},
+                                                                            p_tstamp = self.get_tstamp(),
+                                                                            p_visualize = self.get_visualize,
+                                                                            p_raising_object = self)
 
 
-                # 5.1.2 Raise an anomaly event
-                self._raise_anomaly_event( p_anomaly = spatial_group_anomaly)
+                    # 5.1.2 Raise an anomaly event
+                    self._raise_anomaly_event( p_anomaly = spatial_group_anomaly)
 
 
-        # 6 Check existing anomalies
-        #for anomalies in self._cb_anomalies.values():
+## -------------------------------------------------------------------------------------------------
+    def _triage_anomaly( self, p_anomaly : AnomalyCB ):
+        """
+        """
+        pass
+
+        # ... self._tresh_size is availabe (see above method)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-
 class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
     """
     Implementation of a cluster-based detector for temporal group anomalies.
@@ -307,11 +294,13 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                           p_logging= p_logging,                        
                           **p_kwargs)
 
-## -------------------------------------------------------------------------------------------------
-    def _run(self,
-             p_inst: InstDict):
 
-        super()._run(p_inst)
+## -------------------------------------------------------------------------------------------------
+    def _run_algorithm( self,
+                        p_inst: InstDict):
+
+        super()._run_algorithm( p_inst = p_inst )
+
 
         # 1 Get all the clusters from the clusterer
         clusters = self._clusterer.clusters
@@ -335,3 +324,12 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                                                                      p_raising_object = self)
                 # 2.1.1 Raise an anomaly event
                 self._raise_anomaly_event(p_anomaly = temporal_anomaly)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _triage_anomaly( self, p_anomaly : AnomalyCB ):
+        """
+        """
+        pass
+
+        # ... self._tresh_size is availabe (see above method)
