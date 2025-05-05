@@ -24,15 +24,15 @@ from mlpro.bf.math.properties import *
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.driftdetectors.clusterbased.basics import DriftDetectorCB
+from mlpro.oa.streams.tasks.driftdetectors.clusterbased.basics import DriftDetectorCBSingle
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGeneric ( DriftDetectorCB ):
+class DriftDetectorCBGeneric ( DriftDetectorCBSingle ):
     """
-    Template for generic cluster-based drift detectors observing multiple properties.
+    Template for generic cluster-based drift detectors for single cluster drifts.
 
     Parameters
     ----------
@@ -65,13 +65,13 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
         self.cluster_drifts           = {}
 
         super().__init__( p_clusterer = p_clusterer,
+                          p_property= p_properties,
                           p_name = p_name,
                           p_range_max = p_range_max,
                           p_ada = p_ada,
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
                           p_logging= p_logging,
-                          p_drift_buffer_size = p_drift_buffer_size,
                           **p_kwargs )
         
 
@@ -177,7 +177,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSingle ( DriftDetectorCBGeneric ):
+class DriftDetectorCBGenSingleProp ( DriftDetectorCBGeneric ):
     """
     Specialized template for generic cluster-based drift detectors observing a single property.
 
@@ -221,7 +221,7 @@ class DriftDetectorCBGenSingle ( DriftDetectorCBGeneric ):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenMulti ( DriftDetectorCBGeneric ):
+class DriftDetectorCBGenMultiProp ( DriftDetectorCBGeneric ):
     """
     Specialized template for generic cluster-based drift detectors observing a single property.
     """

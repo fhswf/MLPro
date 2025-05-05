@@ -22,14 +22,14 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGenSingle
+from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGenSingleProp
 from mlpro.oa.streams.tasks.driftdetectors.drifts.clusterbased import DriftCBMovement
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
+class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingleProp ):
     """
     Generic cluster-based drift detector for movement drift detection.
 
