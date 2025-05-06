@@ -10,10 +10,11 @@
 ## -- 2025-04-18  0.0.2     DS       Refactoring - New seperate classes for spatial and temporal group anomalies.  
 ## -- 2025-04-29  0.1.0     DS/DA    Refactoring
 ## -- 2025-05-04  0.1.1     DS       Design extensions
+## -- 2025-05-06  0.2.0     DS/DA    Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2025-05-04)
+Ver. 0.2.0 (2025-05-06)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -24,13 +25,13 @@ from mlpro.bf.streams import InstDict, InstTypeNew, Stream
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size, cprop_size_prev
-from mlpro.oa.streams.tasks.anomalydetectors.clusterbased.basics import AnomalyDetectorCB, AnomalyDetectorCBSingle, AnomalyDetectorCBMulti
+from mlpro.oa.streams.tasks.anomalydetectors.clusterbased.basics import AnomalyDetectorCB
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import AnomalyCB, PointAnomaly, GroupAnomaly, SpatialGroupAnomaly, TemporalGroupAnomaly
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBPA(AnomalyDetectorCBSingle):
+class AnomalyDetectorCBPA(AnomalyDetectorCB):
     """
     Implementation of a cluster-based detector for point and group anomalies.
 
@@ -95,8 +96,8 @@ class AnomalyDetectorCBPA(AnomalyDetectorCBSingle):
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def _run_algorithm( self, 
-                        p_inst: InstDict) :
+    def _detect_cb_anomalies( self, 
+                              p_inst: Instance ) :
         """
         custom methid for detectiong cluster-based point anomalies.
         """
@@ -118,7 +119,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCBSingle):
                                                      p_visualize = self.get_visualize,
                                                      p_raising_object = self)
 
-                self._raise_anomaly_event(p_anomaly = point_anomaly)
+                self._raise_anomaly_event( p_anomaly = point_anomaly, p_inst = inst )
         
 
 ## ----------------------------------------------------------------------------------
@@ -200,12 +201,12 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                   **p_kwargs ):
 
         
+        self.cb_anomalies ={}
         self._cls_spatial_group_anomaly = p_cls_spatial_group_anomaly
         self._group_anomaly_det = p_group_anomaly_det
         self._thres_percent = p_thres_percent
         self.clusters_to_remove = []
         
-
         super().__init__( p_clusterer=p_clusterer,
                           p_name = p_name,
                           p_range_max = p_range_max,
@@ -217,10 +218,45 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_algorithm( self,
-                        p_inst: InstDict):
 
-        super()._run_algorithm( p_inst = p_inst )
+    def _buffer_anomaly(self, p_anomaly:AnomalyCB):
+        """
+        Method to be used to add a new anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : AnomalyCB
+            Anomaly object to be added.
+        """
+
+        super()._buffer_anomaly(p_anomaly)
+
+        for cluster in p_anomaly.clusters.values():
+            self.cb_anomalies[cluster.id] = p_anomaly
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_anomaly(self, p_anomaly:AnomalyCB):
+        """
+        Method to remove an existing anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : AnomalyCB
+            Anomaly object to be removed.
+        """
+
+        super()._remove_anomaly(p_anomaly)
+
+        for cluster in p_anomaly.clusters.values():
+            del self.cb_anomalies[cluster.id]
+
+
+## -------------------------------------------------------------------------------------------------
+    def _detect_cb_anomalies( self,
+                              p_inst: Instance ):
+
+        super()._detect_cb_anomalies( p_inst = p_inst )
 
 
         # 1 Get all the clusters from the clusterer
@@ -259,12 +295,12 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                 # 4.2.2 Create a new spatial group anomaly    
                 if create_anomaly:
                     spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {cluster.id : cluster},
-                                                                            p_tstamp = self.get_tstamp(),
-                                                                            p_visualize = self.get_visualize,
-                                                                            p_raising_object = self)
+                                                                             p_tstamp = self.get_tstamp(),
+                                                                             p_visualize = self.get_visualize,
+                                                                             p_raising_object = self)
 
                     # 4.2.2.1 Raise an anomaly event
-                    self._raise_anomaly_event( p_anomaly = spatial_group_anomaly)
+                    self._raise_anomaly_event( p_anomaly = spatial_group_anomaly, p_inst = p_inst )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -367,8 +403,8 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_algorithm( self,
-                        p_inst: InstDict):
+    def _detect_cb_anomaly( self,
+                            p_inst: Instance ):
 
         super()._run_algorithm( p_inst = p_inst )
 
@@ -394,7 +430,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                                                                      p_visualize = self.get_visualize,
                                                                      p_raising_object = self)
                 # 2.1.1 Raise an anomaly event
-                self._raise_anomaly_event(p_anomaly = temporal_anomaly)
+                self._raise_anomaly_event( p_anomaly = temporal_anomaly, p_inst = p_inst )
 
 
 ## -------------------------------------------------------------------------------------------------

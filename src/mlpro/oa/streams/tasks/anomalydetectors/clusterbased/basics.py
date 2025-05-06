@@ -14,10 +14,11 @@
 ## -- 2025-04-22  1.3.1     DA/DS    New methods - _run_algorithm & _run added
 ## -- 2025-04-24  1.3.2     DS       New classes - AnomalyDetectorCBSingle & AnomalyDetectorCBMulti added
 ## -- 2025-04-27  1.4.0     DA/DS    Design extensions/refactoring
+## -- 2025-05-06  1.5.0     DA/DS    Design reduction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-04-27)
+Ver. 1.5.0 (2025-05-06)
 
 This module provides template for cluster-based anomaly detection algorithms to be used in the context of online adaptivity.
 """
@@ -73,15 +74,25 @@ class AnomalyDetectorCB (AnomalyDetector):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_algorithm(self, p_inst: InstDict) -> None:
+    def _detect_cb_anomalies(self, p_inst: Instance) -> None:
         """
         Custom method for the main detection algorithm.
 
         Parameters
         ----------
-        p_inst : InstDict
-            The incoming instance to be processed.
+        p_inst : Instance
+            Instance that triggered the detection.
+        """
 
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _triage_anomaly( self, 
+                         p_anomaly: AnomalyCB,
+                         **p_kwargs ) -> bool:
+        """
+        Custom method for extended anomaly triage.
         """
 
         pass
@@ -102,92 +113,16 @@ class AnomalyDetectorCB (AnomalyDetector):
         None
 
         """
-        self._run_algorithm(p_inst=p_inst)
 
+        # 1 Execution of the main detection algorithm        
+        try:
+            inst_type, inst = list(p_inst.values())[-1]
+            if inst_type != InstTypeNew:
+                inst = None
+        except:
+            inst = None
 
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBSingle(AnomalyDetectorCB):
-    """
-    This is the class for detect anomalies related to a single cluster.
-
-    """
-
-    C_TYPE = 'Cluster based Anomaly Detector - Single Cluster'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_clusterer : ClusterAnalyzer,
-                 p_name : str = None,
-                 p_range_max = StreamTask.C_RANGE_THREAD,
-                 p_ada : bool = True,
-                 p_duplicate_data : bool = False,
-                 p_visualize : bool = False,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_kwargs):
-        
-        self.cb_anomalies ={}
-
-        super().__init__(p_clusterer = p_clusterer,
-                         p_name = p_name,
-                         p_range_max = p_range_max,
-                         p_ada = p_ada,
-                         p_duplicate_data = p_duplicate_data,
-                         p_visualize = p_visualize,
-                         p_logging= p_logging,
-                         **p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
-
-    def _buffer_anomaly(self, p_anomaly:AnomalyCB):
-        """
-        Method to be used to add a new anomaly. Please use as part of your algorithm.
-
-        Parameters
-        ----------
-        p_anomaly : AnomalyCB
-            Anomaly object to be added.
-        """
-
-        super()._buffer_anomaly(p_anomaly)
-        self.cb_anomalies[p_anomaly.clusters.values()[0].id] = p_anomaly
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_anomaly(self, p_anomaly:AnomalyCB):
-        """
-        Method to remove an existing anomaly. Please use as part of your algorithm.
-
-        Parameters
-        ----------
-        p_anomaly : AnomalyCB
-            Anomaly object to be removed.
-        """
-
-        super()._remove_anomaly(p_anomaly)
-        del self.cb_anomalies[p_anomaly.clusters.values()[0].id]
-
-
-## -------------------------------------------------------------------------------------------------
-    def _triage_anomaly( self, 
-                         p_anomaly: AnomalyCB,
-                         **p_kwargs ) -> bool:
-        """
-        Custom method for extended anomaly triage.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run( p_inst: InstDict ):
-       
-        # 1 Main detection algorithm
-        super()._run( p_inst = p_inst )
+        self._detect_cb_anomalies( p_inst = inst )
 
 
         # 2 Clean-up loop ('triage')
@@ -197,13 +132,18 @@ class AnomalyDetectorCBSingle(AnomalyDetectorCB):
         # 2.1 Collect anomalies to be deleted
         for anomaly in self.cb_anomalies.values():
 
-            # 2.1.1 Check whether the related cluster still exists
-            related_cluster = next(iter(anomaly.clusters.keys()))
-            try:
-                clusters[related_cluster.id]
+            # 2.1.1 Check whether the related clusters still exist
+            remove_anomaly = True
+            for related_cluster in anomaly.clusters.values():
+                try:
+                    clusters[related_cluster.id]
+                    remove_anomaly = False
+                    break
+                except:
+                    pass
+
+            if not remove_anomaly:
                 remove_anomaly = self._triage_anomaly( p_anomaly = anomaly )
-            except:
-                remove_anomaly = True
 
             if remove_anomaly:
                 # 2.1.2 Anomaly is prepared to be removed
@@ -212,16 +152,3 @@ class AnomalyDetectorCBSingle(AnomalyDetectorCB):
         # 2.2 Remove all obsolete anomalies from the triage list
         for anomaly in triage_list:
             self._remove_anomaly( p_anomaly = p_anomaly )
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBMulti(AnomalyDetectorCB):
-    """
-    This is the class for detect anomalies related to multiple clusters.
-
-    """
-    pass
