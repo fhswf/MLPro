@@ -128,18 +128,19 @@ class AnomalyDetectorCBPA(AnomalyDetectorCBSingle):
         This method checks if the point anomaly is still valid based on the cluster size.
         """
         # 1 Iterate over all anomalies
-        for anomaly_id, anomaly in self.cb_anomalies.items():
+       
 
-            if isinstance(anomaly, self._cls_point_anomaly):
-                #1.1 Get the single cluster associated with the anomaly
-                cluster_id, cluster = next(iter(anomaly.clusters.items()))
+        if isinstance(p_anomaly, self._cls_point_anomaly):
+            #1.1 Get the single cluster associated with the anomaly
+            cluster_id, cluster = next(iter(anomaly.clusters.items()))
 
                 #1.2 Get the cluster property to be observed
-                prop_cluster_size : Property = getattr(cluster, cprop_size_prev)
+            prop_cluster_size : Property = getattr(cluster, cprop_size_prev)
 
                 # 1.3 Check if the anomaly is still valid, if not remove it
-                if prop_cluster_size.value != 1:
-                    self._remove_anomaly( p_anomaly = anomaly )
+            return prop_cluster_size.value != 1
+
+        return False
 
 
 
@@ -272,18 +273,20 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
         Custom method for anomaly triage.
         """
         # 1 Iterate over all anomalies
-        for anomaly_id, anomaly in self.cb_anomalies.items():
+      
 
-            if isinstance(anomaly, self._cls_spatial_group_anomaly):
+        if isinstance(anomaly, self._cls_spatial_group_anomaly):
                 #1.1 Get the single cluster associated with the anomaly
-                cluster_id, cluster = next(iter(anomaly.clusters.items()))
+            cluster_id, cluster = next(iter(anomaly.clusters.items()))
 
                 #1.2 Get the cluster property to be observed
-                prop_cluster_size : Property = getattr(cluster, cprop_size_prev)
+            prop_cluster_size : Property = getattr(cluster, cprop_size_prev)
                 
                 # 1.3 Check if the anomaly is still valid, if not remove it
-                if not (1 < prop_cluster_size.value <= self._thres_size):
-                    self._remove_anomaly( p_anomaly = anomaly )
+            return not (1 < prop_cluster_size.value <= self._thres_size)
+                
+        return False
+            
 
 
 
