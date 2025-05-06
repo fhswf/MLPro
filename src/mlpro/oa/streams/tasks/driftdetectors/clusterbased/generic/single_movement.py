@@ -8,10 +8,11 @@
 ## -- 2025-03-04  0.1.0     DA/DS    Creation
 ## -- 2025-03-18  0.2.0     DA/DS    Completion of method _get_drift_status()
 ## -- 2025-03-26  0.3.0     DA       Method _get_drift_status(): exception if property is misdefined
+## -- 2025-05-06  0.3.1     DA       Bugfix in method _get_drift-status()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-03-26)
+Ver. 0.3.1 (2025-05-06)
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
@@ -90,6 +91,9 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingleProp ):
                 raise ImplementationError('MLPro: Cluster property "' + p_properties[0][0] + '" needs to provide a maximum derivative order > 0')
 
             return False
+
+        if prop.dim == 1:
+            abs_derivative_o1 = [ abs_derivative_o1 ]
         
 
         # 3 Get current drift status
