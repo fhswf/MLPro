@@ -151,4 +151,4 @@ class AnomalyDetectorCB (AnomalyDetector):
 
         # 2.2 Remove all obsolete anomalies from the triage list
         for anomaly in triage_list:
-            self._remove_anomaly( p_anomaly = p_anomaly )
+            self._remove_anomaly( p_anomaly = anomaly )
