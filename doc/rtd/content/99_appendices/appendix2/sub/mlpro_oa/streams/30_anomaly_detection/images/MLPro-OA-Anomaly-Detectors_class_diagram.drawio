@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-05-06T12:00:50.846Z" version="24.4.13" etag="JvxlkktLHDf3oLsf8mL-" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-05-12T08:59:37.341Z" etag="H_sDtvDlwl54AO_fz7-I" version="24.4.13" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1434" dy="836" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="1050" dy="621" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -108,7 +108,7 @@
           <mxGeometry y="565" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-16" value="Anomaly &#xa;(bf.various.Id, bf.events.Event, bf.plot.Plottable,&#xa;bf.math.normalizers.Renomalizable)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=52;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="510" y="416" width="290" height="325" as="geometry">
+          <mxGeometry x="510" y="416" width="290" height="374" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -132,6 +132,9 @@
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-21" value="__init__( p_id : int = 0,&#xa;               p_tstamp : datetime = None,&#xa;               p_visualise : bool = False,&#xa;               p_raising_object : object = None,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
           <mxGeometry y="242" width="290" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="U0dWjpTIZt6xBCNFoNqO-0" value="_get_status() -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" vertex="1" parent="4use4ZCXdNiZSNTW99xv-16">
+          <mxGeometry y="324" width="290" height="20" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
