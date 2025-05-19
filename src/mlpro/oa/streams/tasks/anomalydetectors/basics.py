@@ -17,10 +17,11 @@
 ## -- 2024-12-11  1.4.2     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-02-14  1.5.0     DA       Review and refactoring
 ## -- 2025-03-03  1.5.1     DA       Corrections
+## -- 2025-05-06  1.6.0     DA/DS    Method AnomalyDetector._raise_anomaly(): new parameter p_inst
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2025-03-03)
+Ver. 1.6.0 (2025-05-06)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -33,7 +34,7 @@ except:
 from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.bf.streams import InstDict
+from mlpro.bf.streams import InstDict, Instance, InstTypeNew
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly
@@ -151,17 +152,29 @@ class AnomalyDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _raise_anomaly_event(self, p_anomaly:Anomaly, p_buffer: bool = True):
+    def _raise_anomaly_event( self, 
+                              p_anomaly: Anomaly, 
+                              p_inst : Instance = None,
+                              p_buffer: bool = True ):
         """
-        Method to raise an anomaly event.
+        Method to raise an anomaly event. 
 
         Parameters
         ----------
         p_anomaly : Anomaly
             Anomaly object to be raised.
+        p_inst : Instance = None
+            Instance causing the anomaly. If provided, the time stamp of the instance is taken over
+            to the anomaly.
         p_buffer : bool
             Anomaly is buffered when set to True.
         """
+
+        if p_anomaly.tstamp is None:
+            if p_inst is not None:
+                p_anomaly.tstamp = p_inst.tstamp
+            else:
+                p_anomaly.tstamp = self.get_so().tstamp
 
         if p_buffer: self._buffer_anomaly( p_anomaly=p_anomaly )
 

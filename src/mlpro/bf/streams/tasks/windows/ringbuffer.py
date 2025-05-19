@@ -29,10 +29,11 @@
 ## -- 2024-12-11  1.2.3     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-04-11  1.2.4     DA       - Code review/cleanup
 ## --                                - Method RingBuffer._update_plot_nd(): support of time stamps
+## -- 2025-05-06  1.2.5     DA       Method RingBuffer._run(): update tstamp of outdated instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2025-04-11)
+Ver. 1.2.5 (2025-05-06)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -156,6 +157,7 @@ class RingBuffer (Window):
 
                 # The oldest instance is extracted from the buffer and forwarded
                 inst_del = self._buffer[self._buffer_pos]
+                inst_del.tstamp = self.get_so().tstamp
                 p_inst[inst_del.id] = ( InstTypeDel, inst_del )
                 self._raise_event_data_removed = True
 
