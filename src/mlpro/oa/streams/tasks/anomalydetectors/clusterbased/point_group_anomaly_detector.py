@@ -12,6 +12,7 @@
 ## -- 2025-05-04  0.1.1     DS       Design extensions
 ## -- 2025-05-06  0.2.0     DS/DA    Refactoring
 ## -- 2025-05-11  0.2.1     DS       Design extensions
+## -- 2025-05-19  0.2.2     DS       Bug fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -384,7 +385,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                   p_anomaly_buffer_size : int = 100,
                   p_thres_percent : float = 0.05,
                   p_thres_temporal : int = 2,
-                  p_self_tga = None,
+                  p_last_tga : dict = None,
                   **p_kwargs ):
         
         self._cls_temporal_group_anomaly = p_cls_temporal_group_anomaly
@@ -393,7 +394,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         self._thres_percent = p_thres_percent
         self._thres_temporal = p_thres_temporal
         self._temporal_anomalies = {}
-        self._last_tga = {}
+        self._last_tga = {} 
 
         super().__init__( p_clusterer=p_clusterer,
                           p_name = p_name,
@@ -429,11 +430,17 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                     # 2.1.1 Raise an anomaly event
                     self._raise_anomaly_event( p_anomaly = temporal_anomaly, p_inst = p_inst )
                     self._last_tga = temporal_anomaly
+
+                else: 
+                    # 2.1.2 extend the TGA dictionary
+                    self._last_tga.clusters[cluster.id] = cluster
             else:
                 if self._last_tga is not None:
-                    # 2.1.2 Remove the last temporal anomaly
-                    del self._temporal_anomalies[self._last_tga]
-                    self._last_tga = None
+                    raise Exception ("Temporal group anomaly ended")
+                
+                # 2.1.2 Remove the last temporal anomaly
+                del self._temporal_anomalies[self._last_tga]
+                self._last_tga = None
 
 
 ## -------------------------------------------------------------------------------------------------
