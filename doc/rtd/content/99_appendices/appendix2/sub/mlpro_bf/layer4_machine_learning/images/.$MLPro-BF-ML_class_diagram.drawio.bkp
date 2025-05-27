@@ -517,7 +517,7 @@
           <mxGeometry x="1580" y="400" width="140" height="50" as="geometry" />
         </mxCell>
         <mxCell id="UP2SmdmnmiDTw7j5yn1o-20" value="Scenario (bf.ops.ScenarioBase)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=27;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#d5e8d4;strokeColor=#82b366;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="710" y="1560" width="300" height="470" as="geometry">
+          <mxGeometry x="710" y="1544" width="300" height="470" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -561,7 +561,7 @@
           <mxGeometry y="415" width="300" height="54" as="geometry" />
         </mxCell>
         <mxCell id="pWb825mAZI2DxDqmKoyy-1" value="Central template class for machine learning scenarios in MLPro.&lt;br&gt;&lt;br&gt;See class mlpro.bf.ops.Scenario for further details and custom methods." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="500" y="1480" width="220" height="90" as="geometry" />
+          <mxGeometry x="500" y="1464" width="220" height="90" as="geometry" />
         </mxCell>
         <mxCell id="oUS1Hveyk-qcUx9k6z5q-0" value="Adaptation&#xa;(bf.events.Event)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;gradientColor=#ffffff;swimlaneFillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="618" y="120" width="300" height="202" as="geometry">
