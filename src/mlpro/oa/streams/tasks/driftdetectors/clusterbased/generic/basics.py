@@ -24,13 +24,13 @@ from mlpro.bf.math.properties import *
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.driftdetectors.clusterbased.basics import DriftDetectorCBSingle
+from mlpro.oa.streams.tasks.driftdetectors.clusterbased.basics import DriftDetectorCB
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGeneric ( DriftDetectorCBSingle ):
+class DriftDetectorCBGeneric ( DriftDetectorCB):
     """
     Template for generic cluster-based drift detectors for single cluster drifts.
 

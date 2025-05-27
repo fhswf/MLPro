@@ -20,10 +20,11 @@
 ## --                                - new attribute event_id
 ## --                                - new parent Renormalizable
 ## -- 2025-05-12  2.1.0     DS       Design extention : new method _get_status()
+## -- 2025-05-20  2.1.1     DA\DS    Design extension 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-05-12)
+Ver. 2.1.1 (2025-05-20)
 
 This module provides a template class for anomalies to be used in anomaly detection algorithms.
 """
@@ -68,7 +69,7 @@ class Anomaly (Id, Event, Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_status : bool,
+                 p_status : bool = True,
                  p_id : int = 0,
                  p_tstamp : datetime = None,
                  p_visualize : bool = False,
@@ -85,9 +86,23 @@ class Anomaly (Id, Event, Plottable, Renormalizable):
         Plottable.__init__( self, p_visualize = p_visualize )
 
         self._status: bool = p_status
-        self.event_id      = type(self).__name__
+        
+        if p_status:
+            self._event_id = type(self).__name__ + '(ON)'
+        else:
+            self._event_id = type(self).__name__ + '(OFF)'
 
 
 ## -------------------------------------------------------------------------------------------------
     def _get_status(self) -> bool:
         return self._status
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_event_id(self) -> str:
+        return self._event_id
+
+
+## -------------------------------------------------------------------------------------------------
+    status       = property( fget = _get_status )
+    event_id     = property( fget = _get_event_id ) 

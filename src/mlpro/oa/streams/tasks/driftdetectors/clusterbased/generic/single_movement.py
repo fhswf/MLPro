@@ -9,10 +9,11 @@
 ## -- 2025-03-18  0.2.0     DA/DS    Completion of method _get_drift_status()
 ## -- 2025-03-26  0.3.0     DA       Method _get_drift_status(): exception if property is misdefined
 ## -- 2025-05-06  0.3.1     DA       Bugfix in method _get_drift-status()
+## -- 2025-05-20  0.3.2     DA/DS    Bugfixs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.1 (2025-05-06)
+Ver. 0.3.2 (2025-05-20)
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
@@ -25,6 +26,7 @@ from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGenSingleProp
 from mlpro.oa.streams.tasks.driftdetectors.drifts.clusterbased import DriftCBMovement
+
 
 
 
@@ -72,12 +74,12 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingleProp ):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_drift_status( self, 
-                           p_cluster : Cluster, 
-                           p_properties : PropertyDefinitions, 
-                           p_thrs_lower : float, 
-                           p_thrs_upper = float, 
-                           **p_kwargs ):
+    def _get_status( self, 
+                     p_cluster : Cluster, 
+                     p_properties : PropertyDefinitions, 
+                     p_thrs_lower : float, 
+                     p_thrs_upper = float, 
+                     **p_kwargs ):
         
         # 1 Get property of interest from the cluster
         prop : Property = getattr( p_cluster, p_properties[0][0] )
@@ -98,13 +100,13 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingleProp ):
 
         # 3 Get current drift status
         try:
-            cluster_drifting = self.cluster_drifts[p_cluster.id].drift_status
+            cluster_drifting = self.cluster_drifts[p_cluster.id].status
         except:
             cluster_drifting = False
 
 
         # 4 Determine movement per dimension
-        drift_status = False
+        status = False
 
         for d in range( prop.dim ):
 
@@ -112,7 +114,7 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingleProp ):
                ( ( not cluster_drifting ) and ( abs_derivative_o1[d] > p_thrs_upper ) ):
             
                 # 4.1 Cluster is drifting in this dimension
-                drift_status = True
+                status = True
                 break
 
-        return drift_status
+        return status
