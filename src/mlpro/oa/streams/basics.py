@@ -24,7 +24,7 @@
 ## -- 2024-05-29  1.0.1     DA       Correction in method OATask.adapt()
 ## -- 2024-06-18  1.0.2     DA       Litte code cleanup
 ## -- 2024-11-30  1.1.0     DA       Renaming OA... to OAStream...
-## -- 2025-05-27  1.2.0     DA       - New class OASreamAdaptation
+## -- 2025-05-28  1.2.0     DA       - New class OASreamAdaptation
 ## --                                - Class OAStreamTask
 ## --                                  - Refactoring of method adapt()
 ## --                                  - Redefinition of method _set_adapted()
@@ -32,7 +32,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-05-27)
+Ver. 1.2.0 (2025-05-28)
 
 Core classes for online-adaptive data stream processing (OADSP).
 
@@ -64,9 +64,27 @@ class OAStreamShared (StreamShared):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OAStreamAdaptation (Adaptation):
+    """
+    ...
+    """
 
-    C_SUBTYPE_REVERSE       = 10
-    C_SUBTYPE_RENORMALIZE   = 11
+    C_SUBTYPE_REVERSE       = 'REVERSE'
+    C_SUBTYPE_RENORMALIZE   = 'RENORMALIZE'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_raising_object, 
+                  p_subtype, 
+                  p_tstamp = None, 
+                  p_num_inst = 1,
+                  **p_kwargs ):
+        
+        super().__init__( p_raising_object = p_raising_object, 
+                          p_subtype = p_subtype, 
+                          p_tstamp = p_tstamp, 
+                          **p_kwargs )
+        
+        self.num_inst = p_num_inst
 
 
 
@@ -141,7 +159,12 @@ class OAStreamTask (StreamTask, Model):
     def _set_adapted( self, 
                       p_adapted : bool, 
                       p_subtype = Adaptation.C_SUBTYPE_IN_SITU, 
-                      p_tstamp : TStampType= None):
+                      p_tstamp : TStampType= None,
+                      p_num_inst = 1,
+                      **p_kwargs ):
+        """
+        ...
+        """
         
         if p_tstamp is None:
             tstamp = self.get_so().tstamp
@@ -150,7 +173,9 @@ class OAStreamTask (StreamTask, Model):
 
         return super()._set_adapted( p_adapted = p_adapted, 
                                      p_subtype = p_subtype, 
-                                     p_tstamp = tstamp)
+                                     p_tstamp = tstamp,
+                                     p_num_inst = p_num_inst,
+                                     **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -160,8 +185,10 @@ class OAStreamTask (StreamTask, Model):
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_S, 'Adaptation started')
 
-        adapted_in_situ = False
-        adapted_reverse = False
+        adapted_in_situ     = False
+        adapted_reverse     = False
+        num_inst_in_situ    = 0
+        num_inst_reverse    = 0
         
         # 0.1 Get recent instance
         try:
@@ -195,18 +222,21 @@ class OAStreamTask (StreamTask, Model):
                 # 2.1 Adaptation on a new stream instance
                 self.log(self.C_LOG_TYPE_S, 'Adaptation on new instance', inst_id)
                 if self._adapt( p_inst_new=inst):
-                    adapted_in_situ = True
-                    tstamp_in_situ = inst.tstamp
+                    adapted_in_situ      = True
+                    tstamp_in_situ       = inst.tstamp
+                    num_inst_in_situ    += 1
                     self.log(self.C_LOG_TYPE_S, 'Policy adapted')
                 else:
                     self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
+
             else:
                 # 2.2 Reverse adaptation on an obsolete stream instance
                 self.log(self.C_LOG_TYPE_S, 'Reverse adaptation on obsolete instance', inst_id)
                 try:
                     if self._adapt_reverse( p_inst_del=inst ):
-                        adapted_reverse = True
-                        tstamp_reverse = inst.tstamp
+                        adapted_reverse      = True
+                        tstamp_reverse       = inst.tstamp
+                        num_inst_reverse    += 1
                         self.log(self.C_LOG_TYPE_S, 'Policy adapted')
                     else:
                         self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
@@ -232,12 +262,14 @@ class OAStreamTask (StreamTask, Model):
         if adapted_reverse:
             self._set_adapted( p_adapted = True,
                                p_subtype = OAStreamAdaptation.C_SUBTYPE_REVERSE,
-                               p_tstamp = tstamp_reverse )
+                               p_tstamp = tstamp_reverse,
+                               p_num_inst = num_inst_reverse )
 
         if adapted_in_situ:
             self._set_adapted( p_adapted = True,
                                p_subtype = OAStreamAdaptation.C_SUBTYPE_IN_SITU,
-                               p_tstamp = tstamp_in_situ )
+                               p_tstamp = tstamp_in_situ,
+                               p_num_inst = num_inst_in_situ )
             
 
         # 5 Outro
