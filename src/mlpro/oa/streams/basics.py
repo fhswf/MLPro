@@ -167,7 +167,10 @@ class OAStreamTask (StreamTask, Model):
         """
         
         if p_tstamp is None:
-            tstamp = self.get_so().tstamp
+            try:
+                tstamp = self.get_so().tstamp
+            except:
+                tstamp = None
         else:
             tstamp = p_tstamp
 
