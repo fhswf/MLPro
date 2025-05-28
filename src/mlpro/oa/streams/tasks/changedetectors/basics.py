@@ -56,8 +56,10 @@ class Change (Id, Event, Plottable, Renormalizable):
                                 PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_status : bool = True,
                  p_id : int = 0,
                  p_tstamp : datetime = None,
                  p_visualize : bool = False,
@@ -73,7 +75,27 @@ class Change (Id, Event, Plottable, Renormalizable):
         
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self.event_id   = type(self).__name__
+        self._status: bool = p_status
+        
+        if p_status:
+            self._event_id = type(self).__name__ + '(ON)'
+        else:
+            self._event_id = type(self).__name__ + '(OFF)'
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_status(self) -> bool:
+        return self._status
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _get_event_id(self) -> str:
+        return self._event_id
+
+
+## -------------------------------------------------------------------------------------------------
+    status      = property( fget = _get_status )
+    event_id    = property( fet = _get_event_id )
 
 
 
