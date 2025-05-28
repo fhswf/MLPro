@@ -19,27 +19,23 @@
 ## --                                - refactoring and simplification
 ## --                                - new attribute event_id
 ## --                                - new parent Renormalizable
+## -- 2025-05-28  2.1.0     DA/DS    Class Anomaly: new parent Change
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-02-18)
+Ver. 2.1.0 (2025-05-28)
 
 This module provides a template class for anomalies to be used in anomaly detection algorithms.
 """
 
-from datetime import datetime
 
-from mlpro.bf.various import Id
-from mlpro.bf.plot import Plottable, PlotSettings
-from mlpro.bf.events import Event
-from mlpro.bf.math.normalizers import Renormalizable
-
+from mlpro.oa.streams.tasks.changedetectors import Change
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Anomaly (Id, Event, Plottable, Renormalizable):
+class Anomaly (Change):
     """
     This is the base class for anomaly events which can be raised by the anomaly detectors when an
     anomaly is detected.
@@ -58,28 +54,4 @@ class Anomaly (Id, Event, Plottable, Renormalizable):
         Further optional keyword arguments.
     """
 
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
-    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
-                                PlotSettings.C_VIEW_3D, 
-                                PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_id : int = 0,
-                 p_tstamp : datetime = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
-                 **p_kwargs):
-        
-        Id.__init__( self, p_id = p_id )
-
-        Event.__init__( self, 
-                        p_raising_object=p_raising_object,
-                        p_tstamp=p_tstamp, 
-                        **p_kwargs )
-        
-        Plottable.__init__( self, p_visualize = p_visualize )
-
-        self.event_id   = type(self).__name__
+    pass

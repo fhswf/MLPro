@@ -36,13 +36,14 @@ from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.streams import InstDict
 
 from mlpro.oa.streams import OAStreamTask
+from mlpro.oa.streams.tasks.changedetectors import ChangeDetector
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies import Anomaly
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetector (OAStreamTask):
+class AnomalyDetector (ChangeDetector):
     """
     Base class for online anomaly detectors. It raises an event when an
     anomaly is detected.
