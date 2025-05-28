@@ -24,12 +24,17 @@
 ## -- 2024-05-29  1.0.1     DA       Correction in method OATask.adapt()
 ## -- 2024-06-18  1.0.2     DA       Litte code cleanup
 ## -- 2024-11-30  1.1.0     DA       Renaming OA... to OAStream...
+## -- 2025-05-28  1.2.0     DA       - New class OASreamAdaptation
+## --                                - Class OAStreamTask
+## --                                  - Refactoring of method adapt()
+## --                                  - Redefinition of method _set_adapted()
+## --                                  - Refactoring of method renormalize_on_event()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-11-30)
+Ver. 1.2.0 (2025-05-28)
 
-Core classes for online adaptive stream processing.
+Core classes for online-adaptive data stream processing (OADSP).
 
 """
 
@@ -39,8 +44,6 @@ from mlpro.bf.mt import Event
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.ml import *
-
-from typing import List
 
 
 
@@ -53,6 +56,35 @@ class OAStreamShared (StreamShared):
     """ 
     
     pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAStreamAdaptation (Adaptation):
+    """
+    ...
+    """
+
+    C_SUBTYPE_REVERSE       = 'REVERSE'
+    C_SUBTYPE_RENORMALIZE   = 'RENORMALIZE'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_raising_object, 
+                  p_subtype, 
+                  p_tstamp = None, 
+                  p_num_inst = 1,
+                  **p_kwargs ):
+        
+        super().__init__( p_raising_object = p_raising_object, 
+                          p_subtype = p_subtype, 
+                          p_tstamp = p_tstamp, 
+                          **p_kwargs )
+        
+        self.num_inst = p_num_inst
 
 
 
@@ -85,6 +117,8 @@ class OAStreamTask (StreamTask, Model):
     """
 
     C_TYPE              = 'OA Stream-Task'
+
+    C_EVENT_CLS         = OAStreamAdaptation
 
     C_PLOT_ACTIVE       = True
     C_PLOT_STANDALONE   = True
@@ -122,18 +156,67 @@ class OAStreamTask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _set_adapted( self, 
+                      p_adapted : bool, 
+                      p_subtype = Adaptation.C_SUBTYPE_IN_SITU, 
+                      p_tstamp : TStampType= None,
+                      p_num_inst = 1,
+                      **p_kwargs ):
+        """
+        ...
+        """
+        
+        if p_tstamp is None:
+            try:
+                tstamp = self.get_so().tstamp
+            except:
+                tstamp = None
+        else:
+            tstamp = p_tstamp
+
+        return super()._set_adapted( p_adapted = p_adapted, 
+                                     p_subtype = p_subtype, 
+                                     p_tstamp = tstamp,
+                                     p_num_inst = p_num_inst,
+                                     **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
     def adapt(self, p_inst : InstDict) -> bool:
 
         # 0 Intro
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_S, 'Adaptation started')
 
+        adapted_in_situ     = False
+        adapted_reverse     = False
+        num_inst_in_situ    = 0
+        num_inst_reverse    = 0
+        
+        # 0.1 Get recent instance
+        try:
+            (recent_inst_type, recent_inst) = next(reversed(p_inst.values()))
+            recent_inst_tstamp = recent_inst.tstamp
+        except:
+            recent_inst_type = InstTypeNew
+            recent_inst_tstamp = self.get_so().tstamp
+
+
         # 1 Preprocessing 
         try:
-            adapted = self._adapt_pre()
+            if self._adapt_pre():
+                if recent_inst_type == InstTypeNew:
+                    adapted_in_situ = True
+                    tstamp_in_situ  = recent_inst_tstamp
+                else:
+                    adapted_reverse = True
+                    tstamp_reverse  = recent_inst_tstamp
+
             self.log(self.C_LOG_TYPE_S, 'Preprocessing done')
+
         except NotImplementedError:
-            adapted = False
+            pass
+
 
         # 2 Main adaptation loop
         for inst_id, (inst_type, inst) in sorted(p_inst.items()):
@@ -142,36 +225,64 @@ class OAStreamTask (StreamTask, Model):
                 # 2.1 Adaptation on a new stream instance
                 self.log(self.C_LOG_TYPE_S, 'Adaptation on new instance', inst_id)
                 if self._adapt( p_inst_new=inst):
-                    adapted = True
+                    adapted_in_situ      = True
+                    tstamp_in_situ       = inst.tstamp
+                    num_inst_in_situ    += 1
                     self.log(self.C_LOG_TYPE_S, 'Policy adapted')
                 else:
                     self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
+
             else:
                 # 2.2 Reverse adaptation on an obsolete stream instance
                 self.log(self.C_LOG_TYPE_S, 'Reverse adaptation on obsolete instance', inst_id)
                 try:
                     if self._adapt_reverse( p_inst_del=inst ):
-                        adapted = True
+                        adapted_reverse      = True
+                        tstamp_reverse       = inst.tstamp
+                        num_inst_reverse    += 1
                         self.log(self.C_LOG_TYPE_S, 'Policy adapted')
                     else:
                         self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
                 except NotImplementedError:
-                    self.log(self.C_LOG_TYPE_E, 'Reverse adaptation not implemented', inst_id)
+                    self.log(self.C_LOG_TYPE_W, 'Reverse adaptation not implemented', inst_id)
+
 
         # 3 Postprocessing
         try:
-            if self._adapt_post(): adapted = True
+            if self._adapt_post(): 
+                if recent_inst_type == InstTypeNew:
+                    adapted_in_situ = True
+                else:
+                    adapted_reverse = True
+
             self.log(self.C_LOG_TYPE_S, 'Postprocessing done')
+
         except NotImplementedError:
             pass
 
-        # 4 Outro
-        self._set_adapted( p_adapted = adapted )
-        if adapted:
+
+        # 4 Raise adaptation events
+        if adapted_reverse:
+            self._set_adapted( p_adapted = True,
+                               p_subtype = OAStreamAdaptation.C_SUBTYPE_REVERSE,
+                               p_tstamp = tstamp_reverse,
+                               p_num_inst = num_inst_reverse )
+
+        if adapted_in_situ:
+            self._set_adapted( p_adapted = True,
+                               p_subtype = OAStreamAdaptation.C_SUBTYPE_IN_SITU,
+                               p_tstamp = tstamp_in_situ,
+                               p_num_inst = num_inst_in_situ )
+            
+
+        # 5 Outro
+        if adapted_in_situ or adapted_reverse:
             self.log(self.C_LOG_TYPE_S, 'Adaptation done with changes')
-        else:
-            self.log(self.C_LOG_TYPE_S, 'Adaptation done without changes')
-        return adapted
+            return True
+
+        self._set_adapted( p_adapted = False )
+        self.log(self.C_LOG_TYPE_S, 'Adaptation done without changes')
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -253,7 +364,7 @@ class OAStreamTask (StreamTask, Model):
             Normalizer object to be applied on task-specific 
         """
 
-        pass
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -272,8 +383,17 @@ class OAStreamTask (StreamTask, Model):
         """
 
         self.log(Log.C_LOG_TYPE_I, 'Renormalization triggered')
-        self._renormalize( p_normalizer=p_event_object.get_raising_object() )
-        self.log(Log.C_LOG_TYPE_I, 'Renormalization completed')
+        try:
+            self._renormalize( p_normalizer=p_event_object.get_raising_object() )
+            self.log(Log.C_LOG_TYPE_I, 'Renormalization completed')
+
+        except NotImplementedError:
+            self.log(Log.C_LOG_TYPE_W, 'Renormalization not implemented')
+            return
+
+
+        self._set_adapted( p_adapted = True,
+                           p_subtype = OAStreamAdaptation.C_SUBTYPE_RENORMALIZE )
 
 
 

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.ml
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
@@ -70,10 +70,14 @@
 ##                                   - _update_hyperparameters()
 ##                                   - _hpt_updated
 ##                                   - _hyperparameter_handler()
+## -- 2025-05-28  2.4.0     DA       - New class Adaptation
+## --                                - Class Model:
+## --                                  - Method _set_adapted(): new parameters
+## --                                  - Incorporation of new class Adaptation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2023-07-24)
+Ver. 2.4.0 (2025-05-28)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -183,6 +187,33 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class Adaptation (Event):
+    """
+    Class for adaptation events raised by the Model class.
+    """
+
+    C_SUBTYPE_IN_SITU       = 'IN SITU'         # regular in situ adaptation
+    C_SUBTYPE_EVENT         = 'EVENT-ORIENTED'  # event-oriented adaptation
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_raising_object, 
+                  p_subtype,
+                  p_tstamp = None, 
+                  **p_kwargs ):
+        
+        super().__init__( p_raising_object = p_raising_object, 
+                          p_tstamp = p_tstamp, 
+                          **p_kwargs )
+        
+        self.subtype = p_subtype
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Model (Task, ScientificObject):
     """
     Fundamental template class for adaptive ML models. Supports in particular
@@ -224,9 +255,9 @@ class Model (Task, ScientificObject):
     C_NAME                      = '????'
 
     C_EVENT_ADAPTED             = 'ADAPTED'  
-    C_EVENT_OBJECTIVE_REACHED   = False   
+    C_EVENT_CLS                 = Adaptation  
 
-    C_BUFFER_CLS                = Buffer       
+    C_BUFFER_CLS                = Buffer  
 
     C_SCIREF_TYPE               = ScientificObject.C_SCIREF_TYPE_NONE
 
@@ -360,14 +391,34 @@ class Model (Task, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_adapted(self, p_adapted:bool):
+    def _set_adapted( self, 
+                      p_adapted : bool,
+                      p_subtype = Adaptation.C_SUBTYPE_IN_SITU,
+                      p_tstamp : TStampType = None,
+                      **p_kwargs ):
         """
-        Sets the adapted flag. Internal use only.
+        Sets the adapted flag and raises an adaptation event.
+
+        Parameters
+        ----------
+        p_adapted : bool
+            Adaptation flag. If True and event handlers are registered an adaptation event is raised.
+        p_subtype = Adaptation.C_SUBTYPE_IN_SITU
+            Subtype of adaptation. See class Adaptation for further details.
+        p_tstamp : TStampType = None
+            Optional explicite time stamp.
+        **p_kwargs
+            Optional keyword arguments
         """
 
         self._adapted = p_adapted
 
-        if self._adapted: self._raise_event(self.C_EVENT_ADAPTED, Event(p_raising_object=self))
+        if ( self._adapted ) and ( len(self._registered_handlers) > 0 ): 
+            self._raise_event( p_event_id = self.C_EVENT_ADAPTED, 
+                               p_event_object = self.C_EVENT_CLS( p_raising_object=self,
+                                                                  p_subtype = p_subtype,
+                                                                  p_tstamp = p_tstamp,
+                                                                  **p_kwargs ) )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -377,7 +428,7 @@ class Model (Task, ScientificObject):
 
         Parameters
         ----------
-        p_kwargs : dict
+        **p_kwargs
             All parameters that are needed for the adaption. Depends on the specific higher context.
 
         Returns
@@ -399,7 +450,10 @@ class Model (Task, ScientificObject):
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_S, 'Adaptation started')
         adapted = self._adapt(**p_kwargs)
-        self._set_adapted(adapted)
+
+        self._set_adapted( p_adapted = adapted,
+                           p_subtype = Adaptation.C_SUBTYPE_IN_SITU )
+        
         return adapted
         
 
@@ -440,7 +494,9 @@ class Model (Task, ScientificObject):
             Object with further context informations about the event.
         """
 
-        self._set_adapted(p_adapted=self._adapt_on_event(p_event_id=p_event_id, p_event_object=p_event_object))        
+        self._set_adapted( p_adapted = self._adapt_on_event( p_event_id=p_event_id, 
+                                                             p_event_object=p_event_object ),
+                           p_subtype = Adaptation.C_SUBTYPE_EVENT )        
 
 
 ## -------------------------------------------------------------------------------------------------

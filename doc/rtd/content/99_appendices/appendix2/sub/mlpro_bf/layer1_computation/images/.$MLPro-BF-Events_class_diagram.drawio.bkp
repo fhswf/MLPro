@@ -44,7 +44,7 @@
         <mxCell id="z0QvJ6B_BdvuQfe3Sqzu-10" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="z0QvJ6B_BdvuQfe3Sqzu-7" vertex="1">
           <mxGeometry y="66" width="250" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="z0QvJ6B_BdvuQfe3Sqzu-11" value="__init__( p_raising_object, &#xa;               p_tstamp:TStampType = None, &#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="z0QvJ6B_BdvuQfe3Sqzu-7" vertex="1">
+        <mxCell id="z0QvJ6B_BdvuQfe3Sqzu-11" value="__init__( p_raising_object, &#xa;               p_tstamp:datetime = None, &#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="z0QvJ6B_BdvuQfe3Sqzu-7" vertex="1">
           <mxGeometry y="74" width="250" height="52" as="geometry" />
         </mxCell>
         <mxCell id="J-QqGGnJOPUjVu77Mp3g-0" value="get_raising_object()" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="z0QvJ6B_BdvuQfe3Sqzu-7" vertex="1">

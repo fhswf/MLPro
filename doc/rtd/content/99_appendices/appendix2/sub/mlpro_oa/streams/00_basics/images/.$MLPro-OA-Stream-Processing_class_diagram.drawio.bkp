@@ -11,7 +11,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="ado_M-dr3WUVXcom1yO_-1" value="OAStreamTask &#xa;(bf.streams.StreamTask, bf.ml.Model)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#d5e8d4;strokeColor=#82b366;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="520" y="330" width="300" height="474" as="geometry">
+          <mxGeometry x="720" y="390" width="300" height="474" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -54,13 +54,13 @@
         <mxCell id="NC4ok9Ms9W8lQ4tfJlZF-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontColor=#FF0000;endArrow=block;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="3OC-FlShTz39iofZlzZl-0" target="NC4ok9Ms9W8lQ4tfJlZF-16" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="670" y="860" />
-              <mxPoint x="250" y="860" />
+              <mxPoint x="870" y="920" />
+              <mxPoint x="450" y="920" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="3OC-FlShTz39iofZlzZl-0" value="OAStreamWorkflow &#xa;(bf.streams.StreamWorkflow, bf.ml.AWorkflow)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#d5e8d4;strokeColor=#82b366;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="520" y="923" width="300" height="200" as="geometry">
+          <mxGeometry x="720" y="983" width="300" height="200" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -78,11 +78,11 @@
         </mxCell>
         <mxCell id="fdyP1tWBDfPf_pqGQ-dC-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontColor=#0000FF;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="fdyP1tWBDfPf_pqGQ-dC-23" target="3OC-FlShTz39iofZlzZl-0" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="950" y="2163" as="targetPoint" />
+            <mxPoint x="1150" y="2223" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="fdyP1tWBDfPf_pqGQ-dC-23" value="OAStreamScenario &#xa;(bf.streams.StreamScenario)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#d5e8d4;strokeColor=#82b366;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="520" y="1243" width="300" height="260" as="geometry">
+          <mxGeometry x="720" y="1303" width="300" height="260" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -102,7 +102,7 @@
           <mxGeometry y="182" width="300" height="66" as="geometry" />
         </mxCell>
         <mxCell id="NC4ok9Ms9W8lQ4tfJlZF-16" value="OAStreamShared (bf.streams.StreamShared)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="100" y="748" width="300" height="50" as="geometry">
+          <mxGeometry x="300" y="808" width="300" height="50" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -165,7 +165,7 @@
           <mxGeometry y="26" width="40" height="8" as="geometry" />
         </mxCell>
         <mxCell id="7C4s_j0biFTsK1RU1VLK-12" value="OAStreamAdaptation&#xa;(bf.ml.Adaptation)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="100" y="330" width="300" height="210" as="geometry">
+          <mxGeometry x="620" y="60" width="300" height="210" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -185,13 +185,13 @@
           <mxGeometry y="126" width="300" height="84" as="geometry" />
         </mxCell>
         <mxCell id="7C4s_j0biFTsK1RU1VLK-25" value="Central template class for all online-adaptive stream tasks in MLPro. It provides the following features:&lt;br&gt;&lt;br&gt;- Extended adaptivity&lt;div&gt;&amp;nbsp; &amp;nbsp; - several custom methods for adaptation&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; - further subtypes of adaptation&lt;br&gt;- Standard for event-oriented re-normalization&lt;br&gt;&lt;br&gt;See parent classes for further custom options...&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=9;spacingRight=3;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="800" y="180" width="300" height="160" as="geometry" />
+          <mxGeometry x="1000" y="240" width="300" height="160" as="geometry" />
         </mxCell>
         <mxCell id="7C4s_j0biFTsK1RU1VLK-26" value="Container for online-adaptive stream workflows." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=9;spacingRight=3;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="800" y="873" width="140" height="60" as="geometry" />
+          <mxGeometry x="1000" y="933" width="140" height="60" as="geometry" />
         </mxCell>
         <mxCell id="7C4s_j0biFTsK1RU1VLK-27" value="Template for online-adaptive data stream processing applications." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=9;spacingRight=3;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="800" y="1193" width="160" height="60" as="geometry" />
+          <mxGeometry x="1000" y="1253" width="160" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

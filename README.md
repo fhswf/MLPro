@@ -3,8 +3,6 @@
 [![PyPI version](https://badge.fury.io/py/mlpro.svg)](https://badge.fury.io/py/mlpro)
 [![PyPI Total Downloads](https://static.pepy.tech/personalized-badge/mlpro?period=total&units=international_system&left_color=blue&right_color=orange&left_text=PyPI%20Total%20Downloads)](https://pepy.tech/project/mlpro)
 [![PyPI Last Month Downloads](https://static.pepy.tech/personalized-badge/mlpro?period=month&units=international_system&left_color=blue&right_color=orange&left_text=PyPI%20Last%20Month%20Downloads)](https://pepy.tech/project/mlpro)
-[![Anaconda-Version Badge](https://anaconda.org/mlpro/mlpro/badges/version.svg)](https://anaconda.org/mlpro/mlpro)
-[![Anaconda-Downloads Badge](https://img.shields.io/conda/dn/mlpro/mlpro?color=green&label=Anaconda.org%20Total%20downloads&style=flat-square)](https://anaconda.org/mlpro/mlpro)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6653484.svg)](https://doi.org/10.5281/zenodo.6653484)
 
 <img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
