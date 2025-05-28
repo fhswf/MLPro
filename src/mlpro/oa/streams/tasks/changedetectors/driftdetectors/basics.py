@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-03-03  0.2.0     DA       Alignment with anomaly detection
+## -- 2025-05-28  0.3.0     DA/DS    Class DriftDetector: new parent ChangeDetector
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-03-03)
+Ver. 0.3.0 (2025-05-28)
 
 This module provides templates for drift detection to be used in the context of online adaptivity.
 """
@@ -25,12 +26,13 @@ from mlpro.bf.streams import InstDict
 from mlpro.bf.various import Log
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts import Drift
+from mlpro.oa.streams.tasks.changedetectors import ChangeDetector
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetector (OAStreamTask):
+class DriftDetector (ChangeDetector):
     """
     Base class for online anomaly detectors. It raises an event whenever the beginning or the end 
     of a drift is detected. Please describe in child classes which event classes are used. Always

@@ -8,23 +8,39 @@
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-02-13  0.2.0     DA       Class Drift: new attributes event_id, drift_status
 ## -- 2025-02-19  0.3.0     DA       Class Drift: new parent Renomalizable
+<<<<<<< HEAD
 ## -- 2025-05-20  0.4.0     DA/DS    New parent class : Anomaly
 ## -------------------------------------------------------------------------------------------------
 
 """
 Ver. 0.4.0 (2025-05-20)
+=======
+## -- 2025-05-28  0.4.0     DA/DS    Class Drift: new parent Change
+## -------------------------------------------------------------------------------------------------
+
+"""
+Ver. 0.4.0 (2025-05-28)
+>>>>>>> origin/bf/oa/streams/enh
 
 This module provides a template class for types of data drift to be used in drift detection algorithms.
 """
 
-from datetime import datetime
 
+<<<<<<< HEAD
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
+=======
+from mlpro.oa.streams.tasks.changedetectors import Change
+
+>>>>>>> origin/bf/oa/streams/enh
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
 class Drift (Anomaly):
+=======
+class Drift (Change):
+>>>>>>> origin/bf/oa/streams/enh
     """
     This is the base class for drift events which can be raised by drift detectors when the beginning
     or end of a drift is detected.
@@ -51,6 +67,7 @@ class Drift (Anomaly):
         class name and one of the postfixes '(ON)', '(OFF)' depending on the drift status.
     """
 
+<<<<<<< HEAD
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -76,3 +93,8 @@ class Drift (Anomaly):
 
 
 
+=======
+    pass
+
+
+>>>>>>> origin/bf/oa/streams/enh
