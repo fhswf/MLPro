@@ -8,39 +8,24 @@
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-02-13  0.2.0     DA       Class Drift: new attributes event_id, drift_status
 ## -- 2025-02-19  0.3.0     DA       Class Drift: new parent Renomalizable
-<<<<<<< HEAD
 ## -- 2025-05-20  0.4.0     DA/DS    New parent class : Anomaly
+## -- 2025-05-28  0.5.0     DA/DS    Class Drift: new parent Change
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2025-05-20)
-=======
-## -- 2025-05-28  0.4.0     DA/DS    Class Drift: new parent Change
-## -------------------------------------------------------------------------------------------------
-
-"""
-Ver. 0.4.0 (2025-05-28)
->>>>>>> origin/bf/oa/streams/enh
+Ver. 0.5.0 (2025-05-28)
 
 This module provides a template class for types of data drift to be used in drift detection algorithms.
 """
 
 
-<<<<<<< HEAD
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
-=======
 from mlpro.oa.streams.tasks.changedetectors import Change
 
->>>>>>> origin/bf/oa/streams/enh
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-<<<<<<< HEAD
-class Drift (Anomaly):
-=======
 class Drift (Change):
->>>>>>> origin/bf/oa/streams/enh
     """
     This is the base class for drift events which can be raised by drift detectors when the beginning
     or end of a drift is detected.
@@ -67,34 +52,6 @@ class Drift (Change):
         class name and one of the postfixes '(ON)', '(OFF)' depending on the drift status.
     """
 
-<<<<<<< HEAD
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self,
-                  p_status : bool,
-                  p_id : int = 0,
-                  p_tstamp : datetime = None,
-                  p_visualize : bool = False,
-                  p_raising_object : object = None,
-                  **p_kwargs):
-        
-        super().__init__(p_id = p_id,
-                         p_status = p_status,
-                         p_tstamp = p_tstamp,
-                         p_visualize = p_visualize,
-                         p_raising_object = p_raising_object,
-                         **p_kwargs)
-
-                
-
-        
-
-        
-
-
-
-=======
     pass
 
 
->>>>>>> origin/bf/oa/streams/enh
