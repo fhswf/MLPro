@@ -4,11 +4,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-05-28  0.0.1     DA       Creation
+## -- 2025-05-28  0.1.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.1 (2025-05-28)
+Ver. 0.1.0 (2025-05-28)
 
 ...
 You will learn:
@@ -366,4 +366,5 @@ duraction_sec = ( tp_delta.seconds * 1000000 + tp_delta.microseconds + 1 ) / 100
 myscenario.switch_logging( p_logging = Log.C_LOG_TYPE_W)
 myscenario.log(Log.C_LOG_TYPE_W, 'Duration [sec]:', round(duraction_sec,2), ', Cycles/sec:', round(num_inst/duraction_sec,2))
 
-input('Press ENTER to exit...')
+if visualize:
+    input('Press ENTER to exit...')
