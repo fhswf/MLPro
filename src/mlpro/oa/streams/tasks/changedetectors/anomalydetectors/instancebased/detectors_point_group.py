@@ -29,8 +29,8 @@ from mlpro.bf.various import Log
 from mlpro.bf.streams import Instance
 
 from mlpro.oa.streams.basics import StreamTask
-from mlpro.oa.streams.tasks.anomalydetectors.instancebased.basics import AnomalyDetectorIB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies import Anomaly, PointAnomaly, GroupAnomaly
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.instancebased.basics import AnomalyDetectorIB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies import Anomaly, PointAnomaly, GroupAnomaly
 
 
 

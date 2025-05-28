@@ -1,29 +1,29 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.tasks.driftdetectors.drifts.instancebased
-## -- Module  : movement.py
+## -- Package : mlpro.oa.streams.tasks.anomalydetectors.instancebased
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-03-04  1.0.0     DA/DS    Creation
+## -- 2025-02-28  1.0.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-03-04)
+Ver. 1.0.0 (2025-02-28)
 
-This module provides a sub-typ of class DriftIB related to data drift of type movement.
+This module provides MLPro's template class for instance-based anomaly detectors.
 """
 
-from mlpro.oa.streams.tasks.driftdetectors.drifts.instancebased.basics import DriftIB
 
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.basics import AnomalyDetector
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftIBMovement (DriftIB):
+class AnomalyDetectorIB (AnomalyDetector):
     """
-    Sub-type indicating the begin or end of a data drift of type movement.
+    This class is a sub-type template for instance-based anomaly detectors.
     """
 
-    pass
+    C_TYPE = 'Anomaly Detector (IB)'

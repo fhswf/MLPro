@@ -1,18 +1,28 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.oa.streams.tasks.driftdetectors
+## -- Package : mlpro.oa.tasks.changedetectors.anomalydetectors
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-02-12  0.1.0     DA       Creation
-## -- 2025-03-03  0.2.0     DA       Alignment with anomaly detection
+## -- 2023-06-08  0.0.0     SK       Creation
+## -- 2023-09-12  1.0.0     SK       Release
+## -- 2023-11-21  1.0.1     SK       Time Stamp update
+## -- 2024-02-25  1.1.0     SK       Visualisation update
+## -- 2024-04-10  1.2.0     DA/SK    Refactoring
+## -- 2024-04-11  1.3.0     DA       Methods AnomalyDetector.init/update_plot: determination and
+## --                                forwarding of changes on ax limits
+## -- 2024-05-22  1.4.0     SK       Refactoring
+## -- 2024-08-12  1.4.1     DA       Correction in AnomalyDetector.update_plot()
+## -- 2024-12-11  1.4.2     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-02-14  1.5.0     DA       Review and refactoring
+## -- 2025-03-03  1.5.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-03-03)
+Ver. 1.5.1 (2025-03-03)
 
-This module provides templates for drift detection to be used in the context of online adaptivity.
+This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
 try:
@@ -20,21 +30,22 @@ try:
 except:
     class Figure : pass
 
-from mlpro.bf.plot import PlotSettings
-from mlpro.bf.streams import InstDict
 from mlpro.bf.various import Log
+from mlpro.bf.plot import PlotSettings
+from mlpro.bf.math.normalizers import Normalizer
+from mlpro.bf.streams import InstDict
+
 from mlpro.oa.streams import OAStreamTask
-from mlpro.oa.streams.tasks.driftdetectors.drifts import Drift
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies import Anomaly
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetector (OAStreamTask):
+class AnomalyDetector (OAStreamTask):
     """
-    Base class for online anomaly detectors. It raises an event whenever the beginning or the end 
-    of a drift is detected. Please describe in child classes which event classes are used. Always
-    use the _raise_drift_event() method when raising an event. 
+    Base class for online anomaly detectors. It raises an event when an
+    anomaly is detected.
 
     Parameters
     ----------
@@ -50,15 +61,15 @@ class DriftDetector (OAStreamTask):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_drift_buffer_size : int = 100
-        Size of the internal drift buffer self.drifts. Default = 100.
+    p_anomaly_buffer_size : int = 100
+        Size of the internal anomaly buffer self.anomalies. Default = 100.
     p_kwargs : dict
         Further optional named parameters.
     """
 
-    C_TYPE            = 'Drift Detector'
-    C_PLOT_ACTIVE     = True
-    C_PLOT_STANDALONE = False
+    C_TYPE              = 'Anomaly Detector'
+    C_PLOT_ACTIVE       = True
+    C_PLOT_STANDALONE   = False
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -68,7 +79,7 @@ class DriftDetector (OAStreamTask):
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
-                  p_drift_buffer_size : int = 100,
+                  p_anomaly_buffer_size : int = 100,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -79,86 +90,88 @@ class DriftDetector (OAStreamTask):
                           p_logging = p_logging,
                           **p_kwargs )
         
-        self._drift_id                = 0
-        self.drifts                   = {}
-        self._drift_buffer_size : int = p_drift_buffer_size
+        self._ano_id : int          = 0
+        self.anomalies              = {}
+        self._ano_buffer_size : int = p_anomaly_buffer_size
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_next_drift_id(self):
+    def _get_next_anomaly_id(self):
         """
-        Methd that returns the id of the next drift. 
+        Methd that returns the id of the next anomaly. 
 
         Returns
         -------
-        drift_id : int
+        _ano_id : int
         """
 
-        self._drift_id +=1
-        return self._drift_id
+        self._ano_id +=1
+        return self._ano_id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _buffer_drift(self, p_drift:Drift):
+    def _buffer_anomaly(self, p_anomaly:Anomaly):
         """
-        Method to be used internally to add a new drift object. Please use as part of your algorithm.
+        Method to be used to add a new anomaly. Please use as part of your algorithm.
 
         Parameters
         ----------
-        p_drift : Drift
-            Drift object to be added.
+        p_anomaly : Anomaly
+            Anomaly object to be added.
         """
 
         # 1 Buffering turned on?
-        if self._drift_buffer_size <= 0: return
+        if self._ano_buffer_size <= 0: return
 
         # 2 Buffer full?
-        if len( self.drifts ) >= self._drift_buffer_size:
+        if len( self.anomalies ) >= self._ano_buffer_size:
             # 2.1 Remove oldest entry
-            oldest_key     = next(iter(self.drifts))
-            oldest_drift = self.drifts.pop(oldest_key)
-            oldest_drift.remove_plot()
+            oldest_key     = next(iter(self.anomalies))
+            oldest_anomaly = self.anomalies.pop(oldest_key)
+            oldest_anomaly.remove_plot()
 
         # 3 Buffer new anomaly
-        p_drift.id = self._get_next_drift_id()
-        self.drifts[p_drift.id] = p_drift
+        p_anomaly.id = self._get_next_anomaly_id() 
+        self.anomalies[p_anomaly.id] = p_anomaly
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _remove_drift(self, p_drift:Drift):
+    def _remove_anomaly(self, p_anomaly:Anomaly):
         """
-        Method to remove an existing drift object. Please use as part of your algorithm.
+        Method to remove an existing anomaly. Please use as part of your algorithm.
 
         Parameters
         ----------
-        p_drift : Drift
-            Drift object to be removed.
+        p_anomaly : Anomaly
+            Anomaly object to be removed.
         """
 
-        p_drift.remove_plot(p_refresh=True)
-        del self.drifts[p_drift.id]
+        p_anomaly.remove_plot(p_refresh=True)
+        del self.anomalies[p_anomaly.id]
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _raise_drift_event( self, p_drift : Drift, p_buffer: bool = True ):
+    def _raise_anomaly_event(self, p_anomaly:Anomaly, p_buffer: bool = True):
         """
-        Specialized method to raise drift events. 
+        Method to raise an anomaly event.
 
         Parameters
         ----------
-        p_drift : Drift
-            Drift event object to be raised.
+        p_anomaly : Anomaly
+            Anomaly object to be raised.
+        p_buffer : bool
+            Anomaly is buffered when set to True.
         """
 
-        if p_buffer: self._buffer_drift( p_drift = p_drift )
+        if p_buffer: self._buffer_anomaly( p_anomaly=p_anomaly )
 
         if self.get_visualization(): 
-            p_drift.init_plot( p_figure=self._figure, 
-                               p_plot_settings=self.get_plot_settings() )
+            p_anomaly.init_plot( p_figure=self._figure, 
+                                 p_plot_settings=self.get_plot_settings() )
 
-        return super()._raise_event( p_event_id = p_drift.event_id, 
-                                     p_event_object = p_drift )
-    
+        self._raise_event( p_event_id = p_anomaly.event_id,
+                           p_event_object = p_anomaly )
+
                  
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
@@ -171,8 +184,8 @@ class DriftDetector (OAStreamTask):
 
         super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
 
-        for drift in self.drifts.values():
-            drift.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
+        for anomaly in self.anomalies.values():
+            anomaly.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -202,12 +215,12 @@ class DriftDetector (OAStreamTask):
         self._plot_ax_ylim = ax_ylim_new
         self._plot_ax_zlim = ax_zlim_new
 
-        for drift in self.drifts.values():
-            drift.update_plot( p_axlimits_changed = axlimits_changed,
-                               p_xlim = ax_xlim_new,
-                               p_ylim = ax_ylim_new,
-                               p_zlim = ax_zlim_new,
-                               **p_kwargs )
+        for anomaly in self.anomalies.values():
+            anomaly.update_plot( p_axlimits_changed = axlimits_changed,
+                                 p_xlim = ax_xlim_new,
+                                 p_ylim = ax_ylim_new,
+                                 p_zlim = ax_zlim_new,
+                                 **p_kwargs )
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -215,16 +228,16 @@ class DriftDetector (OAStreamTask):
 
         if not self.get_visualization(): return
 
-        # super().remove_plot( p_refresh = p_refresh )
+        # super().remove_plot(p_refresh=p_refresh)
 
-        for drift in self.drifts.values():
-            drift.remove_plot(p_refresh=p_refresh)
+        for anomaly in self.anomalies.values():
+            anomaly.remove_plot(p_refresh=p_refresh)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _renormalize(self, p_normalizer):
         """
-        Internal renormalization of all buffered drifts. See method OATask.renormalize_on_event() 
+        Internal renormalization of all buffered anomalies. See method OATask.renormalize_on_event() 
         for further information.
 
         Parameters
@@ -233,5 +246,5 @@ class DriftDetector (OAStreamTask):
             Normalizer object to be applied on task-specific 
         """
 
-        for drift in self.drifts.values():
-           drift.renormalize( p_normalizer=p_normalizer )
+        for anomaly in self.anomalies.values():
+           anomaly.renormalize( p_normalizer=p_normalizer )

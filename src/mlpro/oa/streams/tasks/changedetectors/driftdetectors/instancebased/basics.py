@@ -14,7 +14,7 @@ Ver. 0.1.0 (2025-03-04)
 This module provides a template for instance-based drift detection algorithms to be used in the context of online adaptivity.
 """
 
-from mlpro.oa.streams.tasks.driftdetectors.basics import DriftDetector
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.basics import DriftDetector
 
 
 

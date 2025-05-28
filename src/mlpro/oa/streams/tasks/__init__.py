@@ -1,5 +1,4 @@
 from mlpro.oa.streams.tasks.boundarydetectors import *
 from mlpro.oa.streams.tasks.clusteranalyzers import *
-from mlpro.oa.streams.tasks.anomalydetectors import *
-from mlpro.oa.streams.tasks.driftdetectors import *
+from mlpro.oa.streams.tasks.changedetectors import *
 from mlpro.oa.streams.tasks.normalizers import *

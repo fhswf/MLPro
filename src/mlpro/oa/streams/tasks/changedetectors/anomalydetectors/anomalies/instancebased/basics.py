@@ -16,7 +16,7 @@ This module provides a template class for instance-based anomalies to be used in
 
 
 from mlpro.bf.streams import Instance
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
 
 
 

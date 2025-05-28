@@ -25,7 +25,7 @@ except:
 from mlpro.bf.mt import PlotSettings
 
 from mlpro.bf.streams import Instance
-from mlpro.oa.streams.tasks.driftdetectors.drifts.basics import Drift
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.basics import Drift
 
 
 

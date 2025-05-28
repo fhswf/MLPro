@@ -27,7 +27,7 @@ except:
     class Text : pass
     
 from mlpro.bf.plot import PlotSettings
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
 
 
 
