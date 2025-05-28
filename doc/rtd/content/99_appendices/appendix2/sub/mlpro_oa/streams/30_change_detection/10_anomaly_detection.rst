@@ -2,18 +2,18 @@
 Anomaly detection
 =================
 
-.. image:: 30_anomaly_detection/images/MLPro-OA-Anomaly-Detectors_class_diagram.drawio.png
+.. image:: 10_anomaly_detection/images/MLPro-OA-Anomaly-Detectors_class_diagram.drawio.png
    :scale: 50%
    
    
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.basics
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.basics
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics
    :members:
    :undoc-members:
    :private-members:
@@ -24,4 +24,4 @@ Anomaly detection
    :maxdepth: 2
    :glob:
    
-   30_anomaly_detection/*
+   10_anomaly_detection/*
