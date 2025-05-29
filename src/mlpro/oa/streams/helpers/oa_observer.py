@@ -10,16 +10,16 @@
 
 
 from mlpro.bf.various import Log, KWArgs
-from mlpro.bf.plot import PlotSettings, Plottable
+from mlpro.bf.plot import PlotSettings
 
-from mlpro.oa.streams import OAStreamAdaptation
+from mlpro.oa.streams import OAStreamAdaptation, OAStreamHelper, OAStreamTask
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAObserver (Log, Plottable, KWArgs):
+class OAObserver (OAStreamHelper, Log, KWArgs):
     """
     This class observes adaptations of particular oa stream tasks. Its event handler method can be 
     registered for adaptation events of a stream task.
@@ -39,26 +39,66 @@ class OAObserver (Log, Plottable, KWArgs):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
+                  p_related_task : OAStreamTask,
+                  p_logarithmic_plot : bool = True,
+                  p_plot_with_numbers : bool = True,
+                  p_filter_subtypes : list = [],
                   p_visualize : bool = True,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
+        OAStreamHelper.__init__(self, p_visualize = p_visualize )
         Log.__init__(self, p_logging = p_logging)
-        Plottable.__init__(self, p_visualize = p_visualize )
         KWArgs.__init__(self, **p_kwargs)
 
+        self._related_task      = p_related_task
+        self._logarithmic_plot  = p_logarithmic_plot
+        self._plot_with_numbers = p_plot_with_numbers
+        self._filter_subtypes   = p_filter_subtypes
+
+        self._related_task.register_event_handler( p_event_id = OAStreamTask.C_EVENT_ADAPTED,
+                                                   p_event_handler = self._event_handler )
+
 
 ## -------------------------------------------------------------------------------------------------
-    def event_handler(self, p_event_id, p_event_object : OAStreamAdaptation ):
+    def _event_handler(self, p_event_id, p_event_object : OAStreamAdaptation ):
+
+        # 0 Log line
         self.log( Log.C_LOG_TYPE_W, 'Task "' + p_event_object.get_raising_object().get_name() + '" performed an adaptation of type "' + str(p_event_object.subtype) + '" on ' + str(p_event_object.num_inst) + ' instances' )
-        self.update_plot()
+
+
+        # 1 Update plot
+        self.update_plot( p_event_object = p_event_object )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure, p_settings):
+    def init_plot( self, 
+                   p_figure = None,
+                   p_plot_settings: PlotSettings = None,
+                   p_window_title: str = None ) -> bool:
+        
+        if p_window_title is None:
+            window_title = 'OA Observer for Task "' + self._related_task.get_name() + '"'
+        else:
+            window_title = p_window_title
+
+        return super().init_plot( p_figure = p_figure,
+                                  p_plot_settings = p_plot_settings,
+                                  p_window_title = window_title )
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd( self, 
+                       p_figure, 
+                       p_settings : PlotSettings ):
+        
         return super()._init_plot_nd(p_figure, p_settings)
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings, **p_kwargs):
+    def _update_plot_nd( self, 
+                         p_settings : PlotSettings, 
+                         p_event_object,
+                         **p_kwargs ):
+        
         return super()._update_plot_nd(p_settings, **p_kwargs)

@@ -92,6 +92,19 @@ class OAStreamAdaptation (Adaptation):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class OAStreamHelper (Plottable):
+    """
+    Template class for own helpers to be added to an oa stream workflow
+    """
+
+    C_PLOT_ACTIVE    = False
+    
+    
+    
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class OAStreamTask (StreamTask, Model):
     """
     Template class for online adaptive ML tasks.
@@ -451,11 +464,39 @@ class OAStreamWorkflow (StreamWorkflow, AWorkflow):
                             p_visualize = p_visualize,
                             p_logging = p_logging,
                             **p_kwargs )
+        
+        self._helpers = []
 
 
 ## -------------------------------------------------------------------------------------------------
     def add_task(self, p_task : StreamTask, p_pred_tasks: list = None):
         AWorkflow.add_task( self, p_task=p_task, p_pred_tasks=p_pred_tasks )
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_helper(self, p_helper : OAStreamHelper):
+        self._helpers.append(p_helper)
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure = None, 
+                   p_plot_settings = None ):
+        
+        super().init_plot( p_figure = p_figure, 
+                           p_plot_settings = p_plot_settings )
+        
+        for helper in self._helpers:
+            helper.init_plot( p_figure = p_figure,
+                              p_plot_settings = p_plot_settings )
+
+
+## -------------------------------------------------------------------------------------------------
+    def remove_plot(self, p_refresh=True):
+        super().remove_plot(p_refresh)
+
+        for helper in self._helpers:
+            helper.remove_plot( p_refresh = p_refresh )
 
 
 
