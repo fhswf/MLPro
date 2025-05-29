@@ -192,8 +192,8 @@ class Adaptation (Event):
     Class for adaptation events raised by the Model class.
     """
 
-    C_SUBTYPE_IN_SITU       = 'IN SITU'         # regular in situ adaptation
-    C_SUBTYPE_EVENT         = 'EVENT-ORIENTED'  # event-oriented adaptation
+    C_SUBTYPE_IN_SITU       = 'forward'         # regular in situ adaptation
+    C_SUBTYPE_EVENT         = 'event'  # event-oriented adaptation
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 

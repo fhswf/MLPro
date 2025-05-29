@@ -268,21 +268,18 @@ class DemoScenario (OAStreamScenario):
         # 3 Add helpers for adaptation observation
         workflow.add_helper( p_helper = OAObserver( p_related_task = task_bd,
                                                     p_logarithmic_plot = True,
-                                                    p_plot_with_numbers = True,
                                                     p_filter_subtypes = [],
                                                     p_visualize = p_visualize, 
                                                     p_logging = p_logging ) )
 
         workflow.add_helper( p_helper = OAObserver( p_related_task = task_norm_minmax,
                                                     p_logarithmic_plot = True,
-                                                    p_plot_with_numbers = True,
                                                     p_filter_subtypes = [],
                                                     p_visualize = p_visualize, 
                                                     p_logging = p_logging ) )
 
         workflow.add_helper( p_helper = OAObserver( p_related_task = task_ma,
                                                     p_logarithmic_plot = True,
-                                                    p_plot_with_numbers = True,
                                                     p_filter_subtypes = [],
                                                     p_visualize = p_visualize, 
                                                     p_logging = p_logging ) )

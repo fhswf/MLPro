@@ -68,8 +68,8 @@ class OAStreamAdaptation (Adaptation):
     ...
     """
 
-    C_SUBTYPE_REVERSE       = 'REVERSE'
-    C_SUBTYPE_RENORMALIZE   = 'RENORMALIZE'
+    C_SUBTYPE_REVERSE       = 'reverse'
+    C_SUBTYPE_RENORMALIZE   = 're-normalize'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -487,8 +487,7 @@ class OAStreamWorkflow (StreamWorkflow, AWorkflow):
                            p_plot_settings = p_plot_settings )
         
         for helper in self._helpers:
-            helper.init_plot( p_figure = p_figure,
-                              p_plot_settings = p_plot_settings )
+            helper.init_plot()
 
 
 ## -------------------------------------------------------------------------------------------------
