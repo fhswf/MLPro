@@ -20,8 +20,8 @@ This module provides template for cluster-based anomaly detection algorithms to 
 """
 
 from mlpro.oa.streams.basics import *
-from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.basics import AnomalyDetector
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.math.properties import *
 

@@ -15,7 +15,7 @@ This module provides cluster deformation detector algorithm.
 """
 
 from mlpro.oa.streams.basics import *
-from mlpro.oa.streams.tasks.anomalydetectors.cb_detectors.basics import AnomalyDetectorCB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased.basics import AnomalyDetectorCB
 from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 

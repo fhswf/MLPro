@@ -6,3 +6,4 @@ from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterba
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.enlargement import ClusterEnlargement
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.shrinkage import ClusterShrinkage
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.new_cluster import NewClusterAppearance
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.deformation import ClusterDeformation

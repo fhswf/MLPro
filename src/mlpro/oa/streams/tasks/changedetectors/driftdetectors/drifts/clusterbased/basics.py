@@ -25,7 +25,7 @@ except:
     class Figure : pass
 
 from mlpro.bf.mt import PlotSettings
-from mlpro.oa.streams.tasks.driftdetectors.drifts.basics import Drift
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.basics import Drift
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
 

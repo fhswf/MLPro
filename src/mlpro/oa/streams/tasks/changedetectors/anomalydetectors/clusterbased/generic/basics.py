@@ -9,10 +9,11 @@
 ## -- 2025-03-11  0.2.0     DA       Removed method AnomalyDetectorCBGenMulti.__init__()
 ## -- 2025-04-01  0.3.0     DA       Class AnomalyDetectorCBGeneric: integration of new method 
 ## --                                _get_tstamp()
+## -- 2025-04-13  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-04-01)
+Ver. 0.4.0 (2025-04-13)
 
 This module provides template classes for generic cluster-based anomaly detection
 """
@@ -22,8 +23,8 @@ from mlpro.bf.math.properties import *
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.anomalydetectors.clusterbased import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import AnomalyCB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased import AnomalyDetectorCB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import AnomalyCB
 
 
 
@@ -77,7 +78,7 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
     def _run(self, p_inst: InstDict):
 
         # 1 Get the clusters
-        clusters = self._clusterer.get_clusters()
+        clusters = self._clusterer.clusters
 
         # 2 Observation of the clusters
         for cluster in clusters.values():
@@ -123,7 +124,7 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBGenSingle (AnomalyDetectorCBGeneric):
+class AnomalyDetectorCBGenSingleProp (AnomalyDetectorCBGeneric):
     """
     Template for generic cluster-based anomaly detectors observing a single property.
 
@@ -169,7 +170,7 @@ class AnomalyDetectorCBGenSingle (AnomalyDetectorCBGeneric):
 
 ## ------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBGenMulti(AnomalyDetectorCBGeneric):
+class AnomalyDetectorCBGenMultiProp(AnomalyDetectorCBGeneric):
     """
     Template for generic cluster-based anomaly detectors observing multiple properties.
 

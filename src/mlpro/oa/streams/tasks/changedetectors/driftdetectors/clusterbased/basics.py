@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-02-12  0.1.0     DA       Creation
+## -- 2025-05-05  0.2.0     Ds       Refactoring : DriftDetectorCBSingle, DriftDetectorCBMulti
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-02-12)
+Ver. 0.2.0 (2025-05-05)
 
 This module provides a template for cluster-based drift detection algorithms to be used in the context of online adaptivity.
 """
@@ -18,7 +19,7 @@ from mlpro.bf.various import Log
 from mlpro.bf.math.properties import PropertyDefinitions
 
 from mlpro.oa.streams.basics import OAStreamTask
-from mlpro.oa.streams.tasks.driftdetectors.basics import DriftDetector
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.basics import DriftDetector
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 
 
@@ -80,4 +81,8 @@ class DriftDetectorCB (DriftDetector):
 
         if len(unknown_prop) > 0:
            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
-        
+
+
+
+
+
