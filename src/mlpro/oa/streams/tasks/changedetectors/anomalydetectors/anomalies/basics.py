@@ -38,20 +38,7 @@ from mlpro.oa.streams.tasks.changedetectors import Change
 class Anomaly (Change):
     """
     This is the base class for anomaly events which can be raised by the anomaly detectors when an
-    anomaly is detected.
-
-    Parameters
-    ----------
-    p_id : int
-        Anomaly ID. Default value = 0.
-    p_tstamp : datetime
-        Time of occurance of anomaly. Default = None.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_raising_object : object
-        Reference of the object raised. Default = None.
-    **p_kwargs
-        Further optional keyword arguments.
+    anomaly is detected. See parent class Change for more details.
     """
 
     pass
