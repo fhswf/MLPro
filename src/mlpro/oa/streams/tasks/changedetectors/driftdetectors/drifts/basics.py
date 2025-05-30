@@ -8,12 +8,11 @@
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-02-13  0.2.0     DA       Class Drift: new attributes event_id, drift_status
 ## -- 2025-02-19  0.3.0     DA       Class Drift: new parent Renomalizable
-## -- 2025-05-20  0.4.0     DA/DS    New parent class : Anomaly
-## -- 2025-05-28  0.5.0     DA/DS    Class Drift: new parent Change
+## -- 2025-05-28  0.4.0     DA/DS    Class Drift: new parent Change
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2025-05-28)
+Ver. 0.4.0 (2025-05-28)
 
 This module provides a template class for types of data drift to be used in drift detection algorithms.
 """
@@ -32,7 +31,7 @@ class Drift (Change):
 
     Parameters
     ----------
-    p_status : bool
+    p_drift_status : bool
         Determines whether a new drift starts (True) or an existing drift ends (False).
     p_id : int
         Drift ID. Default value = 0.

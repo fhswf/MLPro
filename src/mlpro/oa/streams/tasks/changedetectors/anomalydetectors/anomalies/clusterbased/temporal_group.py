@@ -1,38 +1,37 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.tasks.anomalydetectors.anomalies.clusterbased
-## -- Module  : disappearance.py
+## -- Module  : temporal_group.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-06-08  0.0.0     SK       Creation
-## -- 2023-09-12  1.0.0     SK       Release
-## -- 2023-11-21  1.0.1     SK       Time Stamp update
-## -- 2024-02-25  1.1.0     SK       Visualisation update
-## -- 2024-04-10  1.2.0     DA/SK    Refactoring
-## -- 2024-05-28  1.3.0     SK       Refactoring
+## -- 2025-03-31  0.0.0     DS       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-28)
+Ver. 0.0.0 (2025-03-31)
 
-This module provides a template class for cluster disappearances to be used in anomaly detection algorithms.
+This module provides a class for temporal group anomalies to be used in anomaly detection algorithms.
 """
 
+from datetime import datetime
+
+try:
+    from matplotlib.figure import Figure
+    from matplotlib.text import Text
+    from matplotlib import patches
+except:
+    class Figure : pass
+    class Text : pass
+    class patches : pass
+    
+from mlpro.bf.plot import PlotSettings
 from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ClusterDisappearance (AnomalyCB):
-    """
-    Event class to be raised when a cluster disappears.
-    
-    """
-
-    C_NAME      = 'Cluster disappearance'
-
+class TemporalGroupAnomaly (AnomalyCB):
+    pass
 

@@ -10,11 +10,10 @@
 ## -- 2025-03-26  0.2.1     DA       Bugfix in method DriftDetectorCBGeneric._run()
 ## -- 2025-04-01  0.3.0     DA       Class DriftDetectorCBGeneric: integration of new method 
 ## --                                _get_tstamp()
-## -- 2025-04-13  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2025-04-13)
+Ver. 0.3.0 (2025-04-01)
 
 This module provides template classes for generic cluster-based drift detection
 """
@@ -30,9 +29,9 @@ from mlpro.oa.streams.tasks.driftdetectors.clusterbased.basics import DriftDetec
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGeneric ( DriftDetectorCB):
+class DriftDetectorCBGeneric ( DriftDetectorCB ):
     """
-    Template for generic cluster-based drift detectors for single cluster drifts.
+    Template for generic cluster-based drift detectors observing multiple properties.
 
     Parameters
     ----------
@@ -65,13 +64,13 @@ class DriftDetectorCBGeneric ( DriftDetectorCB):
         self.cluster_drifts           = {}
 
         super().__init__( p_clusterer = p_clusterer,
-                          p_property= p_properties,
                           p_name = p_name,
                           p_range_max = p_range_max,
                           p_ada = p_ada,
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
                           p_logging= p_logging,
+                          p_drift_buffer_size = p_drift_buffer_size,
                           **p_kwargs )
         
 
@@ -94,7 +93,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB):
     def _run(self, p_inst : InstDict ):
 
         # 1 Get current list of clusters
-        clusters = self._clusterer.clusters
+        clusters = self._clusterer.get_clusters()
 
 
         # 2 Observation of clusters
@@ -177,7 +176,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSingleProp ( DriftDetectorCBGeneric ):
+class DriftDetectorCBGenSingle ( DriftDetectorCBGeneric ):
     """
     Specialized template for generic cluster-based drift detectors observing a single property.
 
@@ -221,7 +220,7 @@ class DriftDetectorCBGenSingleProp ( DriftDetectorCBGeneric ):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenMultiProp ( DriftDetectorCBGeneric ):
+class DriftDetectorCBGenMulti ( DriftDetectorCBGeneric ):
     """
     Specialized template for generic cluster-based drift detectors observing a single property.
     """

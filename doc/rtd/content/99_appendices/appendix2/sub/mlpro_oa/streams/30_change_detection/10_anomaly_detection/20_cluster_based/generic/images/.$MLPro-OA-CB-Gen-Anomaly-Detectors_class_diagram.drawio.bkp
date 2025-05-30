@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-03-28T11:01:53.125Z" etag="2g8Xev7gjcI7LFb3jwSJ" version="24.4.13" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-03-11T16:09:45.454Z" etag="YZOGrgY_1y0zS0ZAlFDB" version="24.4.13" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1615" dy="955" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="1434" dy="854" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -124,7 +124,7 @@
         <mxCell id="iP_U6ul5jcWvCPFDPsTt-3" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;               p_property : PropertyDefinition = cprop_size,&#xa;               p_cls_anomaly : type,&#xa;               p_name : str = None,&#xa;               p_range_max=OAStreamTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               p_anomaly_buffer_size : int = 100,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#FF0000;" parent="iP_U6ul5jcWvCPFDPsTt-0" vertex="1">
           <mxGeometry y="73" width="350" height="167" as="geometry" />
         </mxCell>
-        <mxCell id="34L6PaqCug6EZg5lML8X-0" value="_detect_anomaly( p_cluster : Cluster,&#xa;                              p_properties : PropertyDefinitons,&#xa;                              **p_kwargs ) -&gt; AnomalyCB" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#FF0000;" parent="iP_U6ul5jcWvCPFDPsTt-0" vertex="1">
+        <mxCell id="34L6PaqCug6EZg5lML8X-0" value="_detect_anomaly( p_cluster : Cluster,&#xa;                              p_properties : PropertyDefinitons,&#xa;                              **p_kwargs ) -&gt; AnomalyCB" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#FF0000;" vertex="1" parent="iP_U6ul5jcWvCPFDPsTt-0">
           <mxGeometry y="240" width="350" height="56" as="geometry" />
         </mxCell>
       </root>

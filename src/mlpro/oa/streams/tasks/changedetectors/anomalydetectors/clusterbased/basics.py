@@ -11,21 +11,17 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.3.0     SK       Refactoring
-## -- 2025-04-22  1.3.1     DA/DS    New methods - _run_algorithm & _run added
-## -- 2025-04-24  1.3.2     DS       New classes - AnomalyDetectorCBSingle & AnomalyDetectorCBMulti added
-## -- 2025-04-27  1.4.0     DA/DS    Design extensions/refactoring
-## -- 2025-05-06  1.5.0     DA/DS    Design reduction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2025-05-06)
+Ver. 1.3.0 (2024-05-28)
 
 This module provides template for cluster-based anomaly detection algorithms to be used in the context of online adaptivity.
 """
 
 from mlpro.oa.streams.basics import *
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.basics import AnomalyDetector
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import *
+from mlpro.oa.streams.tasks.anomalydetectors.basics import AnomalyDetector
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
 from mlpro.bf.math.properties import *
 
@@ -71,84 +67,3 @@ class AnomalyDetectorCB (AnomalyDetector):
 
         if len(unknown_prop) >0:
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _detect_cb_anomalies(self, p_inst: Instance) -> None:
-        """
-        Custom method for the main detection algorithm.
-
-        Parameters
-        ----------
-        p_inst : Instance
-            Instance that triggered the detection.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _triage_anomaly( self, 
-                         p_anomaly: AnomalyCB,
-                         **p_kwargs ) -> bool:
-        """
-        Custom method for extended anomaly triage.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict) -> None:
-        """
-        This method is called by the stream task to process the incoming instance.
-
-        Parameters
-        ----------
-        p_inst : InstDict
-            The incoming instance to be processed.
-
-        Returns
-        -------
-        None
-
-        """
-
-        # 1 Execution of the main detection algorithm        
-        try:
-            inst_type, inst = list(p_inst.values())[-1]
-            if inst_type != InstTypeNew:
-                inst = None
-        except:
-            inst = None
-
-        self._detect_cb_anomalies( p_inst = inst )
-
-
-        # 2 Clean-up loop ('triage')
-        clusters    = self._clusterer.clusters
-        triage_list = []
-
-        # 2.1 Collect anomalies to be deleted
-        for anomaly in self.cb_anomalies.values():
-
-            # 2.1.1 Check whether the related clusters still exist
-            remove_anomaly = True
-            for related_cluster in anomaly.clusters.values():
-                try:
-                    clusters[related_cluster.id]
-                    remove_anomaly = False
-                    break
-                except:
-                    pass
-
-            if not remove_anomaly:
-                remove_anomaly = self._triage_anomaly( p_anomaly = anomaly )
-
-            if remove_anomaly:
-                # 2.1.2 Anomaly is prepared to be removed
-                triage_list.append( anomaly )
-
-        # 2.2 Remove all obsolete anomalies from the triage list
-        for anomaly in triage_list:
-            self._remove_anomaly( p_anomaly = anomaly )

@@ -26,7 +26,7 @@ except:
     class patches : pass
     
 from mlpro.bf.plot import PlotSettings
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
 
 
 
@@ -169,12 +169,3 @@ class GroupAnomaly (AnomalyCB):
 # ## -------------------------------------------------------------------------------------------------
 #     mean            = property( fget = _get_mean )
 #     mean_deviation  = property( fget = _get_mean_deviation )
-
-class SpatialGroupAnomaly (GroupAnomaly):
-
-    pass
-
-
-class TemporalGroupAnomaly (GroupAnomaly):
-
-    pass

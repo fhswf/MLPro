@@ -19,8 +19,6 @@
 ## --                                - refactoring and simplification
 ## --                                - new attribute event_id
 ## --                                - new parent Renormalizable
-## -- 2025-05-12  2.1.0     DS       Design extention : new method _get_status()
-## -- 2025-05-20  2.1.1     DA\DS    Design extension 
 ## -- 2025-05-28  2.1.0     DA/DS    Class Anomaly: new parent Change
 ## -------------------------------------------------------------------------------------------------
 
@@ -40,20 +38,7 @@ from mlpro.oa.streams.tasks.changedetectors import Change
 class Anomaly (Change):
     """
     This is the base class for anomaly events which can be raised by the anomaly detectors when an
-    anomaly is detected.
-
-    Parameters
-    ----------
-    p_id : int
-        Anomaly ID. Default value = 0.
-    p_tstamp : datetime
-        Time of occurance of anomaly. Default = None.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_raising_object : object
-        Reference of the object raised. Default = None.
-    **p_kwargs
-        Further optional keyword arguments.
+    anomaly is detected. See parent class Change for more details.
     """
 
     pass

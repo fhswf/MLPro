@@ -27,7 +27,7 @@ except:
 
 from datetime import datetime
 
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
+from mlpro.oa.streams.tasks.anomalydetectors.anomalies.basics import Anomaly
 from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
