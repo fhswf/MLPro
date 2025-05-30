@@ -95,7 +95,7 @@ class Change (Id, Event, Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     status      = property( fget = _get_status )
-    event_id    = property( fet = _get_event_id )
+    event_id    = property( fget = _get_event_id )
 
 
 

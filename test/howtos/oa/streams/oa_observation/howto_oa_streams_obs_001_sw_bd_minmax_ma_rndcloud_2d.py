@@ -266,24 +266,23 @@ class DemoScenario (OAStreamScenario):
 
 
         # 3 Add helpers for adaptation observation
-        oaobs_task_bd = OAObserver( p_visualize = p_visualize, 
-                                    p_logging = p_logging )
-        
-        task_bd.register_event_handler( p_event_id = OAStreamTask.C_EVENT_ADAPTED,
-                                        p_event_handler = oaobs_task_bd.event_handler )
+        workflow.add_helper( p_helper = OAObserver( p_related_task = task_bd,
+                                                    p_logarithmic_plot = True,
+                                                    p_filter_subtypes = [],
+                                                    p_visualize = p_visualize, 
+                                                    p_logging = p_logging ) )
 
-        oaobs_task_norm_minmax = OAObserver( p_visualize = p_visualize, 
-                                             p_logging = p_logging )
-        
-        task_norm_minmax.register_event_handler( p_event_id = OAStreamTask.C_EVENT_ADAPTED,
-                                                 p_event_handler = oaobs_task_norm_minmax.event_handler )
+        workflow.add_helper( p_helper = OAObserver( p_related_task = task_norm_minmax,
+                                                    p_logarithmic_plot = True,
+                                                    p_filter_subtypes = [],
+                                                    p_visualize = p_visualize, 
+                                                    p_logging = p_logging ) )
 
-
-        oaobs_task_ma = OAObserver( p_visualize = p_visualize, 
-                                    p_logging = p_logging )
-        
-        task_ma.register_event_handler( p_event_id = OAStreamTask.C_EVENT_ADAPTED,
-                                        p_event_handler = oaobs_task_ma.event_handler )
+        workflow.add_helper( p_helper = OAObserver( p_related_task = task_ma,
+                                                    p_logarithmic_plot = True,
+                                                    p_filter_subtypes = [],
+                                                    p_visualize = p_visualize, 
+                                                    p_logging = p_logging ) )
 
 
         # 4 Return stream and workflow
