@@ -13,10 +13,11 @@
 ## --                                - implementation of plot methods
 ## .-                                - redefintion of method assign_so()
 ## -- 2024-12-06  0.4.1     DA       Method OAControllerRL.__init__(): handling of the own name
+## -- 2025-06-02  0.4.2     DA       Bugfix in OAControllerRL.__init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.1 (2024-12-06)
+Ver. 0.4.2 (2025-06-02)
 
 This module provides a wrapper class for MLPro's RL policies.
 
@@ -83,7 +84,9 @@ class OAControllerRL (OAController):
         else:
             name = p_rl_policy.get_name()
 
-        super().__init__( p_ada = p_ada,
+        super().__init__( p_input_space = p_rl_policy.get_observation_space(),
+                          p_output_space = p_rl_policy.get_action_space(),
+                          p_ada = p_ada,
                           p_name = name, 
                           p_range_max = p_range_max, 
                           p_visualize = p_visualize, 
