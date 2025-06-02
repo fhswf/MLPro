@@ -30,18 +30,24 @@
 ## -- 2025-04-11  1.2.4     DA       - Code review/cleanup
 ## --                                - Method RingBuffer._update_plot_nd(): support of time stamps
 ## -- 2025-05-06  1.2.5     DA       Method RingBuffer._run(): update tstamp of outdated instances
+## -- 2025-06-01  2.0.0     DA       Refactoring of class RingBuffer
+## --                                - method get_boundaries(): alignment to new signature
+## --                                - removal of event propagation
+## --                                - optimization of methods _update_plot_2d(), _update_plot_3d()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2025-05-06)
+Ver. 2.0.0 (2025-06-02)
 
-This module provides pool of window objects further used in the context of online adaptivity.
+This module provides a sliding window with an internal ring buffer.
 """
 
+from typing import Union
 
 import numpy as np
 
 try:
+    from matplotlib.figure import Figure
     from matplotlib.axes import Axes
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     from matplotlib.patches import Rectangle
@@ -51,8 +57,11 @@ except:
     class Poly3DCollection : pass
     class Rectangle : pass
 
-from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
+from mlpro.bf.plot import PlotSettings, Plottable
+from mlpro.bf.math import Dimension
+from mlpro.bf.math.statistics import *
+from mlpro.bf.streams.basics import InstDict, InstTypeNew, InstTypeDel, StreamTask
 from mlpro.bf.streams.tasks.windows.basics import Window
 
 
@@ -108,7 +117,6 @@ class RingBuffer (Window):
         self._statistics_enabled        = p_enable_statistics or p_visualize
         self._numeric_buffer:np.ndarray = None
         self._numeric_features          = []
-        self._raise_event_data_removed  = False
         self._buffer_full               = False
 
 
@@ -149,7 +157,7 @@ class RingBuffer (Window):
                                                                                      Dimension.C_BASE_SET_Z]:
                         self._numeric_features.append(j)
 
-                self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
+                self._numeric_buffer = np.full((self.buffer_size, len(self._numeric_features)), np.nan)
 
 
             # 1.3 Internal ring buffer already filled?
@@ -159,8 +167,6 @@ class RingBuffer (Window):
                 inst_del = self._buffer[self._buffer_pos]
                 inst_del.tstamp = self.get_so().tstamp
                 p_inst[inst_del.id] = ( InstTypeDel, inst_del )
-                self._raise_event_data_removed = True
-
                 p_inst[inst.id] = ( InstTypeNew, inst )
 
             elif not self._delay:
@@ -189,37 +195,54 @@ class RingBuffer (Window):
                         inst_fwd = self._buffer[i]
                         p_inst[inst_fwd.id] = ( InstTypeNew, inst_fwd )
 
-                self._raise_event( p_event_id = self.C_EVENT_BUFFER_FULL, 
-                                   p_event_object = Event( p_raising_object=self, 
-                                                           p_related_set=feature_value.get_related_set() ) )
-
-
-            if self._raise_event_data_removed:
-                self._raise_event( p_event_id = self.C_EVENT_DATA_REMOVED, 
-                                   p_event_object = Event( p_raising_object=self, 
-                                                           p_related_set=feature_value.get_related_set() ) )
-
 
 ## -------------------------------------------------------------------------------------------------
-    def get_boundaries(self):
+    def get_boundaries(self, p_side : BoundarySide = None, p_dim : int = None ) -> Union[Boundaries, float]:
         """
-        Method to get the current boundaries of the Window
+        Returns the current value boundaries of internally stored data. The result can be reduced
+        by the optional parameters p_side, p_dim. If both parameters are specified, the result is
+        a float.
+
+        Parameters
+        ----------
+        p_side : BoundarySide = None
+            Optionally reduces the result to upper or lower boundaries. See class BoundarySide for
+            possible values.
+        p_dim : int = None
+            Optionally reduces the result to a particular dimension.
 
         Returns
         -------
-        boundaries:np.ndarray
-            Current window boundaries in the form of a Numpy array.
+        Union[Boundaries, float]
+            Returns the current boundaries of the data. The return value depends on the combination 
+            of the optional parameters:
+            - If neither `p_side` nor `p_dim` is specified: returns the full 2×n array.
+            - If only `p_side` is specified: returns a 1D array with values for all dimensions.
+            - If only `p_dim` is specified: returns a 1D array with both lower and upper bounds.
+            - If both `p_side` and `p_dim` are specified: returns a single float value.
         """
 
-        if not self._buffer_full:
-            boundaries = np.stack( ( [ np.min(self._numeric_buffer[0:self._buffer_pos], axis=0),
-                                       np.max(self._numeric_buffer[0:self._buffer_pos], axis=0) ] ), axis=1)
-        else:
-            boundaries = np.stack( ( [ np.min(self._numeric_buffer, axis=0),
-                                       np.max(self._numeric_buffer, axis=0) ] ), axis=1)
-            
-        return boundaries
+        if p_side is None:
+            if p_dim is None:
+                # Case 1: Full 2×n matrix of lower and upper boundaries
+                lower = np.nanmin(self._numeric_buffer, axis=0)
+                upper = np.nanmax(self._numeric_buffer, axis=0)
+                return np.stack([lower, upper], axis=0)
 
+            # Case 2: 1D array with lower and upper boundary for single dimension p_dim
+            col = self._numeric_buffer[:, p_dim]
+            return np.array([np.nanmin(col), np.nanmax(col)])
+
+
+        if p_dim is None:
+            # Case 3: 1D array for one side across all dimensions
+            return np.nanmin(self._numeric_buffer, axis=0) if p_side == BoundarySide.LOWER else np.nanmax(self._numeric_buffer, axis=0)
+
+
+        # Case 4: Scalar value for one side and one dimension
+        col = self._numeric_buffer[:, p_dim]
+        return np.nanmin(col) if p_side == BoundarySide.LOWER else np.nanmax(col)
+    
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
@@ -238,6 +261,7 @@ class RingBuffer (Window):
         Plottable._init_plot_2d(self, p_figure=p_figure, p_settings=p_settings)
 
         self._patch_windows: dict = None
+        self._plot_boundaries     = None
         p_settings.axes.grid(True)
 
 
@@ -257,6 +281,7 @@ class RingBuffer (Window):
         Plottable._init_plot_3d(self, p_figure=p_figure, p_settings=p_settings)
 
         self._patch_windows: dict = None
+        self._plot_boundaries     = None
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -275,7 +300,7 @@ class RingBuffer (Window):
 
         Plottable._init_plot_nd(self, p_figure=p_figure, p_settings=p_settings)
 
-        self._patch_windows = None
+        self._patch_windows     = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -298,7 +323,14 @@ class RingBuffer (Window):
         if len(self._buffer) == 0: return
 
 
-        # 2 Initialization of the rectangle
+        # 2 Check for changes on boundaries
+        plot_boundaries = self.get_boundaries()
+        if ( self._plot_boundaries is not None ):
+            if np.array_equal( plot_boundaries, self._plot_boundaries ): return
+            self._plot_boundaries = plot_boundaries
+
+
+        # 3 Initialization of the rectangle
         if self._patch_windows is None:
             self._patch_windows = {}
             self._patch_windows['2D'] = Rectangle((0, 0),0,0, ec= 'red', facecolor='none', zorder = -999)
@@ -306,12 +338,11 @@ class RingBuffer (Window):
             self._patch_windows['2D'].set_visible(True)
 
 
-        # 3 Update of the rectangle
-        boundaries = self.get_boundaries()
-        x = boundaries[0][0]
-        y = boundaries[1][0]
-        w = boundaries[0][1] - boundaries[0][0]
-        h = boundaries[1][1] - boundaries[1][0]
+        # 4 Update of the rectangle
+        x = plot_boundaries[0][0]
+        y = plot_boundaries[1][0]
+        w = plot_boundaries[0][1] - plot_boundaries[0][0]
+        h = plot_boundaries[1][1] - plot_boundaries[1][0]
         self._patch_windows['2D'].set_bounds(x,y,w,h)
 
         self._patch_windows['2D'].set_visible(True)
@@ -337,16 +368,22 @@ class RingBuffer (Window):
         if len(self._buffer) == 0: return
 
 
-        # 2 Initialization of the cuboid
+        # 2 Check for changes on boundaries
+        plot_boundaries = self.get_boundaries()
+        if ( self._plot_boundaries is not None ):
+            if np.array_equal( plot_boundaries, self._plot_boundaries ): return
+            self._plot_boundaries = plot_boundaries
+            
+            
+        # 3 Initialization of the cuboid
         if self._patch_windows is None:
             self._patch_windows = {}
             self._patch_windows['3D'] = Poly3DCollection(verts= [], edgecolors='red', facecolors='red', alpha = 0)
             self._plot_settings.axes.add_collection(self._patch_windows['3D'])
 
 
-        # 3 Update of the cuboid
-        b = self.get_boundaries()
-
+        # 4 Update of the cuboid
+        b     = plot_boundaries
         verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
                              [b[0][1], b[1][0], b[2][1]],
                              [b[0][1], b[1][0], b[2][0]],

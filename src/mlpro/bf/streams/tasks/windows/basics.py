@@ -25,16 +25,20 @@
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
 ## -- 2024-05-22  1.2.0     DA       Refactoring and splitting
 ## -- 2025-04-11  1.2.1     DA       Code review/cleanup
+## -- 2025-06-01  2.0.0     DA       Refactoring of class Window:
+## --                                - events removed
+## --                                - method get_boundaries(): new parameters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2025-04-11)
+Ver. 2.0.0 (2025-06-01)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
 
 import numpy as np
+from mlpro.bf.math.statistics import *
 from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
 
@@ -43,7 +47,7 @@ from mlpro.bf.events import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Window (StreamTask):
+class Window (StreamTask, BoundaryProvider):
     """
     This is the abstract root class for window implementations. 
 
@@ -69,9 +73,6 @@ class Window (StreamTask):
 
     C_PLOT_STANDALONE       = False
 
-    C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'     # raised the first time the buffer runs full
-    C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'    # raised whenever data were removed from the buffer
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_buffer_size:int,
@@ -91,10 +92,10 @@ class Window (StreamTask):
                           p_logging = p_logging,
                           p_kwargs = p_kwargs )
 
-        self.buffer_size  = p_buffer_size
-        self._delay       = p_delay
-        self._buffer      = {}
-        self._buffer_pos  = 0
+        self.buffer_size         = p_buffer_size
+        self._delay              = p_delay
+        self._buffer             = {}
+        self._buffer_pos         = 0
         self._statistics_enabled = p_enable_statistics
 
 
@@ -112,20 +113,6 @@ class Window (StreamTask):
         """
 
         return (self._buffer, self._buffer_pos)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_boundaries(self) -> np.ndarray:
-        """
-        Returns the current value boundaries of the data stored in the buffer
-
-        Returns
-        -------
-        boundaries:np.ndarray
-            Returns the current window boundaries in the form of a Numpy array.
-        """
-        
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
