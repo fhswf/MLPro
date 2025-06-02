@@ -166,6 +166,18 @@ class OAControllerRL (OAController):
         return adapted
     
 
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure = None, p_plot_settings = None):
+        super().init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings )
+        self._rl_policy.init_plot( p_figure = p_figure, p_plot_settings = p_plot_settings )
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, p_inst = None, **p_kwargs):
+        super().update_plot(p_inst = p_inst, **p_kwargs)
+        self._rl_policy.update_plot( **p_kwargs )
+    
+
 # ## -------------------------------------------------------------------------------------------------
 #     def _init_plot_2d(self, p_figure, p_settings):
 #         return self._rl_policy._init_plot_2d(p_figure, p_settings)
