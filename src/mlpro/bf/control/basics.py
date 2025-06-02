@@ -547,7 +547,7 @@ class ControlledSystem (ControlTask):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None, **p_kwargs):
-        return self.system._reset(p_seed, **p_kwargs)
+        return self.system.reset(p_seed, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
