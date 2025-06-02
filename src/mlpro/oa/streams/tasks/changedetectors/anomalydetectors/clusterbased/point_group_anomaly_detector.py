@@ -14,10 +14,11 @@
 ## -- 2025-05-11  0.2.1     DS       Design extensions
 ## -- 2025-05-19  0.2.2     DS       Bug fixes
 ## -- 2025-05-27  0.3.0     DS       Design extensions
+## -- 2025-06-02  0.3.1     DS       Bug fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-05-27)
+Ver. 0.3.1 (2025-06-02)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -26,7 +27,7 @@ from mlpro.bf.various import Log
 from mlpro.bf.math.properties import Property, PropertyDefinition
 from mlpro.bf.streams import InstDict, InstTypeNew, Stream, Instance
 from mlpro.oa.streams import OAStreamTask
-from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
+from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size, cprop_size_prev
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased.basics import AnomalyDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import AnomalyCB, PointAnomaly, GroupAnomaly, SpatialGroupAnomaly, TemporalGroupAnomaly
@@ -107,9 +108,9 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
         """
 
         # 1 Get all the clusters from the clusterer
-        clusters = self._clusterer.clusters
+        all_clusters = self._clusterer.clusters
 
-        for cluster in clusters.values():
+        for cluster in all_clusters.values():
 
         # 2 Get the cluster property to be observed
             prop_cluster_size : Property = getattr(cluster, self._property)
@@ -123,7 +124,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
                                                      p_visualize = self.get_visualize,
                                                      p_raising_object = self)
 
-                self._raise_anomaly_event( p_anomaly = point_anomaly, p_inst = Instance )
+                self._raise_anomaly_event( p_anomaly = point_anomaly, p_inst = p_inst )
                 self._latest_anomaly = point_anomaly
         
 
@@ -265,16 +266,16 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 
 
         # 1 Get all the clusters from the clusterer
-        clusters = self._clusterer.clusters
+        all_clusters = self._clusterer.clusters
 
         # 3 Get average cluster size
-        avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in clusters]) / len(clusters)
+        avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in all_clusters.values()]) / len(all_clusters)
 
         # 4 Calculater the threshold for the cluster size
         self._thres_size = avg_cluster_size * self._thres_percent 
 
 
-        for cluster in clusters.values():
+        for cluster in all_clusters.values():
 
             # 4.1 Get the cluster property to be observed
             prop_cluster_size : Property = getattr(cluster, self._property)
@@ -405,19 +406,22 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
     def _detect_cb_anomaly( self,
                             p_inst: Instance ):
 
-        # Call the parent to detect point and spatial group anomalies
+        #1 Call the parent to detect point and spatial group anomalies
         super()._run_algorithm( p_inst = p_inst )
 
+        #2 Get all the clusters from the clusterer
+        clusters = self._clusterer.clusters
+
         
-        #1.1 Get the latest anomaly
+        #3 Get the latest anomaly
         latest_anomaly = self._latest_anomaly
     
-        #1.2 Process the latest anomaly
+        #4 Process the latest anomaly
         if latest_anomaly is not None:
-            #1.2.1 Check for the temporal anomaly conditions
+            #4.1 Check for the temporal anomaly conditions
             if isinstance(latest_anomaly, (self._cls_point_anomaly, self._cls_spatial_group_anomaly)) and (latest_anomaly.tstamp == p_inst.tstamp):
                 
-                # 1.2.2 Check for available temporal anomalies
+                #4.1.1 Check for available temporal anomalies
                 if self._tga is None:
                     for cluster_id in latest_anomaly.clusters:
                         if cluster_id not in self._temporal_anomalies:
@@ -425,7 +429,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                         self._temporal_anomalies[cluster_id].append(latest_anomaly)
 
                     if len(self._temporal_anomalies) == 2:
-                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : self._clusterer.clusters[cluster_id] for cluster_id in self._temporal_anomalies },
+                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : clusters[cluster_id] for cluster_id in self._temporal_anomalies },
                                                                                    p_status = True,
                                                                                    p_tstamp = p_inst.tstamp,
                                                                                    p_visualize = self.get_visualize,
