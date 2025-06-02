@@ -194,12 +194,12 @@ class OAStreamTask (StreamTask, Model):
 ## -------------------------------------------------------------------------------------------------
     def _set_adapted( self, 
                       p_adapted : bool, 
-                      p_subtype = Adaptation.C_SUBTYPE_IN_SITU, 
+                      p_subtype : OAStreamAdaptationType, 
                       p_tstamp : TStampType= None,
                       p_num_inst = 1,
                       **p_kwargs ):
         """
-        ...
+        
         """
         
         if p_tstamp is None:
@@ -210,9 +210,9 @@ class OAStreamTask (StreamTask, Model):
         else:
             tstamp = p_tstamp
 
-        return super()._set_adapted( p_adapted = p_adapted, 
-                                     p_subtype = p_subtype, 
-                                     p_tstamp = tstamp,
+        return super()._set_adapted( p_adapted  = p_adapted, 
+                                     p_subtype  = p_subtype, 
+                                     p_tstamp   = tstamp,
                                      p_num_inst = p_num_inst,
                                      **p_kwargs )
 
@@ -224,23 +224,21 @@ class OAStreamTask (StreamTask, Model):
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_S, 'Adaptation started')
 
-        adapted_in_situ     = False
-        adapted_reverse     = False
-        num_inst_in_situ    = 0
-        num_inst_reverse    = 0
+        adapted_forward  = False
+        adapted_reverse  = False
+        num_inst_forward = 0
+        num_inst_reverse = 0
         
 
         # 1 Preprocessing 
         try:
-            if self._adapt_pre():
-                if recent_inst_type == InstTypeNew:
-                    adapted_in_situ = True
-                    tstamp_in_situ  = recent_inst_tstamp
-                else:
-                    adapted_reverse = True
-                    tstamp_reverse  = recent_inst_tstamp
+            atype_pre = self._adapt_pre()
 
-            self.log(self.C_LOG_TYPE_S, 'Preprocessing done')
+            if atype_pre != OAStreamAdaptationType.NONE:
+                if atype_pre == OAStreamAdaptationType.FORWARD: adapted_forward = True
+                elif atype_pre == OAStreamAdaptationType.REVERSE: adapted_reverse = True
+
+                self.log(self.C_LOG_TYPE_S, 'Preprocessing done')
 
         except NotImplementedError:
             pass
@@ -253,9 +251,8 @@ class OAStreamTask (StreamTask, Model):
                 # 2.1 Adaptation on a new stream instance
                 self.log(self.C_LOG_TYPE_S, 'Adaptation on new instance', inst_id)
                 if self._adapt( p_inst_new=inst):
-                    adapted_in_situ      = True
-                    tstamp_in_situ       = inst.tstamp
-                    num_inst_in_situ    += 1
+                    adapted_forward      = True
+                    num_inst_forward    += 1
                     self.log(self.C_LOG_TYPE_S, 'Policy adapted')
                 else:
                     self.log(self.C_LOG_TYPE_S, 'Policy not adapted')
@@ -266,7 +263,6 @@ class OAStreamTask (StreamTask, Model):
                 try:
                     if self._adapt_reverse( p_inst_del=inst ):
                         adapted_reverse      = True
-                        tstamp_reverse       = inst.tstamp
                         num_inst_reverse    += 1
                         self.log(self.C_LOG_TYPE_S, 'Policy adapted')
                     else:
@@ -277,20 +273,20 @@ class OAStreamTask (StreamTask, Model):
 
         # 3 Postprocessing
         try:
-            if self._adapt_post(): 
-                if recent_inst_type == InstTypeNew:
-                    adapted_in_situ = True
-                else:
-                    adapted_reverse = True
+            atype_post = self._adapt_pre()
 
-            self.log(self.C_LOG_TYPE_S, 'Postprocessing done')
+            if atype_post != OAStreamAdaptationType.NONE:
+                if atype_post == OAStreamAdaptationType.FORWARD: adapted_forward = True
+                elif atype_post == OAStreamAdaptationType.REVERSE: adapted_reverse = True
+
+                self.log(self.C_LOG_TYPE_S, 'Postprocessing done')
 
         except NotImplementedError:
             pass
 
 
         # 4 Outro: Logging and adaptation events
-        if adapted_in_situ or adapted_reverse:
+        if adapted_forward or adapted_reverse:
             self.log(self.C_LOG_TYPE_S, 'Adaptation done with changes')
             tstamp = self.get_so().tstamp
 
@@ -300,11 +296,11 @@ class OAStreamTask (StreamTask, Model):
                                    p_tstamp = tstamp,
                                    p_num_inst = num_inst_reverse )
 
-            if adapted_in_situ:
+            if adapted_forward:
                 self._set_adapted( p_adapted = True,
                                    p_subtype = OAStreamAdaptation.C_SUBTYPE_IN_SITU,
                                    p_tstamp = tstamp,
-                                   p_num_inst = num_inst_in_situ )
+                                   p_num_inst = num_inst_forward )
                 
             return True
         
