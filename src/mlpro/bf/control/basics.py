@@ -30,10 +30,11 @@
 ## -- 2024-11-15  0.17.0    DA       Various corrections
 ## -- 2024-11-26  1.0.0     DA       Classes Controller, ControlledSystem: initial idle loop to
 ## --                                determine the initial system state
+## -- 2025-06-02  1.0.1     DA       Implemented method ControlledSystem._reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-11-26)
+Ver. 1.0.1 (2025-06-02)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -542,6 +543,11 @@ class ControlledSystem (ControlTask):
         self.system : System = p_system
         self._last_update : TStampType = None
         self._current_action : Action  = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None, **p_kwargs):
+        return self.system._reset(p_seed, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
