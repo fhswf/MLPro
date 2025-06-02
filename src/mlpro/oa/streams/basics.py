@@ -29,10 +29,11 @@
 ## --                                  - Refactoring of method adapt()
 ## --                                  - Redefinition of method _set_adapted()
 ## --                                  - Refactoring of method renormalize_on_event()
+## -- 2025-06-02  1.3.0     DA       New class OAStreamAdaptationType
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-05-28)
+Ver. 1.3.0 (2025-06-02)
 
 Core classes for online-adaptive data stream processing (OADSP).
 
@@ -52,7 +53,7 @@ from mlpro.bf.ml import *
 ## -------------------------------------------------------------------------------------------------
 class OAStreamShared (StreamShared):
     """
-    Template class for shared objects in the context of online adaptive stream processing.
+    Template class for shared objects in the context of online-adaptive data stream processing.
     """ 
     
     pass
@@ -63,18 +64,40 @@ class OAStreamShared (StreamShared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAStreamAdaptation (Adaptation):
+class OAStreamAdaptationType (AdaptationType):
     """
-    ...
+    Extended types of adaptation, specific to online-adaptive data stream processing.
     """
 
-    C_SUBTYPE_REVERSE       = 'reverse'
-    C_SUBTYPE_RENORMALIZE   = 're-normalize'
+    REVERSE     = 'Reverse'
+    RENORM      = 'Re-Norm'
+    
+    
+    
+    
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAStreamAdaptation (Adaptation):
+    """
+    Class for extended adaptation events raised by the OAStreamTask class.
+    
+    Parameters
+    ----------
+    p_raising_object
+        Raising object.
+    p_subtype : OAStreamAdaptationType
+        Type of adaptation.
+    p_tstamp : TStampType = None
+        Time stamp of adaptation.
+    **p_kwargs
+        Further keyword arguments to be transported by the event.
+    """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_raising_object, 
-                  p_subtype, 
+                  p_subtype : OAStreamAdaptationType, 
                   p_tstamp = None, 
                   p_num_inst = 1,
                   **p_kwargs ):
@@ -206,14 +229,6 @@ class OAStreamTask (StreamTask, Model):
         num_inst_in_situ    = 0
         num_inst_reverse    = 0
         
-        # 0.1 Get recent instance
-        try:
-            (recent_inst_type, recent_inst) = next(reversed(p_inst.values()))
-            recent_inst_tstamp = recent_inst.tstamp
-        except:
-            recent_inst_type = InstTypeNew
-            recent_inst_tstamp = self.get_so().tstamp
-
 
         # 1 Preprocessing 
         try:
@@ -274,39 +289,40 @@ class OAStreamTask (StreamTask, Model):
             pass
 
 
-        # 4 Raise adaptation events
-        if adapted_reverse:
-            self._set_adapted( p_adapted = True,
-                               p_subtype = OAStreamAdaptation.C_SUBTYPE_REVERSE,
-                               p_tstamp = tstamp_reverse,
-                               p_num_inst = num_inst_reverse )
-
-        if adapted_in_situ:
-            self._set_adapted( p_adapted = True,
-                               p_subtype = OAStreamAdaptation.C_SUBTYPE_IN_SITU,
-                               p_tstamp = tstamp_in_situ,
-                               p_num_inst = num_inst_in_situ )
-            
-
-        # 5 Outro
+        # 4 Outro: Logging and adaptation events
         if adapted_in_situ or adapted_reverse:
             self.log(self.C_LOG_TYPE_S, 'Adaptation done with changes')
-            return True
+            tstamp = self.get_so().tstamp
 
-        self._set_adapted( p_adapted = False )
-        self.log(self.C_LOG_TYPE_S, 'Adaptation done without changes')
-        return False
+            if adapted_reverse:
+                self._set_adapted( p_adapted = True,
+                                   p_subtype = OAStreamAdaptation.C_SUBTYPE_REVERSE,
+                                   p_tstamp = tstamp,
+                                   p_num_inst = num_inst_reverse )
+
+            if adapted_in_situ:
+                self._set_adapted( p_adapted = True,
+                                   p_subtype = OAStreamAdaptation.C_SUBTYPE_IN_SITU,
+                                   p_tstamp = tstamp,
+                                   p_num_inst = num_inst_in_situ )
+                
+            return True
+        
+        else:
+            self.log(self.C_LOG_TYPE_S, 'Adaptation done without changes')
+            self._set_adapted( p_adapted = False )
+            return False
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_pre(self) -> bool:
+    def _adapt_pre(self) -> OAStreamAdaptationType:
         """
         Optional custom method for preprocessing steps of adaption.
 
         Returns
         -------
-        bool
-            True, if something has been adapted. False otherwise.
+        OAStreamAdaptationType
+            Type of adaptation carried out.
         """
 
         raise NotImplementedError
@@ -351,14 +367,14 @@ class OAStreamTask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_post(self) -> bool:
+    def _adapt_post(self) -> OAStreamAdaptationType:
         """
         Optional custom method for postprocessing steps of adaption.
 
         Returns
         -------
-        bool
-            True, if something has been adapted. False otherwise.
+        OAStreamAdaptationType
+            Type of adaptation carried out.
         """
 
         raise NotImplementedError

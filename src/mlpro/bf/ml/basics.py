@@ -74,21 +74,24 @@
 ## --                                - Class Model:
 ## --                                  - Method _set_adapted(): new parameters
 ## --                                  - Incorporation of new class Adaptation
+## -- 2025-06-02  2.5.0     DA       New class AdaptationType
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2025-05-28)
+Ver. 2.5.0 (2025-06-02)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
 """
+
+from enum import StrEnum
+import random
 
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.mt import *
 from mlpro.bf.ops import Mode, ScenarioBase
-import random
 
 
 
@@ -187,19 +190,42 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class AdaptationType(StrEnum):
+    """
+    Basic types of adaptation.
+    """
+
+    NONE        = ''
+    FORWARD     = 'Forward'
+    EVENT       = 'Event'
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Adaptation (Event):
     """
     Class for adaptation events raised by the Model class.
-    """
 
-    C_SUBTYPE_IN_SITU       = 'forward'         # regular in situ adaptation
-    C_SUBTYPE_EVENT         = 'event'  # event-oriented adaptation
+    Parameters
+    ----------
+    p_raising_object
+        Raising object.
+    p_subtype : AdaptationType
+        Type of adaptation.
+    p_tstamp : TStampType = None
+        Time stamp of adaptation.
+    **p_kwargs
+        Further keyword arguments to be transported by the event.
+    """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_raising_object, 
-                  p_subtype,
-                  p_tstamp = None, 
+                  p_subtype : AdaptationType,
+                  p_tstamp : TStampType = None, 
                   **p_kwargs ):
         
         super().__init__( p_raising_object = p_raising_object, 
@@ -393,7 +419,7 @@ class Model (Task, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
     def _set_adapted( self, 
                       p_adapted : bool,
-                      p_subtype = Adaptation.C_SUBTYPE_IN_SITU,
+                      p_subtype : AdaptationType,
                       p_tstamp : TStampType = None,
                       **p_kwargs ):
         """
@@ -403,8 +429,8 @@ class Model (Task, ScientificObject):
         ----------
         p_adapted : bool
             Adaptation flag. If True and event handlers are registered an adaptation event is raised.
-        p_subtype = Adaptation.C_SUBTYPE_IN_SITU
-            Subtype of adaptation. See class Adaptation for further details.
+        p_subtype : AdaptationType
+            Subtype of adaptation. See class AdaptationType for further details.
         p_tstamp : TStampType = None
             Optional explicite time stamp.
         **p_kwargs
@@ -452,7 +478,7 @@ class Model (Task, ScientificObject):
         adapted = self._adapt(**p_kwargs)
 
         self._set_adapted( p_adapted = adapted,
-                           p_subtype = Adaptation.C_SUBTYPE_IN_SITU )
+                           p_subtype = AdaptationType.FORWARD )
         
         return adapted
         
@@ -496,7 +522,7 @@ class Model (Task, ScientificObject):
 
         self._set_adapted( p_adapted = self._adapt_on_event( p_event_id=p_event_id, 
                                                              p_event_object=p_event_object ),
-                           p_subtype = Adaptation.C_SUBTYPE_EVENT )        
+                           p_subtype = AdaptationType.EVENT )        
 
 
 ## -------------------------------------------------------------------------------------------------
