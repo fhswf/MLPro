@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-05-28  0.1.0     DA/DS    Creation
 ## -- 2025-05-30  1.0.0     DA/DS    Completion
+## -- 2025-06-03  1.1.0     DA       Class ChangeDetector: new parameter p_thrs_inst
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-05-30)
+Ver. 1.1.0 (2025-06-03)
 
 This module provides templates for change detection to be used in the context of online adaptivity.
 """
@@ -129,6 +130,8 @@ class ChangeDetector (OAStreamTask):
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_change_buffer_size : int = 100
         Size of the internal change buffer self.changes. Default = 100.
+    p_thrs_inst : int = 0
+        The algorithm is only executed after this number of instances.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -145,8 +148,9 @@ class ChangeDetector (OAStreamTask):
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
-                  p_logging=Log.C_LOG_ALL,
+                  p_logging = Log.C_LOG_ALL,
                   p_change_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -160,6 +164,9 @@ class ChangeDetector (OAStreamTask):
         self._change_id : int          = 0
         self.changes                   = {}
         self._change_buffer_size : int = p_change_buffer_size
+        self._thrs_inst : int          = p_thrs_inst
+        self._num_inst : int           = 0
+        self._chk_num_inst : bool      = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -292,6 +299,13 @@ class ChangeDetector (OAStreamTask):
         None
 
         """
+
+        # 0 Check whether the minimum number of instances has been reached
+        if self._chk_num_inst:
+            self._num_inst += len( p_inst )
+            if self._num_inst < self._thrs_inst: return
+            self._chk_num_inst = False
+
 
         # 1 Execution of the main detection algorithm        
         try:
