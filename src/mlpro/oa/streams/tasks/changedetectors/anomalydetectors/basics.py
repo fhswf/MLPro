@@ -59,6 +59,8 @@ class AnomalyDetector (ChangeDetector):
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_anomaly_buffer_size : int = 100
         Size of the internal anomaly buffer self.anomalies. Default = 100.
+    p_thrs_inst : int = 0
+        The algorithm is only executed after this number of instances.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -74,6 +76,7 @@ class AnomalyDetector (ChangeDetector):
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -83,6 +86,7 @@ class AnomalyDetector (ChangeDetector):
                           p_visualize = p_visualize,
                           p_logging = p_logging,
                           p_change_buffer_size = p_anomaly_buffer_size,
+                          p_thrs_inst = p_thrs_inst,
                           **p_kwargs )
         
         self.anomalies = self.changes
