@@ -29,10 +29,9 @@ from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterba
 ## -------------------------------------------------------------------------------------------------
 class ClusterDisappearance (AnomalyCB):
     """
-    Event class to be raised when a cluster disappears.
-    
+    Event class to be raised when a cluster disappears.   
     """
 
-    C_NAME      = 'Cluster disappearance'
+    pass
 
 

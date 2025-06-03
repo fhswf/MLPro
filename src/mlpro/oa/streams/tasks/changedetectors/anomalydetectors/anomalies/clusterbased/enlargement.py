@@ -33,6 +33,6 @@ class ClusterEnlargement (AnomalyCB):
     
     """
 
-    C_NAME      = 'Cluster Enlargement'
+    pass
 
 

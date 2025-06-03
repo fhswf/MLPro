@@ -33,6 +33,6 @@ class NewClusterAppearance (AnomalyCB):
     
     """
 
-    C_NAME      = 'New cluster appearance'
+    pass
 
 

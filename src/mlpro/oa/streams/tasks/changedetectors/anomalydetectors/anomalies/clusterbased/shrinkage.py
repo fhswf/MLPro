@@ -33,6 +33,6 @@ class ClusterShrinkage (AnomalyCB):
     
     """
 
-    C_NAME      = 'Cluster shrinkage'
+    pass
 
 
