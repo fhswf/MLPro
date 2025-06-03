@@ -30,7 +30,7 @@ from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size, cprop_size_prev
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased.basics import AnomalyDetectorCB
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import AnomalyCB, PointAnomaly, GroupAnomaly, SpatialGroupAnomaly, TemporalGroupAnomaly
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import AnomalyCB, PointAnomaly, SpatialGroupAnomaly, TemporalGroupAnomaly
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -48,10 +48,6 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
         The property to be observed for anomalies.
     p_cls_point_anomaly : type
         The class of the point anomaly to be created.
-    p_cls_spatial_group_anomaly : type
-        The class of the spatial group anomaly to be created.
-    p_cls_temporal_group_anomaly : type
-        The class of the temporal group anomaly to be created.
     p_name : str
         The name of the anomaly detector.
     p_range_max : OAStreamTask.C_RANGE_THREAD
@@ -104,7 +100,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
     def _detect_cb_anomalies( self, 
                               p_inst: Instance ): 
         """
-        custom methid for detectiong cluster-based point anomalies.
+        custom method for detectiong cluster-based point anomalies.
         """
 
         # 1 Get all the clusters from the clusterer
@@ -168,8 +164,6 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
         The property to be observed for anomalies.
     p_cls_spatial_group_anomaly : type
         The class of the spatial group anomaly to be created.
-    p_cls_point_anomaly : type
-        The class of the point anomaly to be created.
     p_name : str
         The name of the anomaly detector.
     p_range_max : OAStreamTask.C_RANGE_THREAD
@@ -261,6 +255,9 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 ## -------------------------------------------------------------------------------------------------
     def _detect_cb_anomalies( self,
                               p_inst: Instance ):
+        """
+        Custom method for detecting cluster-based spatial group anomalies.
+        """
 
         super()._detect_cb_anomalies( p_inst = p_inst )
 
@@ -312,11 +309,11 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 ## -------------------------------------------------------------------------------------------------
     def _triage_anomaly( self, p_anomaly : AnomalyCB ):
         """
-        Custom method for anomaly triage.
+        Custom method for anomaly triage for spatial group anomalies.
+        This method checks if the spatial group anomaly is still valid based on the cluster size.
         """
-        # 1 Iterate over all anomalies
-      
 
+        # 1 Iterate over all anomalies
         if isinstance(p_anomaly , self._cls_spatial_group_anomaly):
             #1.1 Get the single cluster associated with the anomaly
             cluster.id, cluster = next(iter(p_anomaly.clusters.items()))
@@ -345,12 +342,8 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
     ...
     p_clusterer : ClusterAnalyzer
         The cluster analyzer to be used for clustering the data stream.
-    p_property : PropertyDefinition
-        The property to be observed for anomalies.
     p_cls_temporal_group_anomaly : type
         The class of the temporal group anomaly to be created.
-    p_cls_point_anomaly : type
-        The class of the point anomaly to be created.
     p_name : str
         The name of the anomaly detector.
     p_range_max : OAStreamTask.C_RANGE_THREAD
@@ -365,10 +358,6 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         The logging level for the anomaly detector.
     p_anomaly_buffer_size : int = 100
         The size of the anomaly buffer.
-    p_thres_percent : float = 0.05
-        The threshold percentage for the cluster size.
-    p_thres_temporal : int = 2
-        The threshold for the number of temporal anomalies.
     """
 
     C_NAME = 'Temporal group anomaly'
@@ -377,7 +366,6 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_clusterer : ClusterAnalyzer,
-                  p_property : PropertyDefinition,
                   p_cls_temporal_group_anomaly : type = TemporalGroupAnomaly,
                   p_name : str = None,
                   p_range_max = OAStreamTask.C_RANGE_THREAD,
@@ -410,9 +398,8 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         super()._run_algorithm( p_inst = p_inst )
 
         #2 Get all the clusters from the clusterer
-        clusters = self._clusterer.clusters
+        all_clusters = self._clusterer.clusters
 
-        
         #3 Get the latest anomaly
         latest_anomaly = self._latest_anomaly
     
@@ -429,7 +416,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                         self._temporal_anomalies[cluster_id].append(latest_anomaly)
 
                     if len(self._temporal_anomalies) == 2:
-                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : clusters[cluster_id] for cluster_id in self._temporal_anomalies },
+                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._temporal_anomalies },
                                                                                    p_status = True,
                                                                                    p_tstamp = p_inst.tstamp,
                                                                                    p_visualize = self.get_visualize,
@@ -440,10 +427,10 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                         self._temporal_anomalies.clear()
                         self._remove_anomaly(p_anomaly = temporal_group_anomaly)
                            
-            
+                #4.1.2 If temporal anomaly already exists, add the latest anomaly to the list of temporal anomalies
                 else:
                     for cluster_id in latest_anomaly.clusters:
-                        self._tga.clusters[cluster_id] = self._clusterer.clusters[cluster_id]
+                        self._tga.clusters[cluster_id] = all_clusters[cluster_id]
                         self._remove_anomaly(p_anomaly = temporal_group_anomaly)
                         self._tga = None
 
@@ -453,7 +440,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                     self._temporal_anomalies.clear()
                     
                 else:
-                    temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : self._clusterer.clusters[cluster_id] for cluster_id in self._temporal_anomalies },
+                    temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._temporal_anomalies },
                                                                                p_status = False,
                                                                                p_tstamp = p_inst.tstamp,
                                                                                p_visualize = self.get_visualize,
@@ -468,7 +455,8 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
 ## -------------------------------------------------------------------------------------------------
     def _triage_anomaly(self, p_anomaly: AnomalyCB):
         """
-        Custom method for anomaly triage.
+        Custom method for anomaly triage for temporal group anomalies.
+        This method checks if the temporal group anomaly is still valid.
         """
         # 1 Check if the anomaly is a temporal group anomaly
         if isinstance(p_anomaly, self._cls_temporal_group_anomaly):
