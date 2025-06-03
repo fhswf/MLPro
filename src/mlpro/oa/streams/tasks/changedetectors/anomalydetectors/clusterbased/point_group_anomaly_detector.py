@@ -97,8 +97,8 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def _detect_cb_anomalies( self, 
-                              p_inst: Instance ): 
+    def _detect( self, 
+                 p_inst: Instance ): 
         """
         custom method for detectiong cluster-based point anomalies.
         """
@@ -253,13 +253,13 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _detect_cb_anomalies( self,
-                              p_inst: Instance ):
+    def _detect( self,
+                 p_inst: Instance ):
         """
         Custom method for detecting cluster-based spatial group anomalies.
         """
 
-        super()._detect_cb_anomalies( p_inst = p_inst )
+        super()._detect( p_inst = p_inst )
 
 
         # 1 Get all the clusters from the clusterer
@@ -373,11 +373,9 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
-                  p_anomaly_buffer_size : int = 100,
                   **p_kwargs ):
         
         self._cls_temporal_group_anomaly = p_cls_temporal_group_anomaly
-        self._temporal_anomalies = {}
         self._tga : TemporalGroupAnomaly = None
 
         super().__init__( p_clusterer=p_clusterer,
@@ -391,11 +389,11 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _detect_cb_anomaly( self,
-                            p_inst: Instance ):
+    def _detect( self,
+                 p_inst: Instance ):
 
         #1 Call the parent to detect point and spatial group anomalies
-        super()._run_algorithm( p_inst = p_inst )
+        super()._detect( p_inst = p_inst )
 
         #2 Get all the clusters from the clusterer
         all_clusters = self._clusterer.clusters
@@ -408,47 +406,42 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
             #4.1 Check for the temporal anomaly conditions
             if isinstance(latest_anomaly, (self._cls_point_anomaly, self._cls_spatial_group_anomaly)) and (latest_anomaly.tstamp == p_inst.tstamp):
                 
-                #4.1.1 Check for available temporal anomalies
+                #4.1.1 If temporal anomaly does not exist, create a new one and add clusters of the latest anomaly to _tga
                 if self._tga is None:
-                    for cluster_id in latest_anomaly.clusters:
-                        if cluster_id not in self._temporal_anomalies:
-                            self._temporal_anomalies[cluster_id] = []    
-                        self._temporal_anomalies[cluster_id].append(latest_anomaly)
 
-                    if len(self._temporal_anomalies) == 2:
-                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._temporal_anomalies },
+                    self._tga = temporal_group_anomaly
+                    self._tga.clusters = latest_anomaly
+
+                #4.1.2 If temporal anomaly exists, add clusters of the latest anomaly to _tga
+                else:
+                    self._tga.clusters = latest_anomaly
+                    
+                     
+                    if len(self._tga) == 2:
+                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._tga },
                                                                                    p_status = True,
                                                                                    p_tstamp = p_inst.tstamp,
                                                                                    p_visualize = self.get_visualize,
                                                                                    p_raising_object = self)                                                         
                            
-                        self._raise_anomaly_event( p_anomaly = temporal_group_anomaly, p_inst = p_inst )
-                        self._tga = temporal_group_anomaly
-                        self._temporal_anomalies.clear()
-                        self._remove_anomaly(p_anomaly = temporal_group_anomaly)
-                           
-                #4.1.2 If temporal anomaly already exists, add the latest anomaly to the list of temporal anomalies
-                else:
-                    for cluster_id in latest_anomaly.clusters:
-                        self._tga.clusters[cluster_id] = all_clusters[cluster_id]
-                        self._remove_anomaly(p_anomaly = temporal_group_anomaly)
-                        self._tga = None
+                        self._raise_anomaly_event( p_anomaly = temporal_group_anomaly, p_inst = p_inst )              
 
             else:
-                if self._tga is None:
+                if self._tga is not None:
                         
-                    self._temporal_anomalies.clear()
+                    if len(self._tga) >= 2:
+                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._tga },
+                                                                                   p_status = False,
+                                                                                   p_tstamp = p_inst.tstamp,
+                                                                                   p_visualize = self.get_visualize,
+                                                                                   p_raising_object = self)                                                         
+                           
+                        self._raise_anomaly_event( p_anomaly = temporal_group_anomaly, p_inst = p_inst )
+                        self._tga = None
                     
-                else:
-                    temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._temporal_anomalies },
-                                                                               p_status = False,
-                                                                               p_tstamp = p_inst.tstamp,
-                                                                               p_visualize = self.get_visualize,
-                                                                               p_raising_object = self)                                                         
-                            
-                    self._raise_anomaly_event( p_anomaly = temporal_group_anomaly, p_inst = p_inst )
-                    self._temporal_anomalies.clear()
-                    self._tga = None
+                    else:
+                        self._tga = None
+                    
            
 
             
