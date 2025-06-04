@@ -120,7 +120,7 @@
           <mxGeometry y="699" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-16" value="Change&#xa;(bf.various.Id, bf.events.Event, bf.plot.Plottable,&#xa;bf.math.normalizers.Renomalizable)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=52;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="770" y="340" width="290" height="422" as="geometry">
+          <mxGeometry x="770" y="340" width="290" height="455" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -145,14 +145,17 @@
         <mxCell id="4use4ZCXdNiZSNTW99xv-20" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;fillColor=#dae8fc;gradientColor=#ffffff;" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
           <mxGeometry y="260" width="290" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-21" value="__init__( p_status : bool = True,&#xa;               p_id : int = 0,&#xa;               p_tstamp : TStampType = None,&#xa;               p_visualise : bool = False,&#xa;               p_raising_object : object = None,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
+        <mxCell id="4use4ZCXdNiZSNTW99xv-21" value="__init__( p_id : int = 0,&#xa;                p_status : bool = True,&#xa;                p_tstamp : TStampType = None,&#xa;                p_visualise : bool = False,&#xa;                p_raising_object : object = None,&#xa;                **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
           <mxGeometry y="268" width="290" height="97" as="geometry" />
         </mxCell>
+        <mxCell id="IegvnzxpX1ZSIK_RxJHY-0" value="@classmethod&#xa;get_event_id( p_status : bool ) -&gt; str" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="4use4ZCXdNiZSNTW99xv-16">
+          <mxGeometry y="365" width="290" height="38" as="geometry" />
+        </mxCell>
         <mxCell id="azBydEVot9yI6jtSICJJ-2" value="_get_status() -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
-          <mxGeometry y="365" width="290" height="26" as="geometry" />
+          <mxGeometry y="403" width="290" height="26" as="geometry" />
         </mxCell>
         <mxCell id="azBydEVot9yI6jtSICJJ-1" value="_get_event_id() -&gt; str" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
-          <mxGeometry y="391" width="290" height="26" as="geometry" />
+          <mxGeometry y="429" width="290" height="26" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
