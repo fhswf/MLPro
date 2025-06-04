@@ -8,10 +8,11 @@
 ## -- 2025-05-28  0.1.0     DA/DS    Creation
 ## -- 2025-05-30  1.0.0     DA/DS    Completion
 ## -- 2025-06-03  1.1.0     DA       Class ChangeDetector: new parameter p_thrs_inst
+## -- 2025-06-04  1.2.0     DA       Class ChangeDetector: new classmethod get_event_id()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-03)
+Ver. 1.2.0 (2025-06-04)
 
 This module provides templates for change detection to be used in the context of online adaptivity.
 """
@@ -21,9 +22,7 @@ try:
 except:
     class Figure : pass
 
-from datetime import datetime
-
-from mlpro.bf.various import Id, Log
+from mlpro.bf.various import Id, Log, TStampType
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
 from mlpro.bf.math.normalizers import Renormalizable
@@ -39,22 +38,30 @@ from mlpro.oa.streams import OAStreamTask
 class Change (Id, Event, Plottable, Renormalizable):
     """
     This is the base class for change events which can be raised by the change detectors when an
-    change is detected.
+    change is detected. The Change class and all subtypes provide the public attribute **event_id**
+    relevant for handler registration.
 
     Parameters
     ----------
     p_id : int
         Change ID. Default value = 0.
     p_status : bool = True
-        Status of the change.
-    p_tstamp : datetime
-        Time of occurance of change. Default = None.
+        Status of the change. True marks the beginning of a change, while False indicates its end.
+    p_tstamp : TStampType
+        Time stamp of occurance of change. Default = None.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_raising_object : object
         Reference of the object raised. Default = None.
     **p_kwargs
         Further optional keyword arguments.
+
+    Attributes
+    ----------
+    status : bool
+        Status of the change. See parameter p_status for further details.
+    event_id : str
+        Event id for handler regristration. See method ChangeDetector.register_event_handler().
     """
 
     C_PLOT_ACTIVE           = False
@@ -68,7 +75,7 @@ class Change (Id, Event, Plottable, Renormalizable):
     def __init__( self,
                   p_id : int = 0,
                   p_status : bool = True,
-                  p_tstamp : datetime = None,
+                  p_tstamp : TStampType = None,
                   p_visualize : bool = False,
                   p_raising_object : object = None,
                   **p_kwargs ):
@@ -84,10 +91,27 @@ class Change (Id, Event, Plottable, Renormalizable):
 
         self._status: bool = p_status
         
+        self._event_id = self.get_event_id( p_status = p_status )
+
+
+## -------------------------------------------------------------------------------------------------
+    @classmethod
+    def get_event_id( cls, p_status : bool ):
+        """
+        Class method determining the event id to be used for event handler registration at change
+        detectors. See class ChangeDetector and its method register_event_handler() inherited from
+        class EventManager for further details.
+
+        Parameters
+        ----------
+        p_status : bool = True
+            Status of the change. True marks the beginning of a change, while False indicates its end.
+        """
+
         if p_status:
-            self._event_id = type(self).__name__ + '(ON)'
+            return cls.__name__ + '(ON)'
         else:
-            self._event_id = type(self).__name__ + '(OFF)'
+            return cls.__name__ + '(OFF)'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -112,7 +136,7 @@ class Change (Id, Event, Plottable, Renormalizable):
 ## -------------------------------------------------------------------------------------------------
 class ChangeDetector (OAStreamTask):
     """
-    Base class for online change detectors.
+    Base class for change detectors.
 
     Parameters
     ----------
@@ -260,9 +284,10 @@ class ChangeDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _detect(self, p_inst: Instance) -> None:
+    def _detect(self, p_inst: Instance):
         """
-        Custom method for the main detection algorithm.
+        Custom method for the main detection algorithm. Use the _raise_change_event() method to raise
+        a change detected by your algorithm.
 
         Parameters
         ----------
@@ -278,10 +303,23 @@ class ChangeDetector (OAStreamTask):
                  p_change: Change,
                  **p_kwargs ) -> bool:
         """
-        Custom method for extended change triage.
+        Custom method for change triage. Decides whether an already existing change is kept or removed.
+        This method is called by the _run() method als part of its cleanup mechanism.
+
+        Parameters
+        ----------
+        p_change : Change
+            Change object to be kept or discarded.
+        **p_kwargs
+            Optional keyword arguments.
+
+        Returns
+        -------
+        bool
+            True, if the specified change shall be removed. False otherwise.
         """
 
-        pass
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
