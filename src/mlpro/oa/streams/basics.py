@@ -39,12 +39,13 @@ Core classes for online-adaptive data stream processing (OADSP).
 
 """
 
+from enum import StrEnum
 
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.mt import Event
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
-from mlpro.bf.ml import *
+from mlpro.bf.ml import Adaptation, Model, AWorkflow
 
 
 
@@ -64,11 +65,14 @@ class OAStreamShared (StreamShared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAStreamAdaptationType (AdaptationType):
+class OAStreamAdaptationType (StrEnum):
     """
     Extended types of adaptation, specific to online-adaptive data stream processing.
     """
 
+    NONE        = ''
+    FORWARD     = 'Forward'
+    EVENT       = 'Event'
     REVERSE     = 'Reverse'
     RENORM      = 'Re-Norm'
     
@@ -194,7 +198,7 @@ class OAStreamTask (StreamTask, Model):
 ## -------------------------------------------------------------------------------------------------
     def _set_adapted( self, 
                       p_adapted : bool, 
-                      p_subtype : OAStreamAdaptationType, 
+                      p_subtype : OAStreamAdaptationType = OAStreamAdaptationType.NONE, 
                       p_tstamp : TStampType= None,
                       p_num_inst = 1,
                       **p_kwargs ):
@@ -273,7 +277,7 @@ class OAStreamTask (StreamTask, Model):
 
         # 3 Postprocessing
         try:
-            atype_post = self._adapt_pre()
+            atype_post = self._adapt_post()
 
             if atype_post != OAStreamAdaptationType.NONE:
                 if atype_post == OAStreamAdaptationType.FORWARD: adapted_forward = True
@@ -292,13 +296,13 @@ class OAStreamTask (StreamTask, Model):
 
             if adapted_reverse:
                 self._set_adapted( p_adapted = True,
-                                   p_subtype = OAStreamAdaptation.C_SUBTYPE_REVERSE,
+                                   p_subtype = OAStreamAdaptationType.REVERSE,
                                    p_tstamp = tstamp,
                                    p_num_inst = num_inst_reverse )
 
             if adapted_forward:
                 self._set_adapted( p_adapted = True,
-                                   p_subtype = OAStreamAdaptation.C_SUBTYPE_IN_SITU,
+                                   p_subtype = OAStreamAdaptationType.FORWARD,
                                    p_tstamp = tstamp,
                                    p_num_inst = num_inst_forward )
                 

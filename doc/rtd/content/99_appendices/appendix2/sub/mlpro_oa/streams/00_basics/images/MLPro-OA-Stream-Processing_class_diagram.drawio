@@ -171,7 +171,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="7C4s_j0biFTsK1RU1VLK-12" value="OAStreamAdaptation&#xa;(bf.ml.Adaptation)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="100" y="510" width="300" height="160" as="geometry">
+          <mxGeometry x="100" y="550" width="300" height="160" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -193,19 +193,25 @@
         <mxCell id="7C4s_j0biFTsK1RU1VLK-27" value="Template for online-adaptive data stream processing applications." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=9;spacingRight=3;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="800" y="1193" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="soWWl2oo1D3cJulI5Lfz-0" value="OAStreamAdaptationType&#xa;(bf.ml.AdaptationType)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="100" y="330" width="300" height="100" as="geometry">
+        <mxCell id="soWWl2oo1D3cJulI5Lfz-0" value="OAStreamAdaptationType&#xa;(StrEnum)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="100" y="330" width="300" height="170" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="soWWl2oo1D3cJulI5Lfz-1" value="REVERSE    = &#39;Reverse&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
+        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-0" value="NONE           = &#39;&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="soWWl2oo1D3cJulI5Lfz-0">
           <mxGeometry y="40" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="soWWl2oo1D3cJulI5Lfz-2" value="RENORM     = &#39;Re-Norm" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
+        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-1" value="FORWARD   = &#39;Forward&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="soWWl2oo1D3cJulI5Lfz-0">
           <mxGeometry y="66" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="soWWl2oo1D3cJulI5Lfz-4" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
-          <mxGeometry y="92" width="300" height="8" as="geometry" />
+        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-2" value="EVENT         = &#39;Event&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="soWWl2oo1D3cJulI5Lfz-0">
+          <mxGeometry y="92" width="300" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="soWWl2oo1D3cJulI5Lfz-1" value="REVERSE    = &#39;Reverse&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
+          <mxGeometry y="118" width="300" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="soWWl2oo1D3cJulI5Lfz-2" value="RENORM     = &#39;Re-Norm" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
+          <mxGeometry y="144" width="300" height="26" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

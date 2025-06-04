@@ -146,15 +146,15 @@ class RingBuffer (Window):
 
 
             # 1.1 A new instance is to be buffered
-            feature_value  = inst.get_feature_data()
+            feature_data  = inst.get_feature_data()
 
 
             # 1.2 Checking the numeric dimensions/features in Stream
             if self._numeric_buffer is None and self._statistics_enabled:
-                for j in feature_value.get_dim_ids():
-                    if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
+                for j in feature_data.get_dim_ids():
+                    if feature_data.get_related_set().get_dim(j).get_base_set() in [ Dimension.C_BASE_SET_N,
                                                                                      Dimension.C_BASE_SET_R,
-                                                                                     Dimension.C_BASE_SET_Z]:
+                                                                                     Dimension.C_BASE_SET_Z ]:
                         self._numeric_features.append(j)
 
                 self._numeric_buffer = np.full((self.buffer_size, len(self._numeric_features)), np.nan)
@@ -179,7 +179,7 @@ class RingBuffer (Window):
 
             # 1.5 Update of internal statistics
             if self._statistics_enabled:
-                self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in self._numeric_features]
+                self._numeric_buffer[self._buffer_pos] = [feature_data.get_value(k) for k in self._numeric_features]
 
 
             # 1.6 Increment of buffer position
@@ -197,19 +197,19 @@ class RingBuffer (Window):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_boundaries(self, p_side : BoundarySide = None, p_dim : int = None ) -> Union[Boundaries, float]:
+    def get_boundaries(self, p_dim : int = None, p_side : BoundarySide = None ) -> Union[Boundaries, float]:
         """
         Returns the current value boundaries of internally stored data. The result can be reduced
-        by the optional parameters p_side, p_dim. If both parameters are specified, the result is
+        by the optional parameters p_dim, p_side. If both parameters are specified, the result is
         a float.
 
         Parameters
         ----------
+        p_dim : int = None
+            Optionally reduces the result to a particular dimension.
         p_side : BoundarySide = None
             Optionally reduces the result to upper or lower boundaries. See class BoundarySide for
             possible values.
-        p_dim : int = None
-            Optionally reduces the result to a particular dimension.
 
         Returns
         -------
@@ -224,13 +224,13 @@ class RingBuffer (Window):
 
         if p_side is None:
             if p_dim is None:
-                # Case 1: Full 2×n matrix of lower and upper boundaries
+                # Case 1: Full nx2 matrix of lower and upper boundaries
                 lower = np.nanmin(self._numeric_buffer, axis=0)
                 upper = np.nanmax(self._numeric_buffer, axis=0)
                 return np.stack([lower, upper], axis=0)
 
             # Case 2: 1D array with lower and upper boundary for single dimension p_dim
-            col = self._numeric_buffer[:, p_dim]
+            col = self._numeric_buffer[:,p_dim]
             return np.array([np.nanmin(col), np.nanmax(col)])
 
 
@@ -240,7 +240,7 @@ class RingBuffer (Window):
 
 
         # Case 4: Scalar value for one side and one dimension
-        col = self._numeric_buffer[:, p_dim]
+        col = self._numeric_buffer[:,p_dim]
         return np.nanmin(col) if p_side == BoundarySide.LOWER else np.nanmax(col)
     
 
@@ -300,7 +300,8 @@ class RingBuffer (Window):
 
         Plottable._init_plot_nd(self, p_figure=p_figure, p_settings=p_settings)
 
-        self._patch_windows     = None
+        self._patch_windows       = None
+        self._plot_boundaries     = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -325,9 +326,9 @@ class RingBuffer (Window):
 
         # 2 Check for changes on boundaries
         plot_boundaries = self.get_boundaries()
-        if ( self._plot_boundaries is not None ):
-            if np.array_equal( plot_boundaries, self._plot_boundaries ): return
-            self._plot_boundaries = plot_boundaries
+        # if ( self._plot_boundaries is not None ):
+        #     if np.array_equal( plot_boundaries, self._plot_boundaries ): return
+        #     self._plot_boundaries = plot_boundaries
 
 
         # 3 Initialization of the rectangle
@@ -339,10 +340,10 @@ class RingBuffer (Window):
 
 
         # 4 Update of the rectangle
-        x = plot_boundaries[0][0]
-        y = plot_boundaries[1][0]
-        w = plot_boundaries[0][1] - plot_boundaries[0][0]
-        h = plot_boundaries[1][1] - plot_boundaries[1][0]
+        x = plot_boundaries[0,BoundarySide.LOWER]
+        y = plot_boundaries[1,BoundarySide.LOWER]
+        w = plot_boundaries[0,BoundarySide.UPPER] - plot_boundaries[0,BoundarySide.LOWER]
+        h = plot_boundaries[1,BoundarySide.UPPER] - plot_boundaries[1,BoundarySide.LOWER]
         self._patch_windows['2D'].set_bounds(x,y,w,h)
 
         self._patch_windows['2D'].set_visible(True)
@@ -370,9 +371,9 @@ class RingBuffer (Window):
 
         # 2 Check for changes on boundaries
         plot_boundaries = self.get_boundaries()
-        if ( self._plot_boundaries is not None ):
-            if np.array_equal( plot_boundaries, self._plot_boundaries ): return
-            self._plot_boundaries = plot_boundaries
+        # if ( self._plot_boundaries is not None ):
+        #     if np.array_equal( plot_boundaries, self._plot_boundaries ): return
+        #     self._plot_boundaries = plot_boundaries
             
             
         # 3 Initialization of the cuboid
