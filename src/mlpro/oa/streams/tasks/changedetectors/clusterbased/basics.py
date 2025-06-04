@@ -5,32 +5,22 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-06-04  0.1.0     DA/DS    Creation
+## -- 2025-06-03  0.1.0     DA/DS    Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-06-04)
+Ver. 0.1.0 (2025-06-03)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
 """
 
-# try:
-#     from matplotlib.figure import Figure
-# except:
-#     class Figure : pass
 
-# from datetime import datetime
+from mlpro.bf.various import Id, Log, TStampType
+from mlpro.bf.math.properties import *
+from mlpro.bf.streams import InstDict, InstTypeNew
 
-# from mlpro.bf.various import Id, Log
-# from mlpro.bf.plot import Plottable, PlotSettings
-# from mlpro.bf.events import Event
-# from mlpro.bf.math.normalizers import Renormalizable
-# from mlpro.bf.streams import Instance, InstDict, InstTypeNew
-
-# from mlpro.oa.streams import OAStreamTask
-
-from mlpro.oa.streams.tasks.clusteranalyzers.basics import Cluster
+from mlpro.oa.streams.tasks.clusteranalyzers.basics import Cluster, ClusterAnalyzer
 from mlpro.oa.streams.tasks.changedetectors.basics import Change, ChangeDetector
 
 
@@ -65,7 +55,7 @@ class ChangeCB (Change):
     def __init__( self,
                   p_id : int = 0,
                   p_status : bool = True,
-                  p_tstamp : datetime = None,
+                  p_tstamp : TStampType = None,
                   p_visualize : bool = False,
                   p_raising_object : object = None,
                   p_clusters : dict[Cluster] = None,
@@ -94,7 +84,7 @@ class ChangeCB (Change):
             Dictionary with clusters.
         """
         
-        self.cluster.update(p_clusters)
+        self.clusters.update(p_clusters)
     
 
 
@@ -102,13 +92,15 @@ class ChangeCB (Change):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ChangeDetector (OAStreamTask):
+class ChangeDetectorCB (ChangeDetector):
     """
-    Base class for online change detectors.
+    Base class for cluster-based change detectors.
 
     Parameters
     ----------
-    p_name : str
+    p_clusterer : ClusterAnalyzer
+        Associated cluster analyzer.
+    p_name : str = None
         Optional name of the task. Default is None.
     p_range_max : int
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
@@ -124,25 +116,31 @@ class ChangeDetector (OAStreamTask):
         Size of the internal change buffer self.changes. Default = 100.
     p_thrs_inst : int = 0
         The algorithm is only executed after this number of instances.
+    p_thrs_clusters : int = 1
+        The algorithm is only executed with this minimum number of clusters.
     p_kwargs : dict
         Further optional named parameters.
     """
 
-    C_TYPE              = 'Change Detector'
+    C_TYPE              = 'Cluster-based Change Detector'
 
     C_PLOT_ACTIVE       = True
     C_PLOT_STANDALONE   = False
 
+    C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
+                  p_clusterer : ClusterAnalyzer,
                   p_name:str = None,
-                  p_range_max = OAStreamTask.C_RANGE_THREAD,
+                  p_range_max = ChangeDetector.C_RANGE_THREAD,
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL,
                   p_change_buffer_size : int = 100,
                   p_thrs_inst : int = 0,
+                  p_thrs_clusters : int = 1,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -151,129 +149,93 @@ class ChangeDetector (OAStreamTask):
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
                           p_logging = p_logging,
+                          p_change_buffer_size = p_change_buffer_size,
+                          p_thrs_inst = p_thrs_inst,
                           **p_kwargs )
         
-        self._change_id : int          = 0
-        self.changes                   = {}
-        self._change_buffer_size : int = p_change_buffer_size
-        self._thrs_inst : int          = p_thrs_inst
-        self._num_inst : int           = 0
-        self._chk_num_inst : bool      = True
+        self._clusterer           = p_clusterer
+        self._thrs_clusters : int = p_thrs_clusters
+
+        unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
+
+        if len(unknown_prop) > 0:
+            raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        
+
+# ## -------------------------------------------------------------------------------------------------
+#     def _buffer_change(self, p_change:Change):
+#         """
+#         Method to be used to add a new change. Please use as part of your algorithm.
+
+#         Parameters
+#         ----------
+#         p_change : Change
+#             Change object to be added.
+#         """
+
+#         # 1 Buffering turned on?
+#         if self._change_buffer_size <= 0: return
+
+#         # 2 Buffer full?
+#         if len( self.changes ) >= self._change_buffer_size:
+#             # 2.1 Remove oldest entry
+#             oldest_key    = next(iter(self.changes))
+#             oldest_change = self.changes.pop(oldest_key)
+#             oldest_change.remove_plot()
+
+#         # 3 Buffer new change
+#         p_change.id = self._get_next_change_id() 
+#         self.changes[p_change.id] = p_change
 
 
-## -------------------------------------------------------------------------------------------------
-    def _get_next_change_id(self):
-        """
-        Methd that returns the id of the next change. 
+# ## -------------------------------------------------------------------------------------------------
+#     def _remove_change(self, p_change:Change):
+#         """
+#         Method to remove an existing change. Please use as part of your algorithm.
 
-        Returns
-        -------
-        _change_id : int
-        """
+#         Parameters
+#         ----------
+#         p_change : change
+#             change object to be removed.
+#         """
 
-        self._change_id +=1
-        return self._change_id
-
-
-## -------------------------------------------------------------------------------------------------
-    def _buffer_change(self, p_change:Change):
-        """
-        Method to be used to add a new change. Please use as part of your algorithm.
-
-        Parameters
-        ----------
-        p_change : Change
-            Change object to be added.
-        """
-
-        # 1 Buffering turned on?
-        if self._change_buffer_size <= 0: return
-
-        # 2 Buffer full?
-        if len( self.changes ) >= self._change_buffer_size:
-            # 2.1 Remove oldest entry
-            oldest_key    = next(iter(self.changes))
-            oldest_change = self.changes.pop(oldest_key)
-            oldest_change.remove_plot()
-
-        # 3 Buffer new change
-        p_change.id = self._get_next_change_id() 
-        self.changes[p_change.id] = p_change
+#         p_change.remove_plot(p_refresh=True)
+#         del self.changes[p_change.id]
 
 
-## -------------------------------------------------------------------------------------------------
-    def _remove_change(self, p_change:Change):
-        """
-        Method to remove an existing change. Please use as part of your algorithm.
+# ## -------------------------------------------------------------------------------------------------
+#     def _raise_change_event( self, 
+#                              p_change: Change, 
+#                              p_inst : Instance = None,
+#                              p_buffer: bool = True ):
+#         """
+#         Method to raise an change event. 
 
-        Parameters
-        ----------
-        p_change : change
-            change object to be removed.
-        """
+#         Parameters
+#         ----------
+#         p_change : Change
+#             Change object to be raised.
+#         p_inst : Instance = None
+#             Instance causing the change. If provided, the time stamp of the instance is taken over
+#             to the change.
+#         p_buffer : bool
+#             Change is buffered when set to True.
+#         """
 
-        p_change.remove_plot(p_refresh=True)
-        del self.changes[p_change.id]
+#         if p_change.tstamp is None:
+#             if p_inst is not None:
+#                 p_change.tstamp = p_inst.tstamp
+#             else:
+#                 p_change.tstamp = self.get_so().tstamp
 
+#         if p_buffer: self._buffer_change( p_change=p_change )
 
-## -------------------------------------------------------------------------------------------------
-    def _raise_change_event( self, 
-                             p_change: Change, 
-                             p_inst : Instance = None,
-                             p_buffer: bool = True ):
-        """
-        Method to raise an change event. 
+#         if self.get_visualization(): 
+#             p_change.init_plot( p_figure=self._figure, 
+#                                  p_plot_settings=self.get_plot_settings() )
 
-        Parameters
-        ----------
-        p_change : Change
-            Change object to be raised.
-        p_inst : Instance = None
-            Instance causing the change. If provided, the time stamp of the instance is taken over
-            to the change.
-        p_buffer : bool
-            Change is buffered when set to True.
-        """
-
-        if p_change.tstamp is None:
-            if p_inst is not None:
-                p_change.tstamp = p_inst.tstamp
-            else:
-                p_change.tstamp = self.get_so().tstamp
-
-        if p_buffer: self._buffer_change( p_change=p_change )
-
-        if self.get_visualization(): 
-            p_change.init_plot( p_figure=self._figure, 
-                                 p_plot_settings=self.get_plot_settings() )
-
-        self._raise_event( p_event_id = p_change.event_id,
-                           p_event_object = p_change )
-
-
-## -------------------------------------------------------------------------------------------------
-    def _detect(self, p_inst: Instance) -> None:
-        """
-        Custom method for the main detection algorithm.
-
-        Parameters
-        ----------
-        p_inst : Instance
-            Instance that triggered the detection.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _triage( self, 
-                 p_change: Change,
-                 **p_kwargs ) -> bool:
-        """
-        Custom method for extended change triage.
-        """
-
-        pass
+#         self._raise_event( p_event_id = p_change.event_id,
+#                            p_event_object = p_change )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -299,7 +261,11 @@ class ChangeDetector (OAStreamTask):
             self._chk_num_inst = False
 
 
-        # 1 Execution of the main detection algorithm        
+        # 1 Check for the minimum number of clusters
+        if len(self._clusterer.clusters) < self._thrs_clusters: return
+
+
+        # 2 Execution of the main detection algorithm        
         try:
             inst_type, inst = list(p_inst.values())[-1]
             if inst_type != InstTypeNew:
@@ -310,17 +276,17 @@ class ChangeDetector (OAStreamTask):
         self._detect( p_inst = inst )
 
 
-        # 2 Clean-up loop ('triage')
+        # 3 Clean-up loop ('triage')
         triage_list = []
 
-        # 2.1 Collect changes to be deleted
+        # 3.1 Collect changes to be deleted
         for change in self.changes.values():
 
-            # 2.1.1 Apply custom triage method to each change
+            # 3.1.1 Apply custom triage method to each change
             if self._triage( p_change = change ):
                 triage_list.append( change )
 
-        # 2.2 Remove all obsolete changes from the triage list
+        # 3.2 Remove all obsolete changes from the triage list
         for change in triage_list:
             self._remove_change( p_change = change )
 
