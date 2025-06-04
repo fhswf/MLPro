@@ -21,9 +21,7 @@ try:
 except:
     class Figure : pass
 
-from datetime import datetime
-
-from mlpro.bf.various import Id, Log
+from mlpro.bf.various import Id, Log, TStampType
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.events import Event
 from mlpro.bf.math.normalizers import Renormalizable
@@ -47,8 +45,8 @@ class Change (Id, Event, Plottable, Renormalizable):
         Change ID. Default value = 0.
     p_status : bool = True
         Status of the change.
-    p_tstamp : datetime
-        Time of occurance of change. Default = None.
+    p_tstamp : TStampType
+        Time stamp of occurance of change. Default = None.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_raising_object : object
@@ -68,7 +66,7 @@ class Change (Id, Event, Plottable, Renormalizable):
     def __init__( self,
                   p_id : int = 0,
                   p_status : bool = True,
-                  p_tstamp : datetime = None,
+                  p_tstamp : TStampType = None,
                   p_visualize : bool = False,
                   p_raising_object : object = None,
                   **p_kwargs ):
