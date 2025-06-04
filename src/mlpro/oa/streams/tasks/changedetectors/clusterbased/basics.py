@@ -30,6 +30,7 @@ online-adaptive data stream processing.
 
 # from mlpro.oa.streams import OAStreamTask
 
+from mlpro.oa.streams.tasks.clusteranalyzers.basics import Cluster
 from mlpro.oa.streams.tasks.changedetectors.basics import Change, ChangeDetector
 
 
