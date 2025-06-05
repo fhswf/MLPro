@@ -234,13 +234,13 @@ class DemoScenario (OAStreamScenario):
 
 
         # 2.3 Add a boundary detector and connect to the ring buffer
-        # task_bd = BoundaryDetector( p_name = 'T2 - Boundary detector', 
-        #                             p_ada = p_ada, 
-        #                             p_visualize = p_visualize,
-        #                             p_logging = p_logging,
-        #                             p_boundary_provider = task_window )
+        task_bd = BoundaryDetector( p_name = 'T2 - Boundary detector', 
+                                    p_ada = p_ada, 
+                                    p_visualize = p_visualize,
+                                    p_logging = p_logging,
+                                    p_boundary_provider = task_window )
 
-        # workflow.add_task( p_task = task_bd, p_pred_tasks = [task_window] )
+        workflow.add_task( p_task = task_bd, p_pred_tasks = [task_window] )
 
 
         # # 2.4 Add a MinMax-Normalizer and connect to the boundary detector
@@ -266,11 +266,11 @@ class DemoScenario (OAStreamScenario):
 
 
         # 3 Add helpers for adaptation observation
-        # workflow.add_helper( p_helper = OAObserver( p_related_task = task_bd,
-        #                                             p_logarithmic_plot = True,
-        #                                             p_filter_subtypes = [],
-        #                                             p_visualize = p_visualize, 
-        #                                             p_logging = p_logging ) )
+        workflow.add_helper( p_helper = OAObserver( p_related_task = task_bd,
+                                                    p_logarithmic_plot = True,
+                                                    p_filter_subtypes = [],
+                                                    p_visualize = p_visualize, 
+                                                    p_logging = p_logging ) )
 
         # workflow.add_helper( p_helper = OAObserver( p_related_task = task_norm_minmax,
         #                                             p_logarithmic_plot = True,

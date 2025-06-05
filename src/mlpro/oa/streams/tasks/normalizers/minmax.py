@@ -22,17 +22,25 @@
 ## -- 2024-10-29  1.3.3     DA       - Refactoring of NormalizerMinMax._adapt_on_event()
 ## --                                - Bugfix in NormalizerMinMax._update_plot_data_3d()
 ## -- 2024-12-16  1.4.0     DA       Method NormalizerMinMax._run(): little code tuning
+## -- 2025-06-05  1.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-12-16)
+Ver. 1.5.0 (2025-06-05)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
 
 
-from mlpro.oa.streams.basics import *
+import numpy as np
+
+from mlpro.bf.various import Log
+from mlpro.bf.events import Event
+from mlpro.bf.exceptions import Error
+from mlpro.bf.plot import PlotSettings
+from mlpro.oa.streams.basics import InstDict, OAStreamTask
 from mlpro.bf.math import normalizers as Norm
+
 
 
 
@@ -63,22 +71,23 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
     C_NAME = 'Normalizer MinMax' 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,p_name: str = None,
-                  p_range_max = StreamTask.C_RANGE_THREAD,
+    def __init__( self,
+                  p_name: str = None,
+                  p_range_max = OAStreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize:bool = False,
                   p_logging = Log.C_LOG_ALL,
-                  **p_kwargs):
+                  **p_kwargs ):
 
-        OAStreamTask.__init__(self,
-                        p_name = p_name,
-                        p_range_max = p_range_max,
-                        p_ada = p_ada,
-                        p_duplicate_data = p_duplicate_data,
-                        p_visualize = p_visualize,
-                        p_logging=p_logging,
-                        **p_kwargs )
+        OAStreamTask.__init__( self,
+                               p_name = p_name,
+                               p_range_max = p_range_max,
+                               p_ada = p_ada,
+                               p_duplicate_data = p_duplicate_data,
+                               p_visualize = p_visualize,
+                               p_logging=p_logging,
+                               **p_kwargs )
 
 
         Norm.NormalizerMinMax.__init__(self)
@@ -113,7 +122,9 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
+    def _adapt_on_event( self, 
+                         p_event_id:str, 
+                         p_event_object:Event ) -> bool:
         """
         Custom method to adapt the MinMax normalizer parameters based on event raised by Boundary object for changed
         boundaries.
@@ -128,24 +139,12 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
         Returns
         -------
-        adapted: bool
+        bool
             Returns True, if the task has adapted. False otherwise.
         """
 
-        set = p_event_object.get_raising_object().get_related_set()
-
-        self.update_parameters(set)
-
-        if self._visualize:
-            if self._plot_settings.view == PlotSettings.C_VIEW_2D:
-                self._update_plot_data_2d()
-            elif self._plot_settings.view == PlotSettings.C_VIEW_3D:
-                self._update_plot_data_3d()
-            elif self._plot_settings.view == PlotSettings.C_VIEW_ND:
-                self._update_plot_data_nd()
-            else:
-                raise Error
-
+        self.update_parameters( p_boundaries = p_event_object.get_raising_object().get_boundaries() )
+        if self._visualize: self.update_plot()
         return True
 
 
