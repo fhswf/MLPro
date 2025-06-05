@@ -66,7 +66,8 @@ class BoundaryProvider:
 ## -------------------------------------------------------------------------------------------------
     def get_boundaries( self, 
                         p_dim : int = None,
-                        p_side : BoundarySide = None ) -> Union[Boundaries, float]:
+                        p_side : BoundarySide = None,
+                        p_copy : bool = False ) -> Union[Boundaries, float]:
         """
         Returns the current value boundaries of internally stored data. The result can be reduced
         by the optional parameters p_side, p_dim. If both parameters are specified, the result is
@@ -79,6 +80,9 @@ class BoundaryProvider:
         p_side : BoundarySide = None
             Optionally reduces the result to upper or lower boundaries. See class BoundarySide for
             possible values.
+        p_copy : bool = False
+            If True, a copy of the boudaries is returned. Otherwise (default), a reference to the
+            internal boundary array is returned.
 
         Returns
         -------

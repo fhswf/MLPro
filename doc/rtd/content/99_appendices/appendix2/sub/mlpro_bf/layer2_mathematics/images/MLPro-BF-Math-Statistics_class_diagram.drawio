@@ -8,7 +8,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="zkfFHV4jXpPFQw0GAbJ--0" value="BoundaryProvider" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;gradientColor=#FFFFFF;swimlaneFillColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="360" y="520" width="300" height="160" as="geometry">
+          <mxGeometry x="360" y="520" width="300" height="170" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -21,8 +21,8 @@
         <mxCell id="tlYq45CVNBFZnpDYvg0B-2" value="_create_boundaries( p_num_dim : int ) -&gt; Boundaries" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;whiteSpace=wrap;" parent="zkfFHV4jXpPFQw0GAbJ--0" vertex="1">
           <mxGeometry y="72" width="300" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="eLnOqRD9iw0-AsLMPfdM-5" value="get_boundaries( &#xa;     p_side : BoundarySide = None, &#xa;     p_dim : int = None ) -&gt; Boundaries" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;whiteSpace=wrap;" parent="zkfFHV4jXpPFQw0GAbJ--0" vertex="1">
-          <mxGeometry y="96" width="300" height="54" as="geometry" />
+        <mxCell id="eLnOqRD9iw0-AsLMPfdM-5" value="get_boundaries( &#xa;     p_dim : int = None,&#xa;     p_side : BoundarySide = None, &#xa;     p_copy : bool = False ) -&gt; Boundaries" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;whiteSpace=wrap;" parent="zkfFHV4jXpPFQw0GAbJ--0" vertex="1">
+          <mxGeometry y="96" width="300" height="74" as="geometry" />
         </mxCell>
         <mxCell id="3frp60s40n5bYwkhFthx-0" value="" style="group" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1" connectable="0">
           <mxGeometry x="40" y="40" width="480" height="220" as="geometry" />

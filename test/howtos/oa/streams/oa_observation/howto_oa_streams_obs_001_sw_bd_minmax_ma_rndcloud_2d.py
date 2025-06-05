@@ -204,7 +204,7 @@ class DemoScenario (OAStreamScenario):
                                               p_num_instances = self._num_inst,
                                               p_num_clusters = 1,
                                               p_seed = 13,
-                                              p_radii = [200,200],
+                                              p_radii = [200]*self._num_features,
                                               p_velocities = [5],
                                               p_split_and_merge_of_clusters = False,
                                               p_num_of_clusters_for_split_and_merge = 2,
@@ -234,13 +234,13 @@ class DemoScenario (OAStreamScenario):
 
 
         # 2.3 Add a boundary detector and connect to the ring buffer
-        task_bd = BoundaryDetector( p_name = 'T2 - Boundary detector', 
-                                    p_ada = p_ada, 
-                                    p_visualize = p_visualize,
-                                    p_logging = p_logging,
-                                    p_boundary_provider = task_window )
+        # task_bd = BoundaryDetector( p_name = 'T2 - Boundary detector', 
+        #                             p_ada = p_ada, 
+        #                             p_visualize = p_visualize,
+        #                             p_logging = p_logging,
+        #                             p_boundary_provider = task_window )
 
-        workflow.add_task( p_task = task_bd, p_pred_tasks = [task_window] )
+        # workflow.add_task( p_task = task_bd, p_pred_tasks = [task_window] )
 
 
         # # 2.4 Add a MinMax-Normalizer and connect to the boundary detector
@@ -266,11 +266,11 @@ class DemoScenario (OAStreamScenario):
 
 
         # 3 Add helpers for adaptation observation
-        workflow.add_helper( p_helper = OAObserver( p_related_task = task_bd,
-                                                    p_logarithmic_plot = True,
-                                                    p_filter_subtypes = [],
-                                                    p_visualize = p_visualize, 
-                                                    p_logging = p_logging ) )
+        # workflow.add_helper( p_helper = OAObserver( p_related_task = task_bd,
+        #                                             p_logarithmic_plot = True,
+        #                                             p_filter_subtypes = [],
+        #                                             p_visualize = p_visualize, 
+        #                                             p_logging = p_logging ) )
 
         # workflow.add_helper( p_helper = OAObserver( p_related_task = task_norm_minmax,
         #                                             p_logarithmic_plot = True,
@@ -293,7 +293,7 @@ class DemoScenario (OAStreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    num_features    = 2
+    num_features    = 3
     num_inst        = 500
     logging         = Log.C_LOG_WE
     step_rate       = 1
@@ -309,7 +309,7 @@ if __name__ == '__main__':
 
     # 1.5 Get number of features and visualization step rate from user
     if visualize:
-        i = input('Number of features: (press ENTER for 2) ')
+        i = input(f'Number of features (press ENTER for {num_features}): ')
         if i != '': num_features = int(i) 
 
         i = input(f'Visualization step rate (press ENTER for {step_rate}): ')
