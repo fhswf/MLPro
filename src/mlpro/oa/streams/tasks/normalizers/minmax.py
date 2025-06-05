@@ -37,7 +37,6 @@ import numpy as np
 from mlpro.bf.various import Log
 from mlpro.bf.events import Event
 from mlpro.bf.exceptions import Error
-from mlpro.bf.plot import PlotSettings
 from mlpro.oa.streams.basics import InstDict, OAStreamTask
 from mlpro.bf.math import normalizers as Norm
 

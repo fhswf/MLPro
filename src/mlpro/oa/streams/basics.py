@@ -422,7 +422,7 @@ class OAStreamTask (StreamTask, Model):
 
 
         self._set_adapted( p_adapted = True,
-                           p_subtype = OAStreamAdaptation.C_SUBTYPE_RENORMALIZE )
+                           p_subtype = OAStreamAdaptationType.RENORM )
 
 
 

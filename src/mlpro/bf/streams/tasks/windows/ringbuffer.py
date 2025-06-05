@@ -215,9 +215,20 @@ class RingBuffer (Window):
         p_copy : bool = False
             If True, a copy of the boudaries is returned. Otherwise (default), a reference to the
             internal boundary array is returned.
+
+            
+        Returns
+        -------
+        Union[Boundaries, float]
+            Returns the current boundaries of the data. The return value depends on the combination 
+            of the optional parameters:
+            - If neither `p_side` nor `p_dim` is specified: returns the full 2×n array.
+            - If only `p_side` is specified: returns a 1D array with values for all dimensions.
+            - If only `p_dim` is specified: returns a 1D array with both lower and upper bounds.
+            - If both `p_side` and `p_dim` are specified: returns a single float value.
         """
 
-        # 1 Initialize boundary structure if not already created
+        # 1 Initialize boundary structure if not yet done
         if self._boundaries is None:
             try:
                 num_dims = self._numeric_buffer.shape[1]
@@ -226,37 +237,36 @@ class RingBuffer (Window):
                 return None
             
 
-        # 2 Selective update of internal boundary buffer
+        # 2 Selective update and return
         if p_side is None:
             if p_dim is None:
-                # Case 1: Full 2×n boundary array (both sides for all dimensions)
+                # Case 1: Full boundaries array for all dimensions and both sides
                 np.nanmin(self._numeric_buffer, axis=0, out=self._boundaries[:, BoundarySide.LOWER])
                 np.nanmax(self._numeric_buffer, axis=0, out=self._boundaries[:, BoundarySide.UPPER])
                 result = self._boundaries
 
             else:
-                # Case 2: Lower and upper bound for one specific dimension
-                np.nanmin(self._numeric_buffer[:, p_dim], out=self._boundaries[p_dim:p_dim+1, BoundarySide.LOWER])
-                np.nanmax(self._numeric_buffer[:, p_dim], out=self._boundaries[p_dim:p_dim+1, BoundarySide.UPPER])
+                # Case 2: Both sides for one specific dimension (as 1D array)
+                self._boundaries[p_dim, BoundarySide.LOWER] = np.nanmin(self._numeric_buffer[:, p_dim])
+                self._boundaries[p_dim, BoundarySide.UPPER] = np.nanmax(self._numeric_buffer[:, p_dim])
                 result = self._boundaries[p_dim, :]
 
         else:
             if p_dim is None:
-                # Case 3: One specific side (LOWER or UPPER) for all dimensions
+                # Case 3: One side for all dimensions (as 1D array)
                 func = np.nanmin if p_side == BoundarySide.LOWER else np.nanmax
                 func(self._numeric_buffer, axis=0, out=self._boundaries[:, p_side])
                 result = self._boundaries[:, p_side]
 
             else:
-                # Case 4: One specific side for one specific dimension
+                # Case 4: One side for one specific dimension (as scalar)
                 func = np.nanmin if p_side == BoundarySide.LOWER else np.nanmax
-                func(self._numeric_buffer[:, p_dim], out=self._boundaries[p_dim:p_dim+1, p_side])
+                self._boundaries[p_dim, p_side] = func(self._numeric_buffer[:, p_dim])
                 return self._boundaries[p_dim, p_side]
-            
 
-        # 3 Return array-like result (optionally as a copy)
-        if p_copy: return result.copy()
-        return result
+
+        # 3 Return result (copy if requested)
+        return result.copy() if p_copy else result
     
 
 ## -------------------------------------------------------------------------------------------------

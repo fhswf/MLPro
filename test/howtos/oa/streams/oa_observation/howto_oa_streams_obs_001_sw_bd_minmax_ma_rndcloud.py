@@ -27,14 +27,18 @@ from datetime import datetime
 from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.ops import Mode
+from mlpro.bf.math import Element
+from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.math.properties import Properties
 from mlpro.bf.math.geometry import cprop_crosshair
-from mlpro.bf.streams import *
+from mlpro.bf.streams import StreamTask, Instance, InstTypeNew, InstTypeDel
 from mlpro.bf.streams.streams import StreamMLProClusterGenerator
 from mlpro.bf.streams.tasks import RingBuffer
+
 from mlpro.oa.streams import OAStreamTask, OAStreamWorkflow, OAStreamScenario
-from mlpro.oa.streams.tasks import BoundaryDetector, Normalizer, NormalizerMinMax
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 from mlpro.oa.streams.helpers import OAObserver
+
 
 
 
@@ -243,26 +247,26 @@ class DemoScenario (OAStreamScenario):
         workflow.add_task( p_task = task_bd, p_pred_tasks = [task_window] )
 
 
-        # # 2.4 Add a MinMax-Normalizer and connect to the boundary detector
-        # task_norm_minmax = NormalizerMinMax( p_name = 'T3 - MinMax normalizer', 
-        #                                      p_ada = p_ada, 
-        #                                      p_duplicate_data = True,
-        #                                      p_visualize = p_visualize, 
-        #                                      p_logging = p_logging )
+        # 2.4 Add a MinMax-Normalizer and connect to the boundary detector
+        task_norm_minmax = NormalizerMinMax( p_name = 'T3 - MinMax normalizer', 
+                                             p_ada = p_ada, 
+                                             p_duplicate_data = True,
+                                             p_visualize = p_visualize, 
+                                             p_logging = p_logging )
 
-        # task_bd.register_event_handler( p_event_id = BoundaryDetector.C_EVENT_ADAPTED, p_event_handler = task_norm_minmax.adapt_on_event )
-        # workflow.add_task( p_task = task_norm_minmax, p_pred_tasks = [task_bd] )
+        task_bd.register_event_handler( p_event_id = BoundaryDetector.C_EVENT_ADAPTED, p_event_handler = task_norm_minmax.adapt_on_event )
+        workflow.add_task( p_task = task_norm_minmax, p_pred_tasks = [task_bd] )
 
 
-        # # 2.5 Add a moving average task for raw data behind the sliding window
-        # task_ma = MovingAverage( p_name = 'T4 - Moving average (renormalized +/-)', 
-        #                          p_ada = p_ada,
-        #                          p_visualize = p_visualize,
-        #                          p_logging = p_logging,
-        #                          p_centroid_crosshair_labels = False )
+        # 2.5 Add a moving average task for raw data behind the sliding window
+        task_ma = MovingAverage( p_name = 'T4 - Moving average (renormalized +/-)', 
+                                 p_ada = p_ada,
+                                 p_visualize = p_visualize,
+                                 p_logging = p_logging,
+                                 p_centroid_crosshair_labels = False )
         
-        # workflow.add_task( p_task = task_ma, p_pred_tasks = [ task_norm_minmax ] )
-        # task_norm_minmax.register_event_handler( p_event_id = NormalizerMinMax.C_EVENT_ADAPTED, p_event_handler = task_ma.renormalize_on_event )
+        workflow.add_task( p_task = task_ma, p_pred_tasks = [ task_norm_minmax ] )
+        task_norm_minmax.register_event_handler( p_event_id = NormalizerMinMax.C_EVENT_ADAPTED, p_event_handler = task_ma.renormalize_on_event )
 
 
         # 3 Add helpers for adaptation observation
@@ -272,17 +276,17 @@ class DemoScenario (OAStreamScenario):
                                                     p_visualize = p_visualize, 
                                                     p_logging = p_logging ) )
 
-        # workflow.add_helper( p_helper = OAObserver( p_related_task = task_norm_minmax,
-        #                                             p_logarithmic_plot = True,
-        #                                             p_filter_subtypes = [],
-        #                                             p_visualize = p_visualize, 
-        #                                             p_logging = p_logging ) )
+        workflow.add_helper( p_helper = OAObserver( p_related_task = task_norm_minmax,
+                                                    p_logarithmic_plot = True,
+                                                    p_filter_subtypes = [],
+                                                    p_visualize = p_visualize, 
+                                                    p_logging = p_logging ) )
 
-        # workflow.add_helper( p_helper = OAObserver( p_related_task = task_ma,
-        #                                             p_logarithmic_plot = True,
-        #                                             p_filter_subtypes = [],
-        #                                             p_visualize = p_visualize, 
-        #                                             p_logging = p_logging ) )
+        workflow.add_helper( p_helper = OAObserver( p_related_task = task_ma,
+                                                    p_logarithmic_plot = True,
+                                                    p_filter_subtypes = [],
+                                                    p_visualize = p_visualize, 
+                                                    p_logging = p_logging ) )
 
 
         # 4 Return stream and workflow
@@ -293,7 +297,7 @@ class DemoScenario (OAStreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    num_features    = 3
+    num_features    = 2
     num_inst        = 500
     logging         = Log.C_LOG_WE
     step_rate       = 1

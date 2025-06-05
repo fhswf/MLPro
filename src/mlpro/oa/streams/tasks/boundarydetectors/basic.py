@@ -436,7 +436,7 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         """
 
         # 0 Intro
-        if len(p_inst) == 0: return
+        if not self.get_adapted(): return
 
         dims = self._related_set.get_dims()
 
@@ -461,8 +461,8 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         plot_boundary = [None,None]
 
         for dim_id, dim in enumerate(self._plot_nd_plots.keys()):
-            upper_boundary = self._boundaries[BoundarySide.UPPER, dim_id]
-            lower_boundary = self._boundaries[BoundarySide.LOWER ,dim_id]
+            upper_boundary = self._boundaries[dim_id, BoundarySide.UPPER]
+            lower_boundary = self._boundaries[dim_id, BoundarySide.LOWER]
             self._plot_nd_plots[dim].set_y(lower_boundary)
             self._plot_nd_plots[dim].set_height(upper_boundary-lower_boundary)
 
