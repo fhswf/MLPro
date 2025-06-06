@@ -103,7 +103,7 @@ except:
     class Figure : pass
 
 from mlpro.bf.various import Id, TStampType, TStamp, KWArgs, ScientificObject, Log
-from mlpro.bf.exceptions import Error, ImplementationError
+from mlpro.bf.exceptions import Error, ImplementationError, ParamError
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.mt import Range, Shared, Task, Workflow
 from mlpro.bf.plot import PlotSettings

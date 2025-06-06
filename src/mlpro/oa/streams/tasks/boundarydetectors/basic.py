@@ -97,14 +97,14 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         Optional boundary provider, used for service call on reverse adaptation.
     """
 
-    C_TYPE                      = 'Boundary Detector'
+    C_TYPE                  = 'Boundary Detector'
 
-    C_PLOT_ND_XLABEL_FEATURE    = 'Features'
-    C_PLOT_ND_YLABEL            = 'Boundaries'
+    C_PLOT_ND_XLABEL        = 'Features'
+    C_PLOT_ND_YLABEL        = 'Boundaries'
 
-    C_PLOT_STANDALONE           = True
-    C_PLOT_VALID_VIEWS          = [ PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW         = PlotSettings.C_VIEW_ND
+    C_PLOT_STANDALONE       = True
+    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -406,7 +406,7 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 
         super()._init_plot_nd( p_figure = p_figure, p_settings = p_settings )
 
-        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
+        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL)
         p_settings.axes.xaxis.set_label_position('top')   # Position des Labels nach oben setzen
 
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)

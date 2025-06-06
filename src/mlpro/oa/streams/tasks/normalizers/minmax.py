@@ -38,8 +38,10 @@ import numpy as np
 from mlpro.bf.various import Log
 from mlpro.bf.events import Event
 from mlpro.bf.exceptions import Error
-from mlpro.oa.streams.basics import InstDict, OAStreamTask
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import normalizers as Norm
+
+from mlpro.oa.streams.basics import InstDict, OAStreamTask
 
 
 
@@ -154,29 +156,27 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
         """
 
-        try:
-            if len(self._plot_2d_xdata) != 0 and len(self._plot_2d_xdata):
-                if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
-                    self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
-                ids = []
-                for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
-                    ids.extend([id])
-                    self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
-                    self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
+        if len(self._plot_2d_xdata) != 0 and len(self._plot_2d_xdata):
+            if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
+                self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
+            ids = []
+            for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
+                ids.extend([id])
+                self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
+                self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
 
-                plot_data_renormalized = self.renormalize(self._plot_data_2d)
+            plot_data_renormalized = self.renormalize(self._plot_data_2d)
 
-                self._plot_2d_xdata = {}
-                self._plot_2d_ydata = {}
+            self._plot_2d_xdata = {}
+            self._plot_2d_ydata = {}
 
-                for i, data_2d in enumerate(plot_data_renormalized):
-                    self._plot_2d_xdata[ids[i]] = data_2d[0]
-                    self._plot_2d_ydata[ids[i]] = data_2d[1]
+            for i, data_2d in enumerate(plot_data_renormalized):
+                self._plot_2d_xdata[ids[i]] = data_2d[0]
+                self._plot_2d_ydata[ids[i]] = data_2d[1]
 
 
-                self._parameters_updated = False
-        except:
-            raise Error
+            self._parameters_updated = False
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -185,31 +185,27 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
         """
 
-        try:
-            if len(self._plot_3d_xdata) != 0:
-                if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
-                    self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
+        if len(self._plot_3d_xdata) != 0:
+            if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
+                self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
 
-                ids = []
-                for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
-                    ids.extend([id])
-                    self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
-                    self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
-                    self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
+            ids = []
+            for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
+                ids.extend([id])
+                self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
+                self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
+                self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
 
-                plot_data_renormalized = self.renormalize(self._plot_data_3d)
+            plot_data_renormalized = self.renormalize(self._plot_data_3d)
 
-                self._plot_3d_xdata = {}
-                self._plot_3d_ydata = {}
-                self._plot_3d_zdata = {}
+            self._plot_3d_xdata = {}
+            self._plot_3d_ydata = {}
+            self._plot_3d_zdata = {}
 
-                for i, data_3d in enumerate(plot_data_renormalized):
-                    self._plot_3d_xdata[ids[i]] = data_3d[0]
-                    self._plot_3d_ydata[ids[i]] = data_3d[1]
-                    self._plot_3d_zdata[ids[i]] = data_3d[2]
-        except:
-            pass
-
+            for i, data_3d in enumerate(plot_data_renormalized):
+                self._plot_3d_xdata[ids[i]] = data_3d[0]
+                self._plot_3d_ydata[ids[i]] = data_3d[1]
+                self._plot_3d_zdata[ids[i]] = data_3d[2]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -218,18 +214,33 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
         """
 
-        try:
-            if self._plot_nd_plots:
-                if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
-                        self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
-                ids = []
-                for j in range(len(self._plot_nd_plots)):
-                    for i in range(len(self._plot_nd_plots[0][0])):
-                        self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
+        if self._plot_nd_plots:
+            if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
+                    self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
+            ids = []
+            for j in range(len(self._plot_nd_plots)):
+                for i in range(len(self._plot_nd_plots[0][0])):
+                    self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
 
-                plot_data_renormalized = self.renormalize(self._plot_data_nd)
+            plot_data_renormalized = self.renormalize(self._plot_data_nd)
 
-                for j in range(len(self._plot_nd_plots)):
-                    self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
-        except:
-            pass
+            for j in range(len(self._plot_nd_plots)):
+                self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings : PlotSettings, p_instances : InstDict, **p_kwargs):
+        self._update_plot_data_2d()
+        return super()._update_plot_2d( p_settings = p_settings, p_instances = p_instances, **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings : PlotSettings, p_instances : InstDict, **p_kwargs):
+        self._update_plot_data_3d()
+        return super()._update_plot_3d( p_settings = p_settings, p_instances = p_instances, **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings : PlotSettings, p_instances : InstDict, **p_kwargs):
+        self._update_plot_data_nd()
+        return super()._update_plot_nd( p_settings = p_settings, p_instances = p_instances, **p_kwargs )
