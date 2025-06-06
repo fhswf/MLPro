@@ -6,13 +6,21 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-05-28  0.1.0     DA       New class OAObserver for adaptation observation
+## -- 2025-06-04  0.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
+"""
+Ver. 0.2.0 (2025-06-04)
+
+This module provides the OAObserver class to be used for observation and visualization of stream
+adaptation events.
+
+"""
 
 from mlpro.bf.various import Log, KWArgs
 from mlpro.bf.plot import PlotSettings
 
-from mlpro.oa.streams import OAStreamAdaptation, OAStreamHelper, OAStreamTask
+from mlpro.oa.streams import OAStreamAdaptation, OAStreamAdaptationType, OAStreamHelper, OAStreamTask
 
 
 
@@ -37,10 +45,10 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
     C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
-    C_ADAPTATION_COLORS = { OAStreamAdaptation.C_SUBTYPE_IN_SITU : 'blue',
-                            OAStreamAdaptation.C_SUBTYPE_REVERSE : 'red',
-                            OAStreamAdaptation.C_SUBTYPE_EVENT : 'green',
-                            OAStreamAdaptation.C_SUBTYPE_RENORMALIZE : 'purple' }
+    C_ADAPTATION_COLORS = { OAStreamAdaptationType.FORWARD : 'blue',
+                            OAStreamAdaptationType.REVERSE : 'red',
+                            OAStreamAdaptationType.EVENT   : 'green',
+                            OAStreamAdaptationType.RENORM  : 'purple' }
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 

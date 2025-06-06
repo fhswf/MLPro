@@ -28,10 +28,11 @@
 ## -- 2025-06-01  2.0.0     DA       Refactoring of class Window:
 ## --                                - events removed
 ## --                                - method get_boundaries(): new parameters
+## -- 2025-06-05  2.0.1     DA       Bugfix in Window.get_variance()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-01)
+Ver. 2.0.1 (2025-06-05)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -140,7 +141,7 @@ class Window (StreamTask, BoundaryProvider):
             Returns the variance of the current data in the window as a numpy array.
         """
 
-        return np.variance(self._buffer.values(), axis=0, dtype=np.float64)
+        return np.var(self._buffer.values(), axis=0, dtype=np.float64)
 
 
 ## -------------------------------------------------------------------------------------------------

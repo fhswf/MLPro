@@ -441,7 +441,7 @@ class Model (Task, ScientificObject):
 
         if ( self._adapted ) and ( len(self._registered_handlers) > 0 ): 
             self._raise_event( p_event_id = self.C_EVENT_ADAPTED, 
-                               p_event_object = self.C_EVENT_CLS( p_raising_object=self,
+                               p_event_object = self.C_EVENT_CLS( p_raising_object = self,
                                                                   p_subtype = p_subtype,
                                                                   p_tstamp = p_tstamp,
                                                                   **p_kwargs ) )

@@ -5,13 +5,14 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-06-01  1.0.0     DA       Creation 
+## -- 2025-06-01  0.1.0     DA       Creation 
+## -- 2025-06-04  0.2.0     DA       New methods create_boundaries(), _create_boundaries()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-05-31)
+Ver. 0.2.0 (2025-06-04)
 
-This module provides classes for statistical functionalities.
+This module provides classes for the standardized use of value boundaries.
 """
 
 from typing import Union
@@ -44,7 +45,29 @@ class BoundaryProvider:
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def get_boundaries(self, p_side : BoundarySide = None, p_dim : int = None ) -> Union[Boundaries, float]:
+    @staticmethod
+    def create_boundaries( p_num_dim : int ) -> Boundaries:
+        """
+        Static service method to create a two-dim array for boundaries.
+        """
+
+        return np.full( (p_num_dim,2), np.nan)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _create_boundaries( self, p_num_dim : int ) -> Boundaries:
+        """
+        Internal service method to create a two-dim array for boundaries.
+        """
+
+        return self.__class__.create_boundaries( p_num_dim = p_num_dim )
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_boundaries( self, 
+                        p_dim : int = None,
+                        p_side : BoundarySide = None,
+                        p_copy : bool = False ) -> Union[Boundaries, float]:
         """
         Returns the current value boundaries of internally stored data. The result can be reduced
         by the optional parameters p_side, p_dim. If both parameters are specified, the result is
@@ -52,11 +75,14 @@ class BoundaryProvider:
 
         Parameters
         ----------
+        p_dim : int = None
+            Optionally reduces the result to a particular dimension.
         p_side : BoundarySide = None
             Optionally reduces the result to upper or lower boundaries. See class BoundarySide for
             possible values.
-        p_dim : int = None
-            Optionally reduces the result to a particular dimension.
+        p_copy : bool = False
+            If True, a copy of the boudaries is returned. Otherwise (default), a reference to the
+            internal boundary array is returned.
 
         Returns
         -------

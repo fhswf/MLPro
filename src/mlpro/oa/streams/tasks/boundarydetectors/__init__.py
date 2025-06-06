@@ -1,1 +1,1 @@
-from mlpro.oa.streams.tasks.boundarydetectors.boundarydetector import BoundaryDetector
+from mlpro.oa.streams.tasks.boundarydetectors.basic import BoundaryDetector

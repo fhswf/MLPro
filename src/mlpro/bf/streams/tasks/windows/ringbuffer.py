@@ -30,14 +30,14 @@
 ## -- 2025-04-11  1.2.4     DA       - Code review/cleanup
 ## --                                - Method RingBuffer._update_plot_nd(): support of time stamps
 ## -- 2025-05-06  1.2.5     DA       Method RingBuffer._run(): update tstamp of outdated instances
-## -- 2025-06-01  2.0.0     DA       Refactoring of class RingBuffer
+## -- 2025-06-05  2.0.0     DA       Refactoring of class RingBuffer
 ## --                                - method get_boundaries(): alignment to new signature
 ## --                                - removal of event propagation
 ## --                                - optimization of methods _update_plot_2d(), _update_plot_3d()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-02)
+Ver. 2.0.0 (2025-06-05)
 
 This module provides a sliding window with an internal ring buffer.
 """
@@ -48,19 +48,17 @@ import numpy as np
 
 try:
     from matplotlib.figure import Figure
-    from matplotlib.axes import Axes
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     from matplotlib.patches import Rectangle
     import matplotlib.dates as mdates
 except:
-    class Axes : pass
     class Poly3DCollection : pass
     class Rectangle : pass
 
 from mlpro.bf.events import *
 from mlpro.bf.plot import PlotSettings, Plottable
 from mlpro.bf.math import Dimension
-from mlpro.bf.math.statistics import *
+from mlpro.bf.math.statistics import Boundaries, BoundarySide
 from mlpro.bf.streams.basics import InstDict, InstTypeNew, InstTypeDel, StreamTask
 from mlpro.bf.streams.tasks.windows.basics import Window
 
@@ -75,20 +73,20 @@ class RingBuffer (Window):
 
     Parameters
     ----------
-        p_buffer_size:int
-            the size/length of the buffer/window.
-        p_delay:bool, optional
-            Set to true if full buffer is desired before passing the window data to next step. Default is false.
-        p_name:str, optional
-            Name of the Window. Default is None.
-        p_range_max     -Optional
-            Maximum range of task parallelism for window task. Default is set to multithread.
-        p_duplicate_data : bool
-            If True, instances will be duplicated before processing. Default = False.
-        p_ada:bool, optional
-            Adaptivity property of object. Default is True.
-        p_logging      -Optional
-            Log level for the object. Default is log everything.
+    p_buffer_size:int
+        the size/length of the buffer/window.
+    p_delay:bool, optional
+        Set to true if full buffer is desired before passing the window data to next step. Default is false.
+    p_name:str, optional
+        Name of the Window. Default is None.
+    p_range_max     -Optional
+        Maximum range of task parallelism for window task. Default is set to multithread.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
+    p_ada:bool, optional
+        Adaptivity property of object. Default is True.
+    p_logging      -Optional
+        Log level for the object. Default is log everything.
     """
 
     C_NAME      = 'Ring Buffer'
@@ -118,6 +116,7 @@ class RingBuffer (Window):
         self._numeric_buffer:np.ndarray = None
         self._numeric_features          = []
         self._buffer_full               = False
+        self._boundaries : Boundaries   = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -132,12 +131,12 @@ class RingBuffer (Window):
         """
 
         # 0 Intro
-        inst = p_inst.copy()
+        instances = p_inst.copy()
         p_inst.clear()
 
 
         # 1 Main processing loop
-        for inst_id, (inst_type, inst) in sorted(inst.items()):
+        for inst_id, (inst_type, instance) in sorted(instances.items()):
 
             if inst_type != InstTypeNew: 
                 # Obsolete instances need to be removed from the buffer (not yet implemented)
@@ -146,15 +145,15 @@ class RingBuffer (Window):
 
 
             # 1.1 A new instance is to be buffered
-            feature_value  = inst.get_feature_data()
+            feature_data  = instance.get_feature_data()
 
 
             # 1.2 Checking the numeric dimensions/features in Stream
             if self._numeric_buffer is None and self._statistics_enabled:
-                for j in feature_value.get_dim_ids():
-                    if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
+                for j in feature_data.get_dim_ids():
+                    if feature_data.get_related_set().get_dim(j).get_base_set() in [ Dimension.C_BASE_SET_N,
                                                                                      Dimension.C_BASE_SET_R,
-                                                                                     Dimension.C_BASE_SET_Z]:
+                                                                                     Dimension.C_BASE_SET_Z ]:
                         self._numeric_features.append(j)
 
                 self._numeric_buffer = np.full((self.buffer_size, len(self._numeric_features)), np.nan)
@@ -164,22 +163,22 @@ class RingBuffer (Window):
             if len(self._buffer) == self.buffer_size:
 
                 # The oldest instance is extracted from the buffer and forwarded
-                inst_del = self._buffer[self._buffer_pos]
-                inst_del.tstamp = self.get_so().tstamp
-                p_inst[inst_del.id] = ( InstTypeDel, inst_del )
-                p_inst[inst.id] = ( InstTypeNew, inst )
+                instance_del = self._buffer[self._buffer_pos]
+                instance_del.tstamp = self.get_so().tstamp
+                p_inst[instance_del.id] = ( InstTypeDel, instance_del )
+                p_inst[instance.id] = ( InstTypeNew, instance )
 
             elif not self._delay:
-                p_inst[inst.id] = ( InstTypeNew, inst )
+                p_inst[instance.id] = ( InstTypeNew, instance )
 
 
             # 1.4 New instance is buffered
-            self._buffer[self._buffer_pos] = inst
+            self._buffer[self._buffer_pos] = instance
                
 
             # 1.5 Update of internal statistics
             if self._statistics_enabled:
-                self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in self._numeric_features]
+                self._numeric_buffer[self._buffer_pos] = [feature_data.get_value(k) for k in self._numeric_features]
 
 
             # 1.6 Increment of buffer position
@@ -192,12 +191,15 @@ class RingBuffer (Window):
 
                 if self._delay:
                     for i in range(self.buffer_size):
-                        inst_fwd = self._buffer[i]
-                        p_inst[inst_fwd.id] = ( InstTypeNew, inst_fwd )
+                        instance_fwd = self._buffer[i]
+                        p_inst[instance_fwd.id] = ( InstTypeNew, instance_fwd )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_boundaries(self, p_side : BoundarySide = None, p_dim : int = None ) -> Union[Boundaries, float]:
+    def get_boundaries( self, 
+                        p_dim : int = None,
+                        p_side : BoundarySide = None,
+                        p_copy : bool = False ) -> Union[Boundaries, float]:
         """
         Returns the current value boundaries of internally stored data. The result can be reduced
         by the optional parameters p_side, p_dim. If both parameters are specified, the result is
@@ -205,12 +207,16 @@ class RingBuffer (Window):
 
         Parameters
         ----------
+        p_dim : int = None
+            Optionally reduces the result to a particular dimension.
         p_side : BoundarySide = None
             Optionally reduces the result to upper or lower boundaries. See class BoundarySide for
             possible values.
-        p_dim : int = None
-            Optionally reduces the result to a particular dimension.
+        p_copy : bool = False
+            If True, a copy of the boudaries is returned. Otherwise (default), a reference to the
+            internal boundary array is returned.
 
+            
         Returns
         -------
         Union[Boundaries, float]
@@ -222,26 +228,45 @@ class RingBuffer (Window):
             - If both `p_side` and `p_dim` are specified: returns a single float value.
         """
 
+        # 1 Initialize boundary structure if not yet done
+        if self._boundaries is None:
+            try:
+                num_dims = self._numeric_buffer.shape[1]
+                self._boundaries = self._create_boundaries(p_num_dim=num_dims)
+            except:
+                return None
+            
+
+        # 2 Selective update and return
         if p_side is None:
             if p_dim is None:
-                # Case 1: Full 2×n matrix of lower and upper boundaries
-                lower = np.nanmin(self._numeric_buffer, axis=0)
-                upper = np.nanmax(self._numeric_buffer, axis=0)
-                return np.stack([lower, upper], axis=0)
+                # Case 1: Full boundaries array for all dimensions and both sides
+                np.nanmin(self._numeric_buffer, axis=0, out=self._boundaries[:, BoundarySide.LOWER])
+                np.nanmax(self._numeric_buffer, axis=0, out=self._boundaries[:, BoundarySide.UPPER])
+                result = self._boundaries
 
-            # Case 2: 1D array with lower and upper boundary for single dimension p_dim
-            col = self._numeric_buffer[:, p_dim]
-            return np.array([np.nanmin(col), np.nanmax(col)])
+            else:
+                # Case 2: Both sides for one specific dimension (as 1D array)
+                self._boundaries[p_dim, BoundarySide.LOWER] = np.nanmin(self._numeric_buffer[:, p_dim])
+                self._boundaries[p_dim, BoundarySide.UPPER] = np.nanmax(self._numeric_buffer[:, p_dim])
+                result = self._boundaries[p_dim, :]
+
+        else:
+            if p_dim is None:
+                # Case 3: One side for all dimensions (as 1D array)
+                func = np.nanmin if p_side == BoundarySide.LOWER else np.nanmax
+                func(self._numeric_buffer, axis=0, out=self._boundaries[:, p_side])
+                result = self._boundaries[:, p_side]
+
+            else:
+                # Case 4: One side for one specific dimension (as scalar)
+                func = np.nanmin if p_side == BoundarySide.LOWER else np.nanmax
+                self._boundaries[p_dim, p_side] = func(self._numeric_buffer[:, p_dim])
+                return self._boundaries[p_dim, p_side]
 
 
-        if p_dim is None:
-            # Case 3: 1D array for one side across all dimensions
-            return np.nanmin(self._numeric_buffer, axis=0) if p_side == BoundarySide.LOWER else np.nanmax(self._numeric_buffer, axis=0)
-
-
-        # Case 4: Scalar value for one side and one dimension
-        col = self._numeric_buffer[:, p_dim]
-        return np.nanmin(col) if p_side == BoundarySide.LOWER else np.nanmax(col)
+        # 3 Return result (copy if requested)
+        return result.copy() if p_copy else result
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -300,7 +325,8 @@ class RingBuffer (Window):
 
         Plottable._init_plot_nd(self, p_figure=p_figure, p_settings=p_settings)
 
-        self._patch_windows     = None
+        self._patch_windows       = None
+        self._plot_boundaries     = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -324,10 +350,9 @@ class RingBuffer (Window):
 
 
         # 2 Check for changes on boundaries
-        plot_boundaries = self.get_boundaries()
-        if ( self._plot_boundaries is not None ):
-            if np.array_equal( plot_boundaries, self._plot_boundaries ): return
-            self._plot_boundaries = plot_boundaries
+        plot_boundaries = self.get_boundaries().copy()
+        if ( self._plot_boundaries is not None ) and np.array_equal( plot_boundaries, self._plot_boundaries ): return
+        self._plot_boundaries = plot_boundaries
 
 
         # 3 Initialization of the rectangle
@@ -339,10 +364,10 @@ class RingBuffer (Window):
 
 
         # 4 Update of the rectangle
-        x = plot_boundaries[0][0]
-        y = plot_boundaries[1][0]
-        w = plot_boundaries[0][1] - plot_boundaries[0][0]
-        h = plot_boundaries[1][1] - plot_boundaries[1][0]
+        x = plot_boundaries[0,BoundarySide.LOWER]
+        y = plot_boundaries[1,BoundarySide.LOWER]
+        w = plot_boundaries[0,BoundarySide.UPPER] - plot_boundaries[0,BoundarySide.LOWER]
+        h = plot_boundaries[1,BoundarySide.UPPER] - plot_boundaries[1,BoundarySide.LOWER]
         self._patch_windows['2D'].set_bounds(x,y,w,h)
 
         self._patch_windows['2D'].set_visible(True)
@@ -369,10 +394,9 @@ class RingBuffer (Window):
 
 
         # 2 Check for changes on boundaries
-        plot_boundaries = self.get_boundaries()
-        if ( self._plot_boundaries is not None ):
-            if np.array_equal( plot_boundaries, self._plot_boundaries ): return
-            self._plot_boundaries = plot_boundaries
+        plot_boundaries = self.get_boundaries().copy()
+        if ( self._plot_boundaries is not None ) and np.array_equal( plot_boundaries, self._plot_boundaries ): return
+        self._plot_boundaries = plot_boundaries
             
             
         # 3 Initialization of the cuboid
@@ -384,35 +408,35 @@ class RingBuffer (Window):
 
         # 4 Update of the cuboid
         b     = plot_boundaries
-        verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
-                             [b[0][1], b[1][0], b[2][1]],
-                             [b[0][1], b[1][0], b[2][0]],
-                             [b[0][0], b[1][0], b[2][0]]],
+        verts = np.asarray([[[b[0,0], b[1,0], b[2,1]],
+                             [b[0,1], b[1,0], b[2,1]],
+                             [b[0,1], b[1,0], b[2,0]],
+                             [b[0,0], b[1,0], b[2,0]]],
 
-                            [[b[0][0], b[1][0], b[2][1]],
-                             [b[0][1], b[1][0], b[2][1]],
-                             [b[0][1], b[1][1], b[2][1]],
-                             [b[0][0], b[1][1], b[2][1]]],
+                            [[b[0,0], b[1,0], b[2,1]],
+                             [b[0,1], b[1,0], b[2,1]],
+                             [b[0,1], b[1,1], b[2,1]],
+                             [b[0,0], b[1,1], b[2,1]]],
 
-                            [[b[0][0], b[1][0], b[2][1]],
-                             [b[0][0], b[1][1], b[2][1]],
-                             [b[0][0], b[1][1], b[2][0]],
-                             [b[0][0], b[1][0], b[2][0]]],
+                            [[b[0,0], b[1,0], b[2,1]],
+                             [b[0,0], b[1,1], b[2,1]],
+                             [b[0,0], b[1,1], b[2,0]],
+                             [b[0,0], b[1,0], b[2,0]]],
 
-                            [[b[0][1], b[1][0], b[2][1]],
-                             [b[0][1], b[1][1], b[2][1]],
-                             [b[0][1], b[1][1], b[2][0]],
-                             [b[0][1], b[1][0], b[2][0]]],
+                            [[b[0,1], b[1,0], b[2,1]],
+                             [b[0,1], b[1,1], b[2,1]],
+                             [b[0,1], b[1,1], b[2,0]],
+                             [b[0,1], b[1,0], b[2,0]]],
 
-                            [[b[0][0], b[1][1], b[2][1]],
-                             [b[0][1], b[1][1], b[2][1]],
-                             [b[0][1], b[1][1], b[2][0]],
-                             [b[0][0], b[1][1], b[2][0]]],
+                            [[b[0,0], b[1,1], b[2,1]],
+                             [b[0,1], b[1,1], b[2,1]],
+                             [b[0,1], b[1,1], b[2,0]],
+                             [b[0,0], b[1,1], b[2,0]]],
 
-                            [[b[0][0], b[1][0], b[2][0]],
-                             [b[0][1], b[1][0], b[2][0]],
-                             [b[0][1], b[1][1], b[2][0]],
-                             [b[0][0], b[1][1], b[2][0]]]])
+                            [[b[0,0], b[1,0], b[2,0]],
+                             [b[0,1], b[1,0], b[2,0]],
+                             [b[0,1], b[1,1], b[2,0]],
+                             [b[0,0], b[1,1], b[2,0]]]])
 
         self._patch_windows['3D'].set_verts(verts)
 
@@ -454,10 +478,10 @@ class RingBuffer (Window):
         x = p_settings.axes.get_xlim()[0]
         y = p_settings.axes.get_ylim()[0]
 
-        try:
-            w = mdates.date2num(inst_oldest.tstamp) - x
-        except:
+        if isinstance( inst_oldest.tstamp, (int, float) ):
             w = inst_oldest.tstamp - x
+        else:
+            w = mdates.date2num(inst_oldest.tstamp) - x
 
         h = p_settings.axes.get_ylim()[1] - y
         self._patch_windows['nD'].set_bounds(x, y, w, h)
