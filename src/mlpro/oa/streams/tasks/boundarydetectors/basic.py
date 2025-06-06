@@ -41,10 +41,11 @@
 ## --                                - replaced event-oriented adaptation by reverse adaptation
 ## --                                  with callback to external boundary provider 
 ## --                                  (e.g. a sliding window)
+## -- 2025-06-06  2.1.0     Da       New plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-04)
+Ver. 2.1.0 (2025-06-06)
 
 This module provides a basic implementation of a boundary detector.
 
@@ -52,22 +53,17 @@ This module provides a basic implementation of a boundary detector.
 
 from typing import Union
 
-from itertools import repeat
-
 try:
     import matplotlib.colors
     from matplotlib.figure import Figure
+    from matplotlib.patches import Rectangle
 except:
     class Figure : pass
-
 
 import numpy as np
 
 from mlpro.bf.various import Log
-from mlpro.bf.exceptions import ImplementationError
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.mt import Task
-from mlpro.bf.events import Event
 from mlpro.bf.math import Set
 from mlpro.bf.math.statistics import Boundaries, BoundarySide, BoundaryProvider
 from mlpro.bf.streams import Instance, InstDict, InstTypeNew, InstTypeDel
@@ -112,7 +108,7 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_name:str = None,
-                  p_range_max = Task.C_RANGE_THREAD,
+                  p_range_max = OAStreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
@@ -407,69 +403,120 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 
         """
 
-        if p_settings.axes is None:
-            p_settings.axes = p_figure.add_axes([0.1,0.1,0.7,0.8])
-            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
-            p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
-            p_settings.axes.grid(visible=True)
+        super()._init_plot_nd( p_figure = p_figure, p_settings = p_settings )
+
+        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
+        p_settings.axes.xaxis.set_label_position('top')   # Position des Labels nach oben setzen
+
+        p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
+        p_settings.axes.set_axisbelow(True)
 
         self._plot_nd_plots = None
+        self._plot_colors   = list(matplotlib.colors.TABLEAU_COLORS.values())
 
 
 ## --------------------------------------------------------------------------------------------------
-    def _update_plot_nd( self,
-                         p_settings : PlotSettings,
-                         p_inst : InstDict,
-                         **p_kwargs ):
+    def _update_plot_nd(self,
+                        p_settings: PlotSettings,
+                        p_inst: InstDict,
+                        **p_kwargs):
         """
-        Default N-dimensional plotting implementation for Boundary Detector tasks. See class mlpro.bf.plot.Plottable
-        for more details.
+        N-dimensional plotting for Boundary Detector using vertical bars and mean markers.
 
         Parameters
         ----------
         p_settings : PlotSettings
-            Object with further plot settings.
+            Plot settings object including matplotlib axes.
         p_inst : InstDict
-            Stream instances to be plotted.
+            Optional stream instances (not used here).
         p_kwargs : dict
-            Further optional plot parameters.
+            Further optional parameters.
         """
 
-        # 0 Intro
+        # 0 Abort if no boundaries are currently adapted
         if not self.get_adapted(): return
 
-        dims = self._related_set.get_dims()
+
+        # 1 Prepare plotting data
+        dims        = self._related_set.get_dims()
+        num_dims    = len(dims)
+        lowers      = self._boundaries[:, BoundarySide.LOWER]
+        uppers      = self._boundaries[:, BoundarySide.UPPER]
+        feature_ids = np.arange(num_dims)
+        labels      = [dim.get_name_short() for dim in dims]
+        ax          = p_settings.axes
 
 
-        # 1 Set up plotting 
+        # 2 First-time setup
         if self._plot_nd_plots is None:
+            self._plot_nd_plots = {
+                'rects_main': [],
+                'rects_bg': []
+            }
 
-            self._plot_nd_plots = {}
-            heights = list(repeat(0, len(dims)))
-            bottoms = list(repeat(0, len(dims)))
-            labels = [i.get_name_long() for i in self._related_set.get_dims()]
-            bars = p_settings.axes.bar(range(len(dims)), height=heights, bottom=bottoms,
-                color = matplotlib.colors.XKCD_COLORS)
-            for i,(dim,bar) in enumerate(zip(dims, bars)):
-                self._plot_nd_plots[dim] = bar
-                self._plot_nd_plots[dim].set_label(str(i) + '. ' + dim.get_name_long())
-            p_settings.axes.set_xticks(range(len(labels)))
-            p_settings.axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            # Set xlim early to get left border
+            ax.set_xlim(-1, num_dims)
+            x_left = ax.get_xlim()[0]
+
+            for i in range(num_dims):
+                color = self._plot_colors[i % len(self._plot_colors)]
+
+                x_main = feature_ids[i] - 0.4
+                width_bg = x_main - x_left
+
+                # 2.1 Background rectangle ("shadow")
+                rect_bg = Rectangle(
+                    (x_left, lowers[i]),
+                    width=width_bg,
+                    height=uppers[i] - lowers[i],
+                    color=color,
+                    alpha=0.15,
+                    linewidth=1,
+                    zorder = 0
+                )
+                ax.add_patch(rect_bg)
+                self._plot_nd_plots['rects_bg'].append(rect_bg)
+
+                # 2.2 Main rectangle
+                rect_main = Rectangle(
+                    (x_main, lowers[i]),
+                    width=0.8,
+                    height=uppers[i] - lowers[i],
+                    facecolor=color,
+                    edgecolor = 'grey',
+                    linewidth = 1,
+                    zorder = 1
+                )
+                ax.add_patch(rect_main)
+                self._plot_nd_plots['rects_main'].append(rect_main)
+
+            # 2.3 Axis setup
+            ax.set_xticks(feature_ids)
+            ax.set_xticklabels(labels, rotation=45, ha='right')
+
+        else:
+            # 3 Update existing plot elements
+            x_left = ax.get_xlim()[0]
+
+            for i in range(num_dims):
+                x_main = feature_ids[i] - 0.4
+                width_bg = x_main - x_left
+                y = lowers[i]
+                h = uppers[i] - lowers[i]
+
+                rect_bg = self._plot_nd_plots['rects_bg'][i]
+                rect_bg.set_x(x_left)
+                rect_bg.set_width(width_bg)
+                rect_bg.set_y(y)
+                rect_bg.set_height(h)
+
+                rect_main = self._plot_nd_plots['rects_main'][i]
+                rect_main.set_y(y)
+                rect_main.set_height(h)
 
 
-        # 2 Update boundary bars and ax limits
-        plot_boundary = [None,None]
+        # 4 Y-Axis autoscaling
+        y_min = np.min(lowers)
+        y_max = np.max(uppers)
+        ax.set_ylim(y_min,y_max)
 
-        for dim_id, dim in enumerate(self._plot_nd_plots.keys()):
-            upper_boundary = self._boundaries[dim_id, BoundarySide.UPPER]
-            lower_boundary = self._boundaries[dim_id, BoundarySide.LOWER]
-            self._plot_nd_plots[dim].set_y(lower_boundary)
-            self._plot_nd_plots[dim].set_height(upper_boundary-lower_boundary)
-
-            if ( plot_boundary[0] is None ) or ( plot_boundary[0] > lower_boundary):
-                plot_boundary[0] = lower_boundary
-
-            if ( plot_boundary[1] is None ) or ( plot_boundary[1] < upper_boundary):
-                plot_boundary[1] = upper_boundary
-
-        p_settings.axes.set_ylim(plot_boundary)
