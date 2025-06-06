@@ -14,10 +14,11 @@
 ## --                                - constructor: changes on parameter p_wrap_method
 ## --                                - method _run(): changes on parameters
 ## -- 2024-06-10  0.2.1     LSB      Fixing for the refactoring on stream processing
+## -- 2025-06-06  0.3.0     DA       Refactoring: p_inst -> p_instance/s
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-05-24)
+Ver. 0.3.0 (2025-06-06)
 
 This module provides modules and template classes for adaptive systems and adaptive functions.
 """
@@ -75,9 +76,9 @@ class PseudoTask(OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run( self, p_inst : InstDict ):
+    def _run( self, p_instances : InstDict ):
 
-        self._host_task( p_inst = p_inst )
+        self._host_task( p_instances = p_instances )
 
 
 
@@ -211,7 +212,7 @@ class OAFctSTrans(FctSTrans, Model):
             self._setup_wf_strans = self._setup_oafct_strans()
 
         # 3. Running the workflow
-        self._wf_strans.run(p_instances=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
+        self._wf_strans.run( p_instances = dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]) )
 
 
         # 4. get the results
@@ -289,24 +290,25 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_strans(self, p_inst:InstDict):
+    def _run_wf_strans(self, p_instances:InstDict):
         """
         Runs the processing workflow, for state transition.
 
         Parameters
         ----------
-        p_inst: InstDict
+        p_instances : InstDict
             Dictionary of instances to be processed by the workflow.
 
         """
-        p_inst_new = [inst[1] for inst in p_inst.values() if inst[0] == InstTypeNew]
+        inst_new = [inst[1] for inst in p_instances.values() if inst[0] == InstTypeNew]
+
         if self._afct_strans is not None:
             self._wf_strans.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self._afct_strans,
-                                                                                p_state=p_inst_new[0],
+                                                                                p_state=inst_new[0],
                                                                                 p_action=self._action_obj))
         else:
             self._wf_strans.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
-                                                                            p_state=p_inst_new[0],
+                                                                            p_state=inst_new[0],
                                                                             p_action=self._action_obj))
 
 
@@ -453,7 +455,7 @@ class OAFctSuccess(FctSuccess, Model):
             self._setup_wf_success = self._setup_oafct_success()
 
         # 3. Run the workflow
-        self._wf_success.run(p_instances=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
+        self._wf_success.run( p_instances = dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]) )
 
 
         # 4. Return the results
@@ -494,23 +496,23 @@ class OAFctSuccess(FctSuccess, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_success(self, p_inst: InstDict):
+    def _run_wf_success(self, p_instances : InstDict):
         """
         Runs the success computation workflow of the system.
 
         Parameters
         ----------
-        p_inst: InstDict
+        p_instances : InstDict
             Dictionary of instances to be processed by the workflow.
 
         """
-        p_inst_new = [inst[1] for inst in p_inst.values() if inst[0] == InstTypeNew]
+        inst_new = [inst[1] for inst in p_instances.values() if inst[0] == InstTypeNew]
         if self._afct_success is not None:
             self._wf_success.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self._afct_success,
-                                                                                 p_state=p_inst_new[0]))
+                                                                                 p_state=inst_new[0]))
         else:
             self._wf_success.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
-                                                                            p_state=p_inst_new[0]))
+                                                                            p_state=inst_new[0]))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -687,7 +689,7 @@ class OAFctBroken(FctBroken, Model):
             self._setup_wf_broken = self._setup_oafct_broken()
 
         # 3. Run the workflow
-        self._wf_broken.run(p_instances=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
+        self._wf_broken.run( p_instances = dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]) )
 
 
         # 4. Return the results
@@ -712,23 +714,24 @@ class OAFctBroken(FctBroken, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_broken(self, p_inst: InstDict):
+    def _run_wf_broken(self, p_instances : InstDict):
         """
         Runs the success computation workflow of the system.
 
         Parameters
         ----------
-        p_inst: InstDict
+        p_instances : InstDict
             Dictionary of instances to be processed by the workflow.
         """
-        p_inst_new = [inst[1] for inst in p_inst.values() if inst[0] == InstTypeNew]
+        
+        inst_new = [inst[1] for inst in p_instances.values() if inst[0] == InstTypeNew]
 
         if self._afct_broken is not None:
             self._wf_broken.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self._afct_broken,
-                                                                         p_state=p_inst_new[0]))
+                                                                         p_state=inst_new[0]))
         else:
             self._wf_broken.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
-                                                                         p_state=p_inst_new[0]))
+                                                                         p_state=inst_new[0]))
 
 
 ## -------------------------------------------------------------------------------------------------

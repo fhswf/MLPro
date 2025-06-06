@@ -95,7 +95,7 @@ from typing import Dict, Tuple
 from collections.abc import Iterator
 from itertools import cycle
 import time
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 try:
     from matplotlib.figure import Figure
@@ -694,7 +694,10 @@ class StreamShared (Shared, TStamp):
 
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> TStampType:
-        return self._stream.tstamp
+        try:
+            return self._stream.tstamp
+        except:
+            return datetime.now()
     
 
 ## -------------------------------------------------------------------------------------------------
