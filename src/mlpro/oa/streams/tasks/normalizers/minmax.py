@@ -23,10 +23,11 @@
 ## --                                - Bugfix in NormalizerMinMax._update_plot_data_3d()
 ## -- 2024-12-16  1.4.0     DA       Method NormalizerMinMax._run(): little code tuning
 ## -- 2025-06-05  1.5.0     DA       Refactoring
+## -- 2025-06-06  1.6.0     DA       Refactoring: p_inst -> p_instance/s
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2025-06-05)
+Ver. 1.6.0 (2025-06-06)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
@@ -99,18 +100,18 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst:InstDict):
+    def _run(self, p_instances : InstDict):
         """
         Runs MinMax Normalizer task for normalizing stream instances.
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be processed
         """
         
         # Normalization of all incoming stream instances (order doesn't matter)
-        for ids, (inst_type, inst) in p_inst.items():
+        for ids, (inst_type, inst) in p_instances.items():
             feature_data = inst.get_feature_data()
 
             if self._param is None:
@@ -151,16 +152,8 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
     def _update_plot_data_2d(self):
         """
         Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
         """
+
         try:
             if len(self._plot_2d_xdata) != 0 and len(self._plot_2d_xdata):
                 if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
@@ -190,17 +183,8 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
     def _update_plot_data_3d(self):
         """
         Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
-
         """
+
         try:
             if len(self._plot_3d_xdata) != 0:
                 if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
@@ -231,17 +215,7 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_nd(self):
         """
-
         Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
         """
 
         try:

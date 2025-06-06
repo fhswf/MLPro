@@ -34,10 +34,11 @@
 ## --                                - method get_boundaries(): alignment to new signature
 ## --                                - removal of event propagation
 ## --                                - optimization of methods _update_plot_2d(), _update_plot_3d()
+## -- 2025-06-06  2.1.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-05)
+Ver. 2.1.0 (2025-06-06)
 
 This module provides a sliding window with an internal ring buffer.
 """
@@ -120,19 +121,19 @@ class RingBuffer (Window):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict ):
+    def _run(self, p_instances : InstDict ):
         """
         Method to run the window including adding and deleting of elements
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be processed.
         """
 
         # 0 Intro
-        instances = p_inst.copy()
-        p_inst.clear()
+        instances = p_instances.copy()
+        p_instances.clear()
 
 
         # 1 Main processing loop
@@ -165,11 +166,11 @@ class RingBuffer (Window):
                 # The oldest instance is extracted from the buffer and forwarded
                 instance_del = self._buffer[self._buffer_pos]
                 instance_del.tstamp = self.get_so().tstamp
-                p_inst[instance_del.id] = ( InstTypeDel, instance_del )
-                p_inst[instance.id] = ( InstTypeNew, instance )
+                p_instances[instance_del.id] = ( InstTypeDel, instance_del )
+                p_instances[instance.id] = ( InstTypeNew, instance )
 
             elif not self._delay:
-                p_inst[instance.id] = ( InstTypeNew, instance )
+                p_instances[instance.id] = ( InstTypeNew, instance )
 
 
             # 1.4 New instance is buffered
@@ -192,7 +193,7 @@ class RingBuffer (Window):
                 if self._delay:
                     for i in range(self.buffer_size):
                         instance_fwd = self._buffer[i]
-                        p_inst[instance_fwd.id] = ( InstTypeNew, instance_fwd )
+                        p_instances[instance_fwd.id] = ( InstTypeNew, instance_fwd )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -330,7 +331,7 @@ class RingBuffer (Window):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_inst:InstDict, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs):
         """
         Default 2-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -339,7 +340,7 @@ class RingBuffer (Window):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst : InstDict
+        p_instances : InstDict
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
@@ -374,7 +375,7 @@ class RingBuffer (Window):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_inst:InstDict, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs):
         """
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -383,7 +384,7 @@ class RingBuffer (Window):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst : InstDict
+        p_instances : InstDict
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
@@ -442,7 +443,7 @@ class RingBuffer (Window):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_inst:InstDict, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs):
         """
         The n-dimensional representation of the ring buffer visualizes the removal of obsolete data 
         from the buffer by hiding it behind a semi-transparent rectangle. The visualization starts 
@@ -452,14 +453,14 @@ class RingBuffer (Window):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst : InstDict
+        p_instances : InstDict
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
         # 1 No visualization until the buffer has been filledd
-        if ( not self._buffer_full ) or ( len(p_inst) == 0 ): return
+        if ( not self._buffer_full ) or ( len(p_instances) == 0 ): return
 
 
         # 2 Check if the rectangle patches are already created

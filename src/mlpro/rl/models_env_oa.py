@@ -156,7 +156,7 @@ class OAFctReward(FctReward, Model):
             inst_new = [self._state_obj_new]
 
         # 3. Run the workflow
-        self._wf_reward.run(p_inst = dict(zip([inst.get_id() for inst in inst_new], [(InstTypeNew,inst) for inst in inst_new])))
+        self._wf_reward.run(p_instances = dict(zip([inst.get_id() for inst in inst_new], [(InstTypeNew,inst) for inst in inst_new])))
 
         # 4. Return the results
         return self._wf_reward.get_so().get_results()[self.get_tid()]

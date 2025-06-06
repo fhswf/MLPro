@@ -211,7 +211,7 @@ class OAFctSTrans(FctSTrans, Model):
             self._setup_wf_strans = self._setup_oafct_strans()
 
         # 3. Running the workflow
-        self._wf_strans.run(p_inst=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
+        self._wf_strans.run(p_instances=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
 
 
         # 4. get the results
@@ -453,7 +453,7 @@ class OAFctSuccess(FctSuccess, Model):
             self._setup_wf_success = self._setup_oafct_success()
 
         # 3. Run the workflow
-        self._wf_success.run(p_inst=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
+        self._wf_success.run(p_instances=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
 
 
         # 4. Return the results
@@ -687,7 +687,7 @@ class OAFctBroken(FctBroken, Model):
             self._setup_wf_broken = self._setup_oafct_broken()
 
         # 3. Run the workflow
-        self._wf_broken.run(p_inst=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
+        self._wf_broken.run(p_instances=dict([(self._state_obj.get_id(), (InstTypeNew, self._state_obj))]))
 
 
         # 4. Return the results
