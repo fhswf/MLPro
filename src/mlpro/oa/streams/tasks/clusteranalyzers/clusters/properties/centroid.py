@@ -15,10 +15,11 @@
 ## -- 2024-10-31  0.8.0     DA       New parent class Crosshair
 ## -- 2024-12-11  0.8.1     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-03-19  0.8.2     DA       Removed property definitions cprop_center_geo*
+## -- 2025-06-08  0.9.0     DA       Refactoring of Centroid._update_plot*: new return parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.2 (2025-03-19)
+Ver. 0.9.0 (2025-06-08)
 
 This module provides the cluster property class 'Centroid'.
 
@@ -128,10 +129,10 @@ class Centroid (Crosshair, Id):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
 
         # 0 Intro
-        if self.value is None: return
+        if self.value is None: return False
 
 
         # 1 Determine the color of the crosshair
@@ -182,12 +183,14 @@ class Centroid (Crosshair, Id):
             self._plot_line2_t1.set(position=(centroid[0], ylim[0]), color=color)
             self._plot_line2_t2.set(position=(centroid[0], ylim[1]), color=color)
 
+        return True
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
 
         # 0 Intro
-        if self.value is None: return
+        if self.value is None: return False
 
         
         # 1 Determine the color of the crosshair
@@ -256,6 +259,8 @@ class Centroid (Crosshair, Id):
             self._plot_line1_t2.set(position_3d=(xlim[0], centroid[1], centroid[2]), ha=l1_t2_ha, color=color)
             self._plot_line2_t1.set(position_3d=(centroid[0], ylim[0], centroid[2]), ha=l2_t1_ha, color=color)
             self._plot_line3_t1.set(position_3d=(centroid[0], centroid[1], zlim[0]), va=l3_t1_va, color=color)
+
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------

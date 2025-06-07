@@ -63,10 +63,13 @@
 ## -- 2024-12-12  3.1.0     DA       Method Plottable._init_figure(): optimization
 ## -- 2024-12-29  3.2.0     DA       Import of all plot packages moved to class Plottable
 ## -- 2025-04-13  3.2.1     DA       Improved Qt support in method Plottable._import_plot_packages
+## -- 2025-06-08  3.3.0     DA       Class Plottable: reduction of number of window refreshs
+## --                                - new attribute Plottable._plot_refresh_required
+## --                                - extension of methods _update_plot_*() by new return parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.2.1 (2025-04-13)
+Ver. 3.3.0 (2025-06-08)
 
 This module provides various classes related to data plotting.
 
@@ -323,13 +326,14 @@ class Plottable:
 
 
         # 2 Initialize further attributes
-        self.plot_detail_level        = self.C_PLOT_DETAIL_LEVEL
-        self._plot_initialized : bool = False
-        self._plot_first_time : bool  = True
-        self._plot_own_figure : bool  = False
-        self._plot_color              = None
-        self._figure : Figure         = None
-        self._plot_window             = None
+        self.plot_detail_level              = self.C_PLOT_DETAIL_LEVEL
+        self._plot_initialized : bool       = False
+        self._plot_first_time : bool        = True
+        self._plot_own_figure : bool        = False
+        self._plot_color                    = None
+        self._figure : Figure               = None
+        self._plot_window                   = None
+        self._plot_refresh_required : bool  = False
 
 
         # 3 Initialize MLPro's backend object
@@ -573,8 +577,6 @@ class Plottable:
 
 
         # 5 Make window visible
-        # while not self._plot_window.winfo_viewable(): # Tk
-        # while not self._plot_window.isVisible():  # Qt
         plt.pause(0.1)    
 
 
@@ -645,7 +647,9 @@ class Plottable:
         
 
         # 3 Refresh plot
-        if self._plot_settings._plot_step_counter == 0: self._refresh_plot()
+        if ( self._plot_settings._plot_step_counter == 0 ) and self._plot_refresh_required: 
+            self._refresh_plot()
+            self._plot_refresh_required = False
             
 
 ## -------------------------------------------------------------------------------------------------
@@ -749,8 +753,9 @@ class Plottable:
 
 
         # 3 Call of all required plot methods
-        view = self._plot_settings.view
-        self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
+        view   = self._plot_settings.view
+        result = self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
+        self._plot_refresh_required = self._plot_refresh_required or ( result is None ) or result
 
         
         # 4 The last plotting object for the figure refreshs the plot
@@ -759,7 +764,7 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, **p_kwargs) -> bool:
         """
         Custom method to update the 2d plot. The related MatPlotLib Axes object is stored in p_settings.
 
@@ -768,14 +773,19 @@ class Plottable:
         p_settings : PlotSettings
             Object with further plot settings.
         **p_kwargs 
-            Implementation-specific data and parameters.             
+            Implementation-specific data and parameters.   
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
-        pass
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, **p_kwargs) -> bool:
         """
         Custom method to update the 3d plot. The related MatPlotLib Axes object is stored in p_settings.
 
@@ -785,13 +795,19 @@ class Plottable:
             Object with further plot settings.
         **p_kwargs 
             Implementation-specific data and parameters.             
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
-        pass
+        return False
+
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, **p_kwargs) -> bool:
         """
         Custom method to update the nd plot. The related MatPlotLib Axes object is stored in p_settings.
 
@@ -801,9 +817,14 @@ class Plottable:
             Object with further plot settings.
         **p_kwargs 
             Implementation-specific data and parameters.             
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
-        pass
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------

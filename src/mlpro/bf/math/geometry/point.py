@@ -21,10 +21,11 @@
 ## -- 2024-06-05  1.8.1     DA       Bugfix in Point._remove_plot_2d()
 ## -- 2024-06-26  1.9.0     DA       Refactoring
 ## -- 2024-12-11  1.9.1     DA       Pseudo class Figure if matplotlib is not installed
+## -- 2025-06-08  2.0.0     DA       Refactoring of Point._update_plot*: new return parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.1 (2024-12-11)
+Ver. 2.0.0 (2025-06-08)
 
 This module provides a property class for the geometric shape 'point'.
 
@@ -76,9 +77,9 @@ class Point (Property):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
 
-        if self.value is None: return
+        if self.value is None: return False
 
         point_pos = self.value
 
@@ -111,12 +112,14 @@ class Point (Property):
                                                      point_vel[0], 
                                                      point_vel[1],
                                                      color=color )
+            
+        return True
                                                           
                                                          
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
 
-        if self.value is None: return
+        if self.value is None: return False
 
         point_pos = self.value
 
@@ -156,13 +159,9 @@ class Point (Property):
                                                       length = len,
                                                       normalize = True,
                                                       color=color )
+            
+        return True
     
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
-#        if self.value is none: return
-        pass
-
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):
@@ -186,11 +185,6 @@ class Point (Property):
         if self._plot_vel is not None:
             self._plot_vel.remove()
             self._plot_vel = None
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_nd(self):
-        pass        
 
 
 ## -------------------------------------------------------------------------------------------------

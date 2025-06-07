@@ -35,10 +35,11 @@
 ## --                                - removal of event propagation
 ## --                                - optimization of methods _update_plot_2d(), _update_plot_3d()
 ## -- 2025-06-06  2.1.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-08  2.2.0     DA       Refactoring of methods RingBuffer._update_plot*: new return param
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-06-06)
+Ver. 2.2.0 (2025-06-08)
 
 This module provides a sliding window with an internal ring buffer.
 """
@@ -56,11 +57,11 @@ except:
     class Poly3DCollection : pass
     class Rectangle : pass
 
-from mlpro.bf.events import *
+from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings, Plottable
 from mlpro.bf.math import Dimension
 from mlpro.bf.math.statistics import Boundaries, BoundarySide
-from mlpro.bf.streams.basics import InstDict, InstTypeNew, InstTypeDel, StreamTask
+from mlpro.bf.streams import InstDict, InstTypeNew, InstTypeDel, StreamTask
 from mlpro.bf.streams.tasks.windows.basics import Window
 
 
@@ -331,7 +332,7 @@ class RingBuffer (Window):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs) -> bool:
         """
         Default 2-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -344,10 +345,15 @@ class RingBuffer (Window):
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 No visualization until first data is buffered
-        if len(self._buffer) == 0: return
+        if len(self._buffer) == 0: return False
 
 
         # 2 Check for changes on boundaries
@@ -373,9 +379,11 @@ class RingBuffer (Window):
 
         self._patch_windows['2D'].set_visible(True)
 
+        return True
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs) -> bool:
         """
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -388,10 +396,15 @@ class RingBuffer (Window):
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 No visualization until first data is buffered
-        if len(self._buffer) == 0: return
+        if len(self._buffer) == 0: return False
 
 
         # 2 Check for changes on boundaries
@@ -441,9 +454,11 @@ class RingBuffer (Window):
 
         self._patch_windows['3D'].set_verts(verts)
 
+        return True
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, p_instances:InstDict, **p_kwargs) -> bool:
         """
         The n-dimensional representation of the ring buffer visualizes the removal of obsolete data 
         from the buffer by hiding it behind a semi-transparent rectangle. The visualization starts 
@@ -457,10 +472,15 @@ class RingBuffer (Window):
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 No visualization until the buffer has been filledd
-        if ( not self._buffer_full ) or ( len(p_instances) == 0 ): return
+        if ( not self._buffer_full ) or ( len(p_instances) == 0 ): return False
 
 
         # 2 Check if the rectangle patches are already created
@@ -487,3 +507,5 @@ class RingBuffer (Window):
         h = p_settings.axes.get_ylim()[1] - y
         self._patch_windows['nD'].set_bounds(x, y, w, h)
         self._patch_windows['nD'].set_visible(True)
+
+        return True

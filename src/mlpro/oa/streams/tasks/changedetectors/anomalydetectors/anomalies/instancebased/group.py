@@ -15,10 +15,11 @@
 ## -- 2024-11-27  1.3.1     DA       Bugfix in method GroupAnomaly.__init__()
 ## -- 2024-12-11  1.3.2     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-03-05  1.4.0     DA       Code optimization
+## -- 2025-06-08  1.5.0     DA       Refactoring of GroupAnomaly._update_plot_nd(): new return param
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-03-05)
+Ver. 1.5.0 (2025-06-08)
 
 This module provides a class for group anomalies to be used in anomaly detection algorithms.
 """
@@ -123,7 +124,9 @@ class GroupAnomaly (AnomalyIB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_nd( self, 
+                         p_settings: PlotSettings, 
+                         **p_kwargs ) -> bool:
         """
         Draw a shaded rectangular region on a plot.
 
@@ -135,7 +138,7 @@ class GroupAnomaly (AnomalyIB):
         alpha (float): Transparency of the shaded region (default is 0.5).
         """
 
-        if not self.plot_update: return
+        if not self.plot_update: return False
 
         x1 = self.instances[0].tstamp
         x2 = self.instances[-1].tstamp
@@ -161,6 +164,8 @@ class GroupAnomaly (AnomalyIB):
             self._rect.set_width(x2 - x1)
             self._rect.set_height(y2 - y1)
             self._plot_rectangle_t.set_position(((x1+x2)/2, 0))
+
+        return True
 
     
 ## -------------------------------------------------------------------------------------------------

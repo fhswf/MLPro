@@ -43,10 +43,12 @@
 ## --                                  (e.g. a sliding window)
 ## -- 2025-06-06  2.1.0     Da       - Refactoring: p_inst -> p_instances
 ## --                                - BoundaryDetector._update_plot_nd() reworked
+## -- 2025-06-08  2.2.0     DA       Refactoring of methods BoundaryDetector._update_plot_nd(): new 
+## --                                return param
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-06-06)
+Ver. 2.2.0 (2025-06-08)
 
 This module provides a basic implementation of a boundary detector.
 
@@ -420,7 +422,7 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
     def _update_plot_nd(self,
                         p_settings: PlotSettings,
                         p_instances: InstDict,
-                        **p_kwargs):
+                        **p_kwargs) -> bool:
         """
         N-dimensional plotting for Boundary Detector using vertical bars and mean markers.
 
@@ -432,10 +434,16 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
             Optional stream instances (not used here).
         p_kwargs : dict
             Further optional parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 0 Abort if no boundaries are currently adapted
-        if not self.get_adapted(): return
+        if not self.get_adapted(): 
+            return False
 
 
         # 1 Prepare plotting data
@@ -521,3 +529,4 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         y_max = np.max(uppers)
         ax.set_ylim(y_min,y_max)
 
+        return True

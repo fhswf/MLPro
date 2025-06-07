@@ -81,10 +81,11 @@
 ## -- 2025-04-25  2.5.1     DA       Method Stream._get_tstamp_real(): 
 ## --                                - replaced datetime.now() by time.perf_counter()
 ## -- 2025-06-06  2.6.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-08  2.7.0     DA       Refactoring of StreamTask._update_plot*: new return parameter 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.6.0 (2025-06-06)
+Ver. 2.7.0 (2025-06-08)
 
 This module provides classes for standardized data stream processing. 
 
@@ -1367,7 +1368,7 @@ class StreamTask (Task):
     def _update_plot_2d( self, 
                          p_settings : PlotSettings, 
                          p_instances : InstDict, 
-                         **p_kwargs ):
+                         **p_kwargs ) -> bool:
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -1380,10 +1381,15 @@ class StreamTask (Task):
             Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 Check: something to do?
-        if len(p_instances) == 0: return
+        if len(p_instances) == 0: return False
 
 
         # 2 Update plot data
@@ -1483,12 +1489,14 @@ class StreamTask (Task):
             if self._plot_2d_ymin != self._plot_2d_ymax:
                 p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
 
+        return True
+
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d( self, 
                          p_settings : PlotSettings, 
                          p_instances : InstDict,
-                         **p_kwargs ):
+                         **p_kwargs ) -> bool:
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -1501,10 +1509,15 @@ class StreamTask (Task):
             Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 Check: something to do?
-        if len(p_instances) == 0: return
+        if len(p_instances) == 0: return False
 
 
         # 2 Update plot data
@@ -1627,12 +1640,14 @@ class StreamTask (Task):
             if self._plot_3d_zmin != self._plot_3d_zmax:
                 p_settings.axes.set_zlim( self._plot_3d_zmin, self._plot_3d_zmax )
 
+        return True
+    
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd( self, 
                          p_settings : PlotSettings, 
                          p_instances : InstDict, 
-                         **p_kwargs ):
+                         **p_kwargs ) -> bool:
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -1645,10 +1660,15 @@ class StreamTask (Task):
             Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 Check: something to do?
-        if len(p_instances) == 0: return
+        if len(p_instances) == 0: return False
 
 
         # 2 Late initialization of plot object
@@ -1737,6 +1757,8 @@ class StreamTask (Task):
             p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id], self._plot_nd_xdata[-1])
 
         p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
+
+        return True
                     
 
 
