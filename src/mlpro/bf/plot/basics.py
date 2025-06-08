@@ -63,13 +63,16 @@
 ## -- 2024-12-12  3.1.0     DA       Method Plottable._init_figure(): optimization
 ## -- 2024-12-29  3.2.0     DA       Import of all plot packages moved to class Plottable
 ## -- 2025-04-13  3.2.1     DA       Improved Qt support in method Plottable._import_plot_packages
-## -- 2025-06-08  3.3.0     DA       Class Plottable: reduction of number of window refreshs
-## --                                - new attribute Plottable._plot_refresh_required
-## --                                - extension of methods _update_plot_*() by new return parameter
+## -- 2025-06-09  3.3.0     DA       Reduction of the number of plot refreshs
+## --                                - Class PlotSettings: new attribute _refresh_required
+## --                                - Class Plottable: 
+## --                                  - New return parameter for methods _update_plot_*()
+## --                                  - Using PlotSettings._refresh_required for plot refresh on
+## --                                    demand
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.3.0 (2025-06-08)
+Ver. 3.3.0 (2025-06-09)
 
 This module provides various classes related to data plotting.
 
@@ -125,7 +128,7 @@ class PlotSettings:
         Optional data horizon for ND plot. A value > 0 limits the number of data entities buffered 
         internally for plotting. Default = 1000.
     p_detail_level : int 
-        Optional detail level. Default = 0.
+        Optional plot detail level. Default = 0.
     p_force_fg : bool
         Optional boolean flag. If True, the releated window is kept in foreground. Default = True.
     p_id : int
@@ -134,6 +137,11 @@ class PlotSettings:
         If True, the final view is automatically selected during runtime. Default = True.
     p_kwargs : dict
         Further optional named parameters.
+
+    Attributes
+    ----------
+    detail_level : int
+        Current plot detail level.
     """
 
     C_VIEW_2D   = '2D'
@@ -162,20 +170,21 @@ class PlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view               = p_view
-        self.axes               = p_axes
-        self.pos_x              = p_pos_x
-        self.pos_y              = p_pos_y
-        self.size_x             = p_size_x
-        self.size_y             = p_size_y
-        self.step_rate          = p_step_rate
-        self.detail_level       = p_detail_level
-        self.force_fg           = p_force_fg
-        self.id                 = p_id
-        self.view_autoselect    = p_view_autoselect
-        self.kwargs             = p_kwargs.copy()
-        self._registered_obj    = []
-        self._plot_step_counter = 0
+        self.view                       = p_view
+        self.axes                       = p_axes
+        self.pos_x                      = p_pos_x
+        self.pos_y                      = p_pos_y
+        self.size_x                     = p_size_x
+        self.size_y                     = p_size_y
+        self.step_rate                  = p_step_rate
+        self.detail_level               = p_detail_level
+        self.force_fg                   = p_force_fg
+        self.id                         = p_id
+        self.view_autoselect            = p_view_autoselect
+        self.kwargs                     = p_kwargs.copy()
+        self._registered_obj            = []
+        self._plot_step_counter         = 0
+        self._refresh_required : bool   = False
 
         if ( p_plot_horizon > 0 ) and ( p_data_horizon > 0 ):
             self.plot_horizon = min(p_plot_horizon, p_data_horizon)
@@ -333,7 +342,6 @@ class Plottable:
         self._plot_color                    = None
         self._figure : Figure               = None
         self._plot_window                   = None
-        self._plot_refresh_required : bool  = False
 
 
         # 3 Initialize MLPro's backend object
@@ -647,9 +655,9 @@ class Plottable:
         
 
         # 3 Refresh plot
-        if ( self._plot_settings._plot_step_counter == 0 ) and self._plot_refresh_required: 
+        if ( self._plot_settings._plot_step_counter == 0 ) and self._plot_settings._refresh_required: 
             self._refresh_plot()
-            self._plot_refresh_required = False
+            self._plot_settings._refresh_required = False
             
 
 ## -------------------------------------------------------------------------------------------------
@@ -755,7 +763,7 @@ class Plottable:
         # 3 Call of all required plot methods
         view   = self._plot_settings.view
         result = self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
-        self._plot_refresh_required = self._plot_refresh_required or ( result is None ) or result
+        self._plot_settings._refresh_required = self._plot_settings._refresh_required or ( result is None ) or result
 
         
         # 4 The last plotting object for the figure refreshs the plot
