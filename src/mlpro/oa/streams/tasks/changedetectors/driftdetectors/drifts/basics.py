@@ -26,29 +26,8 @@ from mlpro.oa.streams.tasks.changedetectors import Change
 ## -------------------------------------------------------------------------------------------------
 class Drift (Change):
     """
-    This is the base class for drift events which can be raised by drift detectors when the beginning
-    or end of a drift is detected.
-
-    Parameters
-    ----------
-    p_drift_status : bool
-        Determines whether a new drift starts (True) or an existing drift ends (False).
-    p_id : int
-        Drift ID. Default value = 0.
-    p_tstamp : datetime
-        Time stamp of drift detection. Default = None.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_raising_object : object
-        Reference of the object raised. Default = None.
-    **p_kwargs
-        Further optional keyword arguments.
-
-    Attributes
-    ----------
-    event_id : str
-        Event id to be used when raising a drift event object. It is a string consisting of the 
-        class name and one of the postfixes '(ON)', '(OFF)' depending on the drift status.
+    This is the base class for drift events raised by the drift detectors. See parent class 
+    Change for more details.
     """
 
     pass

@@ -75,16 +75,16 @@ class Window (StreamTask, BoundaryProvider):
     C_PLOT_STANDALONE       = False
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_buffer_size:int,
-                 p_delay:bool = False,
-                 p_enable_statistics:bool = False,
-                 p_name:str   = None,
-                 p_range_max  = StreamTask.C_RANGE_THREAD,
-                 p_duplicate_data : bool = False,
-                 p_visualize:bool = False,
-                 p_logging    = Log.C_LOG_ALL,
-                 **p_kwargs):
+    def __init__( self,
+                  p_buffer_size:int,
+                  p_delay:bool = False,
+                  p_enable_statistics:bool = False,
+                  p_name:str   = None,
+                  p_range_max  = StreamTask.C_RANGE_THREAD,
+                  p_duplicate_data : bool = False,
+                  p_visualize:bool = False,
+                  p_logging    = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
         super().__init__( p_name = p_name,
                           p_range_max = p_range_max,

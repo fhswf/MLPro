@@ -41,11 +41,14 @@
 ## --                                - replaced event-oriented adaptation by reverse adaptation
 ## --                                  with callback to external boundary provider 
 ## --                                  (e.g. a sliding window)
-## -- 2025-06-06  2.1.0     Da       New plotting
+## -- 2025-06-06  2.1.0     Da       - Refactoring: p_inst -> p_instances
+## --                                - BoundaryDetector._update_plot_nd() reworked
+## -- 2025-06-08  2.2.0     DA       Refactoring of methods BoundaryDetector._update_plot_nd(): new 
+## --                                return param
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-06-06)
+Ver. 2.2.0 (2025-06-08)
 
 This module provides a basic implementation of a boundary detector.
 
@@ -96,14 +99,14 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         Optional boundary provider, used for service call on reverse adaptation.
     """
 
-    C_TYPE                      = 'Boundary Detector'
+    C_TYPE                  = 'Boundary Detector'
 
-    C_PLOT_ND_XLABEL_FEATURE    = 'Features'
-    C_PLOT_ND_YLABEL            = 'Boundaries'
+    C_PLOT_ND_XLABEL        = 'Features'
+    C_PLOT_ND_YLABEL        = 'Boundaries'
 
-    C_PLOT_STANDALONE           = True
-    C_PLOT_VALID_VIEWS          = [ PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW         = PlotSettings.C_VIEW_ND
+    C_PLOT_STANDALONE       = True
+    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -131,21 +134,21 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances: InstDict):
         """
         Method to run the boundary detector task
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be processed.
         """
 
-        self.adapt(p_inst=p_inst)
+        self.adapt(p_instances=p_instances)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_inst : InstDict) -> bool:
+    def adapt(self, p_instances : InstDict) -> bool:
 
         # 0 Intro
         if not self._adaptivity: return False
@@ -174,12 +177,12 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         # 2 Two-pass adaptation
 
         # 2.1 Pass #1: Forward adaptation -> boundary extension on new instances
-        for inst_id, (inst_type, inst) in p_inst.items():
+        for inst_id, (inst_type, inst) in p_instances.items():
 
             if inst_type != InstTypeNew: continue
 
             self.log(self.C_LOG_TYPE_S, 'Adaptation on new instance', inst_id)
-            if self._adapt( p_inst_new=inst ):
+            if self._adapt( p_instance_new=inst ):
                 adapted_forward   = True
                 num_inst_forward += 1
                 self.log(self.C_LOG_TYPE_S, 'Boundaries extended')
@@ -187,13 +190,13 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 
         # 2.2 Pass #2: Reverse adaptation -> identification of boundaries to be reducted based 
         # on obsolete instances
-        for inst_id, (inst_type, inst) in p_inst.items():
+        for inst_id, (inst_type, inst) in p_instances.items():
 
             if inst_type != InstTypeDel: continue
 
             self.log(self.C_LOG_TYPE_S, 'Reverse adaptation on obsolete instance', inst_id)
             try:
-                if self._adapt_reverse( p_inst_del=inst ):
+                if self._adapt_reverse( p_instance_del=inst ):
                     adapted_reverse   = True
                     num_inst_reverse += 1
                     self.log(self.C_LOG_TYPE_S, 'Boundaries reduced')
@@ -242,8 +245,8 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_data_structures(self, p_inst : Instance ):
-        feature_data            = p_inst.get_feature_data()
+    def _init_data_structures(self, p_instance : Instance ):
+        feature_data            = p_instance.get_feature_data()
         num_dim                 = feature_data.get_related_set().get_num_dim()
         self._boundaries        = self._create_boundaries( p_num_dim = num_dim )
         self._boundaries_tmp    = np.ndarray( (num_dim) ) 
@@ -252,13 +255,13 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new : Instance) -> bool:
+    def _adapt(self, p_instance_new : Instance) -> bool:
         """
         Extends boundaries based on a new instance.
 
         Parameters
         ----------
-        p_inst_new : Instance
+        p_instance_new : Instance
             New instance to be processed.
 
         Returns
@@ -268,12 +271,12 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         """
 
         # 0 First call: Preparation of boundary arrays
-        if self._boundaries is None: self._init_data_structures( p_inst = p_inst_new )
+        if self._boundaries is None: self._init_data_structures( p_instance = p_instance_new )
 
 
         # 1 Extend boundaries on new instance
         adapted        = False
-        feature_values = p_inst_new.get_feature_data().get_values()
+        feature_values = p_instance_new.get_feature_data().get_values()
 
         # 1.1 Upper boundaries
         np.fmax(self._boundaries[:,BoundarySide.UPPER], feature_values, out=self._boundaries_tmp)
@@ -293,13 +296,13 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_reverse(self, p_inst_del:Instance) -> bool:
+    def _adapt_reverse(self, p_instance_del:Instance) -> bool:
         """
         Determines the boundaries to be reduced based on an outdated instance.
 
         Parameters
         ----------
-        p_inst_del : Instance
+        p_instance_del : Instance
             Deleted instance to be processed.
 
         Returns
@@ -309,11 +312,11 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         """
     
         # 0 First call: Preparation of boundary arrays
-        if self._boundaries is None: self._init_data_structures( p_inst = p_inst_del )  
+        if self._boundaries is None: self._init_data_structures( p_instance = p_instance_del )  
     
 
         # 1 Mark boundaries for potential reduction
-        feature_values = p_inst_del.get_feature_data().get_values()
+        feature_values = p_instance_del.get_feature_data().get_values()
 
         # 1.1 Upper boundaries
         np.greater_equal(
@@ -405,7 +408,7 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 
         super()._init_plot_nd( p_figure = p_figure, p_settings = p_settings )
 
-        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
+        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL)
         p_settings.axes.xaxis.set_label_position('top')   # Position des Labels nach oben setzen
 
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
@@ -418,8 +421,8 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 ## --------------------------------------------------------------------------------------------------
     def _update_plot_nd(self,
                         p_settings: PlotSettings,
-                        p_inst: InstDict,
-                        **p_kwargs):
+                        p_instances: InstDict,
+                        **p_kwargs) -> bool:
         """
         N-dimensional plotting for Boundary Detector using vertical bars and mean markers.
 
@@ -427,14 +430,20 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         ----------
         p_settings : PlotSettings
             Plot settings object including matplotlib axes.
-        p_inst : InstDict
+        p_instances : InstDict
             Optional stream instances (not used here).
         p_kwargs : dict
             Further optional parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 0 Abort if no boundaries are currently adapted
-        if not self.get_adapted(): return
+        if not self.get_adapted(): 
+            return False
 
 
         # 1 Prepare plotting data
@@ -520,3 +529,4 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
         y_max = np.max(uppers)
         ax.set_ylim(y_min,y_max)
 
+        return True

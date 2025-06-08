@@ -8,10 +8,11 @@
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-03-03  0.2.0     DA       Alignment with anomaly detection
 ## -- 2025-05-30  1.0.0     DA/DS    Class DriftDetector: new parent ChangeDetector
+## -- 2025-06-06  1.1.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-05-30)
+Ver. 1.1.0 (2025-06-06)
 
 This module provides templates for drift detection to be used in the context of online adaptivity.
 """
@@ -127,7 +128,7 @@ class DriftDetector (ChangeDetector):
 ## -------------------------------------------------------------------------------------------------
     def _raise_drift_event( self, 
                             p_drift : Drift, 
-                            p_inst : Instance = None,
+                            p_instance : Instance = None,
                             p_buffer: bool = True ):
         """
         Specialized method to raise drift events. 
@@ -136,7 +137,7 @@ class DriftDetector (ChangeDetector):
         ----------
         p_drift : Drift
             Drift event object to be raised.
-        p_inst : Instance = None
+        p_instance : Instance = None
             Instance causing the drift. If provided, the time stamp of the instance is taken over
             to the drift.
         p_buffer : bool
@@ -144,7 +145,7 @@ class DriftDetector (ChangeDetector):
         """
 
         self._raise_change_event( p_change = p_drift,
-                                  p_inst = p_inst,
+                                  p_instance = p_instance,
                                   p_buffer = p_buffer )
         
 

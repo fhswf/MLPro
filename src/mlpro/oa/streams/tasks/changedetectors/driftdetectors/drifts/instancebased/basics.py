@@ -5,27 +5,22 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-03-04  0.1.0     DA       Creation
+## -- 2025-03-04  1.0.0     DA       Creation
+## -- 2025-06-08  1.0.1     DA       Review/refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-03-04)
+Ver. 1.0.1 (2025-06-08)
 
 This module provides a template class for instance-based drifts to be used in instance-based drift 
 detection algorithms.
 """
 
-from datetime import datetime
 
-try:
-    from matplotlib.figure import Figure
-except:
-    class Figure : pass
-
-from mlpro.bf.mt import PlotSettings
-
+from mlpro.bf.various import TStampType
 from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.basics import Drift
+
 
 
 
@@ -33,41 +28,41 @@ from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.basics import 
 ## -------------------------------------------------------------------------------------------------
 class DriftIB (Drift):
     """
-    Sub-type for instance-based drift events.
-    
+    This is the base class for instance-based drift events.
+
     Parameters
     ----------
     p_id : int
         Drift ID. Default value = 0.
-    p_tstamp : datetime
-        Time stamp of drift detection. Default = None.
-    p_visualize : bool
+    p_status : bool = True
+        Status of the drift. True marks the beginning of an drift, while False indicates its end.
+    p_tstamp : TStampType = None
+        Time stamp of occurance of drift. Default = None.
+    p_visualize : bool = False
         Boolean switch for visualisation. Default = False.
-    p_raising_object : object
+    p_raising_object : object = None
         Reference of the object raised. Default = None.
-    p_clusters : dict[Cluster]
-        Clusters associated with the anomaly. Default = None.
-    p_properties : dict
-        Poperties of clusters associated with the anomaly. Default = None.
+    p_instances : list[Instances] = []
+        List of related instances.
     **p_kwargs
         Further optional keyword arguments.
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_drift_status : bool,
-                 p_instances : list[Instance],
-                 p_id : int = 0,
-                 p_tstamp : datetime = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
-                 **p_kwargs):
+    def __init__( self, 
+                  p_id = 0, 
+                  p_status : bool = True,
+                  p_tstamp : TStampType = None, 
+                  p_visualize = False, 
+                  p_raising_object = None, 
+                  p_instances : list[Instance] = [],
+                  **p_kwargs ):
         
-        super().__init__( p_drift_status = p_drift_status,
-                          p_id = p_id,
+        super().__init__( p_id = p_id, 
+                          p_status = p_status,
                           p_tstamp = p_tstamp,
-                          p_visualize = p_visualize, 
-                          p_raising_object = p_raising_object,
+                          p_visualize = p_visualize,
+                          p_raising_object = p_raising_object, 
                           **p_kwargs )
         
-        self.instances : list[Instance] = p_instances
+        self.instances = p_instances

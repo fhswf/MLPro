@@ -18,10 +18,11 @@
 ## -- 2025-02-14  1.5.0     DA       Review and refactoring
 ## -- 2025-03-03  1.5.1     DA       Corrections
 ## -- 2025-05-30  2.0.0     DA/DS    New parent class ChangeDetector
+## -- 2025-06-06  2.1.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-05-30)
+Ver. 2.1.0 (2025-06-06)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -136,8 +137,8 @@ class AnomalyDetector (ChangeDetector):
 ## -------------------------------------------------------------------------------------------------
     def _raise_anomaly_event( self, 
                               p_anomaly : Anomaly, 
-                              p_inst : Instance, 
-                              p_buffer: bool = True):
+                              p_instance : Instance, 
+                              p_buffer: bool = True ):
         """
         Method to raise an anomaly event.
 
@@ -145,7 +146,7 @@ class AnomalyDetector (ChangeDetector):
         ----------
         p_anomaly : Anomaly
             Anomaly object to be raised.
-        p_inst : Instance = None
+        p_instance : Instance = None
             Instance causing the anomaly. If provided, the time stamp of the instance is taken over
             to the anomaly.
         p_buffer : bool
@@ -153,7 +154,7 @@ class AnomalyDetector (ChangeDetector):
         """
 
         self._raise_change_event( p_change = p_anomaly, 
-                                  p_inst = p_inst,
+                                  p_instance = p_instance,
                                   p_buffer = p_buffer )
 
 

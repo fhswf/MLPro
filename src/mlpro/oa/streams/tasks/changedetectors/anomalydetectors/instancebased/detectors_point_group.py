@@ -15,10 +15,11 @@
 ## -- 2025-02-14  1.4.0     DA       Refactoring
 ## -- 2025-02-17  1.5.0     DA       Review and generalization
 ## -- 2025-03-05  1.6.0     DA       Refactoring and simplification
+## -- 2025-06-08  1.6.1     DA       Review/refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2025-03-05)
+Ver. 1.6.1 (2025-06-08)
 
 This module provides an extended template for instance-based anomaly detectors that supports an optional
 group anomaly detection based on point anomalies.
@@ -45,8 +46,6 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
 
     Parameters
     ----------
-    p_group_anomaly_det : bool
-        Paramter to activate group anomaly detection. Default is True.
     p_name : str
         Optional name of the task. Default is None.
     p_range_max : int
@@ -61,6 +60,10 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_anomaly_buffer_size : int = 100
         Size of the internal anomaly buffer self.anomalies. Default = 100.
+    p_thrs_inst : int = 0
+        The algorithm is only executed after this number of instances.
+    p_group_anomaly_det : bool = True
+        Paramter to activate group anomaly detection. Default is True.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -69,7 +72,6 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_group_anomaly_det : bool = True,
                   p_name:str = None,
                   p_range_max = StreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
@@ -77,6 +79,8 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
+                  p_group_anomaly_det : bool = True,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name,
@@ -86,6 +90,7 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
                           p_visualize = p_visualize,
                           p_logging = p_logging,
                           p_anomaly_buffer_size = p_anomaly_buffer_size,
+                          p_thrs_inst = p_thrs_inst,
                           **p_kwargs )
         
         self._group_anomalies : list[Anomaly] = []

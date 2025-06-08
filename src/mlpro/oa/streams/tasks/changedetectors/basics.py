@@ -9,10 +9,12 @@
 ## -- 2025-05-30  1.0.0     DA/DS    Completion
 ## -- 2025-06-03  1.1.0     DA       Class ChangeDetector: new parameter p_thrs_inst
 ## -- 2025-06-04  1.2.0     DA       Class ChangeDetector: new classmethod get_event_id()
+## -- 2025-06-06  1.3.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-08  1.3.1     DA       Review and small adjustments
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-06-04)
+Ver. 1.3.1 (2025-06-08)
 
 This module provides templates for change detection to be used in the context of online adaptivity.
 """
@@ -251,7 +253,7 @@ class ChangeDetector (OAStreamTask):
 ## -------------------------------------------------------------------------------------------------
     def _raise_change_event( self, 
                              p_change: Change, 
-                             p_inst : Instance = None,
+                             p_instance : Instance = None,
                              p_buffer: bool = True ):
         """
         Method to raise an change event. 
@@ -260,7 +262,7 @@ class ChangeDetector (OAStreamTask):
         ----------
         p_change : Change
             Change object to be raised.
-        p_inst : Instance = None
+        p_instance : Instance = None
             Instance causing the change. If provided, the time stamp of the instance is taken over
             to the change.
         p_buffer : bool
@@ -268,8 +270,8 @@ class ChangeDetector (OAStreamTask):
         """
 
         if p_change.tstamp is None:
-            if p_inst is not None:
-                p_change.tstamp = p_inst.tstamp
+            if p_instance is not None:
+                p_change.tstamp = p_instance.tstamp
             else:
                 p_change.tstamp = self.get_so().tstamp
 
@@ -284,15 +286,17 @@ class ChangeDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _detect(self, p_inst: Instance):
+    def _detect(self, p_instance: Instance, **p_kwargs):
         """
         Custom method for the main detection algorithm. Use the _raise_change_event() method to raise
         a change detected by your algorithm.
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             Instance that triggered the detection.
+        **p_kwargs
+            Optional keyword arguments (originally provided to the constructor).
         """
 
         pass
@@ -311,7 +315,7 @@ class ChangeDetector (OAStreamTask):
         p_change : Change
             Change object to be kept or discarded.
         **p_kwargs
-            Optional keyword arguments.
+            Optional keyword arguments (originally provided to the constructor).
 
         Returns
         -------
@@ -323,13 +327,13 @@ class ChangeDetector (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances: InstDict):
         """
         This method is called by the stream task to process the incoming instance.
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             The incoming instance to be processed.
 
         Returns
@@ -340,20 +344,20 @@ class ChangeDetector (OAStreamTask):
 
         # 0 Check whether the minimum number of instances has been reached
         if self._chk_num_inst:
-            self._num_inst += len( p_inst )
+            self._num_inst += len( p_instances )
             if self._num_inst < self._thrs_inst: return
             self._chk_num_inst = False
 
 
         # 1 Execution of the main detection algorithm        
         try:
-            inst_type, inst = list(p_inst.values())[-1]
+            inst_type, inst = list(p_instances.values())[-1]
             if inst_type != InstTypeNew:
                 inst = None
         except:
             inst = None
 
-        self._detect( p_inst = inst )
+        self._detect( p_instance = inst, **self.kwargs )
 
 
         # 2 Clean-up loop ('triage')
@@ -363,7 +367,7 @@ class ChangeDetector (OAStreamTask):
         for change in self.changes.values():
 
             # 2.1.1 Apply custom triage method to each change
-            if self._triage( p_change = change ):
+            if self._triage( p_change = change, **self.kwargs ):
                 triage_list.append( change )
 
         # 2.2 Remove all obsolete changes from the triage list
@@ -387,7 +391,7 @@ class ChangeDetector (OAStreamTask):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst : InstDict = None, **p_kwargs):
+    def update_plot(self, p_instances : InstDict = None, **p_kwargs):
     
         if not self.get_visualization(): return
 

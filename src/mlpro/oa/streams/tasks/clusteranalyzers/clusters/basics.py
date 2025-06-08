@@ -39,10 +39,11 @@
 ## -- 2024-06-08  1.9.0     DA       New method Cluster.get_influence()
 ## -- 2024-06-18  2.0.0     DA       Class Cluster: new parent class KWArgs
 ## -- 2024-07-08  2.1.0     DA       Class Cluster: hand over of kwargs to inner properties
+## -- 2025-06-06  2.2.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2024-07-08)
+Ver. 2.2.0 (2025-06-06)
 
 This module provides a template class for clusters to be used in cluster analyzer algorithms.
 
@@ -113,14 +114,14 @@ class Cluster (Id, Properties, KWArgs):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_membership(self, p_inst : Instance ) -> float:
+    def get_membership(self, p_instance : Instance ) -> float:
         """
         Custom method to determine a scalar membership value for the given instance.
 
         Parameters
         ----------
-        p_inst : Instance
-            Instance.
+        p_instance : Instance
+            Instance to be examined for membership.
 
         Returns
         -------
@@ -134,14 +135,14 @@ class Cluster (Id, Properties, KWArgs):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def get_influence(self, p_inst : Instance ) -> float:
+    def get_influence(self, p_instance : Instance ) -> float:
         """
         Custom method to compute a scalar influence value for the given instance.
 
         Parameters
         ----------
-        p_inst : Instance
-            Instance.
+        p_instance : Instance
+            Instance to be examined for its influence to the cluster.
 
         Returns
         -------

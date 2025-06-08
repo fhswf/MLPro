@@ -30,10 +30,11 @@
 ## --                                  - Redefinition of method _set_adapted()
 ## --                                  - Refactoring of method renormalize_on_event()
 ## -- 2025-06-02  1.3.0     DA       New class OAStreamAdaptationType
+## -- 2025-06-06  1.4.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2025-06-02)
+Ver. 1.4.0 (2025-06-06)
 
 Core classes for online-adaptive data stream processing (OADSP).
 
@@ -41,10 +42,13 @@ Core classes for online-adaptive data stream processing (OADSP).
 
 from enum import StrEnum
 
-from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.mt import Event
-from mlpro.bf.various import Log
-from mlpro.bf.streams import *
+from mlpro.bf.various import Log, TStampType
+from mlpro.bf.plot import PlotSettings, Plottable
+from mlpro.bf.mt import Task
+from mlpro.bf.ops import Mode
+from mlpro.bf.streams import InstDict, Instance, InstTypeNew, StreamShared, StreamTask, StreamWorkflow, StreamScenario
+from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.ml import Adaptation, Model, AWorkflow
 
 
@@ -222,7 +226,7 @@ class OAStreamTask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_inst : InstDict) -> bool:
+    def adapt(self, p_instances : InstDict) -> bool:
 
         # 0 Intro
         if not self._adaptivity: return False
@@ -249,12 +253,12 @@ class OAStreamTask (StreamTask, Model):
 
 
         # 2 Main adaptation loop
-        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
+        for inst_id, (inst_type, inst) in sorted(p_instances.items()):
 
             if inst_type == InstTypeNew:
                 # 2.1 Adaptation on a new stream instance
                 self.log(self.C_LOG_TYPE_S, 'Adaptation on new instance', inst_id)
-                if self._adapt( p_inst_new=inst):
+                if self._adapt( p_instance_new=inst):
                     adapted_forward      = True
                     num_inst_forward    += 1
                     self.log(self.C_LOG_TYPE_S, 'Policy adapted')
@@ -265,7 +269,7 @@ class OAStreamTask (StreamTask, Model):
                 # 2.2 Reverse adaptation on an obsolete stream instance
                 self.log(self.C_LOG_TYPE_S, 'Reverse adaptation on obsolete instance', inst_id)
                 try:
-                    if self._adapt_reverse( p_inst_del=inst ):
+                    if self._adapt_reverse( p_instance_del=inst ):
                         adapted_reverse      = True
                         num_inst_reverse    += 1
                         self.log(self.C_LOG_TYPE_S, 'Policy adapted')
@@ -329,13 +333,13 @@ class OAStreamTask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:Instance) -> bool:
+    def _adapt(self, p_instance_new:Instance) -> bool:
         """
         Obligatory custom method for adaptations on a new instance during regular operation. 
 
         Parameters
         ----------
-        p_inst_new : Instance
+        p_instance_new : Instance
             New stream instances to be processed.
 
         Returns
@@ -348,13 +352,13 @@ class OAStreamTask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_reverse(self, p_inst_del:Instance) -> bool:
+    def _adapt_reverse(self, p_instance_del:Instance) -> bool:
         """
         Optional custom method for reverse adaptation on an obsolete instance during regular operation. 
 
         Parameters
         ----------
-        p_inst_del : Instance
+        p_instance_del : Instance
             Obsolete stream instances to be removed.
 
         Returns

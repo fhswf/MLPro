@@ -140,7 +140,7 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
     def _update_plot_nd( self, 
                          p_settings : PlotSettings, 
                          p_event_object : OAStreamAdaptation,
-                         **p_kwargs ):
+                         **p_kwargs ) -> bool:
 
         try:
             vlines = self._vlines[p_event_object.subtype]
@@ -163,3 +163,5 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
         
         if update_legend:
             p_settings.axes.legend(title='Adaptations')
+
+        return True

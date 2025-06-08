@@ -580,7 +580,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
         """
         This method updates the plot figure of each episode. When the figure is
         detected to be an embedded figure, this method will only set up the
@@ -603,6 +603,8 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
             DoublePendulumSystemRoot._update_plot_2d(self, p_settings = p_settings)
+
+        return True
 
 
 

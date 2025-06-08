@@ -30,25 +30,25 @@
         <mxCell id="k9iU4n4au0y_1ybiQBL--0" value="__init__( p_name : str = None,&#xa;               p_range_max=MLTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_buffer_size : int = 0,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="100" width="300" height="109" as="geometry" />
         </mxCell>
-        <mxCell id="7C4s_j0biFTsK1RU1VLK-29" value="_set_adapted( &#xa;       p_adapted : bool,&#xa;       p_subtype : OAStreamAdaptationType,&#xa;       p_tstamp : TStampType = None )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
+        <mxCell id="7C4s_j0biFTsK1RU1VLK-29" value="_set_adapted( &#xa;       p_adapted : bool,&#xa;       p_subtype : OAStreamAdaptationType = &#39;&#39;,&#xa;       p_tstamp : TStampType = None )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="209" width="300" height="67" as="geometry" />
         </mxCell>
-        <mxCell id="wCdgofpyj-93uA1SjnSD-0" value="adapt( p_inst : InstDict ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fillColor=#d5e8d4;strokeColor=none;opacity=50;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
+        <mxCell id="wCdgofpyj-93uA1SjnSD-0" value="adapt( p_instances : InstDict ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fillColor=#d5e8d4;strokeColor=none;opacity=50;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="276" width="300" height="27" as="geometry" />
         </mxCell>
         <mxCell id="KPp8HPjBJbxHnM6AnjO8-0" value="_adapt_pre() -&gt; OAStreamAdaptationType" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#d5e8d4;strokeColor=none;opacity=50;fontColor=#0000FF;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="303" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="eokjPidHcH5mGEEEGnXK-1" value="_adapt( p_inst_new : Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#d5e8d4;strokeColor=none;opacity=50;fontColor=#0000FF;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
+        <mxCell id="eokjPidHcH5mGEEEGnXK-1" value="_adapt( p_instance_new : Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#d5e8d4;strokeColor=none;opacity=50;fontColor=#0000FF;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="329" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="eokjPidHcH5mGEEEGnXK-0" value="_adapt_reverse( p_inst_del : Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#d5e8d4;strokeColor=none;opacity=50;fontColor=#0000FF;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
+        <mxCell id="eokjPidHcH5mGEEEGnXK-0" value="_adapt_reverse( p_instance_del : Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#d5e8d4;strokeColor=none;opacity=50;fontColor=#0000FF;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="355" width="300" height="26" as="geometry" />
         </mxCell>
         <mxCell id="KPp8HPjBJbxHnM6AnjO8-1" value="_adapt_post() -&gt; OAStreamAdaptationType" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#d5e8d4;strokeColor=none;opacity=50;fontColor=#0000FF;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="381" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="Crr_h0JWDobTZQKCrxuK-2" value="renormalize_on_event( p_event_id, &#xa;                               p_event_object : bf.events.Event )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fillColor=#d5e8d4;strokeColor=none;opacity=50;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
+        <mxCell id="Crr_h0JWDobTZQKCrxuK-2" value="renormalize_on_event( p_event_id, &#xa;                           p_event_object : bf.events.Event )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fillColor=#d5e8d4;strokeColor=none;opacity=50;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
           <mxGeometry y="407" width="300" height="36" as="geometry" />
         </mxCell>
         <mxCell id="4c-ZiIEt1ndZPByfsuOM-0" value="_renormalize( p_normalizer: bf.math.Normalizer )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#d5e8d4;strokeColor=none;opacity=50;fontColor=#0000FF;" parent="ado_M-dr3WUVXcom1yO_-1" vertex="1">
@@ -198,13 +198,13 @@
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-0" value="NONE           = &#39;&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="soWWl2oo1D3cJulI5Lfz-0">
+        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-0" value="NONE           = &#39;&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
           <mxGeometry y="40" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-1" value="FORWARD   = &#39;Forward&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="soWWl2oo1D3cJulI5Lfz-0">
+        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-1" value="FORWARD   = &#39;Forward&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
           <mxGeometry y="66" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-2" value="EVENT         = &#39;Event&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="soWWl2oo1D3cJulI5Lfz-0">
+        <mxCell id="bRjRWoWP4Wtyl1gFE5IY-2" value="EVENT         = &#39;Event&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">
           <mxGeometry y="92" width="300" height="26" as="geometry" />
         </mxCell>
         <mxCell id="soWWl2oo1D3cJulI5Lfz-1" value="REVERSE    = &#39;Reverse&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="soWWl2oo1D3cJulI5Lfz-0" vertex="1">

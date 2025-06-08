@@ -31,7 +31,7 @@ from mlpro.bf.math import Element
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.math.properties import Properties
 from mlpro.bf.math.geometry import cprop_crosshair
-from mlpro.bf.streams import StreamTask, Instance, InstTypeNew, InstTypeDel
+from mlpro.bf.streams import StreamTask, Instance, InstDict, InstTypeNew, InstTypeDel
 from mlpro.bf.streams.streams import StreamMLProClusterGenerator
 from mlpro.bf.streams.tasks import RingBuffer
 
@@ -86,7 +86,7 @@ class MovingAverage (OAStreamTask, Properties):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst):
+    def _run(self, p_instances : InstDict):
 
         # 0 Intro
         inst_avg_id     = -1
@@ -94,7 +94,7 @@ class MovingAverage (OAStreamTask, Properties):
 
         
         # 1 Process all incoming new/obsolete stream instances
-        for inst_id, (inst_type, inst) in p_inst.items():
+        for inst_id, (inst_type, inst) in p_instances.items():
 
             feature_data = inst.get_feature_data().get_values()
 
@@ -119,7 +119,7 @@ class MovingAverage (OAStreamTask, Properties):
 
             
         # 2 Clear all incoming stream instances
-        p_inst.clear()
+        p_instances.clear()
 
 
         # 3 Add a new stream instance containing the moving average 
@@ -128,7 +128,7 @@ class MovingAverage (OAStreamTask, Properties):
         inst_avg            = Instance( p_feature_data = inst_avg_data, p_tstamp = inst_avg_tstamp )
         inst_avg.id         = inst_avg_id
 
-        p_inst[inst_avg.id] = ( InstTypeNew, inst_avg )
+        p_instances[inst_avg.id] = ( InstTypeNew, inst_avg )
 
         self.crosshair.value = self._moving_avg
  
@@ -149,9 +149,9 @@ class MovingAverage (OAStreamTask, Properties):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst = None, **p_kwargs):
-        OAStreamTask.update_plot( self, p_inst = p_inst, **p_kwargs )
-        Properties.update_plot( self, p_inst = p_inst, **p_kwargs )
+    def update_plot(self, p_instances = None, **p_kwargs):
+        OAStreamTask.update_plot( self, p_instances = p_instances, **p_kwargs )
+        Properties.update_plot( self, p_instances = p_instances, **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------

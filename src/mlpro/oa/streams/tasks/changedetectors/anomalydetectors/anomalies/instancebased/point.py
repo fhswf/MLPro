@@ -10,10 +10,11 @@
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-12-11  1.2.1     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-02-28  1.3.0     DA       Refactoring and simplification
+## -- 2025-06-08  1.4.0     DA       Refactoring of PointAnomaly._update_plot*: new return param
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2025-02-28)
+Ver. 1.4.0 (2025-06-08)
 
 
 This module provides a template class for point anomaly event to be used in anomaly detection algorithms.
@@ -64,9 +65,14 @@ class PointAnomaly (AnomalyIB):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, p_axlimits_changed: bool, p_xlim, p_ylim, **p_kwargs):
+    def _update_plot_2d( self, 
+                         p_settings: PlotSettings, 
+                         p_axlimits_changed: bool, 
+                         p_xlim, 
+                         p_ylim, 
+                         **p_kwargs ) -> bool:
 
-        if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
+        if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return False
 
         inst = self.instances[-1]
         feature_values = inst.get_feature_data().get_values()
@@ -104,11 +110,19 @@ class PointAnomaly (AnomalyIB):
             self._plot_line_y2.set_data( line_y2_xpos, line_y2_ypos )
             self._plot_label.set( position= (line_x1_xpos[0], line_x1_ypos[1]) )
 
+        return True
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, p_axlimits_changed: bool, p_xlim, p_ylim, p_zlim, **p_kwargs):
+    def _update_plot_3d( self, 
+                         p_settings: PlotSettings, 
+                         p_axlimits_changed: bool, 
+                         p_xlim, 
+                         p_ylim, 
+                         p_zlim, 
+                         **p_kwargs ) -> bool:
 
-        if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return
+        if ( self._plot_line_x1 is not None ) and not p_axlimits_changed: return False
 
         inst = self.instances[-1]
         feature_values = inst.get_feature_data().get_values()
@@ -164,11 +178,17 @@ class PointAnomaly (AnomalyIB):
             self._plot_line_z2.set_data_3d( line_z2_xpos, line_z2_ypos, line_z2_zpos )
             self._plot_label.set( position= ( line_z1_xpos[0], line_z1_ypos[0], line_z1_zpos[1] ) )
 
+        return True
+
         
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, p_axlimits_changed: bool, p_ylim, **p_kwargs):
+    def _update_plot_nd( self, 
+                         p_settings: PlotSettings, 
+                         p_axlimits_changed: bool, 
+                         p_ylim, 
+                         **p_kwargs ) -> bool:
 
-        if ( self._plot_line is not None ) and not p_axlimits_changed: return
+        if ( self._plot_line is not None ) and not p_axlimits_changed: return False
         
 
         inst = self.instances[-1]
@@ -184,6 +204,8 @@ class PointAnomaly (AnomalyIB):
         else:
             self._plot_line.set_data( xpos, p_ylim )
             self._plot_label.set(position=(inst_id, p_ylim[1]))
+
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------

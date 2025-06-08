@@ -419,7 +419,7 @@ class Model (Task, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
     def _set_adapted( self, 
                       p_adapted : bool,
-                      p_subtype : AdaptationType,
+                      p_subtype : AdaptationType = AdaptationType.NONE,
                       p_tstamp : TStampType = None,
                       **p_kwargs ):
         """
