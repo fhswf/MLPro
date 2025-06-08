@@ -349,15 +349,10 @@ class ChangeDetector (OAStreamTask):
             self._chk_num_inst = False
 
 
-        # 1 Execution of the main detection algorithm        
-        try:
-            inst_type, inst = list(p_instances.values())[-1]
-            if inst_type != InstTypeNew:
-                inst = None
-        except:
-            inst = None
-
-        self._detect( p_instance = inst, **self.kwargs )
+        # 1 Execution of the main detection algorithm for each new instance       
+        for (inst_type, inst) in p_instances.items():
+            if inst_type != InstTypeNew: continue
+            self._detect( p_instance = inst, **self.kwargs )
 
 
         # 2 Clean-up loop ('triage')
