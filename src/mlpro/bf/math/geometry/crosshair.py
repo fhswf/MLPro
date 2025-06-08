@@ -7,11 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-31  1.0.0     DA       Creation
 ## -- 2024-12-11  1.0.1     DA       Pseudo classes if matplotlib is not installed
-## -- 2025-06-08  1.1.0     DA       Refactoring of Crosshair._update_plot*: new return parameter
+## -- 2025-06-09  1.1.0     DA       Refactoring of Crosshair._update_plot*: new return parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-08)
+Ver. 1.1.0 (2025-06-09)
 
 This module provides the class Crosshair that provides crosshair functionality.
 
@@ -56,12 +56,6 @@ class Crosshair (Point):
         Keyword parameters.
     """
 
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
-    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
-                                PlotSettings.C_VIEW_3D, 
-                                PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
     C_PLOT_COLOR            = 'blue'
 
 ## -------------------------------------------------------------------------------------------------
