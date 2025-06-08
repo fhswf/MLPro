@@ -15,10 +15,11 @@
 ## -- 2025-05-19  0.2.2     DS       Bug fixes
 ## -- 2025-05-27  0.3.0     DS       Design extensions
 ## -- 2025-06-02  0.3.1     DS       Bug fixes
+## -- 2025-06-08  0.3.2     DS       Design extensions
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.1 (2025-06-02)
+Ver. 0.3.2 (2025-06-08)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -413,10 +414,11 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
             if self._tga is None:
 
                 self._tga = self._cls_temporal_group_anomaly(p_clusters = latest_anomaly.clusters.copy(),
-                                                                           p_status = True,
-                                                                           p_tstamp = p_inst.tstamp,
-                                                                           p_visualize = self.get_visualize,
-                                                                           p_raising_object = self)
+                                                             p_status = True,
+                                                             p_tstamp = p_inst.tstamp,
+                                                             p_visualize = self.get_visualize,
+                                                             p_raising_object = self)
+                
                 self._tga.clusters.update(latest_anomaly.clusters)
 
             #4.1.2 If temporal anomaly exists, add clusters of the latest anomaly to _tga
