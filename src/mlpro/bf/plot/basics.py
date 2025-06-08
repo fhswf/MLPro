@@ -83,6 +83,7 @@ import sys
 import os
 from pathlib import Path
 
+from mlpro.bf.various import KWArgs
 from mlpro.bf.exceptions import ImplementationError, ParamError
 from mlpro.bf.plot.backends import *
 from mlpro.bf.data import ConfigFile
@@ -100,7 +101,7 @@ g_event_loop_started = False
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PlotSettings:
+class PlotSettings (KWArgs):
     """
     Class to specify the context of a subplot.
 
@@ -170,6 +171,8 @@ class PlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
+        super().__init__( **p_kwargs )
+        
         self.view                       = p_view
         self.axes                       = p_axes
         self.pos_x                      = p_pos_x
@@ -181,7 +184,6 @@ class PlotSettings:
         self.force_fg                   = p_force_fg
         self.id                         = p_id
         self.view_autoselect            = p_view_autoselect
-        self.kwargs                     = p_kwargs.copy()
         self._registered_obj            = []
         self._plot_step_counter         = 0
         self._refresh_required : bool   = False
