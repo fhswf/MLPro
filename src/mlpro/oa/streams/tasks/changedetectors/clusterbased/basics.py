@@ -37,13 +37,13 @@ class ChangeCB (Change):
         Change ID. Default value = 0.
     p_status : bool = True
         Status of the change.
-    p_tstamp : datetime
+    p_tstamp : TStampType = None
         Time of occurance of change. Default = None.
-    p_visualize : bool
+    p_visualize : bool = False
         Boolean switch for visualisation. Default = False.
-    p_raising_object : object
+    p_raising_object : object = None
         Reference of the object raised. Default = None.
-    p_clusters : dict[Cluster]
+    p_clusters : dict[Cluster] = {}
         Clusters associated with the anomaly. Default = None.
     p_properties : dict
         Poperties of clusters associated with the anomaly. Default = None.
@@ -58,7 +58,7 @@ class ChangeCB (Change):
                   p_tstamp : TStampType = None,
                   p_visualize : bool = False,
                   p_raising_object : object = None,
-                  p_clusters : dict[Cluster] = None,
+                  p_clusters : dict[Cluster] = {},
                   p_properties : dict = None,
                   **p_kwargs ):
         
@@ -162,101 +162,20 @@ class ChangeDetectorCB (ChangeDetector):
             raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
         
 
-# ## -------------------------------------------------------------------------------------------------
-#     def _buffer_change(self, p_change:Change):
-#         """
-#         Method to be used to add a new change. Please use as part of your algorithm.
-
-#         Parameters
-#         ----------
-#         p_change : Change
-#             Change object to be added.
-#         """
-
-#         # 1 Buffering turned on?
-#         if self._change_buffer_size <= 0: return
-
-#         # 2 Buffer full?
-#         if len( self.changes ) >= self._change_buffer_size:
-#             # 2.1 Remove oldest entry
-#             oldest_key    = next(iter(self.changes))
-#             oldest_change = self.changes.pop(oldest_key)
-#             oldest_change.remove_plot()
-
-#         # 3 Buffer new change
-#         p_change.id = self._get_next_change_id() 
-#         self.changes[p_change.id] = p_change
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _remove_change(self, p_change:Change):
-#         """
-#         Method to remove an existing change. Please use as part of your algorithm.
-
-#         Parameters
-#         ----------
-#         p_change : change
-#             change object to be removed.
-#         """
-
-#         p_change.remove_plot(p_refresh=True)
-#         del self.changes[p_change.id]
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _raise_change_event( self, 
-#                              p_change: Change, 
-#                              p_inst : Instance = None,
-#                              p_buffer: bool = True ):
-#         """
-#         Method to raise an change event. 
-
-#         Parameters
-#         ----------
-#         p_change : Change
-#             Change object to be raised.
-#         p_inst : Instance = None
-#             Instance causing the change. If provided, the time stamp of the instance is taken over
-#             to the change.
-#         p_buffer : bool
-#             Change is buffered when set to True.
-#         """
-
-#         if p_change.tstamp is None:
-#             if p_inst is not None:
-#                 p_change.tstamp = p_inst.tstamp
-#             else:
-#                 p_change.tstamp = self.get_so().tstamp
-
-#         if p_buffer: self._buffer_change( p_change=p_change )
-
-#         if self.get_visualization(): 
-#             p_change.init_plot( p_figure=self._figure, 
-#                                  p_plot_settings=self.get_plot_settings() )
-
-#         self._raise_event( p_event_id = p_change.event_id,
-#                            p_event_object = p_change )
-
-
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances: InstDict):
         """
         This method is called by the stream task to process the incoming instance.
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             The incoming instance to be processed.
-
-        Returns
-        -------
-        None
-
         """
 
         # 0 Check whether the minimum number of instances has been reached
         if self._chk_num_inst:
-            self._num_inst += len( p_inst )
+            self._num_inst += len( p_instances )
             if self._num_inst < self._thrs_inst: return
             self._chk_num_inst = False
 
@@ -267,7 +186,7 @@ class ChangeDetectorCB (ChangeDetector):
 
         # 2 Execution of the main detection algorithm        
         try:
-            inst_type, inst = list(p_inst.values())[-1]
+            inst_type, inst = list(p_instances.values())[-1]
             if inst_type != InstTypeNew:
                 inst = None
         except:

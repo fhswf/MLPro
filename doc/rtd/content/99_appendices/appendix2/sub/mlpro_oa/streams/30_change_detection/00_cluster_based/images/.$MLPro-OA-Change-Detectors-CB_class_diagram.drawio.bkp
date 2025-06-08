@@ -55,7 +55,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-1" value="ChangeDetectorCB&#xa;(ChangeDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="290" y="343" width="350" height="370" as="geometry">
+          <mxGeometry x="290" y="343" width="350" height="344" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -74,14 +74,11 @@
         <mxCell id="4use4ZCXdNiZSNTW99xv-5" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
           <mxGeometry y="145" width="350" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-6" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;     p_name : str = None,&#xa;     p_range_max = ChangeDetector.C_RANGE_THREAD,&#xa;     p_ada : bool = True,&#xa;     p_duplicate_data : bool = False&#xa;     p_visualize : bool = False,&#xa;     p_logging = Log.C_LOG_ALL,&#xa;     p_change_buffer_size : int = 100,&#xa;     p_thrs_inst : int = 0,&#xa;     p_thrs_clusters : int = 0&#xa;     **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
+        <mxCell id="4use4ZCXdNiZSNTW99xv-6" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;                p_name : str = None,&#xa;                p_range_max=MLTask.C_RANGE_THREAD,&#xa;                p_ada : bool = True,&#xa;                p_duplicate_data : bool = False&#xa;                p_visualize : bool = False,&#xa;                p_logging = Log.C_LOG_ALL,&#xa;                p_change_buffer_size : int = 100,&#xa;                p_thrs_inst : int = 0,&#xa;                p_thrs_clusters : int = 0&#xa;                **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
           <mxGeometry y="153" width="350" height="165" as="geometry" />
         </mxCell>
-        <mxCell id="fwcdu7c7HhZm6Ijn48Rt-0" value="_detect( p_clusters : dict, **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=#FF0000;" vertex="1" parent="4use4ZCXdNiZSNTW99xv-1">
+        <mxCell id="QJ7Jg_j1DygTSJfUGPYK-1" value="_run( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=#FF0000;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
           <mxGeometry y="318" width="350" height="26" as="geometry" />
-        </mxCell>
-        <mxCell id="QJ7Jg_j1DygTSJfUGPYK-1" value="_run( p_instances : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=#FF0000;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="344" width="350" height="26" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-16" value="ChangeCB&#xa;(Change)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#fff2cc;strokeColor=#d6b656;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="760" y="343" width="290" height="230" as="geometry">
