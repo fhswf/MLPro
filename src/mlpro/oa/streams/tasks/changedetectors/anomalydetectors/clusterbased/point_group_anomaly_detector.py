@@ -402,49 +402,52 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         latest_anomaly = self._latest_anomaly
     
         #4 Process the latest anomaly
-        if latest_anomaly is not None:
-            #4.1 Check for the temporal anomaly conditions
-            if isinstance(latest_anomaly, (self._cls_point_anomaly, self._cls_spatial_group_anomaly)) and (latest_anomaly.tstamp == p_inst.tstamp):
+        if latest_anomaly is None:
+
+            return
+        
+        #4.1 Check for the temporal anomaly conditions
+        if isinstance(latest_anomaly, (self._cls_point_anomaly, self._cls_spatial_group_anomaly)) and (latest_anomaly.tstamp == p_inst.tstamp):
                 
-                #4.1.1 If temporal anomaly does not exist, create a new one and add clusters of the latest anomaly to _tga
-                if self._tga is None:
+            #4.1.1 If temporal anomaly does not exist, create a new one and add clusters of the latest anomaly to _tga
+            if self._tga is None:
 
-                    self._tga = temporal_group_anomaly
-                    self._tga.clusters = latest_anomaly
+                self._tga = self._cls_temporal_group_anomaly(p_clusters = latest_anomaly.clusters.copy(),
+                                                                           p_status = True,
+                                                                           p_tstamp = p_inst.tstamp,
+                                                                           p_visualize = self.get_visualize,
+                                                                           p_raising_object = self)
+                self._tga.clusters.update(latest_anomaly.clusters)
 
-                #4.1.2 If temporal anomaly exists, add clusters of the latest anomaly to _tga
-                else:
-                    self._tga.clusters = latest_anomaly
-                    
-                     
-                    if len(self._tga) == 2:
-                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._tga },
-                                                                                   p_status = True,
-                                                                                   p_tstamp = p_inst.tstamp,
-                                                                                   p_visualize = self.get_visualize,
-                                                                                   p_raising_object = self)                                                         
-                           
-                        self._raise_anomaly_event( p_anomaly = temporal_group_anomaly, p_inst = p_inst )              
-
+            #4.1.2 If temporal anomaly exists, add clusters of the latest anomaly to _tga
             else:
-                if self._tga is not None:
-                        
-                    if len(self._tga) >= 2:
-                        temporal_group_anomaly = self._cls_temporal_group_anomaly( p_clusters = {cluster_id : all_clusters[cluster_id] for cluster_id in self._tga },
-                                                                                   p_status = False,
-                                                                                   p_tstamp = p_inst.tstamp,
-                                                                                   p_visualize = self.get_visualize,
-                                                                                   p_raising_object = self)                                                         
-                           
-                        self._raise_anomaly_event( p_anomaly = temporal_group_anomaly, p_inst = p_inst )
-                        self._tga = None
+                self._tga.clusters.update(latest_anomaly.clusters)
                     
-                    else:
-                        self._tga = None
-                    
-           
-
             
+            #4.1.3 If the temporal anomaly has only two clusters, raise an anomaly event
+            if len(self._tga.clusters) == 2:
+                
+                self._raise_anomaly_event(p_anomaly= self._tga, 
+                                          p_inst = p_inst)
+                
+        
+        #4.2 If temporal anomaly conditiod is not met, 
+        else:
+            
+            if self._tga is not None:
+                
+                if len(self._tga.clusters) >= 2:
+                    
+                    self._tga.p_status = False
+                    self._raise_anomaly_event(p_anomaly=self._tga, p_inst = p_inst)
+
+                    self._tga = None
+
+                else:
+                    
+                    self._tga = None
+                    
+                  
 ## -------------------------------------------------------------------------------------------------
     def _triage_anomaly(self, p_anomaly: AnomalyCB):
         """
