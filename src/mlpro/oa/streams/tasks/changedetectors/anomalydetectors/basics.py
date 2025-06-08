@@ -138,7 +138,7 @@ class AnomalyDetector (ChangeDetector):
     def _raise_anomaly_event( self, 
                               p_anomaly : Anomaly, 
                               p_instance : Instance, 
-                              p_buffer: bool = True):
+                              p_buffer: bool = True ):
         """
         Method to raise an anomaly event.
 

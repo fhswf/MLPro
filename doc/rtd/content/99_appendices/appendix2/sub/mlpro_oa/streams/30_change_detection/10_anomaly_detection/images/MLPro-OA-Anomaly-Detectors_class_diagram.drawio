@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-06-03T13:14:54.095Z" version="24.4.13" etag="OlxfQriRWKzM5aKC3nt4" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.2.2 Chrome/134.0.6998.178 Electron/35.1.2 Safari/537.36" version="26.2.2">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1434" dy="836" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="2878" dy="1242" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -55,7 +55,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-1" value="AnomalyDetector&#xa;(ChangeDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="40" y="66" width="350" height="430" as="geometry">
+          <mxGeometry x="40" y="66" width="350" height="444" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -80,17 +80,17 @@
         <mxCell id="oLJumqx1HHhM9YScGNT0-3" value="_remove_anomaly(p_anomaly : Anomaly)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
           <mxGeometry y="300" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="oLJumqx1HHhM9YScGNT0-4" value="_raise_anomaly_event( p_anomaly : Anomaly, &#xa;                                        p_buffer : bool = True )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="330" width="350" height="40" as="geometry" />
+        <mxCell id="oLJumqx1HHhM9YScGNT0-4" value="_raise_anomaly_event( p_anomaly : Anomaly,&#xa;                                         p_instance : Instance, &#xa;                                         p_buffer : bool = True )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
+          <mxGeometry y="330" width="350" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="-u0G7t2jXtyPaLjrbKKN-0" value="_triage( p_change : Change ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="370" width="350" height="30" as="geometry" />
+        <mxCell id="-u0G7t2jXtyPaLjrbKKN-0" value="_triage( p_change : Change, **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
+          <mxGeometry y="384" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="-u0G7t2jXtyPaLjrbKKN-1" value="_triage_anomaly( p_anomaly : Anomaly ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#0000FF;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="400" width="350" height="30" as="geometry" />
+        <mxCell id="-u0G7t2jXtyPaLjrbKKN-1" value="_triage_anomaly( p_anomaly : Anomaly, **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#0000FF;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
+          <mxGeometry y="414" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-16" value="Anomaly &#xa;(Change)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="510" y="440" width="290" height="56" as="geometry">
+          <mxGeometry x="510" y="454" width="290" height="56" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>

@@ -37,8 +37,8 @@ from mlpro.oa.streams.tasks.changedetectors import Change
 ## -------------------------------------------------------------------------------------------------
 class Anomaly (Change):
     """
-    This is the base class for anomaly events which can be raised by the anomaly detectors when an
-    anomaly is detected. See parent class Change for more details.
+    This is the base class for anomaly events raised by the anomaly detectors. See parent class 
+    Change for more details.
     """
 
     pass

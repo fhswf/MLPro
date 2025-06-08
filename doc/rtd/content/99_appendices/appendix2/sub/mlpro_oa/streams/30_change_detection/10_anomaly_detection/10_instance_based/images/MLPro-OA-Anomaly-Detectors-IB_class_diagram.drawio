@@ -52,10 +52,12 @@
           <mxGeometry y="26" width="40.83333333333333" height="8" as="geometry" />
         </mxCell>
         <mxCell id="7JkVl93vQoOUYRVFK4Rs-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="p2okAq9_pR5mkignAm-u-1" target="7JkVl93vQoOUYRVFK4Rs-1" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="765" y="340" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="p2okAq9_pR5mkignAm-u-1" value="PointAnomaly (AnomalyIB)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="620" y="442" width="290" height="560" as="geometry">
+          <mxGeometry x="620" y="450" width="290" height="560" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -77,13 +79,13 @@
         <mxCell id="N38WU9mJ-Era6qwWuLtT-5" value="_init_plot_nd( p_figure: Figure,&#xa;                       p_settings: PlotSettings,&#xa;                        **p_kwargs)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="p2okAq9_pR5mkignAm-u-1" vertex="1">
           <mxGeometry y="190" width="290" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="IN7lYUDwhcxV2UBQLD-M-2" value="_update_plot_2d( p_settings: PlotSettings,&#xa;                             p_axlimits_changed : bool,&#xa;                             p_xlim,&#xa;                             p_ylim,&#xa;                            **p_kwargs) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="p2okAq9_pR5mkignAm-u-1">
+        <mxCell id="IN7lYUDwhcxV2UBQLD-M-2" value="_update_plot_2d( p_settings: PlotSettings,&#xa;                             p_axlimits_changed : bool,&#xa;                             p_xlim,&#xa;                             p_ylim,&#xa;                            **p_kwargs) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="p2okAq9_pR5mkignAm-u-1" vertex="1">
           <mxGeometry y="240" width="290" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="IN7lYUDwhcxV2UBQLD-M-1" value="_update_plot_3d( p_settings: PlotSettings,&#xa;                             p_axlimits_changed : bool,&#xa;                             p_xlim,&#xa;                             p_ylim,&#xa;                            **p_kwargs) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="p2okAq9_pR5mkignAm-u-1">
+        <mxCell id="IN7lYUDwhcxV2UBQLD-M-1" value="_update_plot_3d( p_settings: PlotSettings,&#xa;                             p_axlimits_changed : bool,&#xa;                             p_xlim,&#xa;                             p_ylim,&#xa;                            **p_kwargs) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="p2okAq9_pR5mkignAm-u-1" vertex="1">
           <mxGeometry y="320" width="290" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="IN7lYUDwhcxV2UBQLD-M-0" value="_update_plot_nd( p_settings: PlotSettings,&#xa;                             p_axlimits_changed : bool,&#xa;                             p_ylim,&#xa;                            **p_kwargs) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="p2okAq9_pR5mkignAm-u-1">
+        <mxCell id="IN7lYUDwhcxV2UBQLD-M-0" value="_update_plot_nd( p_settings: PlotSettings,&#xa;                             p_axlimits_changed : bool,&#xa;                             p_ylim,&#xa;                            **p_kwargs) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="p2okAq9_pR5mkignAm-u-1" vertex="1">
           <mxGeometry y="400" width="290" height="70" as="geometry" />
         </mxCell>
         <mxCell id="oLJumqx1HHhM9YScGNT0-31" value="_remove_plot_2d()" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="p2okAq9_pR5mkignAm-u-1" vertex="1">
@@ -98,13 +100,14 @@
         <mxCell id="7JkVl93vQoOUYRVFK4Rs-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y2l99iwQbg-wAnSwsQFK-0" target="7JkVl93vQoOUYRVFK4Rs-1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1135" y="382" />
-              <mxPoint x="765" y="382" />
+              <mxPoint x="1135" y="390" />
+              <mxPoint x="765" y="390" />
             </Array>
+            <mxPoint x="765" y="340" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="y2l99iwQbg-wAnSwsQFK-0" value="GroupAnomaly (AnomalyIB)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="990" y="442" width="290" height="420" as="geometry">
+          <mxGeometry x="990" y="450" width="290" height="420" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -120,7 +123,7 @@
         <mxCell id="y2l99iwQbg-wAnSwsQFK-2" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;fillColor=#dae8fc;gradientColor=#ffffff;" parent="y2l99iwQbg-wAnSwsQFK-0" vertex="1">
           <mxGeometry y="116" width="290" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="y2l99iwQbg-wAnSwsQFK-3" value="__init__( p_instances : Instance = None,&#xa;               p_id = 0,&#xa;               p_tstamp : datetime = None,&#xa;               p_visualize : bool = False,&#xa;               p_raising_object : object = None,&#xa;               p_mean : float = None,&#xa;               p_deviation : float=None,&#xa;               **p_kwargs)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="y2l99iwQbg-wAnSwsQFK-0" vertex="1">
+        <mxCell id="y2l99iwQbg-wAnSwsQFK-3" value="__init__( p_id = 0,&#xa;               p_tstamp : TStampType = None,&#xa;               p_visualize : bool = False,&#xa;               p_raising_object : object = None,&#xa;               p_instances : Instance = None,&#xa;               p_mean : float = None,&#xa;               p_deviation : float=None,&#xa;               **p_kwargs)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="y2l99iwQbg-wAnSwsQFK-0" vertex="1">
           <mxGeometry y="124" width="290" height="126" as="geometry" />
         </mxCell>
         <mxCell id="iRqbgX-deYLXcJWkZiLP-6" value="_get_mean( ) -&gt; float" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="y2l99iwQbg-wAnSwsQFK-0" vertex="1">
@@ -141,13 +144,14 @@
         <mxCell id="7JkVl93vQoOUYRVFK4Rs-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="y2l99iwQbg-wAnSwsQFK-5" target="7JkVl93vQoOUYRVFK4Rs-1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1505" y="382" />
-              <mxPoint x="765" y="382" />
+              <mxPoint x="1505" y="390" />
+              <mxPoint x="765" y="390" />
             </Array>
+            <mxPoint x="765" y="340" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="y2l99iwQbg-wAnSwsQFK-5" value="ContextualAnomaly (AnomalyIB)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1360" y="442" width="290" height="39" as="geometry">
+          <mxGeometry x="1360" y="450" width="290" height="39" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -158,7 +162,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="hOcUKRqpv3udX4BvXm5B-1" value="AnomalyDetectorIBPG&#xa;(AnomalyDetectorIB)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=42;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="150" y="442" width="350" height="332" as="geometry">
+          <mxGeometry x="150" y="450" width="350" height="346" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -177,17 +181,17 @@
         <mxCell id="hOcUKRqpv3udX4BvXm5B-3" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;fillColor=#dae8fc;gradientColor=#ffffff;" parent="hOcUKRqpv3udX4BvXm5B-1" vertex="1">
           <mxGeometry y="154" width="350" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="hOcUKRqpv3udX4BvXm5B-4" value="__init__( p_group_anomaly_det : bool = True,&#xa;               p_name : str = None,&#xa;               p_range_max = StreamTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               p_anomaly_buffer_size : int = 100,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="hOcUKRqpv3udX4BvXm5B-1" vertex="1">
-          <mxGeometry y="162" width="350" height="140" as="geometry" />
+        <mxCell id="hOcUKRqpv3udX4BvXm5B-4" value="__init__( p_name : str = None,&#xa;               p_range_max = StreamTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               p_anomaly_buffer_size : int = 100,&#xa;               p_thrs_inst : int = 0,&#xa;               p_group_anomaly_det : bool = True,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="hOcUKRqpv3udX4BvXm5B-1" vertex="1">
+          <mxGeometry y="162" width="350" height="154" as="geometry" />
         </mxCell>
         <mxCell id="hOcUKRqpv3udX4BvXm5B-5" value="_buffer_anomaly( p_anomaly : Anomaly)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="hOcUKRqpv3udX4BvXm5B-1" vertex="1">
-          <mxGeometry y="302" width="350" height="30" as="geometry" />
+          <mxGeometry y="316" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="0cJ1NAXk0Xtcf3CmwPfC-8" value="Extended template&amp;nbsp;&lt;div&gt;for anomaly detectors. Auto-detects and raises groups of point anomalies as group anomalies&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="40" y="352" width="130" height="101" as="geometry" />
+          <mxGeometry x="40" y="360" width="130" height="101" as="geometry" />
         </mxCell>
         <mxCell id="7JkVl93vQoOUYRVFK4Rs-1" value="AnomalyIB (Anomaly)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="620" y="162" width="290" height="160" as="geometry">
+          <mxGeometry x="620" y="162" width="290" height="170" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -197,8 +201,8 @@
         <mxCell id="7JkVl93vQoOUYRVFK4Rs-2" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;fillColor=#dae8fc;gradientColor=#ffffff;" parent="7JkVl93vQoOUYRVFK4Rs-1" vertex="1">
           <mxGeometry y="52" width="290" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="7JkVl93vQoOUYRVFK4Rs-3" value="__init__( p_instances : list[Instance],&#xa;               p_id = 0,&#xa;               p_tstamp : datetime = None,&#xa;               p_visualize : bool = False,&#xa;               p_raising_object : object = None,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="7JkVl93vQoOUYRVFK4Rs-1" vertex="1">
-          <mxGeometry y="60" width="290" height="100" as="geometry" />
+        <mxCell id="7JkVl93vQoOUYRVFK4Rs-3" value="__init__( p_id = 0,&#xa;               p_status : bool = True,&#xa;               p_tstamp : TStampType = None,&#xa;               p_visualize : bool = False,&#xa;               p_raising_object : object = None,&#xa;               p_instances : list[Instance] = [],&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="7JkVl93vQoOUYRVFK4Rs-1" vertex="1">
+          <mxGeometry y="60" width="290" height="110" as="geometry" />
         </mxCell>
         <mxCell id="7JkVl93vQoOUYRVFK4Rs-11" value="Sub-type for instance-based anomalies" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="890" y="124.5" width="100" height="51" as="geometry" />

@@ -24,7 +24,6 @@ Ver. 1.5.0 (2025-06-08)
 This module provides a class for group anomalies to be used in anomaly detection algorithms.
 """
 
-from datetime import datetime
 
 try:
     from matplotlib.figure import Figure
@@ -35,6 +34,8 @@ except:
     class Text : pass
     class patches : pass
     
+
+from mlpro.bf.various import TStampType
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
@@ -49,16 +50,18 @@ class GroupAnomaly (AnomalyIB):
     
     Parameters
     ----------
-    p_instances : Instance
-        List of instances. Default value = None.
     p_id : int
         Anomaly ID. Default value = 0.
-    p_tstamp : datetime = None
-        Time of occurance of anomaly. Default = None.
+    p_status : bool = True
+        Status of the anomaly. True marks the beginning of an anomaly, while False indicates its end.
+    p_tstamp : TStampType = None
+        Time stamp of occurance of anomaly. Default = None.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_raising_object : object
         Reference of the object raised. Default = None.
+    p_instances : list[Instances] = []
+        List of related instances.
     p_mean : float
         The mean value of the anomaly. Default = None.
     p_mean_deviation : float
@@ -68,25 +71,27 @@ class GroupAnomaly (AnomalyIB):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_instances : list[Instance],
-                 p_id = 0,
-                 p_tstamp : datetime = None,
-                 p_visualize : bool = False,
-                 p_raising_object : object = None,
-                 p_mean : float= None,
-                 p_mean_deviation : float = None,
-                 **p_kwargs):
+    def __init__( self, 
+                  p_id = 0, 
+                  p_status : bool = True,
+                  p_tstamp : TStampType = None, 
+                  p_visualize = False, 
+                  p_raising_object = None, 
+                  p_instances : list[Instance] = [],
+                  p_mean : float= None,
+                  p_mean_deviation : float = None,
+                  **p_kwargs ):
         
-        super().__init__( p_instances = p_instances, 
-                          p_id = p_id, 
+        super().__init__( p_id = p_id, 
+                          p_status = p_status,
+                          p_tstamp = p_tstamp,
                           p_visualize = p_visualize, 
                           p_raising_object = p_raising_object,
-                          p_tstamp = p_tstamp,
+                          p_instances = p_instances, 
                           **p_kwargs )
         
-        self.plot_update = True
-        self._mean = p_mean
+        self.plot_update     = True
+        self._mean           = p_mean
         self._mean_deviation = p_mean_deviation
 
 
