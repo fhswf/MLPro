@@ -1,3 +1,6 @@
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.basics import DriftDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.deformation_detector import DriftDetectorCBGenDeformation
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.density_detector import DriftCBDensity
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.movement_detector import DriftDetectorCBGenMovement
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.size_change_detector import DriftDetectorCBGenSizeChange
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import *
