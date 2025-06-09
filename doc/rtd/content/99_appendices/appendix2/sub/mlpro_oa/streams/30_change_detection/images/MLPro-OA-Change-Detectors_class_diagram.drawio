@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.2.2 Chrome/134.0.6998.178 Electron/35.1.2 Safari/537.36" version="26.2.2">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="5214" dy="1242" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="2878" dy="1242" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -55,7 +55,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-1" value="ChangeDetector&#xa;(OAStreamTask)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="940" y="620" width="350" height="753" as="geometry">
+          <mxGeometry x="1020" y="620" width="350" height="753" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -123,7 +123,7 @@
           <mxGeometry y="723" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="4use4ZCXdNiZSNTW99xv-16" value="Change&#xa;(bf.various.Id, bf.events.Event, bf.plot.Plottable,&#xa;bf.math.normalizers.Renomalizable)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=52;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="940" y="80" width="350" height="460" as="geometry">
+          <mxGeometry x="1020" y="80" width="350" height="460" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -167,7 +167,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-0" value="AnomalyDetector&#xa;(ChangeDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="510" y="929" width="350" height="444" as="geometry">
+          <mxGeometry x="590" y="929" width="350" height="444" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -204,12 +204,12 @@
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="2PxFUsdKY2rTfC8V-BGI-11" target="azBydEVot9yI6jtSICJJ-2" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="275" y="496" />
+              <mxPoint x="355" y="496" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-11" value="Anomaly &#xa;(Change)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="80" y="927" width="350" height="56" as="geometry">
+          <mxGeometry x="160" y="927" width="350" height="56" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -219,13 +219,13 @@
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="2PxFUsdKY2rTfC8V-BGI-12" target="4use4ZCXdNiZSNTW99xv-1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1320" y="1151" />
-              <mxPoint x="1320" y="997" />
+              <mxPoint x="1400" y="1151" />
+              <mxPoint x="1400" y="997" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-12" value="DriftDetector&#xa;(ChangeDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1370" y="929" width="350" height="444" as="geometry">
+          <mxGeometry x="1450" y="929" width="350" height="444" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -263,7 +263,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-23" value="Drift&#xa;(Change)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1800" y="930" width="350" height="53" as="geometry">
+          <mxGeometry x="1880" y="930" width="350" height="53" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -271,7 +271,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-69" value="AnomalyIB (Anomaly)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="80" y="1053" width="350" height="170" as="geometry">
+          <mxGeometry x="160" y="1053" width="350" height="170" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -285,7 +285,7 @@
           <mxGeometry y="60" width="350" height="110" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-73" value="Subtype for instance-based anomalies" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry y="1010" width="100" height="51" as="geometry" />
+          <mxGeometry x="80" y="1010" width="100" height="51" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-77" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="2PxFUsdKY2rTfC8V-BGI-74" target="2PxFUsdKY2rTfC8V-BGI-69" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -294,7 +294,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-74" value="AnomalyDetectorIB&#xa;(AnomalyDetector)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=42;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="80" y="1289" width="350" height="84" as="geometry">
+          <mxGeometry x="160" y="1289" width="350" height="84" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -311,7 +311,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-81" value="DriftDetectorIB&#xa;(DriftDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1800" y="1293" width="350" height="80" as="geometry">
+          <mxGeometry x="1880" y="1293" width="350" height="80" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -325,7 +325,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-84" value="DriftIB&#xa;(Drift)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1800" y="1043" width="350" height="190" as="geometry">
+          <mxGeometry x="1880" y="1043" width="350" height="190" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -339,31 +339,31 @@
           <mxGeometry y="74" width="350" height="110" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-94" value="Template for anomaly detectors" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="472" y="900" width="110" height="41" as="geometry" />
+          <mxGeometry x="552" y="900" width="110" height="41" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-95" value="Template for drift detectors" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1645" y="900" width="105" height="41" as="geometry" />
+          <mxGeometry x="1725" y="900" width="105" height="41" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-96" value="Abstract prototype for change detectors" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="830" y="580" width="130" height="50" as="geometry" />
+          <mxGeometry x="910" y="580" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-103" value="Abstract prototype for change Events" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="840" y="50" width="120" height="41" as="geometry" />
+          <mxGeometry x="920" y="50" width="120" height="41" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-104" value="Subtype for anomaly events" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry y="900" width="100" height="41" as="geometry" />
+          <mxGeometry x="80" y="900" width="100" height="41" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-105" value="Subtype for drift events" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="2130" y="910" width="100" height="41" as="geometry" />
+          <mxGeometry x="2210" y="910" width="100" height="41" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-106" value="Subtype for instance-based anomalies" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="2130" y="1010" width="100" height="51" as="geometry" />
+          <mxGeometry x="2210" y="1010" width="100" height="51" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-107" value="Template for instance-based anomaly detectors" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="-20" y="1250" width="120" height="59" as="geometry" />
+          <mxGeometry x="60" y="1250" width="120" height="59" as="geometry" />
         </mxCell>
         <mxCell id="2PxFUsdKY2rTfC8V-BGI-108" value="Template for instance-based drift detectors" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="2140" y="1260" width="100" height="59" as="geometry" />
+          <mxGeometry x="2220" y="1260" width="100" height="59" as="geometry" />
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="P8m3U_S5QSKX-hw6cI7y-0" target="4use4ZCXdNiZSNTW99xv-1">
           <mxGeometry relative="1" as="geometry" />
@@ -372,7 +372,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-0" value="ChangeDetectorCB&#xa;(ChangeDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="940" y="1780" width="350" height="753" as="geometry">
+          <mxGeometry x="1020" y="1790" width="350" height="380" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -397,21 +397,18 @@
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-15" value="_detect( p_clusters : dict, p_inst : Instance, **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#0000FF;" vertex="1" parent="P8m3U_S5QSKX-hw6cI7y-0">
           <mxGeometry y="318" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="P8m3U_S5QSKX-hw6cI7y-16" value="_triage( p_change : Change, **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#0000FF;" vertex="1" parent="P8m3U_S5QSKX-hw6cI7y-0">
-          <mxGeometry y="348" width="350" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-17" value="_run( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=default;" vertex="1" parent="P8m3U_S5QSKX-hw6cI7y-0">
-          <mxGeometry y="378" width="350" height="30" as="geometry" />
+          <mxGeometry y="348" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=block;endFill=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="P8m3U_S5QSKX-hw6cI7y-22" target="azBydEVot9yI6jtSICJJ-2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1335" y="496" />
+              <mxPoint x="1415" y="496" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-22" value="ChangeCB&#xa;(Change)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=42;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="1160" y="1440" width="350" height="260" as="geometry">
+          <mxGeometry x="1240" y="1450" width="350" height="260" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -431,10 +428,10 @@
           <mxGeometry y="229" width="350" height="26" as="geometry" />
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-36" value="Abstract prototype for cluster-based change detectors" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="869" y="1750" width="130" height="50" as="geometry" />
+          <mxGeometry x="949" y="1760" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-38" value="Abstract prototype for cluster-based change Events" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="1140" y="1410" width="120" height="55.5" as="geometry" />
+          <mxGeometry x="1220" y="1420" width="120" height="55.5" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

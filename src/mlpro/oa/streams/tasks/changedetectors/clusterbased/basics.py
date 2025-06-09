@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-03  0.1.0     DA/DS    Creation
+## -- 2025-06-09  0.2.0     DA       Design updates
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-06-03)
+Ver. 0.2.0 (2025-06-09)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
@@ -17,8 +18,8 @@ online-adaptive data stream processing.
 
 
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.math.properties import *
-from mlpro.bf.streams import InstDict, InstTypeNew
+from mlpro.bf.math.properties import PropertyDefinitions
+from mlpro.bf.streams import InstDict, InstTypeNew, Instance
 
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import Cluster, ClusterAnalyzer
 from mlpro.oa.streams.tasks.changedetectors.basics import Change, ChangeDetector
@@ -160,6 +161,23 @@ class ChangeDetectorCB (ChangeDetector):
         
 
 ## -------------------------------------------------------------------------------------------------
+    def _detect(self, p_clusters : dict, p_instance: Instance, **p_kwargs):
+        """
+        Custom method for the main detection algorithm. Use the _raise_change_event() method to raise
+        a change detected by your algorithm.
+
+        Parameters
+        ----------
+        p_instance : Instance
+            Instance that triggered the detection.
+        **p_kwargs
+            Optional keyword arguments (originally provided to the constructor).
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_instances: InstDict):
         """
         This method is called by the stream task to process the incoming instance.
@@ -178,18 +196,16 @@ class ChangeDetectorCB (ChangeDetector):
 
 
         # 1 Check for the minimum number of clusters
-        if len(self._clusterer.clusters) < self._thrs_clusters: return
+        current_clusters = self._clusterer.clusters
+        if len(current_clusters) < self._thrs_clusters: return
 
 
-        # 2 Execution of the main detection algorithm        
-        try:
-            inst_type, inst = list(p_instances.values())[-1]
-            if inst_type != InstTypeNew:
-                inst = None
-        except:
-            inst = None
+        # 2 Execution of the main detection algorithm once for the latest new instance
+        for inst_type, inst in reversed(list(p_instances.values())):
+            if inst_type == InstTypeNew: break
 
-        self._detect( p_clusters = self._clusterer.clusters, p_inst = inst, **self.kwargs )
+        if inst is not None:
+            self._detect( p_clusters = current_clusters, p_inst = inst, **self.kwargs )
 
 
         # 3 Clean-up loop ('triage')
@@ -198,88 +214,16 @@ class ChangeDetectorCB (ChangeDetector):
         # 3.1 Collect changes to be deleted
         for change in self.changes.values():
 
-            # 3.1.1 Apply custom triage method to each change
-            if self._triage( p_change = change ):
-                triage_list.append( change )
+            # 3.1.1 Extended triage check
+            if change.clusters.keys() <= current_clusters.keys():
+                # Case 1: all clusters of the change still exist. Here the custom triage method makes the decision
+                triage = self._triage( p_change = change, **self.kwargs )
+            else:
+                # Case 2: at least one cluster of the change disappeared -> triage
+                triage = True
+
+            if triage: triage_list.append( change )
 
         # 3.2 Remove all obsolete changes from the triage list
         for change in triage_list:
             self._remove_change( p_change = change )
-
-                 
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
-
-        if not self.get_visualization(): return
-
-        self._plot_ax_xlim = None
-        self._plot_ax_ylim = None
-        self._plot_ax_zlim = None
-
-        super().init_plot( p_figure=p_figure, p_plot_settings=p_plot_settings)
-
-        for change in self.changes.values():
-            change.init_plot(p_figure=p_figure, p_plot_settings = p_plot_settings)
-    
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst : InstDict = None, **p_kwargs):
-    
-        if not self.get_visualization(): return
-
-        # super().update_plot(p_inst, **p_kwargs)
-
-        axes = self._plot_settings.axes
-
-        ax_xlim_new = axes.get_xlim()
-        if self._plot_settings.view != PlotSettings.C_VIEW_ND:
-            axlimits_changed = ( self._plot_ax_xlim is None ) or ( self._plot_ax_xlim != ax_xlim_new )
-        else:
-            axlimits_changed = False
-
-        ax_ylim_new = axes.get_ylim()
-        axlimits_changed = axlimits_changed or ( self._plot_ax_ylim is None ) or ( self._plot_ax_ylim != ax_ylim_new )
-        try:
-            ax_zlim_new = axes.get_zlim()
-            axlimits_changed = axlimits_changed or ( self._plot_ax_zlim is None ) or ( self._plot_ax_zlim != ax_zlim_new )
-        except:
-            ax_zlim_new = None
-        
-        self._plot_ax_xlim = ax_xlim_new
-        self._plot_ax_ylim = ax_ylim_new
-        self._plot_ax_zlim = ax_zlim_new
-
-        for change in self.changes.values():
-            change.update_plot( p_axlimits_changed = axlimits_changed,
-                                 p_xlim = ax_xlim_new,
-                                 p_ylim = ax_ylim_new,
-                                 p_zlim = ax_zlim_new,
-                                 **p_kwargs )
-    
-
-## -------------------------------------------------------------------------------------------------
-    def remove_plot(self, p_refresh: bool = True):
-
-        if not self.get_visualization(): return
-
-        # super().remove_plot(p_refresh=p_refresh)
-
-        for change in self.changes.values():
-            change.remove_plot(p_refresh=p_refresh)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _renormalize(self, p_normalizer):
-        """
-        Internal renormalization of all buffered changes. See method OATask.renormalize_on_event() 
-        for further information.
-
-        Parameters
-        ----------
-        p_normalizer : Normalizer
-            Normalizer object to be applied on task-specific 
-        """
-
-        for change in self.changes.values():
-           change.renormalize( p_normalizer=p_normalizer )
-
