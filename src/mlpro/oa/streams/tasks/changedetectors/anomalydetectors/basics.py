@@ -19,10 +19,11 @@
 ## -- 2025-03-03  1.5.1     DA       Corrections
 ## -- 2025-05-30  2.0.0     DA/DS    New parent class ChangeDetector
 ## -- 2025-06-06  2.1.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-09  2.1.1     DA       Corrections in AnomalyDetector._triage()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-06-06)
+Ver. 2.1.1 (2025-06-09)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
@@ -159,8 +160,8 @@ class AnomalyDetector (ChangeDetector):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _triage(self, p_change, **p_kwargs):
-        self._triage_anomaly (p_anomaly = p_change, **p_kwargs)
+    def _triage(self, p_change, **p_kwargs) -> bool:
+        return self._triage_anomaly (p_anomaly = p_change, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -168,7 +169,20 @@ class AnomalyDetector (ChangeDetector):
                          p_anomaly : Anomaly,
                          **p_kwargs ) -> bool:
         """
-        Custom method for extended anomaly triage.
+        Custom method for extended anomaly triage. Decides whether an already existing anomaly is 
+        kept or removed. This method is called by the _run() method als part of its cleanup mechanism.
+
+        Parameters
+        ----------
+        p_anomaly : Anomaly
+            Anomaly object to be kept or discarded.
+        **p_kwargs
+            Optional keyword arguments (originally provided to the constructor).
+
+        Returns
+        -------
+        bool
+            True, if the specified anomaly shall be removed. False otherwise.
         """
 
-        pass
+        return False

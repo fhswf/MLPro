@@ -9,10 +9,11 @@
 ## -- 2025-03-03  0.2.0     DA       Alignment with anomaly detection
 ## -- 2025-05-30  1.0.0     DA/DS    Class DriftDetector: new parent ChangeDetector
 ## -- 2025-06-06  1.1.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-09  1.1.1     DA       Corrections in DriftDetector._triage()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-06)
+Ver. 1.1.1 (2025-06-09)
 
 This module provides templates for drift detection to be used in the context of online adaptivity.
 """
@@ -150,8 +151,8 @@ class DriftDetector (ChangeDetector):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _triage(self, p_change, **p_kwargs):
-        self._triage_drift (p_drift = p_change, **p_kwargs)
+    def _triage(self, p_change, **p_kwargs) -> bool:
+        return self._triage_drift (p_drift = p_change, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,7 +160,20 @@ class DriftDetector (ChangeDetector):
                        p_drift : Drift,
                        **p_kwargs ) -> bool:
         """
-        Custom method for extended drift triage.
+        Custom method for extended drift triage. Decides whether an already existing drift is kept or removed.
+        This method is called by the _run() method als part of its cleanup mechanism.
+
+        Parameters
+        ----------
+        p_drift : Drift
+            Drift object to be kept or discarded.
+        **p_kwargs
+            Optional keyword arguments (originally provided to the constructor).
+
+        Returns
+        -------
+        bool
+            True, if the specified drift shall be removed. False otherwise.
         """
 
-        pass
+        return False
