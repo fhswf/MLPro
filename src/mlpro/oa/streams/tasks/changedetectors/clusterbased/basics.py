@@ -16,7 +16,7 @@ online-adaptive data stream processing.
 """
 
 
-from mlpro.bf.various import Id, Log, TStampType
+from mlpro.bf.various import Log, TStampType
 from mlpro.bf.math.properties import *
 from mlpro.bf.streams import InstDict, InstTypeNew
 
@@ -44,9 +44,9 @@ class ChangeCB (Change):
     p_raising_object : object = None
         Reference of the object raised. Default = None.
     p_clusters : dict[Cluster] = {}
-        Clusters associated with the anomaly. Default = None.
-    p_properties : dict
-        Poperties of clusters associated with the anomaly. Default = None.
+        Clusters associated with the anomaly.
+    p_properties : PropertyDefinitions = []
+        List of properties of clusters associated with the anomaly.
     **p_kwargs
         Further optional keyword arguments.
     """
@@ -59,7 +59,7 @@ class ChangeCB (Change):
                   p_visualize : bool = False,
                   p_raising_object : object = None,
                   p_clusters : dict[Cluster] = {},
-                  p_properties : dict = None,
+                  p_properties : PropertyDefinitions = [],
                   **p_kwargs ):
         
         super().__init__( p_id = p_id,
@@ -70,7 +70,7 @@ class ChangeCB (Change):
                           **p_kwargs )
 
         self.clusters : dict[Cluster] = p_clusters
-        self._properties : dict       = p_properties
+        self.properties : dict       = p_properties
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -123,9 +123,6 @@ class ChangeDetectorCB (ChangeDetector):
     """
 
     C_TYPE              = 'Cluster-based Change Detector'
-
-    C_PLOT_ACTIVE       = True
-    C_PLOT_STANDALONE   = False
 
     C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []
 
@@ -192,7 +189,7 @@ class ChangeDetectorCB (ChangeDetector):
         except:
             inst = None
 
-        self._detect( p_inst = inst )
+        self._detect( p_clusters = self._clusterer.clusters, p_inst = inst, **self.kwargs )
 
 
         # 3 Clean-up loop ('triage')
