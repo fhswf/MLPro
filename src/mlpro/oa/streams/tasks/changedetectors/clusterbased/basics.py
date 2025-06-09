@@ -6,18 +6,23 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-03  0.1.0     DA/DS    Creation
-## -- 2025-06-09  0.2.0     DA       Design updates
+## -- 2025-06-09  1.0.0     DA       Design updates
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-06-09)
+Ver. 1.0.0 (2025-06-09)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
 """
 
+try:
+    from matplotlib.figure import Figure
+except:
+    class Figure : pass
 
 from mlpro.bf.various import Log, TStampType
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.bf.streams import InstDict, InstTypeNew, Instance
 
@@ -86,6 +91,42 @@ class ChangeCB (Change):
         """
         
         self.clusters.update(p_clusters)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+
+        super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
+
+        cluster : Cluster = None
+
+        for cluster in self.clusters.values(): 
+            if self.status:
+                cluster.color_bak = cluster.color
+                cluster.color = "red"
+            else:
+                try:
+                    cluster.color = cluster.color_bak
+                except:
+                    pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+
+        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
+    
+        cluster : Cluster = None
+
+        for cluster in self.clusters.values(): 
+            if self.status:
+                cluster.color_bak = cluster.color
+                cluster.color = "red"
+            else:
+                try:
+                    cluster.color = cluster.color_bak
+                except:
+                    pass
     
 
 

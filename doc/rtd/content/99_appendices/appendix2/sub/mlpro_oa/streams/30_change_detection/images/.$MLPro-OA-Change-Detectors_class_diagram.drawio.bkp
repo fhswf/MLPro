@@ -451,7 +451,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="4LvH10w1mnI7Oj8NLsvD-0" value="AnomalyDetectorCB&#xa;(ChangeDetectorCB, AnomalyDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="630" y="1958" width="350" height="272" as="geometry">
+          <mxGeometry x="630" y="1980" width="350" height="250" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -463,9 +463,6 @@
         </mxCell>
         <mxCell id="4LvH10w1mnI7Oj8NLsvD-6" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;                p_name : str = None,&#xa;               p_range_max=MLTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               p_anomaly_buffer_size : int = 100,&#xa;               p_thrs_inst : int = 0,&#xa;               p_thrs_clusters : int = 1,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="4LvH10w1mnI7Oj8NLsvD-0">
           <mxGeometry y="75" width="350" height="167" as="geometry" />
-        </mxCell>
-        <mxCell id="4LvH10w1mnI7Oj8NLsvD-42" value="_triage( p_change : Change, **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" vertex="1" parent="4LvH10w1mnI7Oj8NLsvD-0">
-          <mxGeometry y="242" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="4LvH10w1mnI7Oj8NLsvD-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="4LvH10w1mnI7Oj8NLsvD-11" target="P8m3U_S5QSKX-hw6cI7y-0">
           <mxGeometry relative="1" as="geometry" />

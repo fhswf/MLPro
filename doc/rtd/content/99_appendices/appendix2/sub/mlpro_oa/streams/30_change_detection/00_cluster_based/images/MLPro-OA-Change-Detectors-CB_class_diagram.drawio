@@ -51,54 +51,65 @@
         <mxCell id="fcJVb3HREh7NScvAmxeq-9" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="fcJVb3HREh7NScvAmxeq-8" vertex="1">
           <mxGeometry y="26" width="40.83333333333333" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="0cJ1NAXk0Xtcf3CmwPfC-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="4use4ZCXdNiZSNTW99xv-1" target="4use4ZCXdNiZSNTW99xv-16" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="zU3uKxy9fllYl4XVXU_g-1" target="zU3uKxy9fllYl4XVXU_g-10">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1049" y="420" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-1" value="ChangeDetectorCB&#xa;(ChangeDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="290" y="343" width="350" height="370" as="geometry">
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-1" value="ChangeDetectorCB&#xa;(ChangeDetector)" style="swimlane;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="641" y="500" width="350" height="380" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-2" value="C_TYPE = &#39;Cluster-based Change Detector&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-2" value="C_TYPE                           = &#39;Cluster-based Change Detector&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
           <mxGeometry y="41" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="QJ7Jg_j1DygTSJfUGPYK-0" value="_clusterer : ClusterAnalyzer" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="67" width="350" height="26" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-3" value="C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#0000FF;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
+          <mxGeometry y="67" width="350" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="QJ7Jg_j1DygTSJfUGPYK-2" value="_thrs_clusters : int" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="93" width="350" height="26" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-4" value="_clusterer : ClusterAnalyzer" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
+          <mxGeometry y="91" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="QJ7Jg_j1DygTSJfUGPYK-3" value="C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=#0000FF;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="119" width="350" height="26" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-5" value="_thrs_clusters : int" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
+          <mxGeometry y="117" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-5" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="145" width="350" height="8" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-6" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
+          <mxGeometry y="143" width="350" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-6" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;     p_name : str = None,&#xa;     p_range_max = ChangeDetector.C_RANGE_THREAD,&#xa;     p_ada : bool = True,&#xa;     p_duplicate_data : bool = False&#xa;     p_visualize : bool = False,&#xa;     p_logging = Log.C_LOG_ALL,&#xa;     p_change_buffer_size : int = 100,&#xa;     p_thrs_inst : int = 0,&#xa;     p_thrs_clusters : int = 0&#xa;     **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="153" width="350" height="165" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-7" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;                p_name : str = None,&#xa;               p_range_max=MLTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               p_change_buffer_size : int = 100,&#xa;               p_thrs_inst : int = 0,&#xa;               p_thrs_clusters : int = 1,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
+          <mxGeometry y="151" width="350" height="167" as="geometry" />
         </mxCell>
-        <mxCell id="fwcdu7c7HhZm6Ijn48Rt-0" value="_detect( p_clusters : dict, **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=#FF0000;" vertex="1" parent="4use4ZCXdNiZSNTW99xv-1">
-          <mxGeometry y="318" width="350" height="26" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-8" value="_detect( p_clusters : dict, p_inst : Instance, **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#0000FF;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
+          <mxGeometry y="318" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="QJ7Jg_j1DygTSJfUGPYK-1" value="_run( p_instances : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=#FF0000;" parent="4use4ZCXdNiZSNTW99xv-1" vertex="1">
-          <mxGeometry y="344" width="350" height="26" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-9" value="_run( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=default;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-1">
+          <mxGeometry y="348" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-16" value="ChangeCB&#xa;(Change)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=41;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#fff2cc;strokeColor=#d6b656;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="760" y="343" width="290" height="230" as="geometry">
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-10" value="ChangeCB&#xa;(Change)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=42;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;gradientColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="641" y="120" width="350" height="260" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="azBydEVot9yI6jtSICJJ-0" value="clusters : dict[Cluster]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
-          <mxGeometry y="41" width="290" height="26" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-11" value="clusters : dict[Cluster]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-10">
+          <mxGeometry y="42" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-20" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;fillColor=#dae8fc;gradientColor=#ffffff;" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
-          <mxGeometry y="67" width="290" height="8" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-12" value="_properties : PropertyDefinitions" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-10">
+          <mxGeometry y="68" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="4use4ZCXdNiZSNTW99xv-21" value="__init__( p_id : int = 0,&#xa;                p_tstamp : TStampType = None,&#xa;                p_visualise : bool = False,&#xa;                p_raising_object : object = None,&#xa;                p_status : bool = True,&#xa;                p_clusters : dict[Cluster] = None,&#xa;                p_properties : dict = None,&#xa;                **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
-          <mxGeometry y="75" width="290" height="125" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-13" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;fillColor=#dae8fc;gradientColor=#ffffff;" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-10">
+          <mxGeometry y="94" width="350" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="azBydEVot9yI6jtSICJJ-2" value="add_clusters( p_clusters )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" parent="4use4ZCXdNiZSNTW99xv-16" vertex="1">
-          <mxGeometry y="200" width="290" height="26" as="geometry" />
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-14" value="__init__( p_id : int = 0,&#xa;                p_status : bool = True,&#xa;                p_tstamp : TStampType = None,&#xa;                p_visualise : bool = False,&#xa;                p_raising_object : object = None,&#xa;                p_clusters : dict[Clusters] = {},&#xa;                p_properties : PropertyDefinitions = [],&#xa;                **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-10">
+          <mxGeometry y="102" width="350" height="127" as="geometry" />
+        </mxCell>
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-15" value="add_clusters( p_clusters : dict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0" vertex="1" parent="zU3uKxy9fllYl4XVXU_g-10">
+          <mxGeometry y="229" width="350" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-16" value="Abstract prototype for cluster-based change detectors" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="540" y="470" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="zU3uKxy9fllYl4XVXU_g-17" value="Abstract prototype for cluster-based change Events" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="970" y="70" width="120" height="55.5" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

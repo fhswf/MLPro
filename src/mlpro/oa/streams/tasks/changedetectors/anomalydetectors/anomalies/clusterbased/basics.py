@@ -12,111 +12,72 @@
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.3.0     SK       Refactoring
 ## -- 2024-12-11  1.3.1     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-06-09  2.0.0     DA       Refactoring: new parent ChangeCB
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2024-12-11)
+Ver. 2.0.0 (2025-06-09)
 
 This module provides a template class for cluster-based anomalies to be used in anomaly detection algorithms.
 """
 
-try:
-    from matplotlib.figure import Figure
-except:
-    class Figure : pass
 
-from datetime import datetime
-
+from mlpro.bf.various import TStampType
+from mlpro.bf.math.properties import PropertyDefinitions
+from mlpro.oa.streams.tasks.changedetectors.clusterbased import ChangeCB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
-from mlpro.bf.mt import Figure, PlotSettings
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AnomalyCB (Anomaly):
+class AnomalyCB (ChangeCB, Anomaly):
     """
-    Event class to be raised when cluster-based anomalies are detected.
+    Subtype for cluster-based anomaly events.
     
     Parameters
     ----------
     p_id : int
-        Anomaly ID. Default value = 0.
-    p_clusters : dict[Cluster]
-        Clusters associated with the anomaly. Default = None.
-    p_properties : dict
-        Poperties of clusters associated with the anomaly. Default = None.
-    p_det_time : str
-        Time of occurance of anomaly. Default = None.
-    p_visualize : bool
+        Change ID. Default value = 0.
+    p_status : bool = True
+        Status of the change.
+    p_tstamp : TStampType = None
+        Time of occurance of change. Default = None.
+    p_visualize : bool = False
         Boolean switch for visualisation. Default = False.
-    p_raising_object : object
+    p_raising_object : object = None
         Reference of the object raised. Default = None.
+    p_clusters : dict[Cluster] = {}
+        Clusters associated with the anomaly.
+    p_properties : PropertyDefinitions = []
+        List of properties of clusters associated with the anomaly.
     **p_kwargs
         Further optional keyword arguments.
     """
     
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
-    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
-                                PlotSettings.C_VIEW_3D, 
-                                PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
-
-    C_ANOMALY_COLORS        = [ 'blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan' ]
-
-## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_id : int = 0,
-                  p_clusters : dict[Cluster] = None,
-                  p_properties : dict = None,
-                  p_tstamp : datetime = None,
+                  p_status : bool = True,
+                  p_tstamp : TStampType = None,
                   p_visualize : bool = False,
                   p_raising_object : object = None,
+                  p_clusters : dict[Cluster] = {},
+                  p_properties : PropertyDefinitions = [],
                   **p_kwargs ):
         
-        super().__init__( p_id = p_id,
-                          p_tstamp = p_tstamp,
-                          p_visualize = p_visualize, 
-                          p_raising_object = p_raising_object,
-                          **p_kwargs )
+        ChangeCB(self).__init__( p_id = p_id,
+                                 p_status = p_status,
+                                 p_tstamp = p_tstamp,
+                                 p_visualize = p_visualize, 
+                                 p_raising_object = p_raising_object,
+                                 p_clusters = p_clusters,
+                                 p_properties = p_properties,
+                                 **p_kwargs )
         
-        self._colour_id               = 0
-        self.clusters : dict[Cluster] = p_clusters
-        self._properties : dict       = p_properties
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_properties(self) -> dict:
-        """
-        Method that returns the properties of clusters associated with the anomaly.
-        
-        Returns
-        -------
-        dict
-            Dictionary of properties.
-        """
-        return self._properties
-    
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
-
-        cluster : Cluster = None
-
-        for cluster in self.clusters.values(): 
-
-            cluster.color = "red"
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
-    
-        cluster : Cluster = None
-
-        for cluster in self.clusters.values(): 
-
-            cluster.color = "red"
+        Anomaly(self).__init__( p_id = p_id,
+                                p_status = p_status,
+                                p_tstamp = p_tstamp,
+                                p_visualize = p_visualize, 
+                                p_raising_object = p_raising_object,
+                                **p_kwargs )
