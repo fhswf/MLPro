@@ -11,7 +11,7 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.3.0     SK       Refactoring
-## -- 2025-06-04  2.0.0     DA       Refactoring: new parent ChangeDetectorCB
+## -- 2025-06-09  2.0.0     DA       Refactoring: new parent ChangeDetectorCB
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -23,7 +23,7 @@ This module provides templates for cluster-based anomaly detection algorithms.
 from mlpro.bf.various import Log
 from mlpro.bf.math.properties import *
 
-from mlpro.oa.streams.basics import StreamTask, InstDict, InstTypeNew
+from mlpro.oa.streams.tasks.changedetectors import Change
 from mlpro.oa.streams.tasks.changedetectors.clusterbased import ChangeDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.basics import AnomalyDetector
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import *
@@ -102,7 +102,7 @@ class AnomalyDetectorCB (ChangeDetectorCB, AnomalyDetector):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _triage(self, p_change, **p_kwargs):
+    def _triage(self, p_change : Change, **p_kwargs) -> bool:
         return AnomalyDetector()._triage(self, p_change = p_change, **p_kwargs)
         
 
