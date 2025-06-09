@@ -350,7 +350,7 @@ class ChangeDetector (OAStreamTask):
 
 
         # 1 Execution of the main detection algorithm for each new instance       
-        for (inst_type, inst) in p_instances.items():
+        for (inst_type, inst) in p_instances.values():
             if inst_type != InstTypeNew: continue
             self._detect( p_instance = inst, **self.kwargs )
 
