@@ -25,7 +25,7 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGenSingleProp
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGeneric
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBMovement
 
 
@@ -33,7 +33,7 @@ from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased i
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGenSingleProp ):
+class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
     """
     Generic cluster-based drift detector for gradient changes of single properties.
 
