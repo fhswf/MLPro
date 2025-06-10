@@ -19,7 +19,7 @@ from mlpro.bf.various import Log
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.deformation_index import cprop_deformation_index1
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.density import cprop_density1
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBDensity
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
 
@@ -51,7 +51,7 @@ class DriftDetectorCBGenDensity (DriftDetectorCBGenSingleGradient):
                   p_thrs_cluster : int = 0 ):
 
         super().__init__( p_clusterer = p_clusterer,
-                          p_property = cprop_deformation_index1,
+                          p_property = cprop_density1,
                           p_thrs_lower = p_thrs_lower,
                           p_thrs_upper = p_thrs_upper,
                           p_cls_drift = p_cls_drift,
