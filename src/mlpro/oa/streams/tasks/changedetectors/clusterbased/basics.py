@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-03  0.1.0     DA/DS    Creation
 ## -- 2025-06-09  1.0.0     DA       Design updates
+## -- 2025-06-10  1.1.0     DA       Review/rework of ChangeDetectorCB._run()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-06-09)
+Ver. 1.1.0 (2025-06-10)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
@@ -164,7 +165,7 @@ class ChangeDetectorCB (ChangeDetector):
         Further optional named parameters.
     """
 
-    C_TYPE              = 'Cluster-based Change Detector'
+    C_TYPE = 'Cluster-based Change Detector'
 
     C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []
 
@@ -242,11 +243,16 @@ class ChangeDetectorCB (ChangeDetector):
 
 
         # 2 Execution of the main detection algorithm once for the latest new instance
+        inst_new = None
         for inst_type, inst in reversed(list(p_instances.values())):
-            if inst_type == InstTypeNew: break
+            if inst_type == InstTypeNew: 
+                inst_new = inst
+                break
 
-        if inst is not None:
-            self._detect( p_clusters = current_clusters, p_inst = inst, **self.kwargs )
+        if inst_new is not None:
+            self._detect( p_clusters = current_clusters, 
+                          p_instance = inst_new, 
+                          **self.kwargs )
 
 
         # 3 Clean-up loop ('triage')
@@ -265,6 +271,13 @@ class ChangeDetectorCB (ChangeDetector):
 
             if triage: triage_list.append( change )
 
-        # 3.2 Remove all obsolete changes from the triage list
+        # 3.2 Raise and remove all obsolete changes
         for change in triage_list:
+            if change.status:
+                change.status = False
+                change.tstamp = None
+                self._raise_change_event( p_change = change, 
+                                          p_instance = inst_new, 
+                                          p_buffer = False )
+
             self._remove_change( p_change = change )

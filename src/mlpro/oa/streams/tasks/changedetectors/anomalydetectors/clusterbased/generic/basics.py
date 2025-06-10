@@ -19,8 +19,9 @@ This module provides template classes for generic cluster-based anomaly detectio
 """
 
 from mlpro.bf.various import Log
-from mlpro.bf.math.properties import *
-from mlpro.bf.streams import InstDict, InstTypeNew
+from mlpro.bf.math.properties import PropertyDefinitions
+from mlpro.bf.streams import Instance
+
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased import AnomalyDetectorCB
@@ -50,7 +51,7 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
     def __init__(self,
                   p_clusterer : ClusterAnalyzer,
                   p_properties : PropertyDefinitions,
-                  p_cls_anomaly : type,
+                  p_cls_anomaly : type[AnomalyCB],
                   p_name : str = None,
                   p_range_max = OAStreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
@@ -58,6 +59,8 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
+                  p_thrs_clusters : int = 1,
                   **p_kwargs ):
         
         self.C_REQ_CLUSTER_PROPERTIES = p_properties
@@ -71,26 +74,21 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
                           p_visualize = p_visualize,
                           p_logging= p_logging,
                           p_anomaly_buffer_size = p_anomaly_buffer_size,
+                          p_thrs_inst = p_thrs_inst,
+                          p_thrs_clusters = p_thrs_clusters,
                           **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _detect(self, p_clusters : dict, p_instance : Instance, **p_kwargs):
 
-        # 1 Get the clusters
-        clusters = self._clusterer.clusters
-
-        # 2 Observation of the clusters
-        for cluster in clusters.values():
-
-            # 2.1 Determine the current anomaly status of the cluster
+        for cluster in p_clusters.values():
             new_anomaly : AnomalyCB = self._detect_anomaly( p_cluster = cluster,
                                                             p_properties = self.C_REQ_CLUSTER_PROPERTIES,
-                                                            p_kwargs = self.kwargs )
+                                                            **self.kwargs )
             
             if new_anomaly is not None:
-                new_anomaly.tstamp = self._get_tstamp()
-                self._raise_anomaly_event( p_anomaly = new_anomaly )
+                self._raise_anomaly_event( p_anomaly = new_anomaly, p_instance = p_instance )
             
 
 ## -------------------------------------------------------------------------------------------------
@@ -117,71 +115,3 @@ class AnomalyDetectorCBGeneric (AnomalyDetectorCB):
         """
         
         raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBGenSingleProp (AnomalyDetectorCBGeneric):
-    """
-    Template for generic cluster-based anomaly detectors observing a single property.
-
-    Parameters
-    ----------
-    ...
-    p_property : PropertyDefinition
-        Cluster property to be observed.
-    p_cls_anomaly : type
-        Type of anomaly events to be raised.
-    ...
-    """
-
-    C_TYPE = 'Cluster-based Generic Single Property Anomaly Detector'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_clusterer : ClusterAnalyzer,
-                  p_property : PropertyDefinition,
-                  p_cls_anomaly : type,
-                  p_name : str = None,
-                  p_range_max = OAStreamTask.C_RANGE_THREAD,
-                  p_ada : bool = True,
-                  p_duplicate_data : bool = False,
-                  p_visualize : bool = False,
-                  p_logging=Log.C_LOG_ALL,
-                  **p_kwargs ):  
-             
-        super().__init__( p_clusterer = p_clusterer,
-                          p_properties = [p_property],
-                          p_cls_anomaly = p_cls_anomaly,
-                          p_name = p_name,
-                          p_range_max = p_range_max,
-                          p_ada = p_ada,
-                          p_duplicate_data = p_duplicate_data,
-                          p_visualize = p_visualize,
-                          p_logging= p_logging,
-                          **p_kwargs ) 
-
-
-
-
-
-## ------------------------------------------------------------------------------------------------
-## ------------------------------------------------------------------------------------------------
-class AnomalyDetectorCBGenMultiProp(AnomalyDetectorCBGeneric):
-    """
-    Template for generic cluster-based anomaly detectors observing multiple properties.
-
-    Parameters
-    ----------
-    ...
-    p_properties : PropertyDefinitions
-        Cluster properties to be observed.
-    p_cls_anomaly : type
-        Type of anomaly events to be raised.
-    ...
-    """
-
-    C_TYPE = 'Cluster-based Generic Multi Property Anomaly Detector'

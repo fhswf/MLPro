@@ -21,12 +21,14 @@ This module provides template classes for generic cluster-based drift detection
 """
 
 from mlpro.bf.various import Log
-from mlpro.bf.math.properties import PropertyDefinition, PropertyDefinitions
+from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.bf.streams import Instance
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.basics import DriftDetectorCB
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts import Drift
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased import DriftDetectorCB
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased  import DriftCB
 
 
 
@@ -52,7 +54,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
     def __init__( self,
                   p_clusterer : ClusterAnalyzer,
                   p_properties : PropertyDefinitions,
-                  p_cls_drift : type,
+                  p_cls_drift : type[DriftCB],
                   p_name : str = None,
                   p_range_max = OAStreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
@@ -64,9 +66,9 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
                   p_thrs_clusters : int = 1,
                   **p_kwargs ):
         
-        self.C_REQ_CLUSTER_PROPERTIES = p_properties
-        self._cls_drift               = p_cls_drift
-        self.cluster_drifts           = {}
+        self.C_REQ_CLUSTER_PROPERTIES   = p_properties
+        self._cls_drift : type[DriftCB] = p_cls_drift
+        self.cluster_drifts             = {}
 
         super().__init__( p_clusterer = p_clusterer,
                           p_property= p_properties,
@@ -83,22 +85,21 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _buffer_drift(self, p_drift):
-
-        # 0 Buffer the drift event
+    def _buffer_drift(self, p_drift : Drift):
         super()._buffer_drift(p_drift)
-
-
-        # 1 Get the id of the first cluster stored within the drift object
         cluster_id = next( iter(p_drift.clusters.keys()) )
-
-
-        # 2 Store this drift event for the related cluster
         self.cluster_drifts[cluster_id] = p_drift
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_drift(self, p_drift : Drift):
+        super()._remove_drift(p_drift)
+        cluster_id = next( iter(p_drift.clusters.keys()) )
+        del self.cluster_drifts[cluster_id]
  
 
 ## -------------------------------------------------------------------------------------------------
-    def _detect(self, p_clusters, p_instance : Instance, **p_kwargs):
+    def _detect(self, p_clusters : dict, p_instance : Instance, **p_kwargs):
         
         # 1 Observation of clusters
         for cluster in p_clusters.values():
@@ -115,41 +116,26 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
                 existing_drift = None
 
 
-            # 1.3 Raise a new drift event, whenever a drift of this cluster is determined for the first time
-            #     or if the drift status changes.
-            if ( ( existing_drift is None ) and ( drift_status == True ) ) or \
-               ( ( existing_drift is not None ) and ( existing_drift.drift_status != drift_status ) ):
-                new_drift = self._cls_drift( p_drift_status = drift_status,
-                                             p_tstamp = self._get_tstamp(),
-                                             p_visualize = self.get_visualization(),
-                                             p_raising_object = self,
-                                             p_clusters = { cluster.id : cluster },
-                                             p_properties = self.C_REQ_CLUSTER_PROPERTIES,
-                                             **self.kwargs )
-               
-                self._raise_drift_event( p_drift = new_drift )
-              
+            # 1.3 Determine whether a new drift event on/off is to be raised
+            drift : DriftCB = None
 
-        # 3 Update of stored last drift events per cluster
-        for cluster_id, drift in list( self.cluster_drifts.items() ):
-                        
-            try:
-                # 3.1 Check whether the related cluster still exists
-                related_cluster = p_clusters[cluster_id]
-            except:
-                # 3.2 Cluster disappered
-                if drift.status == True:
-                    new_drift = self._cls_drift( p_drift_status = False,
-                                                 p_tstamp = self._get_tstamp(),
-                                                 p_visualize = self.get_visualization(),
-                                                 p_raising_object = self,
-                                                 p_clusters = { cluster_id : cluster },
-                                                 p_properties = self.C_REQ_CLUSTER_PROPERTIES,
-                                                 **self.kwargs )
+            if ( existing_drift is None ) and ( drift_status == True ):
+                # 1.3.1 A new drift is detected
+                drift = self._cls_drift( p_status = True,
+                                         p_tstamp = p_instance.tstamp,
+                                         p_visualize = self.get_visualization(),
+                                         p_raising_object = self,
+                                         p_clusters = { cluster.id : cluster },
+                                         p_properties = self.C_REQ_CLUSTER_PROPERTIES,
+                                         **self.kwargs )
                 
-                    self._raise_drift_event( p_drift = new_drift ) 
-
-                del self.cluster_drifts[cluster_id]   
+            elif ( existing_drift is not None ) and ( existing_drift.status != drift_status ):
+                # 1.3.2 An existing drift changed its status
+                drift = existing_drift
+                drift.tstamp = p_instance.tstamp
+                
+                
+            if drift: self._raise_drift_event( p_drift = drift )
                        
 
 ## -------------------------------------------------------------------------------------------------
@@ -173,66 +159,3 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
         """
 
         raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSingleProp ( DriftDetectorCBGeneric ):
-    """
-    Specialized template for generic cluster-based drift detectors observing a single property.
-
-    Parameters
-    ----------
-    ...
-    p_property : PropertyDefinition
-        Single property to be observed.
-    ...
-    """
-
-    C_TYPE = 'Cluster-based Generic Drift Detector (Single)'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self,
-                  p_clusterer : ClusterAnalyzer,
-                  p_property : PropertyDefinition,
-                  p_cls_drift : type,
-                  p_name : str = None,
-                  p_range_max = OAStreamTask.C_RANGE_THREAD,
-                  p_ada : bool = True,
-                  p_duplicate_data : bool = False,
-                  p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL,
-                  p_drift_buffer_size : int = 100,
-                  p_thrs_inst : int = 0,
-                  p_thrs_clusters : int = 1,
-                  **p_kwargs ):
-        
-        super().__init__( p_clusterer = p_clusterer,
-                          p_properties = [ p_property ],
-                          p_cls_drift = p_cls_drift,
-                          p_name = p_name,
-                          p_range_max = p_range_max,
-                          p_ada = p_ada,
-                          p_duplicate_data = p_duplicate_data,
-                          p_visualize = p_visualize,
-                          p_logging = p_logging,
-                          p_drift_buffer_size = p_drift_buffer_size,
-                          p_thrs_inst = p_thrs_inst,
-                          p_thrs_clusters = p_thrs_clusters,
-                          **p_kwargs )
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenMultiProp ( DriftDetectorCBGeneric ):
-    """
-    Specialized template for generic cluster-based drift detectors observing multiple properties.
-    """
-
-    C_TYPE = 'Cluster-based Generic Drift Detector (Multi)'
