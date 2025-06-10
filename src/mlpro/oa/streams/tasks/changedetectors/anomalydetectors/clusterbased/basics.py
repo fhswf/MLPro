@@ -15,7 +15,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-04)
+Ver. 2.0.0 (2025-06-09)
 
 This module provides templates for cluster-based anomaly detection algorithms.
 """
