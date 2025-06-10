@@ -9,10 +9,11 @@
 ## -- 2025-03-18  0.1.1     DA       Bugfix in ClusterBody.__init__()
 ## -- 2025-03-19  0.1.2     DA       Refactoring (cprop_center_geo)
 ## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-10  0.3.0     DA/DS    New property 'density'
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-06-06)
+Ver. 0.3.0 (2025-06-10)
 
 This module provides a template class for clusters with a centroid and a body.
 
@@ -26,7 +27,7 @@ from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterId
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterCentroid, cprop_centroid
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_body, cprop_deformation_index
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_body, cprop_deformation_index, cprop_density
 
 
 
@@ -44,7 +45,8 @@ class ClusterBody (ClusterCentroid):
                             cprop_body,
                             cprop_size_geo,
                             cprop_center_geo,
-                            cprop_deformation_index ]
+                            cprop_deformation_index,
+                            cprop_density ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -61,6 +63,7 @@ class ClusterBody (ClusterCentroid):
         self._link_property( p_attr = cprop_size_geo[0], p_prop = self.body )
         self._link_property( p_attr = cprop_center_geo[0], p_prop = self.body )
         self._link_property( p_attr = cprop_deformation_index[0], p_prop = self.body )
+        self._link_property( p_attr = cprop_density[0], p_prop = self.body )
 
 
 ## -------------------------------------------------------------------------------------------------

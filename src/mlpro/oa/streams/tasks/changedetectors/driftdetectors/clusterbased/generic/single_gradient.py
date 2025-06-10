@@ -10,10 +10,11 @@
 ## -- 2025-03-26  0.3.0     DA       Method _get_drift_status(): exception if property is misdefined
 ## -- 2025-05-06  0.3.1     DA       Bugfix in method _get_drift-status()
 ## -- 2025-05-20  0.3.2     DA/DS    Bugfixs
+## -- 2025-06-10  0.4.0     DA/DS    New class name: DriftDetectorCBGenSingleGradient
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.2 (2025-05-20)
+Ver. 0.4.0 (2025-06-10)
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
@@ -32,9 +33,9 @@ from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased i
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingleProp ):
+class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGenSingleProp ):
     """
-    Generic cluster-based drift detector for movement drift detection.
+    Generic cluster-based drift detector for gradient changes of single properties.
 
     Parameters
     ----------

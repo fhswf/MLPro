@@ -7,28 +7,28 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-28  0.0.0     DS       Creation
 ## -- 2025-05-06  0.0.1     DA       Added default type 'DriftCBDeformation' to param p_cls_drift
+## -- 2025-06-10  0.0.2     DA/DS    Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.1 (2025-05-06)
+Ver. 0.0.2 (2025-06-10)
 
 This module provides a cluster-based deformation detector.
 """
 
 from mlpro.bf.various import Log
-from mlpro.bf.exceptions import *
-from mlpro.bf.math.properties import *
+
 from mlpro.oa.streams import OAStreamTask
-from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
+from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.deformation_index import cprop_deformation_index1
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBDeformation
-from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleMovement
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenDeformation (DriftDetectorCBGenSingleMovement):
+class DriftDetectorCBGenDeformation (DriftDetectorCBGenSingleGradient):
     """
     Cluster based Drift detector for the perticular cluster deformation detector.
     """

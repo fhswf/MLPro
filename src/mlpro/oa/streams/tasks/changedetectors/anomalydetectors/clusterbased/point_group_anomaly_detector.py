@@ -97,9 +97,8 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
                           **p_kwargs)
 
 
-## -------------------------------------------------------------------------------------------------    
-    def _detect( self, 
-                 p_inst: Instance ): 
+## -------------------------------------------------------------------------------------------------  
+    def _detect(self, p_clusters, p_instance, **p_kwargs):
         """
         custom method for detectiong cluster-based point anomalies.
         """
@@ -117,16 +116,16 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
             
                 # 2.1.1 Create a new point anomaly
                 point_anomaly = self._cls_point_anomaly( p_clusters = {cluster.id : cluster},
-                                                     p_tstamp = self.get_tstamp(),
+                                                     p_tstamp = self._get_tstamp(),
                                                      p_visualize = self.get_visualize,
                                                      p_raising_object = self)
 
-                self._raise_anomaly_event( p_anomaly = point_anomaly, p_inst = p_inst )
+                self._raise_anomaly_event( p_anomaly = point_anomaly, p_instance = p_instance )
                 self._latest_anomaly = point_anomaly
         
 
 ## ----------------------------------------------------------------------------------
-    def _triage_anomaly( self, p_anomaly : AnomalyCB ):
+    def _triage_anomaly( self, p_anomaly : AnomalyCB, **p_kwargs ):
         """
         Custom method for anomaly triage for point anomalies.
         This method checks if the point anomaly is still valid based on the cluster size.
@@ -254,17 +253,16 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _detect( self,
-                 p_inst: Instance ):
+    def _detect(self, p_clusters : dict, p_instance : Instance, **p_kwargs):
         """
         Custom method for detecting cluster-based spatial group anomalies.
         """
 
-        super()._detect( p_inst = p_inst )
+        super()._detect( p_clusters = p_clusters, p_instance = p_instance, **p_kwargs)
 
 
         # 1 Get all the clusters from the clusterer
-        all_clusters = self._clusterer.clusters
+        all_clusters = p_clusters
 
         # 3 Get average cluster size
         avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in all_clusters.values()]) / len(all_clusters)
@@ -304,11 +302,11 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                                                                              p_raising_object = self)
 
                     # 4.2.2.1 Raise an anomaly event
-                    self._raise_anomaly_event( p_anomaly = spatial_group_anomaly, p_inst = p_inst )
+                    self._raise_anomaly_event( p_anomaly = spatial_group_anomaly, p_instance = p_instance )
                     self._latest_anomaly = spatial_group_anomaly
 
 ## -------------------------------------------------------------------------------------------------
-    def _triage_anomaly( self, p_anomaly : AnomalyCB ):
+    def _triage_anomaly( self, p_anomaly : AnomalyCB, **p_kwargs ):
         """
         Custom method for anomaly triage for spatial group anomalies.
         This method checks if the spatial group anomaly is still valid based on the cluster size.
@@ -419,35 +417,27 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                                                              p_visualize = self.get_visualize,
                                                              p_raising_object = self)
                 
-                self._tga.clusters.update(latest_anomaly.clusters)
-
-            #4.1.2 If temporal anomaly exists, add clusters of the latest anomaly to _tga
-            else:
-                self._tga.clusters.update(latest_anomaly.clusters)
-                    
+            self._tga.add_clusters(p_clusters= latest_anomaly.clusters)
             
             #4.1.3 If the temporal anomaly has only two clusters, raise an anomaly event
             if len(self._tga.clusters) == 2:
                 
                 self._raise_anomaly_event(p_anomaly= self._tga, 
                                           p_inst = p_inst)
-                
+
+            return    
         
         #4.2 If temporal anomaly conditiod is not met, 
-        else:
-            
-            if self._tga is not None:
-                
-                if len(self._tga.clusters) >= 2:
+        elif self._tga is None:
+            return
+               
+        if len(self._tga.clusters) >= 2:
                     
-                    self._tga.p_status = False
-                    self._raise_anomaly_event(p_anomaly=self._tga, p_inst = p_inst)
+            self._tga.status = False
+            self._raise_anomaly_event(p_anomaly=self._tga, p_inst = p_inst)
 
-                    self._tga = None
+        self._tga = None
 
-                else:
-                    
-                    self._tga = None
                     
                   
 ## -------------------------------------------------------------------------------------------------
