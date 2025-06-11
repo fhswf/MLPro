@@ -40,17 +40,18 @@
 ## -- 2024-06-18  2.0.0     DA       Class Cluster: new parent class KWArgs
 ## -- 2024-07-08  2.1.0     DA       Class Cluster: hand over of kwargs to inner properties
 ## -- 2025-06-06  2.2.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-11  2.3.0     DA       New method Cluster.update_properties()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2025-06-06)
+Ver. 2.3.0 (2025-06-11)
 
 This module provides a template class for clusters to be used in cluster analyzer algorithms.
 
 """
 
 
-from mlpro.bf.various import Id, KWArgs
+from mlpro.bf.various import Id, KWArgs, TStampType
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import PropertyDefinitions, Properties
 from mlpro.bf.streams import Instance
@@ -152,6 +153,20 @@ class Cluster (Id, Properties, KWArgs):
         """
 
         raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def update_properties(self, p_tstamp : TStampType ):
+        """
+        Custom method to update inner cluster properties. To be triggered by the cluster analyzer.
+
+        Parameters
+        ----------
+        p_tstamp : TStampType
+            Time stamp of property update.
+        """
+
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
