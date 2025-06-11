@@ -16,10 +16,11 @@
 ## -- 2024-12-06  0.7.0     ASP      -BugFix: _adapt()
 ## -- 2025-01-02  0.8.0     ASP      -Renaming of variable names 
 ## -- 2025-01-26  0.9.0     ASP      class RLPID: Changed parameters and attributes comments
+## -- 2025-06-11  1.0.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2025-01-26)
+Ver. 1.0.0 (2025-06-11)
 
 This module provides an implementation of a OA PID controller.
 
@@ -181,18 +182,18 @@ class RLPID(Policy):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings, p_inst, **p_kwargs):
-        return self._pid_controller._update_plot_2d(p_settings, p_inst, **p_kwargs)
+    def _update_plot_2d(self, p_settings, p_instances, **p_kwargs) -> bool:
+        return self._pid_controller._update_plot_2d(p_settings = p_settings, p_instances = p_instances, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings, p_inst, **p_kwargs):
-        return self._pid_controller._update_plot_3d(p_settings, p_inst, **p_kwargs)
+    def _update_plot_3d(self, p_settings, p_instances, **p_kwargs) -> bool:
+        return self._pid_controller._update_plot_3d(p_settings = p_settings, p_instances = p_instances, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings, p_inst:InstDict, **p_kwargs): 
-        return self._pid_controller._update_plot_nd(p_settings, p_inst, **p_kwargs)   
+    def _update_plot_nd(self, p_settings, p_instances:InstDict, **p_kwargs) -> bool: 
+        return self._pid_controller._update_plot_nd(p_settings = p_settings, p_instances = p_instances, **p_kwargs)   
 
 
 ## -------------------------------------------------------------------------------------------------
