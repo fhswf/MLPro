@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-11-05  0.1.0     AP       Creation and initial implementation
 ## -- 2024-11-10  0.2.0     DA       Turned off visualization
+## -- 2025-06-11  0.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-11-10)
+Ver. 0.3.0 (2025-06-11)
 
 This module provides an implementation of a converter that convertsdetermins the next control variable by
 buffering and cumulating it.
@@ -61,10 +62,10 @@ class Converter (Operator):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances : InstDict):
 
         # 1 Get source instance 
-        src_instance : ControlData = get_ctrl_data( p_inst = p_inst, p_type = self._src_type, p_remove = True ) 
+        src_instance : ControlData = get_ctrl_data( p_instances = p_instances, p_type = self._src_type, p_remove = True ) 
 
         if src_instance is None:       
   
@@ -80,4 +81,4 @@ class Converter (Operator):
 
 
         # 3 Store destination instance      
-        p_inst[dst_instance.id] = (InstTypeNew, dst_instance)
+        p_instances[dst_instance.id] = (InstTypeNew, dst_instance)

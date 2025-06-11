@@ -32,15 +32,19 @@ This module provides a class for MinMax normalization.
 """
 
 
-from mlpro.bf.math.normalizers.basics import *
-import numpy as np
 from typing import Union
 
+import numpy as np
+
+from mlpro.bf.exceptions import ParamError
+from mlpro.bf.math import Set
+from mlpro.bf.math.normalizers import Normalizer
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerMinMax(Normalizer):
+class NormalizerMinMax (Normalizer):
     """
     Class to normalize elements based on MinMax normalization.
     """

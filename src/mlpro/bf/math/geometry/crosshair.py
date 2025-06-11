@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-31  1.0.0     DA       Creation
 ## -- 2024-12-11  1.0.1     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-06-09  1.1.0     DA       Refactoring of Crosshair._update_plot*: new return parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-12-11)
+Ver. 1.1.0 (2025-06-09)
 
 This module provides the class Crosshair that provides crosshair functionality.
 
@@ -55,12 +56,6 @@ class Crosshair (Point):
         Keyword parameters.
     """
 
-    C_PLOT_ACTIVE           = True
-    C_PLOT_STANDALONE       = False
-    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, 
-                                PlotSettings.C_VIEW_3D, 
-                                PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
     C_PLOT_COLOR            = 'blue'
 
 ## -------------------------------------------------------------------------------------------------
@@ -79,10 +74,10 @@ class Crosshair (Point):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
 
         # 0 Intro
-        if self.value is None: return
+        if self.value is None: return False
 
         if self.color is None:
             self.color = self.C_PLOT_COLOR
@@ -116,12 +111,14 @@ class Crosshair (Point):
             self._plot_line2.set_data( [center[0],center[0]], ylim )
             self._plot_line2.set_color( self.color )
 
+        return True
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
 
         # 0 Intro
-        if self.value is None: return
+        if self.value is None: return False
 
         if self.color is None:
             self.color = self.C_PLOT_COLOR
@@ -160,6 +157,8 @@ class Crosshair (Point):
             self._plot_line3.set_data_3d( [center[0],center[0]], [center[1],center[1]], zlim )
             self._plot_line3.set_color( self.color )
 
+        return True
+    
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_2d(self):

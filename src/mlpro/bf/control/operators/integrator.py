@@ -54,9 +54,9 @@ class Integrator (Operator):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances : InstDict):
 
-        ctrl_var = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        ctrl_var = get_ctrl_data( p_instances = p_instances, p_type = ControlVariable, p_remove = True )
         
         if ctrl_var is None:
             self.log(Log.C_LOG_TYPE_E, 'Control variable not found')
@@ -64,7 +64,7 @@ class Integrator (Operator):
 
         ctrl_var_int = self.integrate( p_ctrl_var = ctrl_var )
         
-        p_inst[ctrl_var_int.id] = (InstTypeNew, ctrl_var_int )
+        p_instances[ctrl_var_int.id] = (InstTypeNew, ctrl_var_int )
 
 
 ## -------------------------------------------------------------------------------------------------
