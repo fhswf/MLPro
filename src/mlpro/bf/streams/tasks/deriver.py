@@ -12,10 +12,11 @@
 ## -- 2024-07-17  1.1.1     SY       Method Deriver._prepare_derivation(): takeover of feature 
 ## --                                and label space from first instance
 ## -- 2025-04-25  1.1.2     DA       Bugfix in DerivativeFunction._custom_function()
+## -- 2025-06-06  1.2.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2025-04-25)
+Ver. 1.2.0 (2025-06-06)
 
 This module provides a stream task class Deriver to derive the data of instances.
 """
@@ -108,14 +109,14 @@ class Deriver(StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _prepare_derivation(self, p_inst:Instance):
+    def _prepare_derivation(self, p_instance:Instance):
 
         # 1 Feature space
-        features                = p_inst.get_feature_data().get_dim_ids()
-        self._feature_space     = type(p_inst.get_feature_data().get_related_set())()
+        features                = p_instance.get_feature_data().get_dim_ids()
+        self._feature_space     = type(p_instance.get_feature_data().get_related_set())()
         self._idx_feature       = features.index(self._derived_feature.get_id())
         
-        for feature in p_inst.get_feature_data().get_related_set().get_dims():
+        for feature in p_instance.get_feature_data().get_related_set().get_dims():
             self._feature_space.add_dim(p_dim=feature)
 
         feature                 = self._derived_feature.copy()
@@ -125,11 +126,11 @@ class Deriver(StreamTask):
         
         # 2 Label space
         try:
-            labels              = p_inst.get_label_data().get_dim_ids()
-            self._label_space   = type(p_inst.get_label_data().get_related_set())()
+            labels              = p_instance.get_label_data().get_dim_ids()
+            self._label_space   = type(p_instance.get_label_data().get_related_set())()
             self._idx_label     = labels.index(self._derived_label.get_id())
             
-            for label in p_inst.get_label_data().get_related_set().get_dims():
+            for label in p_instance.get_label_data().get_related_set().get_dims():
                 self._label_space.add_dim(p_dim=label)
 
             label               = self._derived_label.copy()
@@ -141,22 +142,22 @@ class Deriver(StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _derive_data(self, p_inst:Instance):
+    def _derive_data(self, p_instance:Instance):
         
         # 1 Preparation
-        f_values_old = p_inst.get_feature_data().get_values()
+        f_values_old = p_instance.get_feature_data().get_values()
         f_data_new = Element(p_set=self._feature_space)
 
         try:
-            l_values_old = p_inst.get_label_data().get_values()
+            l_values_old = p_instance.get_label_data().get_values()
             l_data_new = Element(p_set=self._label_space)
             l_values_new = np.append(l_values_old.copy(), l_values_old.copy()[self._idx_feature])
             l_data_new.set_values(l_values_new)
         except:
             l_data_new = None
         
-        if p_inst.get_tstamp() is not None:
-            t_values_old = p_inst.get_tstamp()
+        if p_instance.tstamp is not None:
+            t_values_old = p_instance.tstamp
         else:
             t_values_old = None
 
@@ -185,25 +186,25 @@ class Deriver(StreamTask):
 
         # 3 Add feature and label data in origin instance
         f_data_new.set_values(f_values_new)
-        p_inst.set_feature_data(p_feature_data=f_data_new)
+        p_instance.set_feature_data(p_feature_data=f_data_new)
 
         if l_data_new is not None:
-            p_inst.set_label_data(p_label_data=l_data_new)
+            p_instance.set_label_data(p_label_data=l_data_new)
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst:InstDict):
+    def _run(self, p_instances:InstDict):
 
         if not self._prepared:
             try:
-                (inst_type, inst) = next(iter(p_inst.values()))
-                self._prepare_derivation(p_inst=inst)
+                (inst_type, inst) = next(iter(p_instances.values()))
+                self._prepare_derivation(p_instance=inst)
                 self._prepared = True
             except:
                 return
 
-        for (inst_type,inst) in sorted(p_inst.values()):
-            self._derive_data(p_inst=inst)
+        for (inst_type,inst) in sorted(p_instances.values()):
+            self._derive_data(p_instance=inst)
 
 
 

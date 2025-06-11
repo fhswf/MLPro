@@ -12,17 +12,18 @@
 ## -- 2023-11-17  1.2.0     DA       Class Event: new time stamp functionality
 ## -- 2023-11-18  1.2.1     DA       Class Event: time stamp is set to now() if not provided
 ## -- 2024-05-23  1.3.0     DA       Method EventManger._raise_event(): reduction to TypeError   
+## -- 2025-05-27  1.4.0     DA       Class Event: new parent class KWArgs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-23)
+Ver. 1.4.0 (2025-05-27)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
 """
 
 from datetime import datetime
-from mlpro.bf.various import Log, TStamp
+from mlpro.bf.various import Log, TStamp, TStampType, KWArgs
 from mlpro.bf.exceptions import *
 
 
@@ -30,7 +31,7 @@ from mlpro.bf.exceptions import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Event (TStamp):
+class Event (TStamp, KWArgs):
     """
     Root class for events. It is ready to use and transfers the raising object and further key/value
     data to the event handler.
@@ -44,7 +45,7 @@ class Event (TStamp):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_raising_object, p_tstamp:datetime = None, **p_kwargs):
+    def __init__(self, p_raising_object, p_tstamp:TStampType = None, **p_kwargs):
         self._raising_object = p_raising_object
 
         if p_tstamp is None:
@@ -52,7 +53,7 @@ class Event (TStamp):
         else:
             TStamp.__init__(self, p_tstamp = p_tstamp)
 
-        self._data           = p_kwargs
+        KWArgs.__init__(self, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ class Event (TStamp):
 
 ## -------------------------------------------------------------------------------------------------
     def get_data(self):
-        return self._data
+        return self.kwargs
 
 
 
