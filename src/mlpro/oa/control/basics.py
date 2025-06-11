@@ -13,10 +13,11 @@
 ## -- 2024-10-09  0.4.0     DA       Refactoring
 ## -- 2024-12-05  0.5.0     DA       Refactoring and code cleanup
 ## -- 2024-12-06  0.5.1     DA       Bugfixes in methods OAController.__init__(), ._run()
+## -- 2025-06-11  0.6.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.1 (2024-12-06)
+Ver. 0.6.0 (2025-06-11)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
@@ -89,21 +90,21 @@ class OAController (Controller, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances: InstDict):
         """
         Computes the next action based on the current control error and adapts on further contextual
         information like setpoint, state, action.
         """
 
         # 1 Get control error instance
-        ctrl_error = get_ctrl_data( p_instances = p_inst, p_type = ControlError, p_remove = True )
+        ctrl_error = get_ctrl_data( p_instances = p_instances, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
             self.log(Log.C_LOG_TYPE_W, 'Control error instance is missing!')
             return
 
         # 2 Compute the next action
         ctrl_var = self.compute_output( p_ctrl_error = ctrl_error )
-        p_inst[ctrl_var.id] = (InstTypeNew, ctrl_var)
+        p_instances[ctrl_var.id] = (InstTypeNew, ctrl_var)
 
         # 3 Adapt
         self.adapt( p_ctrl_error = ctrl_error, p_ctrl_var = ctrl_var )
