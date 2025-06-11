@@ -31,10 +31,11 @@
 ## -- 2024-11-26  1.0.0     DA       Classes Controller, ControlledSystem: initial idle loop to
 ## --                                determine the initial system state
 ## -- 2025-06-02  1.0.1     DA       Implemented method ControlledSystem._reset()
+## -- 2025-06-11  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2025-06-02)
+Ver. 1.1.0 (2025-06-11)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -50,7 +51,6 @@ from mlpro.bf.various import Log, TStampType, Timer
 from mlpro.bf.mt import Range, Task, Workflow, Shared
 from mlpro.bf.ops import Mode
 from mlpro.bf.events import Event, EventManager
-from mlpro.bf.exceptions import *
 from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import Action, System
@@ -134,13 +134,13 @@ class ControlData (Instance):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-def get_ctrl_data( p_inst: InstDict, p_type: type, p_remove: bool = False) -> ControlData:
+def get_ctrl_data( p_instances: InstDict, p_type: type, p_remove: bool = False) -> ControlData:
     """
-    Gets and optionally removes a control data instance of a particular type from the p_inst dictionary.
+    Gets and optionally removes a control data instance of a particular type from the p_instances dictionary.
 
     Parameters
     ----------
-    p_inst: InstDict
+    p_instances : InstDict
         Dictionary of instances.
     p_type: type
         Type of instance to be found.
@@ -150,13 +150,13 @@ def get_ctrl_data( p_inst: InstDict, p_type: type, p_remove: bool = False) -> Co
 
     ctrl_data_found : ControlData = None
         
-    for (inst_type, inst) in p_inst.values():
+    for (inst_type, inst) in p_instances.values():
         if isinstance( inst, p_type):
             ctrl_data_found = inst
             break
         
     if ( p_remove ) and ( ctrl_data_found is not None ):
-        del p_inst[ctrl_data_found.id]
+        del p_instances[ctrl_data_found.id]
 
     return ctrl_data_found
 
@@ -166,14 +166,14 @@ def get_ctrl_data( p_inst: InstDict, p_type: type, p_remove: bool = False) -> Co
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-def replace_ctrl_data( p_inst: InstDict, p_ctrl_data: ControlData ):
+def replace_ctrl_data( p_instances: InstDict, p_ctrl_data: ControlData ):
     """
-    Adds the specified control data instance to the p_inst dictionary and removes an already existing
+    Adds the specified control data instance to the p_instances dictionary and removes an already existing
     control data instance of the same type before that.
 
     Parameters
     ----------
-    p_inst: InstDict
+    p_instances : InstDict
         Dictionary of instances.
     p_ctrl_data : ControlData
         Control data instance to be added.
@@ -184,8 +184,8 @@ def replace_ctrl_data( p_inst: InstDict, p_ctrl_data: ControlData ):
         True, if control data of the same type were actually removed. False otherwise.
     """
 
-    result = ( get_ctrl_data( p_inst = p_inst, p_type = type(p_ctrl_data), p_remove =  True ) != None )
-    p_inst[p_ctrl_data.id] = (InstTypeNew, p_ctrl_data)
+    result = ( get_ctrl_data( p_instances = p_instances, p_type = type(p_ctrl_data), p_remove =  True ) != None )
+    p_instances[p_ctrl_data.id] = (InstTypeNew, p_ctrl_data)
 
     return result
 
@@ -363,21 +363,21 @@ class Controller (ControlTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances : InstDict):
 
         # 0 Intro
         so : ControlShared = self.get_so()
         
 
         # 1 Get control error instance
-        ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
+        ctrl_error = get_ctrl_data( p_instances = p_instances, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
             self.log(Log.C_LOG_TYPE_W, 'Control error instance is missing!')
             return
 
 
         # 2 Remove existing control variable from inst dictionary
-        get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        get_ctrl_data( p_instances = p_instances, p_type = ControlVariable, p_remove = True )
 
 
         # 3 Compute control output
@@ -407,7 +407,7 @@ class Controller (ControlTask):
 
 
         # 4 Complete and store new control variable
-        p_inst[self._current_ctrl_var.id] = (InstTypeNew, self._current_ctrl_var)
+        p_instances[self._current_ctrl_var.id] = (InstTypeNew, self._current_ctrl_var)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -551,18 +551,18 @@ class ControlledSystem (ControlTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict ):
+    def _run(self, p_instances : InstDict ):
 
         # 0 Intro
         so : ControlShared = self.get_so()
 
 
         # 1 Remove an already existing controlled variable
-        get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
+        get_ctrl_data( p_instances = p_instances, p_type = ControlledVariable, p_remove = True )
 
 
         # 2 Get and remove control variable
-        ctrl_var = get_ctrl_data( p_inst = p_inst, p_type = ControlVariable, p_remove = True )
+        ctrl_var = get_ctrl_data( p_instances = p_instances, p_type = ControlVariable, p_remove = True )
 
         if ctrl_var is not None:
             # 3 Process control variable
@@ -594,7 +594,7 @@ class ControlledSystem (ControlTask):
                                                      p_value_space = self.system.get_state_space(),
                                                      p_values = state.values,
                                                      p_tstamp = so.get_tstamp() )
-        p_inst[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
+        p_instances[ctrlled_var.id] = ( InstTypeNew, ctrlled_var)
         self.log(Log.C_LOG_TYPE_S, 'Controlled variable created')
         
 
@@ -605,8 +605,8 @@ class ControlledSystem (ControlTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst : InstDict = None, **p_kwargs):
-        super().update_plot(p_inst = p_inst, **p_kwargs)
+    def update_plot(self, p_instances : InstDict = None, **p_kwargs):
+        super().update_plot(p_instances = p_instances, **p_kwargs)
         self.system.update_plot( **p_kwargs)
 
 
@@ -761,10 +761,10 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_inst: InstDict):
-        setpoint = get_ctrl_data( p_inst = p_inst, p_type = SetPoint, p_remove = False)
+    def reset(self, p_instances : InstDict):
+        setpoint = get_ctrl_data( p_instances = p_instances, p_type = SetPoint, p_remove = False)
         if setpoint != None:
-            replace_ctrl_data( p_inst = self._instances[self.C_TID_ADMIN], p_ctrl_data = setpoint )
+            replace_ctrl_data( p_instances = self._instances[self.C_TID_ADMIN], p_ctrl_data = setpoint )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -896,7 +896,7 @@ class ControlShared (StreamShared, ControlPanel, Log):
 
 
         # 2 Replace setpoint instance
-        get_ctrl_data( p_inst = inst_admin, p_type = SetPoint, p_remove = True)
+        get_ctrl_data( p_instances = inst_admin, p_type = SetPoint, p_remove = True)
 
         setpoint = SetPoint( p_id = self.get_next_inst_id(),
                              p_value_space = self._ctrlled_var_space,
@@ -1023,11 +1023,11 @@ class ControlWorkflow (StreamWorkflow, Mode):
     def run( self, 
              p_range : int = None, 
              p_wait: bool = False, 
-             p_inst : InstDict = None ):
+             p_instances : InstDict = None ):
         
         # 1 Transfer the setpoint instances from the predecessor tasks of a superior workflow
         try:
-            inst_dict = p_inst.copy()
+            inst_dict = p_instances.copy()
         except:
             superior_setpoint : SetPoint = None
             inst_dict = None
@@ -1038,7 +1038,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
                 superior_so.lock( p_tid = self.get_tid() )
 
                 for pred_task in self.get_predecessors():
-                    superior_setpoint = get_ctrl_data( p_inst = superior_so._instances[pred_task.get_tid()], 
+                    superior_setpoint = get_ctrl_data( p_instances = superior_so._instances[pred_task.get_tid()], 
                                                        p_type = SetPoint,
                                                        p_remove = True )
                 
@@ -1049,7 +1049,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
 
         
         # 2 Execute all tasks
-        StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_inst = inst_dict)
+        StreamWorkflow.run( self, p_range = p_range, p_wait = p_wait, p_instances = inst_dict)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1058,7 +1058,7 @@ class ControlWorkflow (StreamWorkflow, Mode):
         # 1 Add/replace the outcomes of the final task to the instance dict of the initial task
         so = self.get_so()
         so.lock( p_tid = ControlShared.C_TID_ADMIN )
-        setpoint = get_ctrl_data( p_inst = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
+        setpoint = get_ctrl_data( p_instances = so._instances[ControlShared.C_TID_ADMIN], p_type = SetPoint, p_remove = False )
 
         del so._instances[ControlShared.C_TID_ADMIN]
         new_setpoint = setpoint.copy()

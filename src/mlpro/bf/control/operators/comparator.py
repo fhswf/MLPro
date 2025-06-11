@@ -13,10 +13,11 @@
 ## -- 2024-11-26  0.6.0     DA       Method Comparator._run(): creation of ControlError only if
 ## --                                both SetPoint and ControlledVariable are detected
 ## -- 2024-12-03  0.6.1     DA       Bugfix in method Comparator.get_control_error()
+## -- 2025-06-11  0.7.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.1 (2024-12-03)
+Ver. 0.7.0 (2025-06-11)
 
 This module provides an implementation of a comparator that determins the control error based on 
 setpoint and controlled variable (system state).
@@ -43,17 +44,17 @@ class Comparator (Operator):
     C_NAME      = 'Comparator'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances : InstDict):
         
         # 1 Get setpoint
-        setpoint : SetPoint = get_ctrl_data( p_inst = p_inst, p_type = SetPoint, p_remove = True )
+        setpoint : SetPoint = get_ctrl_data( p_instances = p_instances, p_type = SetPoint, p_remove = True )
         if setpoint is None:
             self.log(Log.C_LOG_TYPE_E, 'Setpoint missing!')
             return
 
 
         # 2 Get and remove current controlled variable
-        ctrlled_var : ControlledVariable = get_ctrl_data( p_inst = p_inst, p_type = ControlledVariable, p_remove = True )
+        ctrlled_var : ControlledVariable = get_ctrl_data( p_instances = p_instances, p_type = ControlledVariable, p_remove = True )
         if ctrlled_var is None:
             self.log(Log.C_LOG_TYPE_W, 'Controlled variable missing!')
             return
@@ -61,7 +62,7 @@ class Comparator (Operator):
 
         # 3 Compute control error
         control_error = self.get_control_error( p_setpoint = setpoint, p_ctrlled_var = ctrlled_var )
-        p_inst[control_error.id] = (InstTypeNew, control_error)
+        p_instances[control_error.id] = (InstTypeNew, control_error)
 
 
 ## -------------------------------------------------------------------------------------------------

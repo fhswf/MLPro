@@ -96,7 +96,7 @@ class OAController (Controller, Model):
         """
 
         # 1 Get control error instance
-        ctrl_error = get_ctrl_data( p_inst = p_inst, p_type = ControlError, p_remove = True )
+        ctrl_error = get_ctrl_data( p_instances = p_inst, p_type = ControlError, p_remove = True )
         if ctrl_error is None:
             self.log(Log.C_LOG_TYPE_W, 'Control error instance is missing!')
             return
