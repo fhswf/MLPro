@@ -13,10 +13,11 @@
 ## -- 2024-05-28  1.3.0     SK       Refactoring
 ## -- 2024-12-11  1.3.1     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-06-09  2.0.0     DA       Refactoring: new parent ChangeCB
+## -- 2025-06-11  2.0.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-09)
+Ver. 2.0.1 (2025-06-11)
 
 This module provides a template class for cluster-based anomalies to be used in anomaly detection algorithms.
 """
@@ -66,18 +67,20 @@ class AnomalyCB (ChangeCB, Anomaly):
                   p_properties : PropertyDefinitions = [],
                   **p_kwargs ):
         
-        ChangeCB(self).__init__( p_id = p_id,
-                                 p_status = p_status,
-                                 p_tstamp = p_tstamp,
-                                 p_visualize = p_visualize, 
-                                 p_raising_object = p_raising_object,
-                                 p_clusters = p_clusters,
-                                 p_properties = p_properties,
-                                 **p_kwargs )
+        ChangeCB.__init__( self,
+                           p_id = p_id,
+                           p_status = p_status,
+                           p_tstamp = p_tstamp,
+                           p_visualize = p_visualize, 
+                           p_raising_object = p_raising_object,
+                           p_clusters = p_clusters,
+                           p_properties = p_properties,
+                           **p_kwargs )
         
-        Anomaly(self).__init__( p_id = p_id,
-                                p_status = p_status,
-                                p_tstamp = p_tstamp,
-                                p_visualize = p_visualize, 
-                                p_raising_object = p_raising_object,
-                                **p_kwargs )
+        Anomaly.__init__( self,
+                          p_id = p_id,
+                          p_status = p_status,
+                          p_tstamp = p_tstamp,
+                          p_visualize = p_visualize, 
+                          p_raising_object = p_raising_object,
+                          **p_kwargs )

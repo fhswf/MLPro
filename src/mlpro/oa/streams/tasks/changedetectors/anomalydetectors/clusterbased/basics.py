@@ -103,6 +103,6 @@ class AnomalyDetectorCB (ChangeDetectorCB, AnomalyDetector):
 
 ## -------------------------------------------------------------------------------------------------
     def _triage(self, p_change : Change, **p_kwargs) -> bool:
-        return AnomalyDetector()._triage(self, p_change = p_change, **p_kwargs)
+        return AnomalyDetector._triage(self, p_change = p_change, **p_kwargs)
         
 

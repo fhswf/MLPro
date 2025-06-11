@@ -8,10 +8,11 @@
 ## -- 2025-06-03  0.1.0     DA/DS    Creation
 ## -- 2025-06-09  1.0.0     DA       Design updates
 ## -- 2025-06-10  1.1.0     DA       Review/rework of ChangeDetectorCB._run()
+## -- 2025-06-11  1.1.1     DA       Workaround in ChangeDetectorCB.__init__(): parent/super()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-10)
+Ver. 1.1.1 (2025-06-11)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
@@ -183,15 +184,16 @@ class ChangeDetectorCB (ChangeDetector):
                   p_thrs_clusters : int = 1,
                   **p_kwargs ):
 
-        super().__init__( p_name = p_name,
-                          p_range_max = p_range_max,
-                          p_ada = p_ada,
-                          p_duplicate_data = p_duplicate_data,
-                          p_visualize = p_visualize,
-                          p_logging = p_logging,
-                          p_change_buffer_size = p_change_buffer_size,
-                          p_thrs_inst = p_thrs_inst,
-                          **p_kwargs )
+        ChangeDetector.__init__( self, 
+                                 p_name = p_name,
+                                 p_range_max = p_range_max,
+                                 p_ada = p_ada,
+                                 p_duplicate_data = p_duplicate_data,
+                                 p_visualize = p_visualize,
+                                 p_logging = p_logging,
+                                 p_change_buffer_size = p_change_buffer_size,
+                                 p_thrs_inst = p_thrs_inst,
+                                 **p_kwargs )
         
         self._clusterer           = p_clusterer
         self._thrs_clusters : int = p_thrs_clusters

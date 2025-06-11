@@ -9,12 +9,13 @@
 ## -- 2025-03-18  0.2.0     DA/DS    Completion of method _get_drift_status()
 ## -- 2025-03-26  0.3.0     DA       Method _get_drift_status(): exception if property is misdefined
 ## -- 2025-05-06  0.3.1     DA       Bugfix in method _get_drift-status()
-## -- 2025-05-20  0.3.2     DA/DS    Bugfixs
+## -- 2025-05-20  0.3.2     DA/DS    Bugfixes
 ## -- 2025-06-10  0.4.0     DA/DS    New class name: DriftDetectorCBGenSingleGradient
+## -- 2025-06-11  0.4.1     DA       Bugfixes 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2025-06-10)
+Ver. 0.4.1 (2025-06-11)
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
@@ -59,10 +60,13 @@ class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
+                  p_drift_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
+                  p_thrs_clusters : int = 1,
                   p_logging=Log.C_LOG_ALL ):
         
         super().__init__( p_clusterer = p_clusterer,
-                          p_property = p_property,
+                          p_properties = [p_property] ,
                           p_thrs_lower = p_thrs_lower,
                           p_thrs_upper = p_thrs_upper,
                           p_cls_drift = p_cls_drift,
@@ -71,16 +75,19 @@ class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
                           p_ada = p_ada,
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
+                          p_drift_buffer_size = p_drift_buffer_size,
+                          p_thrs_inst = p_thrs_inst,
+                          p_thrs_clusters = p_thrs_clusters,
                           p_logging = p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_status( self, 
-                     p_cluster : Cluster, 
-                     p_properties : PropertyDefinitions, 
-                     p_thrs_lower : float, 
-                     p_thrs_upper = float, 
-                     **p_kwargs ):
+    def _get_drift_status( self, 
+                           p_cluster : Cluster, 
+                           p_properties : PropertyDefinitions, 
+                           p_thrs_lower : float, 
+                           p_thrs_upper = float, 
+                           **p_kwargs ):
         
         # 1 Get property of interest from the cluster
         prop : Property = getattr( p_cluster, p_properties[0][0] )

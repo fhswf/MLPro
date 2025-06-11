@@ -8,10 +8,11 @@
 ## -- 2025-02-12  0.1.0     DA       Creation
 ## -- 2025-05-05  0.2.0     Ds       Refactoring : DriftDetectorCBSingle, DriftDetectorCBMulti
 ## -- 2025-06-09  1.0.0     DA       Refactoring: new parent ChangeDetectorCB
+## -- 2025-06-11  1.0.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-06-09)
+Ver. 1.0.1 (2025-06-11)
 
 This module provides a template for cluster-based drift detection algorithms.
 """
@@ -74,7 +75,8 @@ class DriftDetectorCB (ChangeDetectorCB, DriftDetector):
                   p_thrs_clusters : int = 1,
                   **p_kwargs ):
    
-        ChangeDetectorCB.__init__( p_clusterer = p_clusterer,
+        ChangeDetectorCB.__init__( self,
+                                   p_clusterer = p_clusterer,
                                    p_name = p_name,
                                    p_range_max = p_range_max,
                                    p_ada = p_ada,
@@ -86,17 +88,18 @@ class DriftDetectorCB (ChangeDetectorCB, DriftDetector):
                                    p_thrs_clusters = p_thrs_clusters,
                                    **p_kwargs )
         
-        DriftDetector.__init__( p_name = p_name,
-                                  p_range_max = p_range_max,
-                                  p_ada = p_ada,
-                                  p_duplicate_data = p_duplicate_data,
-                                  p_visualize = p_visualize,
-                                  p_logging = p_logging,
-                                  p_drift_buffer_size = p_drift_buffer_size,
-                                  p_thrs_inst = p_thrs_inst,
-                                  **p_kwargs )
+        DriftDetector.__init__( self,
+                                p_name = p_name,
+                                p_range_max = p_range_max,
+                                p_ada = p_ada,
+                                p_duplicate_data = p_duplicate_data,
+                                p_visualize = p_visualize,
+                                p_logging = p_logging,
+                                P_drift_buffer_size = p_drift_buffer_size,
+                                p_thrs_inst = p_thrs_inst,
+                                **p_kwargs )
         
 
 ## -------------------------------------------------------------------------------------------------
     def _triage(self, p_change : Change, **p_kwargs) -> bool:
-        return DriftDetector()._triage(self, p_change = p_change, **p_kwargs)
+        return DriftDetector._triage(self, p_change = p_change, **p_kwargs)

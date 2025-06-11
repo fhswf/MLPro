@@ -9,10 +9,11 @@
 ## -- 2025-03-04  0.2.0     DA       Simplification
 ## -- 2025-03-19  0.3.0     DA       Methods DriftCB._update_plot*: recovery of origin color
 ## -- 2025-06-09  1.0.0     DA       Refactoring: new parent ChangeCB
+## -- 2025-06-11  1.0.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-06-09)
+Ver. 1.0.1 (2025-06-11)
 
 This module provides a template class for cluster-based drifts to be used in cluster-based drift 
 detection algorithms.
@@ -62,18 +63,20 @@ class DriftCB (ChangeCB, Drift):
                   p_properties : PropertyDefinitions = [],
                   **p_kwargs ):
         
-        ChangeCB(self).__init__( p_id = p_id,
-                                 p_status = p_status,
-                                 p_tstamp = p_tstamp,
-                                 p_visualize = p_visualize, 
-                                 p_raising_object = p_raising_object,
-                                 p_clusters = p_clusters,
-                                 p_properties = p_properties,
-                                 **p_kwargs )
+        ChangeCB.__init__( self,
+                           p_id = p_id,
+                           p_status = p_status,
+                           p_tstamp = p_tstamp,
+                           p_visualize = p_visualize, 
+                           p_raising_object = p_raising_object,
+                           p_clusters = p_clusters,
+                           p_properties = p_properties,
+                           **p_kwargs )
         
-        Drift(self).__init__( p_id = p_id,
-                              p_status = p_status,
-                              p_tstamp = p_tstamp,
-                              p_visualize = p_visualize, 
-                              p_raising_object = p_raising_object,
-                              **p_kwargs )
+        Drift.__init__( self,
+                        p_id = p_id,
+                        p_status = p_status,
+                        p_tstamp = p_tstamp,
+                        p_visualize = p_visualize, 
+                        p_raising_object = p_raising_object,
+                        **p_kwargs )

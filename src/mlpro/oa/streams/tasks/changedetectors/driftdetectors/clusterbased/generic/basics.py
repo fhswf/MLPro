@@ -12,10 +12,11 @@
 ## --                                _get_tstamp()
 ## -- 2025-04-13  0.4.0     DA       Refactoring
 ## -- 2025-06-10  0.5.0     DA/DS    Refactoring
+## -- 2025-06-11  0.5.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2025-06-10)
+Ver. 0.5.1 (2025-06-11)
 
 This module provides template classes for generic cluster-based drift detection
 """
@@ -135,7 +136,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
                 drift.tstamp = p_instance.tstamp
                 
                 
-            if drift: self._raise_drift_event( p_drift = drift )
+            if drift: self._raise_drift_event( p_drift = drift, p_instance = p_instance )
                        
 
 ## -------------------------------------------------------------------------------------------------

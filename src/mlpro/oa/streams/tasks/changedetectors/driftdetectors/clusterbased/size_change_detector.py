@@ -21,13 +21,13 @@ from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.body import cprop_size_geo
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBSize
-from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleMovement
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSizeChange (DriftDetectorCBGenSingleMovement):
+class DriftDetectorCBGenSizeChange (DriftDetectorCBGenSingleGradient):
     """
     Cluster based Drift detector for the change of the cluster size.
     """
