@@ -9,16 +9,19 @@
 ## -- 2025-03-18  0.1.1     DA       Bugfix in ClusterBody.__init__()
 ## -- 2025-03-19  0.1.2     DA       Refactoring (cprop_center_geo)
 ## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-11  0.3.0     DA       - Redefintion of method ClusterBody.update_properties()
+## --                                - New method ClusterBody._update_density()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-06-06)
+Ver. 0.3.0 (2025-06-11)
 
 This module provides a template class for clusters with a centroid and a body.
 
 """
 
 
+from mlpro.bf.various import TStampType
 from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.bf.math.geometry import cprop_size_geo, cprop_center_geo
 from mlpro.bf.streams import Instance
@@ -26,7 +29,7 @@ from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterId
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterCentroid, cprop_centroid
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_body, cprop_deformation_index
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_body, cprop_deformation_index, cprop_density
 
 
 
@@ -44,7 +47,8 @@ class ClusterBody (ClusterCentroid):
                             cprop_body,
                             cprop_size_geo,
                             cprop_center_geo,
-                            cprop_deformation_index ]
+                            cprop_deformation_index,
+                            cprop_density ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -66,3 +70,19 @@ class ClusterBody (ClusterCentroid):
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_instance : Instance ) -> float:
         return self.body.get_membership( p_instance = p_instance )
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_density(self, p_tstamp : TStampType):
+        
+        try:
+            density = self.size.value / self.size_geo.value
+            self.density.set( p_value = density, p_time_stamp = p_tstamp )
+        except:
+            pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_properties(self, p_tstamp : TStampType):
+        super().update_properties( p_tstamp = p_tstamp )
+        self._update_density( p_tstamp = p_tstamp )
