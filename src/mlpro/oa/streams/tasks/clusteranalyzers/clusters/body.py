@@ -65,7 +65,6 @@ class ClusterBody (ClusterCentroid):
         self._link_property( p_attr = cprop_size_geo[0], p_prop = self.body )
         self._link_property( p_attr = cprop_center_geo[0], p_prop = self.body )
         self._link_property( p_attr = cprop_deformation_index[0], p_prop = self.body )
-        self._link_property( p_attr = cprop_density[0], p_prop = self.body )
 
 
 ## -------------------------------------------------------------------------------------------------
