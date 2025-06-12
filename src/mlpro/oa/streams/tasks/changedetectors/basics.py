@@ -390,7 +390,7 @@ class ChangeDetector (OAStreamTask):
     
         if not self.get_visualization(): return
 
-        # super().update_plot(p_inst, **p_kwargs)
+        super().update_plot( p_instances = p_instances, **p_kwargs )
 
         axes = self._plot_settings.axes
 
@@ -414,10 +414,10 @@ class ChangeDetector (OAStreamTask):
 
         for change in self.changes.values():
             change.update_plot( p_axlimits_changed = axlimits_changed,
-                                 p_xlim = ax_xlim_new,
-                                 p_ylim = ax_ylim_new,
-                                 p_zlim = ax_zlim_new,
-                                 **p_kwargs )
+                                p_xlim = ax_xlim_new,
+                                p_ylim = ax_ylim_new,
+                                p_zlim = ax_zlim_new,
+                                **p_kwargs )
     
 
 ## -------------------------------------------------------------------------------------------------
