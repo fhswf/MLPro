@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-02-28  1.0.0     DA       Creation
 ## -- 2025-06-08  1.0.1     DA       Review/refactoring
+## -- 2025-06-13  1.1.0     DA       Class AnomalyIB: param p_id is now initialized to -1
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2025-06-08)
+Ver. 1.1.0 (2025-06-13)
 
 This module provides a template class for instance-based anomalies to be used in instance-based
 anomaly detection algorithms.
@@ -32,8 +33,9 @@ class AnomalyIB ( Anomaly ):
 
     Parameters
     ----------
-    p_id : int
-        Anomaly ID. Default value = 0.
+    p_id : int = -1
+        Anomaly ID. Default value = -1, indicating that the ID is not set. In that case, the id is
+        automatically generated when raising the anomaly.
     p_status : bool = True
         Status of the anomaly. True marks the beginning of an anomaly, while False indicates its end.
     p_tstamp : TStampType = None
@@ -50,7 +52,7 @@ class AnomalyIB ( Anomaly ):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_id = 0, 
+                  p_id = -1, 
                   p_status : bool = True,
                   p_tstamp : TStampType = None, 
                   p_visualize = False, 
