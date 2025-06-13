@@ -11,10 +11,11 @@
 ## -- 2025-06-04  1.2.0     DA       Class ChangeDetector: new classmethod get_event_id()
 ## -- 2025-06-06  1.3.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-06-08  1.3.1     DA       Review and small adjustments
+## -- 2025-06-13  1.4.0     DA       Class Change: param p_id is now initialized to -1
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2025-06-08)
+Ver. 1.4.0 (2025-06-13)
 
 This module provides templates for change detection to be used in the context of online adaptivity.
 """
@@ -45,8 +46,9 @@ class Change (Id, Event, Plottable, Renormalizable):
 
     Parameters
     ----------
-    p_id : int
-        Change ID. Default value = 0.
+    p_id : int = -1
+        Change ID. Default value = -1, indicating that the ID is not set. In that case, the id is
+        automatically generated when raising the change.
     p_status : bool = True
         Status of the change. True marks the beginning of a change, while False indicates its end.
     p_tstamp : TStampType
@@ -75,7 +77,7 @@ class Change (Id, Event, Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_id : int = 0,
+                  p_id : int = -1,
                   p_status : bool = True,
                   p_tstamp : TStampType = None,
                   p_visualize : bool = False,
@@ -231,7 +233,7 @@ class ChangeDetector (OAStreamTask):
             oldest_change.remove_plot()
 
         # 3 Buffer new change
-        p_change.id = self._get_next_change_id() 
+        if p_change.id == -1: p_change.id = self._get_next_change_id() 
         self.changes[p_change.id] = p_change
 
 
