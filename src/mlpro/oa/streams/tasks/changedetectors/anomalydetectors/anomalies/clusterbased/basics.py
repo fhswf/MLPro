@@ -14,10 +14,11 @@
 ## -- 2024-12-11  1.3.1     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-06-09  2.0.0     DA       Refactoring: new parent ChangeCB
 ## -- 2025-06-11  2.0.1     DA       Corrections
+## -- 2025-06-13  2.1.0     DA       Class Change: param p_id is now initialized to -1
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2025-06-11)
+Ver. 2.1.0 (2025-06-13)
 
 This module provides a template class for cluster-based anomalies to be used in anomaly detection algorithms.
 """
@@ -39,8 +40,9 @@ class AnomalyCB (ChangeCB, Anomaly):
     
     Parameters
     ----------
-    p_id : int
-        Change ID. Default value = 0.
+    p_id : int = -1
+        Anomaly ID. Default value = -1, indicating that the ID is not set. In that case, the id is
+        automatically generated when raising the anomaly.
     p_status : bool = True
         Status of the change.
     p_tstamp : TStampType = None

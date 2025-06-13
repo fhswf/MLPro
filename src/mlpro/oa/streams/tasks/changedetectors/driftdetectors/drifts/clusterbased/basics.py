@@ -10,10 +10,11 @@
 ## -- 2025-03-19  0.3.0     DA       Methods DriftCB._update_plot*: recovery of origin color
 ## -- 2025-06-09  1.0.0     DA       Refactoring: new parent ChangeCB
 ## -- 2025-06-11  1.0.1     DA       Corrections
+## -- 2025-06-13  1.1.0     DA       Class Change: param p_id is now initialized to -1
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2025-06-11)
+Ver. 1.1.0 (2025-06-13)
 
 This module provides a template class for cluster-based drifts to be used in cluster-based drift 
 detection algorithms.
@@ -35,8 +36,9 @@ class DriftCB (ChangeCB, Drift):
     
     Parameters
     ----------
-    p_id : int
-        Change ID. Default value = 0.
+    p_id : int = -1
+        Drift ID. Default value = -1, indicating that the ID is not set. In that case, the id is
+        automatically generated when raising the drift.
     p_status : bool = True
         Status of the change.
     p_tstamp : TStampType = None

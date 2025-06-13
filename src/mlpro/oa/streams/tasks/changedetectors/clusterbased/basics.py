@@ -9,10 +9,11 @@
 ## -- 2025-06-09  1.0.0     DA       Design updates
 ## -- 2025-06-10  1.1.0     DA       Review/rework of ChangeDetectorCB._run()
 ## -- 2025-06-11  1.1.1     DA       Workaround in ChangeDetectorCB.__init__(): parent/super()
+## -- 2025-06-13  1.2.0     DA       Class Change: param p_id is now initialized to -1
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2025-06-11)
+Ver. 1.2.0 (2025-06-13)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
@@ -41,8 +42,9 @@ class ChangeCB (Change):
 
     Parameters
     ----------
-    p_id : int
-        Change ID. Default value = 0.
+    p_id : int = -1
+        Change ID. Default value = -1, indicating that the ID is not set. In that case, the id is
+        automatically generated when raising the change.
     p_status : bool = True
         Status of the change.
     p_tstamp : TStampType = None
@@ -61,7 +63,7 @@ class ChangeCB (Change):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_id : int = 0,
+                  p_id : int = -1,
                   p_status : bool = True,
                   p_tstamp : TStampType = None,
                   p_visualize : bool = False,
