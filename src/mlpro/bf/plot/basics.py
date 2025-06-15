@@ -69,10 +69,12 @@
 ## --                                  - New return parameter for methods _update_plot_*()
 ## --                                  - Using PlotSettings._refresh_required for plot refresh on
 ## --                                    demand
+## -- 2025-06-15  3.4.0     DA       Class PlotSettings: improved methods register(),unregister(),
+## --                                is_last_registered()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.3.0 (2025-06-09)
+Ver. 3.4.0 (2025-06-15)
 
 This module provides various classes related to data plotting.
 
@@ -184,7 +186,8 @@ class PlotSettings (KWArgs):
         self.force_fg                   = p_force_fg
         self.id                         = p_id
         self.view_autoselect            = p_view_autoselect
-        self._registered_obj            = []
+        self._registered_obj            = {}
+        self._last_registered           = None
         self._plot_step_counter         = 0
         self._refresh_required : bool   = False
 
@@ -207,7 +210,9 @@ class PlotSettings (KWArgs):
             Plotting object to be registered
         """
 
-        self._registered_obj.append(p_plot_obj)
+        if not p_plot_obj in self._registered_obj:
+            self._registered_obj[p_plot_obj] = None
+            self._last_registered = p_plot_obj
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -222,7 +227,9 @@ class PlotSettings (KWArgs):
         """
 
         try:
-            self._registered_obj.remove(p_plot_obj)
+            del self._registered_obj[p_plot_obj]
+            if self._last_registered == p_plot_obj:
+                self._last_registered = next(reversed(self._registered_obj.keys()))
         except:
             pass
 
@@ -245,7 +252,7 @@ class PlotSettings (KWArgs):
         """
         
         try:
-            return p_plot_obj == self._registered_obj[-1]
+            return p_plot_obj == self._last_registered
         except:
             return False
 
