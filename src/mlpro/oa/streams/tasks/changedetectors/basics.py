@@ -11,10 +11,14 @@
 ## -- 2025-06-04  1.2.0     DA       Class ChangeDetector: new classmethod get_event_id()
 ## -- 2025-06-06  1.3.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-06-08  1.3.1     DA       Review and small adjustments
+## -- 2025-06-13  1.4.0     DA       Class Change: param p_id is now initialized to -1
+## -- 2025-06-15  1.5.0     DA       Class ChangeDetector: 
+## --                                - corrected method update_plot()
+## --                                - added methods _update_plot_*()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2025-06-08)
+Ver. 1.5.0 (2025-06-15)
 
 This module provides templates for change detection to be used in the context of online adaptivity.
 """
@@ -45,8 +49,9 @@ class Change (Id, Event, Plottable, Renormalizable):
 
     Parameters
     ----------
-    p_id : int
-        Change ID. Default value = 0.
+    p_id : int = -1
+        Change ID. Default value = -1, indicating that the ID is not set. In that case, the id is
+        automatically generated when raising the change.
     p_status : bool = True
         Status of the change. True marks the beginning of a change, while False indicates its end.
     p_tstamp : TStampType
@@ -75,7 +80,7 @@ class Change (Id, Event, Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_id : int = 0,
+                  p_id : int = -1,
                   p_status : bool = True,
                   p_tstamp : TStampType = None,
                   p_visualize : bool = False,
@@ -231,7 +236,7 @@ class ChangeDetector (OAStreamTask):
             oldest_change.remove_plot()
 
         # 3 Buffer new change
-        p_change.id = self._get_next_change_id() 
+        if p_change.id == -1: p_change.id = self._get_next_change_id() 
         self.changes[p_change.id] = p_change
 
 
@@ -390,8 +395,6 @@ class ChangeDetector (OAStreamTask):
     
         if not self.get_visualization(): return
 
-        # super().update_plot(p_inst, **p_kwargs)
-
         axes = self._plot_settings.axes
 
         ax_xlim_new = axes.get_xlim()
@@ -412,13 +415,34 @@ class ChangeDetector (OAStreamTask):
         self._plot_ax_ylim = ax_ylim_new
         self._plot_ax_zlim = ax_zlim_new
 
-        for change in self.changes.values():
-            change.update_plot( p_axlimits_changed = axlimits_changed,
-                                 p_xlim = ax_xlim_new,
-                                 p_ylim = ax_ylim_new,
-                                 p_zlim = ax_zlim_new,
-                                 **p_kwargs )
-    
+        if self.changes:
+            # One of the changes will refresh the plot
+            for change in self.changes.values():
+                change.update_plot( p_axlimits_changed = axlimits_changed,
+                                    p_xlim = ax_xlim_new,
+                                    p_ylim = ax_ylim_new,
+                                    p_zlim = ax_zlim_new,
+                                    **p_kwargs )
+                
+        else:
+            # Without changes the detector itself is potentially the last task refreshing the plot
+            super().update_plot( p_instances = p_instances, **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings, p_instances, **p_kwargs) -> bool:
+        return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings, p_instances, **p_kwargs) -> bool:
+        return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings, p_instances, **p_kwargs) -> bool:
+        return False
+
 
 ## -------------------------------------------------------------------------------------------------
     def remove_plot(self, p_refresh: bool = True):

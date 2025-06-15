@@ -1920,8 +1920,8 @@ class StreamScenario (ScenarioBase):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
-    p_kwargs : dict
-        Custom keyword parameters handed over to custom method setup().
+    **p_kwargs 
+        Custom keyword arguments handed over to custom method setup().
     """
     
     C_TYPE              = 'Stream-Scenario'

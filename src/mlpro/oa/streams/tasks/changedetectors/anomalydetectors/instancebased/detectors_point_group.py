@@ -16,10 +16,11 @@
 ## -- 2025-02-17  1.5.0     DA       Review and generalization
 ## -- 2025-03-05  1.6.0     DA       Refactoring and simplification
 ## -- 2025-06-08  1.6.1     DA       Review/refactoring
+## -- 2025-06-13  1.6.2     DA       Bugfix in method _buffer_anomaly()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.1 (2025-06-08)
+Ver. 1.6.2 (2025-06-13)
 
 This module provides an extended template for instance-based anomaly detectors that supports an optional
 group anomaly detection based on point anomalies.
@@ -135,7 +136,7 @@ class AnomalyDetectorIBPG (AnomalyDetectorIB):
                         groupanomaly = GroupAnomaly( p_instances = self._group_anomalies_instances,
                                                      p_visualize=self.get_visualization(),
                                                      p_raising_object = self,
-                                                     p_tstampt = inst_2.tstamp )
+                                                     p_tstamp = inst_2.tstamp )
                         
                         self._raise_anomaly_event( p_anomaly = groupanomaly )
                             
