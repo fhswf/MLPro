@@ -31,10 +31,13 @@
 ## --                                  - Refactoring of method renormalize_on_event()
 ## -- 2025-06-02  1.3.0     DA       New class OAStreamAdaptationType
 ## -- 2025-06-06  1.4.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-06-15  1.4.1     DA       Class OAStreamScenario: added parameter **p_kwargs to
+## --                                - __init__()
+## --                                - setup() and _setup()       
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-06-06)
+Ver. 1.4.1 (2025-06-15)
 
 Core classes for online-adaptive data stream processing (OADSP).
 
@@ -539,6 +542,8 @@ class OAStreamScenario (StreamScenario):
         Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
+    **p_kwargs
+        Custom keyword arguments handed over to the custom method setup().
     """
     
     C_TYPE      = 'OA Stream-Scenario'
@@ -549,33 +554,41 @@ class OAStreamScenario (StreamScenario):
                   p_ada : bool = True,  
                   p_cycle_limit = 0, 
                   p_visualize : bool = False, 
-                  p_logging = Log.C_LOG_ALL ):
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
         
         self._ada = p_ada
 
         super().__init__( p_mode = p_mode, 
                           p_cycle_limit = p_cycle_limit, 
                           p_visualize = p_visualize, 
-                          p_logging = p_logging )
+                          p_logging = p_logging,
+                          **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self):
+    def setup(self, **p_kwargs):
         """
         Specialized method to set up an oa stream scenario. It is automatically called by the 
         constructor and calls in turn the custom method _setup().
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Custom keyword parameters
         """
 
         self._stream, self._workflow = self._setup( p_mode = self.get_mode(),
                                                     p_ada = self._ada, 
                                                     p_visualize = self.get_visualization(),
-                                                    p_logging = self.get_log_level() )
+                                                    p_logging = self.get_log_level(),
+                                                    **p_kwargs )
 
         self._workflow.get_so().assign_stream( p_stream = self._stream )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging):
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging, **p_kwargs):
         """
         Custom method to set up a stream scenario consisting of a stream and a processing stream
         workflow.
@@ -590,6 +603,8 @@ class OAStreamScenario (StreamScenario):
             Boolean switch for visualisation.
         p_logging
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+        p_kwargs : dict
+            Custom keyword parameters
 
         Returns
         -------

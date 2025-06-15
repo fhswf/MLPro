@@ -11,10 +11,11 @@
 ## -- 2024-12-11  1.2.1     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-02-28  1.3.0     DA       Refactoring and simplification
 ## -- 2025-06-08  1.4.0     DA       Refactoring of PointAnomaly._update_plot*: new return param
+## -- 2025-06-15  1.4.1     DA       Activated plotting for PointAnomaly
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-06-08)
+Ver. 1.4.1 (2025-06-15)
 
 
 This module provides a template class for point anomaly event to be used in anomaly detection algorithms.
@@ -38,6 +39,8 @@ class PointAnomaly (AnomalyIB):
     """
     Sub-type for point anomalies including a particular visualization.
     """
+
+    C_PLOT_ACTIVE        = True          
 
     C_PLOT_CH_SIZE      = 0.06           # Crosshair size in % of visible axes area
     C_PLOT_CH_OFFSET    = 0.4            # Crosshair distance from the center in [0,1]
