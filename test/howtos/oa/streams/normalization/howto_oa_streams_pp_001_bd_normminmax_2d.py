@@ -52,7 +52,9 @@ class MyAdaptiveScenario(OAStreamScenario):
                                    p_mode=p_mode,
                                    p_visualize=p_visualize,
                                    p_logging=p_logging)
+        stream.set_random_seed(p_seed=2)  # Set a random seed for reproducibility
         
+      
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a tasks
@@ -64,14 +66,15 @@ class MyAdaptiveScenario(OAStreamScenario):
         task_norm = NormalizerMinMax( p_name='T2 - MinMax Normalizer', 
                                       p_ada=p_ada, 
                                       p_visualize=p_visualize,
-                                      p_logging=p_logging)
+                                      p_logging=p_logging,
+                                      p_dst_boundaries=[-1, 1] )
 
         # 2.2 Creation of a workflow
         workflow = OAStreamWorkflow( p_name='Input Signal "' + StreamMLProClouds2D4C1000Static.C_NAME + '"',
-                               p_range_max = OAStreamWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
-                               p_ada=p_ada,
-                               p_visualize=p_visualize, 
-                               p_logging=p_logging )
+                                     p_range_max = OAStreamWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
+                                     p_ada=p_ada,
+                                     p_visualize=p_visualize, 
+                                     p_logging=p_logging )
 
         # 2.3 Addition of the task to the workflow
         workflow.add_task(p_task = task_bd)
@@ -84,13 +87,15 @@ class MyAdaptiveScenario(OAStreamScenario):
 
         # 4 Return stream and workflow
         return stream, workflow
+    
+
 
 
 
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 200
-    step_rate   = 2
+    step_rate   = 1
     logging     = Log.C_LOG_NOTHING
     visualize   = True
 
@@ -112,7 +117,7 @@ myscenario = MyAdaptiveScenario(p_mode=Mode.C_MODE_REAL,
 
 
 # 3 Reset and run own stream scenario
-myscenario.reset()
+myscenario.reset( p_seed = 1 )
 
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,

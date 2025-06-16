@@ -23,7 +23,7 @@
 ## -- 2023-02-13  1.0.14    LSB      BugFix: Changed the direct reference to p_param to a copy object
 ## -- 2024-04-30  1.1.0     DA       Refactoring and new class Renormalizable
 ## -- 2024-05-23  1.2.0     DA       Method Normalizer._set_parameters(): little optimization
-## -- 2024-07-12  1.2.1     LSB       Renormalization error
+## -- 2024-07-12  1.2.1     LSB      Renormalization error
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -73,7 +73,8 @@ class Normalizer:
         boolean:True
             Returns true after setting the parameters
         """
-        self._param = p_param.copy()
+
+        self._param = p_param #.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -92,14 +93,18 @@ class Normalizer:
             Normalized Data
         """
 
-        if self._param is None:
+        try:
+            if isinstance(p_data, Element):
+                p_data.set_values( (p_data.get_values() * self._param[0]) + self._param[1] ) 
+
+            elif isinstance(p_data, np.ndarray):
+                p_data = p_data * self._param[1] + self._param[0]
+
+            else:
+                raise ParamError('Wrong data type provided for normalization')
+        except:
             raise ImplementationError('Normalization parameters not set')
-        if isinstance(p_data, Element):
-            p_data.set_values(np.multiply(p_data.get_values(), self._param[0]) - self._param[1])
-        elif isinstance(p_data, np.ndarray):
-            p_data = np.multiply(p_data, self._param[0]) - self._param[1]
-        else:
-            raise ParamError('Wrong data type provided for normalization')
+    
         return p_data
 
 
@@ -123,14 +128,11 @@ class Normalizer:
             raise ImplementationError('Normalization parameters not set')
 
         if isinstance(p_data, Element):
-
-            p_data.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
-                    self._param[1] / self._param[0]))
+            p_data.set_values( ( p_data.get_values() - self._param[1] ) / self._param[0] )
 
         elif isinstance(p_data, np.ndarray):
-            p_data = np.multiply(p_data, 1 / self._param[0]) + \
-                    (self._param[1] / self._param[0])
-            p_data = np.nan_to_num(p_data)
+            p_data = ( p_data - self._param[1] ) / self._param[0]
+
         else:
             raise ParamError('Wrong datatype provided for denormalization')
 
@@ -153,6 +155,8 @@ class Normalizer:
             Renormalized Data
 
         """
+
+        if self._param_old is None: return p_data
 
         self._set_parameters(self._param_old)
         denormalized_element = self.denormalize(p_data)

@@ -66,6 +66,8 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         True for visualization, false by default.
     p_logging:
         Logging level of the task. Default is Log.C_LOG_ALL
+    p_dst_boundaries : list = [-1,1]
+        Explicit list of (low, high) destination boundaries. Default is [-1, 1].
     p_kwargs:
         Additional task parameters
     """
@@ -80,6 +82,7 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
                   p_duplicate_data : bool = False,
                   p_visualize:bool = False,
                   p_logging = Log.C_LOG_ALL,
+                  p_dst_boundaries : list = [-1, 1],
                   **p_kwargs ):
 
         OAStreamTask.__init__( self,
@@ -92,7 +95,7 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
                                **p_kwargs )
 
 
-        Norm.NormalizerMinMax.__init__(self)
+        Norm.NormalizerMinMax.__init__(self, p_dst_boundaries = p_dst_boundaries)
         self._parameters_updated:bool = None
 
         if p_visualize:
@@ -114,11 +117,7 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         
         # Normalization of all incoming stream instances (order doesn't matter)
         for ids, (inst_type, inst) in p_instances.items():
-            feature_data = inst.get_feature_data()
-
-            if self._param is None:
-                self.update_parameters( p_set = feature_data.get_related_set() )
-                
+            feature_data = inst.get_feature_data()               
             normalized_element = self.normalize(feature_data)
             feature_data.set_values(normalized_element.get_values())
 
@@ -146,17 +145,53 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         """
 
         self.update_parameters( p_boundaries = p_event_object.get_raising_object().get_boundaries() )
-        if self._visualize: self.update_plot()
+
+        if self._visualize:
+            if self._plot_settings.view == PlotSettings.C_VIEW_2D:
+                self._update_plot_data_2d()
+            elif self._plot_settings.view == PlotSettings.C_VIEW_3D:
+                self._update_plot_data_3d()
+            elif self._plot_settings.view == PlotSettings.C_VIEW_ND:
+                self._update_plot_data_nd()
+            else:
+                raise Error
+            
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_2d(self):
         """
+        Updates the 2D plot data after parameter changes by renormalizing the existing points.
+        """
+        
+        if not self._plot_2d_xdata:
+            return
+
+        for id in self._plot_2d_xdata:
+            # Hole Originalwerte
+            x = self._plot_2d_xdata[id]
+            y = self._plot_2d_ydata[id]
+
+            # 1. Renormalisiere einen 1x2-Vektor (nicht gesamtes Array!)
+            data = np.array([[x, y]], dtype=float)
+            renorm = self.renormalize(data)[0]  # Nur die erste Zeile zurücknehmen
+
+            # 2. Aktualisiere bestehende Dicts in-place
+            self._plot_2d_xdata[id] = renorm[0]
+            self._plot_2d_ydata[id] = renorm[1]
+
+        self._parameters_updated = False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_data_2d_old(self):
+        """
         Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
         """
 
-        if len(self._plot_2d_xdata) != 0 and len(self._plot_2d_xdata):
+        if len(self._plot_2d_xdata) == 0 and len(self._plot_2d_xdata):
+            
             if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
                 self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
             ids = []
@@ -176,7 +211,6 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
 
             self._parameters_updated = False
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -226,21 +260,3 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
             for j in range(len(self._plot_nd_plots)):
                 self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings : PlotSettings, p_instances : InstDict, **p_kwargs):
-        self._update_plot_data_2d()
-        return super()._update_plot_2d( p_settings = p_settings, p_instances = p_instances, **p_kwargs )
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings : PlotSettings, p_instances : InstDict, **p_kwargs):
-        self._update_plot_data_3d()
-        return super()._update_plot_3d( p_settings = p_settings, p_instances = p_instances, **p_kwargs )
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings : PlotSettings, p_instances : InstDict, **p_kwargs):
-        self._update_plot_data_nd()
-        return super()._update_plot_nd( p_settings = p_settings, p_instances = p_instances, **p_kwargs )
