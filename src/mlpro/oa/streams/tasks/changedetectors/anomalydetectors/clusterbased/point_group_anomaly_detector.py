@@ -16,11 +16,12 @@
 ## -- 2025-05-27  0.3.0     DS       Design extensions
 ## -- 2025-06-02  0.3.1     DS       Bug fixes
 ## -- 2025-06-08  0.3.2     DS       Design extensions
-## -- 2025-06-10  0.3.3     DA/DS       Refactoring
+## -- 2025-06-10  0.3.3     DA/DS    Refactoring
+## -- 2025-06-15  0.3.4     DS       Bug fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.3 (2025-06-10)
+Ver. 0.3.4 (2025-06-15)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -64,12 +65,17 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
         The logging level for the anomaly detector.
     p_anomaly_buffer_size : int = 100
         The size of the anomaly buffer.
+    p_thrs_inst : int = 0
+        The threshold for the number of instances.
+    p_thrs_clusters : int = 1
+        The threshold for the number of clusters.
     ...
     """
 
     C_NAME = 'Point anomaly'
     C_PROPERTY_DEFINITIONS : PropertyDefinition = []
     
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_clusterer : ClusterAnalyzer,
@@ -86,9 +92,9 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
                   p_thrs_clusters : int = 1,
                   **p_kwargs ):
         
-        self._property = p_property
+        self._property          = p_property
         self._cls_point_anomaly = p_cls_point_anomaly
-        self._latest_anomaly = None
+        self._latest_anomaly    = None
         
         super().__init__( p_clusterer=p_clusterer,
                           p_name = p_name,
@@ -119,9 +125,9 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
             
                 # 2.1.1 Create a new point anomaly
                 point_anomaly = self._cls_point_anomaly( p_clusters = {cluster.id : cluster},
-                                                     p_tstamp = self._get_tstamp(),
-                                                     p_visualize = self.get_visualize,
-                                                     p_raising_object = self)
+                                                         p_tstamp = self._get_tstamp(),
+                                                         p_visualize = self.get_visualize,
+                                                         p_raising_object = self)
 
                 self._raise_anomaly_event( p_anomaly = point_anomaly, p_instance = p_instance )
                 self._latest_anomaly = point_anomaly
@@ -179,12 +185,17 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
         The logging level for the anomaly detector.
     p_anomaly_buffer_size : int = 100
         The size of the anomaly buffer.
+    P_thres_inst : int = 0
+        The threshold for the number of instances.
+    p_thres_clusters : int = 1
+        The threshold for the number of clusters.
     p_thres_percent : float = 0.05
         The threshold percentage for the cluster size.
     """
 
     C_NAME = 'Spatial group anomaly'
     C_PROPERTY_DEFINITIONS : PropertyDefinition = []
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -203,12 +214,11 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                   p_thres_percent : float = 0.05,
                   **p_kwargs ):
 
-        
-        self.cb_anomalies ={}
-        self._property = p_property
+        self.cb_anomalies               ={}
+        self._property                  = p_property
         self._cls_spatial_group_anomaly = p_cls_spatial_group_anomaly
-        self._thres_percent = p_thres_percent
-        self.clusters_to_remove = []
+        self._thres_percent             = p_thres_percent
+        self.clusters_to_remove         = []
         
         super().__init__( p_clusterer=p_clusterer,
                           p_name = p_name,
@@ -224,7 +234,6 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
 
 
 ## -------------------------------------------------------------------------------------------------
-
     def _buffer_anomaly(self, p_anomaly:AnomalyCB):
         """
         Method to be used to add a new anomaly. Please use as part of your algorithm.
@@ -307,6 +316,7 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                     self._raise_anomaly_event( p_anomaly = spatial_group_anomaly, p_instance = p_instance )
                     self._latest_anomaly = spatial_group_anomaly
 
+
 ## -------------------------------------------------------------------------------------------------
     def _triage_anomaly( self, p_anomaly : AnomalyCB, **p_kwargs ):
         """
@@ -327,7 +337,6 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                 
         return False
             
-
 
 
 
@@ -359,6 +368,10 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         The logging level for the anomaly detector.
     p_anomaly_buffer_size : int = 100
         The size of the anomaly buffer.
+    P_thrs_inst : int = 0
+        The threshold for the number of instances.
+    p_thrs_clusters : int = 1
+        The threshold for the number of clusters.
     """
 
     C_NAME = 'Temporal group anomaly'
