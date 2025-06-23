@@ -99,8 +99,6 @@ from itertools import cycle
 import time
 from datetime import timedelta, datetime
 
-import numpy as np
-
 try:
     from matplotlib.figure import Figure
 except:
@@ -1652,9 +1650,9 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd( self, 
-                            p_settings : PlotSettings, 
-                            p_instances : InstDict, 
-                            **p_kwargs ) -> bool:
+                         p_settings : PlotSettings, 
+                         p_instances : InstDict, 
+                         **p_kwargs ) -> bool:
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -1675,7 +1673,7 @@ class StreamTask (Task):
         """
 
         # 1 Check: something to do?
-        if len(p_instances) == 0: return False
+        if not p_instances: return False
 
 
         # 2 Late initialization of plot object
@@ -1684,8 +1682,10 @@ class StreamTask (Task):
             inst_ref = next(iter(p_instances.values()))[1]
 
             # 2.1 Add plot for each feature
-            self._plot_nd_plots = []
-            feature_space       = inst_ref.get_feature_data().get_related_set()
+            feature_space        = inst_ref.get_feature_data().get_related_set()
+            self._plot_nd_plots  = []
+            self._plot_y_min     = None
+            self._plot_y_max     = None
 
             for feature in feature_space.get_dims():
                 if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
@@ -1710,16 +1710,24 @@ class StreamTask (Task):
                 for i, fplot in enumerate(self._plot_nd_plots):
                     feature_value = feature_data[i]
                     fplot[0].append(feature_value)
-            
+                    if not p_settings.autoscale_local:
+                        if ( self._plot_y_min is None ) or ( self._plot_y_min > feature_value ):
+                            self._plot_y_min = feature_value
+                        if ( self._plot_y_max is None ) or ( self._plot_y_max < feature_value ):
+                            self._plot_y_max = feature_value
+
             else:
-                try:
-                    idx = self._plot_inst_ids.index(inst_id)
-                    self._plot_inst_ids[idx] = None
-                    self._plot_nd_xdata[idx] = np.nan
+                if inst_id == self._plot_inst_ids[0]:
+                    self._plot_inst_ids = self._plot_inst_ids[1:]
+                    self._plot_nd_xdata = self._plot_nd_xdata[1:]
                     for fplot in self._plot_nd_plots:
-                        fplot[0][idx] = np.nan
-                except:
-                    pass
+                        fplot[0] = fplot[0][1:]
+                else:
+                    idx = self._plot_inst_ids.index(inst_id)
+                    del self._plot_inst_ids[idx]
+                    del self._plot_nd_xdata[idx]
+                    for fplot in self._plot_nd_plots:
+                        del fplot[0][idx]
 
 
         # 4 If buffer size is limited, remove obsolete data
@@ -1727,9 +1735,9 @@ class StreamTask (Task):
             num_del = max(0, len(self._plot_nd_xdata) - p_settings.data_horizon )
 
             for i in range(num_del):
-                del self._plot_inst_ids[0]
-                del self._plot_nd_xdata[0]
-                for fplot in self._plot_nd_plots: del fplot[0][0]
+                self._plot_inst_ids = self._plot_inst_ids[1:]
+                self._plot_nd_xdata = self._plot_nd_xdata[1:]
+                for fplot in self._plot_nd_plots: fplot[0] = fplot[0][1:]
 
 
         # 5 Set new plot data of all feature plots
@@ -1743,142 +1751,20 @@ class StreamTask (Task):
         else:
             xlim_id = 0
 
-        try:
-            x_min = self._plot_nd_xdata[xlim_id].total_seconds() if isinstance(self._plot_nd_xdata[xlim_id], timedelta) else self._plot_nd_xdata[xlim_id]
-            x_max = self._plot_nd_xdata[-1].total_seconds() if isinstance(self._plot_nd_xdata[-1], timedelta) else self._plot_nd_xdata[-1]
-            p_settings.axes.set_xlim(x_min, x_max)
-        except:
-            raise Error("time delta could not be processed")
+        if isinstance(self._plot_nd_xdata[xlim_id], timedelta):
+            x_min = self._plot_nd_xdata[xlim_id].total_seconds()
+            x_max = self._plot_nd_xdata[-1].total_seconds()
+        else:
+            x_min = self._plot_nd_xdata[xlim_id]
+            x_max = self._plot_nd_xdata[-1]
+
+        p_settings.axes.set_xlim(x_min, x_max)
 
         if p_settings.autoscale_local:
             p_settings.axes.relim()
             p_settings.axes.autoscale_view(scalex=False, scaley=True)
         else:
-# !!
-            y_values = []
-            for fplot in self._plot_nd_plots:
-                y_values += [v for v in fplot[0] if not np.isnan(v)]
-            if y_values:
-                ymin, ymax = min(y_values), max(y_values)
-                p_settings.axes.set_ylim(ymin, ymax)
-
-        return True
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd_old( self, 
-                         p_settings : PlotSettings, 
-                         p_instances : InstDict, 
-                         **p_kwargs ) -> bool:
-        """
-        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_instances : InstDict
-            Instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
-
-        Returns
-        -------
-        bool   
-            True, if changes on the plot require a refresh of the figure. False otherwise.          
-        """
-
-        # 1 Check: something to do?
-        if len(p_instances) == 0: return False
-
-
-        # 2 Late initialization of plot object
-        if self._plot_nd_plots is None:
-
-            inst_ref = next(iter(p_instances.values()))[1]
-
-            # 2.1 Add plot for each feature
-            self._plot_nd_plots = []
-            feature_space       = inst_ref.get_feature_data().get_related_set()
-
-            for feature in feature_space.get_dims():
-                if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
-                    feature_xdata = self._plot_nd_xdata
-                    feature_ydata = []
-                    feature_plot, = p_settings.axes.plot( feature_xdata, 
-                                                          feature_ydata, 
-                                                          lw=1 )
-
-                    self._plot_nd_plots.append( [feature_ydata, feature_plot] )
-
-
-        # 3 Update plot data
-        for inst_id, (inst_type, inst) in sorted(p_instances.items()):
-
-            if inst_type == InstTypeNew:
-                self._plot_inst_ids.append(inst_id)
-                # Handling if the tstamps are timedeltas
-                try:
-                    self._plot_nd_xdata.append(inst.tstamp.total_seconds())
-                except:
-                    self._plot_nd_xdata.append(inst.tstamp)
-
-                feature_data = inst.get_feature_data().get_values()
-
-                for i, fplot in enumerate(self._plot_nd_plots):
-                    feature_value = feature_data[i]
-
-                    if ( self._plot_nd_ymin is None ) or ( self._plot_nd_ymin > feature_value ):
-                        self._plot_nd_ymin = feature_value
-
-                    if ( self._plot_nd_ymax is None ) or ( self._plot_nd_ymax < feature_value ):
-                        self._plot_nd_ymax = feature_value
-
-                    fplot[0].append(feature_value)
-            
-            else:
-                try:
-                    idx = self._plot_inst_ids.index(inst_id)
-                    del self._plot_inst_ids[idx]
-                    del self._plot_nd_xdata[idx]
-                    for fplot in self._plot_nd_plots: del fplot[0][idx]
-                except:
-                    pass
-
-        
-        # 4 If buffer size is limited, remove obsolete data
-        if p_settings.data_horizon > 0:
-            num_del = max(0, len(self._plot_nd_xdata) - p_settings.data_horizon )
-
-            for i in range(num_del):
-                del self._plot_inst_ids[0]
-                del self._plot_nd_xdata[0]
-                for fplot in self._plot_nd_plots: del fplot[0][0]
-
-
-        # 5 Set new plot data of all feature plots
-        for fplot in self._plot_nd_plots:
-            fplot[1].set_xdata(self._plot_nd_xdata)
-            fplot[1].set_ydata(fplot[0])
-
-
-        # 6 Update ax limits
-        if p_settings.plot_horizon > 0:
-            xlim_id = max(0, len(self._plot_nd_xdata) - p_settings.plot_horizon)
-        else:
-            xlim_id = 0
-
-        if isinstance(self._plot_nd_xdata[xlim_id], timedelta):
-            # Handling if the tstamps are timedeltas
-            try:
-                p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id].total_seconds(), self._plot_nd_xdata[-1].total_seconds())
-            except:
-                raise Error("time delta could not be processed")
-        else:
-            p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id], self._plot_nd_xdata[-1])
-
-        p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
+            p_settings.axes.set_ylim(self._plot_y_min, self._plot_y_max)
 
         return True
                     
