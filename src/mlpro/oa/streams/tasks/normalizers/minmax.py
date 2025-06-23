@@ -96,7 +96,6 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
 
         Norm.NormalizerMinMax.__init__(self, p_dst_boundaries = p_dst_boundaries)
-        self._parameters_updated:bool = None
 
         if p_visualize:
             self._plot_data_2d = None
@@ -165,52 +164,10 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         Updates the 2D plot data after parameter changes by renormalizing the existing points.
         """
         
-        if not self._plot_2d_xdata:
-            return
+        if not self._plot_2d_xdata: return
 
-        for id in self._plot_2d_xdata:
-            # Hole Originalwerte
-            x = self._plot_2d_xdata[id]
-            y = self._plot_2d_ydata[id]
-
-            # 1. Renormalisiere einen 1x2-Vektor (nicht gesamtes Array!)
-            data = np.array([[x, y]], dtype=float)
-            renorm = self.renormalize(data)[0]  # Nur die erste Zeile zurücknehmen
-
-            # 2. Aktualisiere bestehende Dicts in-place
-            self._plot_2d_xdata[id] = renorm[0]
-            self._plot_2d_ydata[id] = renorm[1]
-
-        self._parameters_updated = False
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_data_2d_old(self):
-        """
-        Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-        """
-
-        if len(self._plot_2d_xdata) == 0 and len(self._plot_2d_xdata):
-            
-            if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
-                self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
-            ids = []
-            for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
-                ids.extend([id])
-                self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
-                self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
-
-            plot_data_renormalized = self.renormalize(self._plot_data_2d)
-
-            self._plot_2d_xdata = {}
-            self._plot_2d_ydata = {}
-
-            for i, data_2d in enumerate(plot_data_renormalized):
-                self._plot_2d_xdata[ids[i]] = data_2d[0]
-                self._plot_2d_ydata[ids[i]] = data_2d[1]
-
-
-            self._parameters_updated = False
+        self.renormalize( p_data = self._plot_2d_xdata, p_dim = 0 )
+        self.renormalize( p_data = self._plot_2d_ydata, p_dim = 1 )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -219,27 +176,11 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
         """
 
-        if len(self._plot_3d_xdata) != 0:
-            if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
-                self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
+        if not self._plot_3d_xdata: return
 
-            ids = []
-            for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
-                ids.extend([id])
-                self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
-                self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
-                self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
-
-            plot_data_renormalized = self.renormalize(self._plot_data_3d)
-
-            self._plot_3d_xdata = {}
-            self._plot_3d_ydata = {}
-            self._plot_3d_zdata = {}
-
-            for i, data_3d in enumerate(plot_data_renormalized):
-                self._plot_3d_xdata[ids[i]] = data_3d[0]
-                self._plot_3d_ydata[ids[i]] = data_3d[1]
-                self._plot_3d_zdata[ids[i]] = data_3d[2]
+        self.renormalize( p_data = self._plot_3d_xdata, p_dim = 0 )
+        self.renormalize( p_data = self._plot_3d_ydata, p_dim = 1 )
+        self.renormalize( p_data = self._plot_3d_zdata, p_dim = 2 )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -248,15 +189,7 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
         """
 
-        if self._plot_nd_plots:
-            if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
-                    self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
-            ids = []
-            for j in range(len(self._plot_nd_plots)):
-                for i in range(len(self._plot_nd_plots[0][0])):
-                    self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
+        if not self._plot_nd_plots: return
 
-            plot_data_renormalized = self.renormalize(self._plot_data_nd)
-
-            for j in range(len(self._plot_nd_plots)):
-                self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
+        for dim, plot_data in enumerate(self._plot_nd_plots):
+            self.renormalize(p_data=plot_data, p_dim=dim)

@@ -1235,8 +1235,8 @@ class StreamTask (Task):
         Task._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
 
         self._plot_2d_plot   = None
-        self._plot_2d_xdata  = {}
-        self._plot_2d_ydata  = {}
+        self._plot_2d_xdata  = []
+        self._plot_2d_ydata  = []
         self._plot_2d_xmin   = None
         self._plot_2d_xmax   = None
         self._plot_2d_ymin   = None
@@ -1253,9 +1253,9 @@ class StreamTask (Task):
         Task._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
 
         self._plot_3d_plot   = None
-        self._plot_3d_xdata  = {}
-        self._plot_3d_ydata  = {}
-        self._plot_3d_zdata  = {}
+        self._plot_3d_xdata  = []
+        self._plot_3d_ydata  = []
+        self._plot_3d_zdata  = []
         self._plot_3d_xmin   = None
         self._plot_3d_xmax   = None
         self._plot_3d_ymin   = None
