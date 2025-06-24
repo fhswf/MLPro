@@ -1284,6 +1284,7 @@ class StreamTask (Task):
         if p_settings.autoscale_local:
             p_settings.axes.set_autoscalex_on(False)
             p_settings.axes.set_autoscaley_on(True)
+            p_settings.axes.margins(y=0)
 
         self._plot_inst_ids  = []
         self._plot_nd_xdata  = []
