@@ -272,19 +272,20 @@ class PlotSettings (KWArgs):
         """
 
         return self.__class__( p_view = self.view,
-                                    p_axes = self.axes,
-                                    p_pos_x = self.pos_x,
-                                    p_pos_y = self.pos_y,
-                                    p_size_x = self.size_x,
-                                    p_size_y = self.size_y,
-                                    p_step_rate = self.step_rate,
-                                    p_plot_horizon = self.plot_horizon,
-                                    p_data_horizon = self.data_horizon,
-                                    p_detail_level = self.detail_level,
-                                    p_force_fg = self.force_fg,
-                                    p_id = self.id,
-                                    p_view_autoselect = self.view_autoselect,
-                                    p_kwargs = self.kwargs )
+                               p_axes = self.axes,
+                               p_pos_x = self.pos_x,
+                               p_pos_y = self.pos_y,
+                               p_size_x = self.size_x,
+                               p_size_y = self.size_y,
+                               p_step_rate = self.step_rate,
+                               p_plot_horizon = self.plot_horizon,
+                               p_data_horizon = self.data_horizon,
+                               p_autoscale_local = self.autoscale_local,
+                               p_detail_level = self.detail_level,
+                               p_force_fg = self.force_fg,
+                               p_id = self.id,
+                               p_view_autoselect = self.view_autoselect,
+                               p_kwargs = self.kwargs )
     
 
 

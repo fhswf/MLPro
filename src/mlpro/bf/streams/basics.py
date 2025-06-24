@@ -1278,8 +1278,8 @@ class StreamTask (Task):
         p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
         p_settings.axes.grid(visible=True)
-        p_settings.axes.set_xlim(0,1)
-        p_settings.axes.set_ylim(-1,1)
+        # p_settings.axes.set_xlim(0,1)
+        # p_settings.axes.set_ylim(-1,1)
 
         if p_settings.autoscale_local:
             p_settings.axes.set_autoscalex_on(False)
@@ -1472,9 +1472,17 @@ class StreamTask (Task):
                                        ( y == self._plot_2d_ymin ) or ( y == self._plot_2d_ymax )
 
 
-        # 4Plot current data
+        # 4 If buffer size is limited, remove obsolete data
+        if p_settings.data_horizon > 0:
+            num_del = max(0, len(self._plot_inst_ids) - p_settings.data_horizon )
+            self._plot_inst_ids = self._plot_inst_ids[num_del:]
+            self._plot_2d_xdata = self._plot_2d_xdata[num_del:]
+            self._plot_2d_ydata = self._plot_2d_ydata[num_del:]
+
+
+        # 5 Plot current data
         if self._plot_2d_plot is None:            
-            # 4.1 First plot
+            # 5.1 First plot
             inst_ref    = next(iter(p_instances.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
             p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
@@ -1488,12 +1496,12 @@ class StreamTask (Task):
                                                          markersize=3 )
 
         else:
-            # 4.2 Update of existing plot object
+            # 5.2 Update of existing plot object
             self._plot_2d_plot.set_xdata(self._plot_2d_xdata)
             self._plot_2d_plot.set_ydata(self._plot_2d_ydata)
 
 
-        # 5 Update of ax limits
+        # 6 Update of ax limits
         if update_ax_limits:
             p_settings.axes.relim()
             p_settings.axes.autoscale_view(scalex=True, scaley=True)
@@ -1503,6 +1511,146 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d( self, 
+                         p_settings : PlotSettings, 
+                         p_instances : InstDict, 
+                         **p_kwargs ) -> bool:
+        """
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_instances : InstDict
+            Instances to be plotted.
+        p_kwargs : dict
+            Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
+        """
+
+        # 1 Check: something to do?
+        if len(p_instances) == 0: return False
+
+
+        # 2 Determine the feature ids to be plotted
+        if not self._plot_feature_ids:
+            inst_ref     = next(iter(p_instances.values()))[1]
+            feature_data = inst_ref.get_feature_data()
+
+            for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
+                if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                    self._plot_feature_ids.append(feature_id)
+
+            if len(self._plot_feature_ids) < 2:
+                raise Error('Data stream does not provide two numeric features')
+
+
+        # 3 Update plot data
+        update_ax_limits = False
+
+        for inst_id, (inst_type, inst) in p_instances.items():
+               
+            feature_data   = inst.get_feature_data()
+            feature_values = feature_data.get_values()
+            x              = feature_values[self._plot_feature_ids[0]]
+            y              = feature_values[self._plot_feature_ids[1]]
+
+            if inst_type == InstTypeNew:
+
+                if not self._plot_feature_ids:
+                    for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
+                        if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                            self._plot_feature_ids.append(feature_id)
+
+                    if len(self._plot_feature_ids) < 2:
+                        raise Error('Data stream does not provide two numeric features')
+
+                self._plot_2d_xdata.append(x)
+                self._plot_2d_ydata.append(y)
+                self._plot_inst_ids.append(inst_id)
+
+                if self._plot_2d_xmin is None:
+                    self._plot_2d_xmin = x
+                    self._plot_2d_xmax = x
+                    self._plot_2d_ymin = y
+                    self._plot_2d_ymax = y
+                    update_ax_limits   = True
+                else:
+                    if x < self._plot_2d_xmin: 
+                        self._plot_2d_xmin = x
+                        update_ax_limits   = True
+                    elif x > self._plot_2d_xmax: 
+                        self._plot_2d_xmax = x
+                        update_ax_limits   = True
+
+                    if y < self._plot_2d_ymin: 
+                        self._plot_2d_ymin = y
+                        update_ax_limits   = True
+                    elif y > self._plot_2d_ymax: 
+                        self._plot_2d_ymax = y
+                        update_ax_limits   = True
+
+            else:
+                if inst_id == self._plot_inst_ids[0]:
+                    self._plot_inst_ids = self._plot_inst_ids[1:]
+                    self._plot_2d_xdata = self._plot_2d_xdata[1:]
+                    self._plot_2d_ydata = self._plot_2d_ydata[1:]
+
+                else:
+                    idx = self._plot_inst_ids.index(inst_id)
+                    del self._plot_inst_ids[idx]
+                    del self._plot_2d_xdata[idx]
+                    del self._plot_2d_ydata[idx]
+
+                if not update_ax_limits:
+                    update_ax_limits = ( x == self._plot_2d_xmin ) or ( x == self._plot_2d_xmax ) or \
+                                       ( y == self._plot_2d_ymin ) or ( y == self._plot_2d_ymax )
+
+
+        # 4 If buffer size is limited, remove obsolete data
+        if p_settings.data_horizon > 0:
+            num_del = max(0, len(self._plot_inst_ids) - p_settings.data_horizon )
+            self._plot_inst_ids = self._plot_inst_ids[num_del:]
+            self._plot_2d_xdata = self._plot_2d_xdata[num_del:]
+            self._plot_2d_ydata = self._plot_2d_ydata[num_del:]
+
+
+        # 5 Plot current data
+        if self._plot_2d_plot is None:            
+            # 5.1 First plot
+            inst_ref    = next(iter(p_instances.values()))[1]
+            feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
+            p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
+            p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
+
+            self._plot_2d_plot,  = p_settings.axes.plot( self._plot_2d_xdata, 
+                                                         self._plot_2d_ydata, 
+                                                         marker='+', 
+                                                         color='blue', 
+                                                         linestyle='',
+                                                         markersize=3 )
+
+        else:
+            # 5.2 Update of existing plot object
+            self._plot_2d_plot.set_xdata(self._plot_2d_xdata)
+            self._plot_2d_plot.set_ydata(self._plot_2d_ydata)
+
+
+        # 6 Update of ax limits
+        if update_ax_limits:
+            p_settings.axes.relim()
+            p_settings.axes.autoscale_view(scalex=True, scaley=True)
+
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d_old( self, 
                          p_settings : PlotSettings, 
                          p_instances : InstDict,
                          **p_kwargs ) -> bool:
@@ -1699,6 +1847,9 @@ class StreamTask (Task):
 
 
         # 3 Update plot data
+        update_ax_limits_y = False
+        recalc_limits      = False
+
         for inst_id, (inst_type, inst) in sorted(p_instances.items()):
 
             if inst_type == InstTypeNew:
@@ -1714,11 +1865,19 @@ class StreamTask (Task):
                 for i, fplot in enumerate(self._plot_nd_plots):
                     feature_value = feature_data[i]
                     fplot[0].append(feature_value)
+                    
                     if not p_settings.autoscale_local:
-                        if ( self._plot_y_min is None ) or ( self._plot_y_min > feature_value ):
+                        if self._plot_y_min is None:
                             self._plot_y_min = feature_value
-                        if ( self._plot_y_max is None ) or ( self._plot_y_max < feature_value ):
                             self._plot_y_max = feature_value
+                            update_ax_limits_y = True
+                        else:
+                            if feature_value < self._plot_y_min:
+                                self._plot_y_min = feature_value
+                                update_ax_limits_y = True
+                            if feature_value > self._plot_y_max:
+                                self._plot_y_max = feature_value
+                                update_ax_limits_y = True
 
             else:
                 if inst_id == self._plot_inst_ids[0]:
@@ -1733,15 +1892,20 @@ class StreamTask (Task):
                     for fplot in self._plot_nd_plots:
                         del fplot[0][idx]
 
+                if not p_settings.autoscale_local:
+                    update_ax_limits_y = True   
+                    recalc_limits      = True
+
 
         # 4 If buffer size is limited, remove obsolete data
         if p_settings.data_horizon > 0:
             num_del = max(0, len(self._plot_nd_xdata) - p_settings.data_horizon )
-
-            for i in range(num_del):
-                self._plot_inst_ids = self._plot_inst_ids[1:]
-                self._plot_nd_xdata = self._plot_nd_xdata[1:]
-                for fplot in self._plot_nd_plots: fplot[0] = fplot[0][1:]
+            if num_del > 0:
+                self._plot_inst_ids = self._plot_inst_ids[num_del:]
+                self._plot_nd_xdata = self._plot_nd_xdata[num_del:]
+                for fplot in self._plot_nd_plots: fplot[0] = fplot[0][num_del:]
+                update_ax_limits_y = True
+                recalc_limits      = True
 
 
         # 5 Set new plot data of all feature plots
@@ -1762,16 +1926,29 @@ class StreamTask (Task):
             x_min = self._plot_nd_xdata[xlim_id]
             x_max = self._plot_nd_xdata[-1]
 
-        p_settings.axes.set_xlim(x_min, x_max)
+        if x_min != x_max:
+            p_settings.axes.set_xlim(x_min, x_max)
 
         if p_settings.autoscale_local:
             p_settings.axes.relim()
             p_settings.axes.autoscale_view(scalex=False, scaley=True)
-        else:
-            p_settings.axes.set_ylim(self._plot_y_min, self._plot_y_max)
+        
+        elif update_ax_limits_y:
+            if recalc_limits:
+                self._plot_y_min = None
+                self._plot_y_max = None
+                for fplot in self._plot_nd_plots:
+                    try:
+                        self._plot_y_min = min( self._plot_y_min, min( fplot[0]) )
+                        self._plot_y_max = max( self._plot_y_max, max( fplot[0]) )
+                    except:
+                        self._plot_y_min = min(fplot[0])
+                        self._plot_y_max = max(fplot[0])
+
+            if self._plot_y_min < self._plot_y_max:
+                p_settings.axes.set_ylim(self._plot_y_min, self._plot_y_max)
 
         return True
-                    
 
 
 
