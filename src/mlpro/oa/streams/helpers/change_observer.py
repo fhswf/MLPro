@@ -100,7 +100,7 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
     def _event_handler(self, p_event_id, p_event_object : Change ):
 
         # 0 Intro
-        self.log( Log.C_LOG_TYPE_W, 'Task "' + p_event_object.get_raising_object().get_name() + '" raised an anomaly of type "' + str(p_event_id) + '"' )
+        self.log( Log.C_LOG_TYPE_W, 'Task "' + p_event_object.get_raising_object().get_name() + '" raised a change of type "' + str(p_event_id) + '"' )
 
 
         # 1 Update statistics
@@ -127,7 +127,7 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
                    p_window_title: str = None ) -> bool:
         
         if p_window_title is None:
-            window_title = 'OA Observer for Task "' + self._related_task.get_name() + '"'
+            window_title = 'Change Observer for Task "' + self._related_task.get_name() + '"'
         else:
             window_title = p_window_title
 
@@ -136,7 +136,7 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
                            p_window_title = window_title )
         
         axes = self.get_plot_settings().axes
-        axes.legend(title='Anomalies')
+        axes.legend(title='Changes')
         axes.set_xlabel('Time index')
         # axes.set_ylabel('Adapted instances')     
 
