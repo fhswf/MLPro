@@ -706,8 +706,7 @@ class Plottable:
         if p_settings.axes is None:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id )
 
-        if p_settings.autoscale_local:
-            p_settings.axes.set_autoscale_on(True)
+        p_settings.axes.set_autoscale_on(True)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -731,8 +730,7 @@ class Plottable:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id, projection='3d' )
             p_settings.axes.set_proj_type(proj_type='persp', focal_length=0.3)
 
-        if p_settings.autoscale_local:
-            p_settings.axes.set_autoscale_on(True)
+        p_settings.axes.set_autoscale_on(True)
  
 
 ## -------------------------------------------------------------------------------------------------
