@@ -24,10 +24,11 @@
 ## -- 2024-04-30  1.1.0     DA       Refactoring and new class Renormalizable
 ## -- 2024-05-23  1.2.0     DA       Method Normalizer._set_parameters(): little optimization
 ## -- 2024-07-12  1.2.1     LSB      Renormalization error
+## -- 2025-06-24  1.3.0     DA       Refactoring and extension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2024-07-12)
+Ver. 1.3.0 (2025-06-24)
 
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
@@ -110,7 +111,6 @@ class Normalizer:
 
             p_data.set_values(values)
 
-
         elif isinstance(p_data, np.ndarray):
             if p_dim is None:
                 np.multiply(p_data, scale, out=p_data)
@@ -118,6 +118,12 @@ class Normalizer:
             else:
                 p_data[:, p_dim] *= scale[p_dim]
                 p_data[:, p_dim] += offset[p_dim]
+
+        elif isinstance(p_data, list) and ( p_dim is not None ):
+            data_array = np.array(p_data) 
+            np.multiply(data_array, scale[p_dim], out=data_array)
+            np.add(data_array, offset[p_dim], out=data_array)
+            p_data[:] = data_array.tolist()
 
         else:
             raise ParamError(f"Unsupported data type for normalization: {type(p_data)}")
@@ -157,12 +163,18 @@ class Normalizer:
 
         elif isinstance(p_data, np.ndarray):
             if p_dim is None:
-                np.divide(p_data, scale, out=p_data)
                 np.subtract(p_data, offset, out=p_data)
+                np.divide(p_data, scale, out=p_data)
             else:
-                p_data[:, p_dim] /= scale[p_dim]
                 p_data[:, p_dim] -= offset[p_dim]
+                p_data[:, p_dim] /= scale[p_dim]
 
+        elif isinstance(p_data, list) and ( p_dim is not None ):
+            data_array = np.array(p_data) 
+            np.subtract(data_array, offset[p_dim], out=data_array)
+            np.divide(data_array, scale[p_dim], out=data_array)
+            p_data[:] = data_array.tolist()
+            
         else:
             raise ParamError('Wrong datatype provided for denormalization')
 
@@ -190,10 +202,10 @@ class Normalizer:
         if self._param_old is None: return p_data
 
         self._set_parameters(self._param_old)
-        denormalized_data = self.denormalize(p_data = p_data, p_dim=p_dim)
-        
+        denormalized_data = self.denormalize(p_data = p_data, p_dim = p_dim)
+
         self._set_parameters(self._param_new)
-        renormalized_data = self.normalize(p_data = denormalized_data, p_dim=p_dim)
+        renormalized_data = self.normalize(p_data = denormalized_data, p_dim = p_dim)
         return renormalized_data
 
 

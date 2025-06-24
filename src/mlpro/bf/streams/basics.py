@@ -82,11 +82,11 @@
 ## --                                - replaced datetime.now() by time.perf_counter()
 ## -- 2025-06-06  2.6.0     DA       Refactoring: p_inst -> p_instance/s
 ## -- 2025-06-08  2.7.0     DA       Refactoring of StreamTask._update_plot*: new return parameter 
-## -- 2025-06-23  2.8.0     DA       Class StreamTask: tuning of plot updates
+## -- 2025-06-24  2.8.0     DA       Class StreamTask: tuning of plot updates
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.8.0 (2025-06-23)
+Ver. 2.8.0 (2025-06-24)
 
 This module provides classes for standardized data stream processing. 
 
