@@ -23,10 +23,13 @@
 ## -- 2023-02-13  1.0.14    LSB      BugFix: Changed the direct reference to p_param to a copy object
 ## -- 2024-04-30  1.1.0     DA       Refactoring/separation
 ## -- 2024-07-12  1.1.1     LSB      Renormalization error
+## -- 2025-06-16  2.0.0     DA       Class NormalizerMinMax:
+## --                                - New parameter p_dst_boundaries
+## --                                - Refactoring of method update_parameters()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-07-12)
+Ver. 2.0.0 (2025-06-16)
 
 This module provides a class for MinMax normalization.
 """
@@ -47,49 +50,78 @@ from mlpro.bf.math.normalizers import Normalizer
 class NormalizerMinMax (Normalizer):
     """
     Class to normalize elements based on MinMax normalization.
+
+    Parameters
+    ----------
+    p_dst_boundaries : list = [-1,1]
+        Explicit list of (low, high) destination boundaries. Default is [-1, 1].
     """
 
-    ## -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+    def __init__( self, p_dst_boundaries : list = [-1,1]):
+
+        super().__init__()
+        self._dst_boundaries = p_dst_boundaries
+        self._dst_diff       = p_dst_boundaries[1] - p_dst_boundaries[0]
+
+
+# -------------------------------------------------------------------------------------------------
     def update_parameters(self, p_set: Set = None, p_boundaries: Union[list, np.ndarray] = None):
         """
-        Method to update the normalization parameters of MinMax normalizer.
+        Update the normalization parameters using MinMax strategy.
 
         Parameters
         ----------
-        p_set:Set
-            Set related to the elements to be normalized
-        p_boundaries:ndarray
-            array consisting of boundaries related to the dimension of the array
+        p_set : Set, optional
+            A set object providing dimensional boundaries per feature.
 
+        p_boundaries : list or np.ndarray, optional
+            Explicit array of (low, high) boundaries for each dimension.
+
+        Raises
+        ------
+        ParamError
+            Raised if neither p_set nor p_boundaries is provided.
         """
-        if self._param_new is not None: self._param_old = self._param_new.copy()
 
-        try:
-            if self._param_new is None: self._param_new = np.zeros([2, len(p_set.get_dim_ids())], dtype=np.float64)
-            boundaries = [p_set.get_dim(i).get_boundaries() for i in p_set.get_dim_ids()]
-
-        except:
-            try:
-                if self._param_new is None: self._param_new = np.zeros([(len(p_boundaries)), (len(p_boundaries))])
-                boundaries = p_boundaries.reshape(-1, 2)
-
-            except:
-                raise ParamError("Wrong parameters provided for update. Please provide a set as p_set or boundaries as "
-                                 "p_boundaries")
-
-        for i, boundary in enumerate(boundaries):
-            if (boundary[1] - boundary[0]) == 0:
-                self._param_new[0][i] = 0
-            else:
-                self._param_new[0][i] = (2 / (boundary[1] - boundary[0]))
-            if (boundary[1] - boundary[0]) == 0:
-                self._param_new[0][i] = 0
-            else:
-                self._param_new[1][i] = (2 * boundary[0] / (boundary[1] - boundary[0]) + 1)
-
-        if self._param is not None:
-            self._param_old = self._param.copy()
+        # 1 Determine normalization boundaries
+        if p_set is not None:
+            dim_ids = p_set.get_dim_ids()
+            boundaries = [p_set.get_dim(i).get_boundaries() for i in dim_ids]
+        elif p_boundaries is not None:
+            boundaries = np.asarray(p_boundaries).reshape(-1, 2)
         else:
-            self._param_old = self._param_new.copy()
-        self._param = self._param_new.copy()
+            raise ParamError("Either p_set or p_boundaries must be provided.")
 
+        n_dims = len(boundaries)
+
+
+        # 2 Initialize or update _param_old
+        if self._param_new is not None:
+            if self._param_old is None or self._param_old.shape != self._param_new.shape:
+                self._param_old = self._param_new.copy()
+            else:
+                self._param_old[...] = self._param_new
+
+
+        # 3 Allocate or reuse _param_new
+        if self._param_new is None or self._param_new.shape != (2, n_dims):
+            self._param_new = np.zeros((2, n_dims), dtype=np.float64)
+        else:
+            self._param_new[:] = 0.0  # optional in-place reset
+
+
+        # 4 Compute new parameters into _param_new
+        for i, (low, high) in enumerate(boundaries):
+            if high == low:
+                high += 1
+                low  -= 1
+
+            diff = high - low
+            p0 = self._dst_diff / diff
+            p1 = self._dst_boundaries[0] - low * p0
+            self._param_new[:, i] = p0, p1
+
+
+        # 5 Activate _param_new by reference
+        self._param = self._param_new

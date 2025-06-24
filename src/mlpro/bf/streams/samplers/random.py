@@ -41,9 +41,6 @@ class SamplerRND(Sampler):
         Random seeding. Default = 0.
     """
 
-    C_TYPE          = 'Random Sampler'
-
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_num_instances:int=0, p_max_step_rate:int=5, p_seed:int=0):
         

@@ -44,8 +44,6 @@ class SamplerMinWise(Sampler):
         Random seeding. Default = 0.
     """
 
-    C_TYPE                      = 'Min-Wise Sampler'
-
     C_SCIREF_TYPE_PROCEEDINGS   = "Proceedings"
     C_SCIREF_TYPE               = C_SCIREF_TYPE_PROCEEDINGS
     C_SCIREF_AUTHOR             = 'Suman Nath, Phillip B. Gibbons, Srinivasan Seshan, and Zachary R. Anderson'
