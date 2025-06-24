@@ -1243,7 +1243,7 @@ class StreamTask (Task):
         self._plot_2d_ymax      = None
 
         if p_settings.autoscale_local:
-            p_settings.axes.margins(y=0)
+            p_settings.axes.margins(x=0, y=0)
  
 
 ## -------------------------------------------------------------------------------------------------
