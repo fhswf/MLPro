@@ -36,10 +36,11 @@
 ## --                                - optimization of methods _update_plot_2d(), _update_plot_3d()
 ## -- 2025-06-06  2.1.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-06-08  2.2.0     DA       Refactoring of methods RingBuffer._update_plot*: new return param
+## -- 2025-06-24  2.3.0     DA       Optimized method RingBuffer._update_plot_nd():     
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2025-06-08)
+Ver. 2.3.0 (2025-06-24)
 
 This module provides a sliding window with an internal ring buffer.
 """
@@ -496,16 +497,16 @@ class RingBuffer (Window):
 
         # 3 Add the hiding plot around obsolete data
         inst_oldest = self._buffer[self._buffer_pos]
-        x = p_settings.axes.get_xlim()[0]
-        y = p_settings.axes.get_ylim()[0]
+        x_limits = p_settings.axes.get_xlim()
+        y_limits = p_settings.axes.get_ylim()
 
         if isinstance( inst_oldest.tstamp, (int, float) ):
-            w = inst_oldest.tstamp - x
+            w = inst_oldest.tstamp - x_limits[0]
         else:
-            w = mdates.date2num(inst_oldest.tstamp) - x
+            w = mdates.date2num(inst_oldest.tstamp) - x_limits[0]
 
-        h = p_settings.axes.get_ylim()[1] - y
-        self._patch_windows['nD'].set_bounds(x, y, w, h)
+        h = y_limits[1] - y_limits[0]
+        self._patch_windows['nD'].set_bounds(x_limits[0], y_limits[0], w, h)
         self._patch_windows['nD'].set_visible(True)
 
         return True

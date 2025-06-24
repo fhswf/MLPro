@@ -192,4 +192,4 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         if not self._plot_nd_plots: return
 
         for dim, plot_data in enumerate(self._plot_nd_plots):
-            self.renormalize(p_data=plot_data, p_dim=dim)
+            self.renormalize(p_data=plot_data[0], p_dim=dim)
