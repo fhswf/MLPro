@@ -181,6 +181,6 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
                                                label = label ) )
         
         if update_legend:
-            p_settings.axes.legend(title='Anomalies')
+            p_settings.axes.legend(title='Changes')
 
         return True
