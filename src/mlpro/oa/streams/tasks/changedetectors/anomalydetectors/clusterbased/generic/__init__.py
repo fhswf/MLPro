@@ -1,1 +1,1 @@
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased.generic.basics import AnomalyDetectorCBGeneric, AnomalyDetectorCBGenSingleProp, AnomalyDetectorCBGenMultiProp
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased.generic.basics import AnomalyDetectorCBGeneric

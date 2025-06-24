@@ -118,7 +118,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
         for cluster in p_clusters.values():
 
         # 2 Get the cluster property to be observed
-            prop_cluster_size : Property = getattr(cluster, self._property)
+            prop_cluster_size : Property = getattr(cluster, self._property[0])
 
             # 2.1 Check for the  spatial group anomalies
             if (prop_cluster_size.value == 1) and (prop_cluster_size.value_prev is None):
@@ -126,7 +126,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
                 # 2.1.1 Create a new point anomaly
                 point_anomaly = self._cls_point_anomaly( p_clusters = {cluster.id : cluster},
                                                          p_tstamp = self._get_tstamp(),
-                                                         p_visualize = self.get_visualize,
+                                                         p_visualize = self.get_visualization(),
                                                          p_raising_object = self)
 
                 self._raise_anomaly_event( p_anomaly = point_anomaly, p_instance = p_instance )
@@ -142,10 +142,11 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
         # 1 Iterate over all anomalies
         if isinstance(p_anomaly, self._cls_point_anomaly):
             #1.1 Get the single cluster associated with the anomaly
-            cluster.id, cluster = next(iter(p_anomaly.clusters.items()))
+            cluster = next(iter(p_anomaly.clusters.values()))
+
 
                 #1.2 Get the cluster property to be observed
-            prop_cluster_size : Property = getattr(cluster, cprop_size_prev)
+            prop_cluster_size : Property = getattr(cluster, cprop_size_prev[0])
 
                 # 1.3 Check if the anomaly is still valid, if not remove it
             return prop_cluster_size.value != 1
@@ -327,11 +328,11 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
         # 1 Iterate over all anomalies
         if isinstance(p_anomaly , self._cls_spatial_group_anomaly):
             #1.1 Get the single cluster associated with the anomaly
-            cluster.id, cluster = next(iter(p_anomaly.clusters.items()))
+            cluster = next(iter(p_anomaly.clusters.values()))
 
             #1.2 Get the cluster property to be observed
-            prop_cluster_size : Property = getattr(cluster, cprop_size_prev)
-                
+            prop_cluster_size : Property = getattr(cluster, cprop_size_prev[0])
+
             # 1.3 Check if the anomaly is still valid, if not remove it
             return not (1 < prop_cluster_size.value <= self._thres_size)
                 
@@ -467,12 +468,12 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         if isinstance(p_anomaly, self._cls_temporal_group_anomaly):
             try:
                 # 1.1 Get the cluster associated with the anomaly
-                cluster.id, cluster = next(iter(p_anomaly.clusters.items()))
+                cluster = next(iter(p_anomaly.clusters.values()))
             except:
                 return False
 
             # 1.2 Check if the anomaly is still valid
-            if cluster.id not in self._temporal_anomalies or len(self._temporal_anomalies[cluster.id]) < 2:
+            if cluster_id not in self._temporal_anomalies or len(self._temporal_anomalies[cluster_id]) < 2:
                 return False
         
         return True

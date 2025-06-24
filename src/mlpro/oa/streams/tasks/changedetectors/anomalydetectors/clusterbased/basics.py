@@ -12,10 +12,11 @@
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.3.0     SK       Refactoring
 ## -- 2025-06-09  2.0.0     DA       Refactoring: new parent ChangeDetectorCB
+## -- 2025-06-24  2.0.1     DA/DS    Bugfixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-09)
+Ver. 2.0.1 (2025-06-24)
 
 This module provides templates for cluster-based anomaly detection algorithms.
 """
@@ -78,7 +79,8 @@ class AnomalyDetectorCB (ChangeDetectorCB, AnomalyDetector):
                   p_thrs_clusters : int = 1,
                   **p_kwargs ):
    
-        ChangeDetectorCB.__init__( p_clusterer = p_clusterer,
+        ChangeDetectorCB.__init__( self, 
+                                   p_clusterer = p_clusterer,
                                    p_name = p_name,
                                    p_range_max = p_range_max,
                                    p_ada = p_ada,
@@ -90,7 +92,8 @@ class AnomalyDetectorCB (ChangeDetectorCB, AnomalyDetector):
                                    p_thrs_clusters = p_thrs_clusters,
                                    **p_kwargs )
         
-        AnomalyDetector.__init__( p_name = p_name,
+        AnomalyDetector.__init__( self,
+                                  p_name = p_name,
                                   p_range_max = p_range_max,
                                   p_ada = p_ada,
                                   p_duplicate_data = p_duplicate_data,
