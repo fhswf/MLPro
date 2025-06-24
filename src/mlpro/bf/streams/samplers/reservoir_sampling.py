@@ -46,8 +46,6 @@ class SamplerReservoir(Sampler):
         Random seeding. Default = 0.
     """
 
-    C_TYPE                  = 'Reservoir Sampler (Algorithm R)'
-
     C_SCIREF_TYPE_ARTICLE   = "Journal Article"
     C_SCIREF_TYPE           = C_SCIREF_TYPE_ARTICLE
     C_SCIREF_AUTHOR         = 'Jeffrey S. Vitter'
