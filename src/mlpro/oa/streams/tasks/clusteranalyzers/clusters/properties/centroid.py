@@ -168,7 +168,8 @@ class Centroid (Crosshair, Id):
             self._plot_line1_t3 = p_settings.axes.text(xlim[1], centroid[1], self._plot_label, ha='left',va='center', color=self.color )
             self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], self._plot_label, ha='center', va='top', color=self.color )
             self._plot_line2_t2 = p_settings.axes.text(centroid[0], ylim[1], self._plot_label, ha='center', va='bottom',color=self.color )
-            p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', shadow=True, draggable=True)
+
+            p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', draggable=True)
 
         else:
             # 4.2 Update color and labels of the crosshair lines
@@ -237,7 +238,7 @@ class Centroid (Crosshair, Id):
             self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], centroid[2], self._plot_label, ha=l2_t1_ha, va='center', color=self.color )
             self._plot_line3_t1 = p_settings.axes.text(centroid[0], centroid[1], zlim[0], self._plot_label, ha='center', va=l3_t1_va, color=self.color )
 
-            p_settings.axes.legend(title='Clusters', alignment='left', loc='right', shadow=True, draggable=True)
+            p_settings.axes.legend(title='Clusters', alignment='left', loc='right', draggable=True)
 
         else:
             # 5.2 Update color and labels of the crosshair lines
@@ -277,9 +278,11 @@ class Centroid (Crosshair, Id):
         if not self._plot_line_texts:
 
             # 4.1 Add all label elements
-            plot_label_stub    = ' C' + str(cluster_id) + ' '
-            plot_label         = plot_label_stub
             plot_label_feature = len(centroid) > 1
+
+            plot_label_stub    = ' C' + str(cluster_id) + ' '
+
+            plot_label         = plot_label_stub
             self._plot_lines[0].set_label( plot_label_stub )
 
             for i, centroid_pos in enumerate(centroid):
@@ -288,7 +291,7 @@ class Centroid (Crosshair, Id):
 
                 self._plot_line_texts.append( p_settings.axes.text( xpos, centroid_pos, plot_label, color=self.color ) )
             
-            p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', draggable=True)
+            p_settings.axes.legend(title='Feat./Clust.', alignment='left', loc='upper right', draggable=True)
 
         else:
             # 4.2 Update color and labels of the crosshair lines
