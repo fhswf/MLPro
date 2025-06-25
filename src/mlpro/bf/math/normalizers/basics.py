@@ -54,7 +54,6 @@ class Normalizer:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
 
-        self._param_valid = False
         self._param     = None
         self._param_old = None
         self._param_new = None
@@ -76,7 +75,7 @@ class Normalizer:
             Returns true after setting the parameters
         """
 
-        self._param = p_param #.copy()
+        self._param = p_param 
 
 
 ## -------------------------------------------------------------------------------------------------

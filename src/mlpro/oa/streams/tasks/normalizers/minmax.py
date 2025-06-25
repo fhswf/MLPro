@@ -23,17 +23,15 @@
 ## --                                - Bugfix in NormalizerMinMax._update_plot_data_3d()
 ## -- 2024-12-16  1.4.0     DA       Method NormalizerMinMax._run(): little code tuning
 ## -- 2025-06-05  1.5.0     DA       Refactoring
-## -- 2025-06-06  1.6.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-25  1.6.0     DA       Refactoring: p_inst -> p_instance/s
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2025-06-06)
+Ver. 1.6.0 (2025-06-25)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
 
-
-import numpy as np
 
 from mlpro.bf.various import Log
 from mlpro.bf.events import Event
