@@ -25,10 +25,11 @@
 ## -- 2024-05-23  1.2.0     DA       Method Normalizer._set_parameters(): little optimization
 ## -- 2024-07-12  1.2.1     LSB      Renormalization error
 ## -- 2025-06-24  1.3.0     DA       Refactoring and extension
+## -- 2025-06-25  1.4.0     DA       Method Normalizer.renormalize(): tuning of dim-wise renormalization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2025-06-24)
+Ver. 1.4.0 (2025-06-25)
 
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
@@ -200,6 +201,9 @@ class Normalizer:
         """
 
         if self._param_old is None: return p_data
+
+        if ( p_dim is not None ) and np.array_equal(self._param_new[:,p_dim], self._param_old[:,p_dim] ):
+            return p_data
 
         self._set_parameters(self._param_old)
         denormalized_data = self.denormalize(p_data = p_data, p_dim = p_dim)
