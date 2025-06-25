@@ -1665,8 +1665,10 @@ class StreamTask (Task):
             for feature in feature_space.get_dims():
                 if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
                     feature_ydata = []
-                    feature_plot, = p_settings.axes.plot([], [], lw=1)
+                    feature_plot, = p_settings.axes.plot([], [], lw=1, label = feature.get_name_short() )
                     self._plot_nd_plots.append( [feature_ydata, feature_plot] )
+
+            p_settings.axes.legend(title='Features', alignment='left', loc='upper right', draggable=True)
 
 
         # 3 Update plot data

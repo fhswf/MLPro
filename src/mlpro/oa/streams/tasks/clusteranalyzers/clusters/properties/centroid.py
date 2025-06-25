@@ -288,7 +288,7 @@ class Centroid (Crosshair, Id):
 
                 self._plot_line_texts.append( p_settings.axes.text( xpos, centroid_pos, plot_label, color=self.color ) )
             
-            p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', shadow=True, draggable=True)
+            p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', draggable=True)
 
         else:
             # 4.2 Update color and labels of the crosshair lines
