@@ -1,6 +1,6 @@
-.. _target_oa_change_detection:
-Change detection
-================
+.. _target_oa_helpers:
+Helpers
+=======
 
 Further descriptions coming soon...
 
@@ -11,13 +11,12 @@ Further descriptions coming soon...
    :maxdepth: 2
    :glob:
 
-   30_change_detection/*
+   99_helpers/*
 
 
 
 **Cross reference**
 
-- :ref:`Helper for change event observation <target_oa_helper_change_observer>`
 .. - Selected open access papers
 .. - Howtos
 .. - :ref:`API reference: MLPro-OA-Streams - Anomaly detection <target_api_oa_stream_tasks_ad>`
