@@ -280,12 +280,11 @@ class Centroid (Crosshair, Id):
             plot_label_stub    = ' C' + str(cluster_id) + ' '
             plot_label         = plot_label_stub
             plot_label_feature = len(centroid) > 1
+            self._plot_lines[0].set_label( plot_label_stub )
 
             for i, centroid_pos in enumerate(centroid):
                 if plot_label_feature:
                     plot_label = plot_label_stub + 'F' + str(i) + ' '
-
-                self._plot_lines[i].set_label( plot_label )
 
                 self._plot_line_texts.append( p_settings.axes.text( xpos, centroid_pos, plot_label, color=self.color ) )
             
