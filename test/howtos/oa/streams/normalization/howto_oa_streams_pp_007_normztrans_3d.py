@@ -63,10 +63,10 @@ class MyAdaptiveScenario (OAStreamScenario):
 
         # 2.2 Creation of a workflow
         workflow = OAStreamWorkflow( p_name='Input Signal "' + StreamMLProClouds3D8C2000Static.C_NAME + '"',
-                               p_range_max=OAStreamWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
-                               p_ada=p_ada,
-                               p_visualize=p_visualize,
-                               p_logging=p_logging )
+                                     p_range_max=OAStreamWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
+                                     p_ada=p_ada,
+                                     p_visualize=p_visualize,
+                                     p_logging=p_logging )
      
         # 2.3 Addition of the Z-transform task to the workflow
         workflow.add_task(p_task = task_norm)
