@@ -44,9 +44,6 @@ class SamplerWeightedRND(Sampler):
         Random seeding. Default = 0.
     """
 
-    C_TYPE          = 'Weighted Random Sampler'
-
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_num_instances:int=0, p_threshold:float=0.5, p_seed:int=0):
         
