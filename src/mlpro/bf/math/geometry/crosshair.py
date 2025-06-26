@@ -8,10 +8,11 @@
 ## -- 2024-10-31  1.0.0     DA       Creation
 ## -- 2024-12-11  1.0.1     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-06-09  1.1.0     DA       Refactoring of Crosshair._update_plot*: new return parameter
+## -- 2025-06-25  1.2.0     DA       Class Crosshair: implementation of nD plot methods
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-09)
+Ver. 1.2.0 (2025-06-25)
 
 This module provides the class Crosshair that provides crosshair functionality.
 
@@ -71,6 +72,12 @@ class Crosshair (Point):
         self._plot_line1 : Line3D = None
         self._plot_line2 : Line3D = None
         self._plot_line3 : Line3D = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure, p_settings):
+        super()._init_plot_nd(p_figure, p_settings)
+        self._plot_lines = []
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -88,7 +95,6 @@ class Crosshair (Point):
         self.color = Point.C_PLOT_COLOR
         super()._update_plot_2d(p_settings, **p_kwargs)
         self.color = color
-
 
 
         # 2 Get line coordinates
@@ -141,7 +147,7 @@ class Crosshair (Point):
         zlim     = [ min( ax_zlim[0], center[2] ), max(ax_zlim[1], center[2] ) ]
 
 
-        # 3 Plot a crosshair with label texts
+        # 3 Plot a crosshair
         if self._plot_line1 is None:
             # 3.1 Add initial crosshair lines
             self._plot_line1 = p_settings.axes.plot( xlim, [center[1],center[1]], [center[2],center[2]], color=self.color, linestyle='dashed', lw=1)[0]
@@ -156,6 +162,37 @@ class Crosshair (Point):
             self._plot_line2.set_color( self.color )
             self._plot_line3.set_data_3d( [center[0],center[0]], [center[1],center[1]], zlim )
             self._plot_line3.set_color( self.color )
+
+        return True
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings : PlotSettings, **p_kwargs) -> bool: 
+
+        # 0 Intro
+        if self.value is None: return False
+
+        if self.color is None:
+            self.color = self.C_PLOT_COLOR
+
+
+        # 2 Get coordinates
+        center   = self.value
+        ax_xlim  = p_settings.axes.get_xlim()
+        xlim     = [ min( ax_xlim[0], center[0] ), max(ax_xlim[1], center[0] ) ]
+        
+
+        # 3 Plot a crosshair per feature
+        if not self._plot_lines:
+            # 3.1 Add initial crosshair lines
+            for center_fval in center: 
+                self._plot_lines.append( p_settings.axes.plot( xlim, [center_fval,center_fval], color=self.color, linestyle='dashed', lw=1)[0] )
+
+        else:
+            # 3.2 Update data of crosshair lines
+            for i, plot_line in enumerate(self._plot_lines):
+                plot_line.set_data( xlim, [center[i],center[i]] )
+                plot_line.set_color( self.color )
 
         return True
     
@@ -188,6 +225,13 @@ class Crosshair (Point):
         self._plot_line3.remove()
         self._plot_line3 = None
 
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_plot_nd(self):
+        for plot_line in self._plot_lines:
+            plot_line.remove()
+
+        self._plot_lines.clear()
 
 
 
