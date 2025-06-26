@@ -45,10 +45,11 @@
 ## --                                - BoundaryDetector._update_plot_nd() reworked
 ## -- 2025-06-08  2.2.0     DA       Refactoring of methods BoundaryDetector._update_plot_nd(): new 
 ## --                                return param
+## -- 2025-06-25  2.3.0     DA       Reduced the boundary bar's width
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2025-06-08)
+Ver. 2.3.0 (2025-06-25)
 
 This module provides a basic implementation of a boundary detector.
 
@@ -470,7 +471,7 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
             for i in range(num_dims):
                 color = self._plot_colors[i % len(self._plot_colors)]
 
-                x_main = feature_ids[i] - 0.4
+                x_main = feature_ids[i] - 0.1
                 width_bg = x_main - x_left
 
                 # 2.1 Background rectangle ("shadow")
@@ -489,7 +490,7 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
                 # 2.2 Main rectangle
                 rect_main = Rectangle(
                     (x_main, lowers[i]),
-                    width=0.8,
+                    width=0.2, #0.8,
                     height=uppers[i] - lowers[i],
                     facecolor=color,
                     edgecolor = 'grey',
@@ -505,17 +506,11 @@ class BoundaryDetector (OAStreamTask, BoundaryProvider):
 
         else:
             # 3 Update existing plot elements
-            x_left = ax.get_xlim()[0]
-
             for i in range(num_dims):
-                x_main = feature_ids[i] - 0.4
-                width_bg = x_main - x_left
                 y = lowers[i]
                 h = uppers[i] - lowers[i]
 
                 rect_bg = self._plot_nd_plots['rects_bg'][i]
-                rect_bg.set_x(x_left)
-                rect_bg.set_width(width_bg)
                 rect_bg.set_y(y)
                 rect_bg.set_height(h)
 
