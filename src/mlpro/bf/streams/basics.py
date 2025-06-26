@@ -1478,9 +1478,10 @@ class StreamTask (Task):
         # 4 If buffer size is limited, remove obsolete data
         if p_settings.data_horizon > 0:
             num_del = max(0, len(self._plot_inst_ids) - p_settings.data_horizon )
-            self._plot_inst_ids = self._plot_inst_ids[num_del:]
-            self._plot_2d_xdata = self._plot_2d_xdata[num_del:]
-            self._plot_2d_ydata = self._plot_2d_ydata[num_del:]
+            if num_del > 0:
+                self._plot_inst_ids = self._plot_inst_ids[num_del:]
+                self._plot_2d_xdata = self._plot_2d_xdata[num_del:]
+                self._plot_2d_ydata = self._plot_2d_ydata[num_del:]
 
 
         # 5 Plot current data
@@ -1595,10 +1596,11 @@ class StreamTask (Task):
         # 4 If buffer size is limited, remove obsolete data
         if p_settings.data_horizon > 0:
             num_del = max(0, len(self._plot_inst_ids) - p_settings.data_horizon )
-            self._plot_inst_ids = self._plot_inst_ids[num_del:]
-            self._plot_3d_xdata = self._plot_3d_xdata[num_del:]
-            self._plot_3d_ydata = self._plot_3d_ydata[num_del:]
-            self._plot_3d_zdata = self._plot_3d_zdata[num_del:]
+            if num_del > 0:
+                self._plot_inst_ids = self._plot_inst_ids[num_del:]
+                self._plot_3d_xdata = self._plot_3d_xdata[num_del:]
+                self._plot_3d_ydata = self._plot_3d_ydata[num_del:]
+                self._plot_3d_zdata = self._plot_3d_zdata[num_del:]
 
         # 5 Plot current data
         if self._plot_3d_plot is None:            
