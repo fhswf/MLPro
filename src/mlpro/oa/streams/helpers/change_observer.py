@@ -184,3 +184,66 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
             p_settings.axes.legend(title='Changes')
 
         return True
+    
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ChangeObserverCB(ChangeObserver):
+    """
+    This class observes adaptations of particular oa stream tasks. Its event handler method can be 
+    registered for adaptation events of a stream task.
+
+    Parameters
+    ----------
+    
+    """
+
+    C_TYPE              = 'Helper'
+    C_NAME              = 'Event Observer (CB)'
+
+    C_PLOT_ACTIVE       = True
+    C_PLOT_STANDALONE   = True
+    C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_related_task : OAStreamTask,
+                  p_change_types : list = [],
+                  p_logarithmic_plot : bool = True,
+                  p_visualize : bool = True,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
+        
+        super().__init__( p_related_task = p_related_task,
+                          p_change_types = p_change_types,
+                          p_logarithmic_plot = p_logarithmic_plot,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_kwargs )
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _event_handler(self, p_event_id, p_event_object):
+        
+        super()._event_handler(p_event_id, p_event_object)
+
+        try:
+            clusters = getattr(p_event_object, "clusters", None)
+            centroids = getattr(p_event_object, "centroids", None)
+            cluster_size = getattr(p_event_object, "cluster_size", None)
+
+            if clusters is not None:
+                self.log(Log.C_LOG_TYPE_I, f"Related cluster IDs: {clusters}")
+
+            if centroids is not None:
+                self.log(Log.C_LOG_TYPE_I, f"Centroid coordinates: {centroids}")
+
+            if cluster_size is not None:
+                self.log(Log.C_LOG_TYPE_I, f"Cluster sizes: {cluster_size}")
+
+        except:
+            self.log(Log.C_LOG_TYPE_W, f"Could not extract cluster infomation")
