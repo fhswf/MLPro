@@ -488,7 +488,7 @@ class RingBuffer (Window):
         if self._patch_windows is None:
             self._patch_windows = {}
 
-            bg = p_settings.axes.get_facecolor()
+            bg = 'lightgrey' #p_settings.axes.get_facecolor()
             ec = p_settings.axes.patch.get_edgecolor()
             obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 )
             p_settings.axes.add_patch(obs_window)
