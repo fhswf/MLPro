@@ -9,10 +9,11 @@
 ## -- 2024-12-11  1.0.1     DA       Pseudo classes if matplotlib is not installed
 ## -- 2025-06-09  1.1.0     DA       Refactoring of Crosshair._update_plot*: new return parameter
 ## -- 2025-06-25  1.2.0     DA       Class Crosshair: implementation of nD plot methods
+## -- 2025-06-26  1.2.1     DA       Bugfix in method Crosshair._update_plot_nd()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-06-25)
+Ver. 1.2.1 (2025-06-26)
 
 This module provides the class Crosshair that provides crosshair functionality.
 
@@ -178,8 +179,8 @@ class Crosshair (Point):
 
         # 2 Get coordinates
         center   = self.value
-        ax_xlim  = p_settings.axes.get_xlim()
-        xlim     = [ min( ax_xlim[0], center[0] ), max(ax_xlim[1], center[0] ) ]
+        xlim  = p_settings.axes.get_xlim()
+        #xlim     = [ min( ax_xlim[0], center[0] ), max(ax_xlim[1], center[0] ) ]
         
 
         # 3 Plot a crosshair per feature
