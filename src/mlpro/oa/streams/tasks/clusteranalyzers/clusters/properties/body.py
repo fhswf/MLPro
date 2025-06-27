@@ -7,10 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-12  0.1.0     DA       Creation
 ## -- 2025-03-19  0.1.1     DA       Refactoring (cprop_center_geo)
+## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-10  0.3.0     DA/DS    New property 'density'
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2025-03-19)
+Ver. 0.3.0 (2025-06-10)
 
 This module provides a template class for the cluster property 'body'.
 
@@ -20,7 +22,7 @@ This module provides a template class for the cluster property 'body'.
 from mlpro.bf.streams import Instance
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.geometry import cprop_size_geo, cprop_center_geo
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_deformation_index
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_deformation_index, cprop_density
 
 
 
@@ -47,7 +49,8 @@ class Body (MultiProperty):
 
     C_PROPERTIES : PropertyDefinitions = [ cprop_center_geo,
                                            cprop_size_geo,
-                                           cprop_deformation_index ]
+                                           cprop_deformation_index,
+                                           cprop_density ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -69,15 +72,14 @@ class Body (MultiProperty):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_membership(self, p_inst : Instance ) -> float:
+    def get_membership(self, p_instance : Instance ) -> float:
         """
         Custom method to determine a scalar membership value for the given instance.
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             Instance.
-
         Returns
         -------
         float

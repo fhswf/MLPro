@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.samplers
 ## -- Module  : weighted_random.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-16  0.0.0     SY       Creation 
 ## -- 2023-04-16  1.0.0     SY       First version release
+## -- 2025-06-06  1.1.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-04-16)
+Ver. 1.1.0 (2025-06-06)
 
 This module provides a ready-to-use stream sampler class SamplerWeightedRND, in which each instance
 is randomly uniformly weighted. Then, it is compared to a pre-defined threshold. If the weight of an
@@ -43,9 +44,6 @@ class SamplerWeightedRND(Sampler):
         Random seeding. Default = 0.
     """
 
-    C_TYPE          = 'Weighted Random Sampler'
-
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_num_instances:int=0, p_threshold:float=0.5, p_seed:int=0):
         
@@ -69,14 +67,14 @@ class SamplerWeightedRND(Sampler):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _omit_instance(self, p_inst:Instance) -> bool:
+    def _omit_instance(self, p_instance : Instance) -> bool:
         """
         A custom method to filter any incoming instances, which is being called by omit_instance()
         method.
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             An input instance to be filtered.
 
         Returns
