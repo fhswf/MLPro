@@ -23,17 +23,20 @@
 ## -- 2024-05-28  1.3.4     LSB      Fixed the denormalizing method when zero std
 ## -- 2024-12-05  1.3.5     DA       Bugfix in method NormalizersZTransform._run()
 ## -- 2024-12-06  1.3.6     DA       Fixes and optimization 
+## -- 2025-06-06  1.4.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-25  2.0.0     DA       Refactoring, simplification, correction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.6 (2024-12-06)
+Ver. 2.0.0 (2025-06-25)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
 
-
-from mlpro.oa.streams.basics import *
+from mlpro.bf.various import Log
 from mlpro.bf.math import normalizers as Norm
+
+from mlpro.oa.streams.basics import Instance, InstDict, OAStreamTask
 
 
 
@@ -65,7 +68,7 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name: str = None,
-                 p_range_max=StreamTask.C_RANGE_THREAD,
+                 p_range_max=OAStreamTask.C_RANGE_THREAD,
                  p_ada: bool = True,
                  p_duplicate_data : bool = False,
                  p_visualize = False,
@@ -91,44 +94,38 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict):
+    def _run(self, p_instances : InstDict):
         """
         Custom method to for run Z-transform task for normalizing new instances and denormalizing deleted instances.
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             Stream instances to be processed
 
         """
 
-        if len( p_inst ) == 0: return
+        for inst_id, (inst_type, inst) in sorted(p_instances.items()):
 
-        # 1 Online update of transformation parameters
-        self.adapt( p_inst = p_inst )
+            # 1 Adaptation per instance
+            self.adapt( p_instances = { inst_id : (inst_type, inst) } )
 
-        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
-
+            # 2 Z-transformation
             feature_data = inst.get_feature_data()
-
-            if self._param is None:
-                if inst_type == InstTypeNew:
-                    self.update_parameters( p_data_new = feature_data )
-                else:
-                    self.update_parameters( p_data_del = feature_data )
-
-            self.update_plot_data()
             feature_data.set_values( p_values = self.normalize(feature_data).get_values() )
+
+            # 3 Udpdate of plot data
+            self._update_plot_data()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new : Instance) -> bool:
+    def _adapt(self, p_instance_new : Instance) -> bool:
         """
         Custom method to for adapting of Z-transform parameters on new instances.
 
         Parameters
         ----------
-        p_inst_new: Instance
+        p_instance_new: Instance
             Instance to be adapted on.
 
         Returns
@@ -138,21 +135,19 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
         """
 
-        self.update_parameters( p_data_new = p_inst_new.get_feature_data() )
-        self.update_plot_data()
-        self._parameters_updated = True
+        self.update_parameters( p_data_new = p_instance_new.get_feature_data() )
 
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_reverse(self, p_inst_del:Instance) -> bool:
+    def _adapt_reverse(self, p_instance_del : Instance) -> bool:
         """
         Custom method to for adapting of Z-transform parameters on deleted instances.
 
         Parameters
         ----------
-        p_inst_del: Instance
+        p_instance_del: Instance
             Instance to be adapted on.
 
         Returns
@@ -162,9 +157,7 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
         """
 
-        self.update_parameters( p_data_del = p_inst_del.get_feature_data() )
-        self.update_plot_data()
-        self._parameters_updated = True
+        self.update_parameters( p_data_del = p_instance_del.get_feature_data() )
 
         return True
 
@@ -172,158 +165,42 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_2d(self):
         """
-        Renormalizing the plot data.
+        Updates the 2D plot data after parameter changes by renormalizing the existing points.
         """
-        if self._parameters_updated and (len(self._plot_2d_xdata) != 0):
+        
+        if not self._plot_2d_xdata: return
 
-            if self._parameters_updated and (len(self._plot_2d_xdata) != 0):
-
-                if (self._plot_data_2d is None) or (len(self._plot_2d_xdata) > self._plot_data_2d.shape[0]):
-                    self._plot_data_2d = np.zeros((len(self._plot_2d_xdata), 2))
-                    self._parameters_updated = False
-                    # return
-
-            for i in range(len(self._plot_2d_xdata)):
-                self._plot_data_2d[i][0] = self._plot_2d_xdata[i]
-                self._plot_data_2d[i][1] = self._plot_2d_ydata[i]
-
-            plot_data_renormalized = self.renormalize(self._plot_data_2d)
-
-            for i, data_2d in enumerate(plot_data_renormalized):
-                self._plot_2d_xdata[i] = data_2d[0]
-                self._plot_2d_ydata[i] = data_2d[1]
-
-            self._parameters_updated = False
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d( self,
-                         p_settings : PlotSettings,
-                         p_inst : InstDict,
-                         **p_kwargs ):
-        """
-        Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
-        """
-
-        self.update_plot_data()
-
-        OAStreamTask._update_plot_2d( self,
-                                      p_settings = p_settings,
-                                      p_inst = p_inst,
-                                      **p_kwargs )
+        self.renormalize( p_data = self._plot_2d_xdata, p_dim = 0 )
+        self.renormalize( p_data = self._plot_2d_ydata, p_dim = 1 )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_3d(self):
-        if self._parameters_updated and (len(self._plot_3d_xdata) != 0):
-
-            if (self._plot_data_3d is None) or (len(self._plot_3d_xdata) > self._plot_data_3d.shape[0]):
-                self._plot_data_3d = np.zeros((len(self._plot_3d_xdata), 3))
-
-            for i in range(len(self._plot_3d_xdata)):
-                self._plot_data_3d[i][0] = self._plot_3d_xdata[i]
-                self._plot_data_3d[i][1] = self._plot_3d_ydata[i]
-                self._plot_data_3d[i][2] = self._plot_3d_zdata[i]
-
-            plot_data_renormalized = self.renormalize(self._plot_data_3d)
-
-            self._plot_3d_xdata = {}
-            self._plot_3d_ydata = {}
-            self._plot_3d_zdata = {}
-
-            for i, data_3d in enumerate(plot_data_renormalized):
-                self._plot_3d_xdata[i] = data_3d[0]
-                self._plot_3d_ydata[i] = data_3d[1]
-                self._plot_3d_zdata[i] = data_3d[2]
-
-            self._parameters_updated = False
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d( self,
-                         p_settings : PlotSettings,
-                         p_inst : InstDict,
-                         **p_kwargs ):
         """
         Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
-
         """
 
-        self._update_plot_data_3d()
+        if not self._plot_3d_xdata: return
 
-        OAStreamTask._update_plot_3d( self,
-                                      p_settings = p_settings,
-                                      p_inst = p_inst,
-                                      **p_kwargs )
+        self.renormalize( p_data = self._plot_3d_xdata, p_dim = 0 )
+        self.renormalize( p_data = self._plot_3d_ydata, p_dim = 1 )
+        self.renormalize( p_data = self._plot_3d_zdata, p_dim = 2 )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_nd(self):
-        if self._parameters_updated and self._plot_nd_plots:
-            if (len(self._plot_nd_plots[0][0])) != 0:
-
-                if (self._plot_data_nd is None) or (len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0]):
-                    self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]), len(self._plot_nd_plots)))
-
-                for j in range(len(self._plot_nd_plots)):
-                    for i in range(len(self._plot_nd_plots[0][0])):
-                        self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
-
-                plot_data_renormalized = self.renormalize(self._plot_data_nd)
-
-                for j in range(len(self._plot_nd_plots)):
-                    self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
-
-                self._parameters_updated = False
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd( self,
-                         p_settings : PlotSettings,
-                         p_inst : InstDict,
-                         **p_kwargs ):
         """
-
         Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
         """
 
-        self._update_plot_data_nd()
+        if not self._plot_nd_plots: return
 
-        OAStreamTask._update_plot_nd( self,
-                                p_settings = p_settings,
-                                p_inst = p_inst,
-                                **p_kwargs )
+        for dim, plot_data in enumerate(self._plot_nd_plots):
+            self.renormalize(p_data=plot_data[0], p_dim=dim)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot_data(self):
+    def _update_plot_data(self):
         """
         Updates the plot data.
         """

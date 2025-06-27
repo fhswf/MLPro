@@ -37,10 +37,11 @@
 ## --                                - implemented new method get_influence()
 ## -- 2024-06-18  1.3.0     DA       Removed method ClusterCentroid.__init__()
 ## -- 2025-04-13  1.4.0     DA       Introduction of C_EPSILON
+## -- 2025-06-06  1.5.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-04-13)
+Ver. 1.5.0 (2025-06-06)
 
 This module provides a template class for clusters with a centroid.
 """
@@ -78,13 +79,13 @@ class ClusterCentroid (Cluster):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_influence(self, p_inst: Instance) -> float:
+    def get_influence(self, p_instance: Instance) -> float:
         """
         Default strategy to determine the influence of a cluster on a specified instance based
         on the metric distance between the instance and the cluster centroid.
         """
 
-        feature_data = p_inst.get_feature_data()
+        feature_data = p_instance.get_feature_data()
 
         try:
             centroid_elem = self._centroid_elem

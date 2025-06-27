@@ -51,7 +51,7 @@ class MyTask (StreamTask):
     C_NAME      = 'Custom'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst: InstDict):
+    def _run(self, p_instances : InstDict):
         pass
 
 
