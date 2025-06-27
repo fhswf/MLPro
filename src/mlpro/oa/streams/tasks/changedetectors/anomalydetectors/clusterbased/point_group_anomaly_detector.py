@@ -18,10 +18,11 @@
 ## -- 2025-06-08  0.3.2     DS       Design extensions
 ## -- 2025-06-10  0.3.3     DA/DS    Refactoring
 ## -- 2025-06-15  0.3.4     DS       Bug fixes
+## -- 2025-06-27  0.3.5     DS       Bug fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.4 (2025-06-15)
+Ver. 0.3.5 (2025-06-27)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -115,16 +116,18 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
         custom method for detectiong cluster-based point anomalies.
         """
         # 1 Call the parent method to detect anomalies
-        for cluster in p_clusters.values():
+        for cluster_id, cluster in p_clusters.items():
 
         # 2 Get the cluster property to be observed
             prop_cluster_size : Property = getattr(cluster, self._property[0])
 
+
             # 2.1 Check for the  spatial group anomalies
-            if (prop_cluster_size.value == 1) and (prop_cluster_size.value_prev is None):
+            if (prop_cluster_size.value == 1) and (prop_cluster_size.value_prev is None or prop_cluster_size.value_prev > 2):
+
             
                 # 2.1.1 Create a new point anomaly
-                point_anomaly = self._cls_point_anomaly( p_clusters = {cluster.id : cluster},
+                point_anomaly = self._cls_point_anomaly( p_clusters = {cluster_id: cluster},
                                                          p_tstamp = self._get_tstamp(),
                                                          p_visualize = self.get_visualization(),
                                                          p_raising_object = self)
