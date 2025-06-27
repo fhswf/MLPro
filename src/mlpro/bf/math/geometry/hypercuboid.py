@@ -153,10 +153,10 @@ class Hypercuboid (MultiProperty):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
         
         # 1 Intro
-        if self.value is None: return
+        if self.value is None: return False
         boundaries = self.value
         center_geo = self.center_geo.value 
         
@@ -215,14 +215,16 @@ class Hypercuboid (MultiProperty):
                                        [ center_geo[1], center_geo[1] ] )  
 
             self._plot_line1.set( color = color )
-            self._plot_line2.set( color = color )                                                           
+            self._plot_line2.set( color = color )  
+
+        return True                                                         
                                                          
                              
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
 
         # 1 Intro
-        if self.value is None: return
+        if self.value is None: return False
         b = self.value
         center_geo = self.center_geo.value 
 
@@ -317,12 +319,8 @@ class Hypercuboid (MultiProperty):
 
         self._plot_3d_polycollection.set( edgecolor = color,
                                           facecolor = color )
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, **p_kwargs):
-        if self.value is None: return
-        pass
+        
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -349,11 +347,6 @@ class Hypercuboid (MultiProperty):
         self._plot_line2 = None
         self._plot_line3.remove()
         self._plot_line3 = None
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_plot_nd(self):
-        pass        
 
 
 ## -------------------------------------------------------------------------------------------------

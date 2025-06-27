@@ -530,7 +530,7 @@ class DoublePendulumSystemRoot (System):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs) -> bool:
         """
         This method updates the plot figure of each episode. When the figure is
         detected to be an embedded figure, this method will only set up the
@@ -569,6 +569,8 @@ class DoublePendulumSystemRoot (System):
                     self._ccw_arc.set_alpha(self._alpha)
                     self._ccw_arrow.set_alpha(self._alpha)
         except: pass
+
+        return True
 
 
 

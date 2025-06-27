@@ -301,10 +301,10 @@
         <mxCell id="snStFESme1t0pUEIyn34-9" value="run( p_range : int = None,&#xa;        p_wait : bool = False,&#xa;        p_inst : InstDict = None )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="372" width="300" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="IA8VCRKfYFapqcyP_5LL-1" value="_run_wrapper( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
+        <mxCell id="IA8VCRKfYFapqcyP_5LL-1" value="_run_wrapper( p_instances : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="427" width="300" height="27" as="geometry" />
         </mxCell>
-        <mxCell id="snStFESme1t0pUEIyn34-10" value="_run( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
+        <mxCell id="snStFESme1t0pUEIyn34-10" value="_run( p_instances : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="454" width="300" height="27" as="geometry" />
         </mxCell>
         <mxCell id="snStFESme1t0pUEIyn34-11" value="_init_plot_2d( p_figure : Figure, &#xa;                       p_settings : PlotSettings )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
@@ -316,16 +316,16 @@
         <mxCell id="snStFESme1t0pUEIyn34-13" value="_init_plot_nd( p_figure : Figure, &#xa;                       p_settings : PlotSettings )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="560" width="300" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="snStFESme1t0pUEIyn34-14" value="update_plot( p_inst : InstDict = None,&#xa;                     **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
+        <mxCell id="snStFESme1t0pUEIyn34-14" value="update_plot( p_instances : InstDict = None,&#xa;                     **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="600" width="300" height="37" as="geometry" />
         </mxCell>
-        <mxCell id="ngyPrO2KQY6iT1rI6530-9" value="_update_plot_2d( p_settings : PlotSettings,&#xa;                             p_inst : InstDict,&#xa;                             **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
+        <mxCell id="ngyPrO2KQY6iT1rI6530-9" value="_update_plot_2d( p_settings : PlotSettings,&#xa;                             p_instances : InstDict,&#xa;                             **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="637" width="300" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="fwiwB6IKrWPd8qoMgfP1-0" value="_update_plot_3d( p_settings : PlotSettings,&#xa;                             p_inst : InstDict,&#xa;                             **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
+        <mxCell id="fwiwB6IKrWPd8qoMgfP1-0" value="_update_plot_3d( p_settings : PlotSettings,&#xa;                             p_instances : InstDict,&#xa;                             **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="697" width="300" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="fwiwB6IKrWPd8qoMgfP1-1" value="_update_plot_nd( p_settings : PlotSettings,&#xa;                             p_inst : InstDict,&#xa;                             **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
+        <mxCell id="fwiwB6IKrWPd8qoMgfP1-1" value="_update_plot_nd( p_settings : PlotSettings,&#xa;                             p_instances : InstDict,&#xa;                             **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-0" vertex="1">
           <mxGeometry y="757" width="300" height="60" as="geometry" />
         </mxCell>
         <mxCell id="snStFESme1t0pUEIyn34-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="snStFESme1t0pUEIyn34-19" target="snStFESme1t0pUEIyn34-0" edge="1">
@@ -354,7 +354,7 @@
         <mxCell id="snStFESme1t0pUEIyn34-26" value="__init__( p_name : str = None,&#xa;               p_range_max=MLTask.C_RANGE_THREAD,&#xa;               p_class_shared = StreamShared,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;fontStyle=1" parent="snStFESme1t0pUEIyn34-19" vertex="1">
           <mxGeometry y="186" width="300" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="XLZvmo2WCLEzuC_Loi9u-2" value="run( p_range : int = None,&#xa;        p_wait : bool = False,&#xa;        p_inst : InstDict = None )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-19" vertex="1">
+        <mxCell id="XLZvmo2WCLEzuC_Loi9u-2" value="run( p_range : int = None,&#xa;        p_wait : bool = False,&#xa;        p_instances : InstDict = None )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-19" vertex="1">
           <mxGeometry y="281" width="300" height="59" as="geometry" />
         </mxCell>
         <mxCell id="HMNv4_V_l2ykN5qrOgnX-1" value="init_plot( p_figure:Figure=None, &#xa;               p_plot_settings : PlotSettings )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-19" vertex="1">
@@ -369,7 +369,7 @@
         <mxCell id="snStFESme1t0pUEIyn34-30" value="_init_plot_nd( p_figure : Figure, &#xa;                       p_settings : PlotSettings )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-19" vertex="1">
           <mxGeometry y="460" width="300" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="HMNv4_V_l2ykN5qrOgnX-0" value="update_plot( p_inst : InstDict = None,  **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-19" vertex="1">
+        <mxCell id="HMNv4_V_l2ykN5qrOgnX-0" value="update_plot( p_instances:InstDict=None,**p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="snStFESme1t0pUEIyn34-19" vertex="1">
           <mxGeometry y="500" width="300" height="30" as="geometry" />
         </mxCell>
         <mxCell id="snStFESme1t0pUEIyn34-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="snStFESme1t0pUEIyn34-36" target="snStFESme1t0pUEIyn34-19" edge="1">
@@ -473,7 +473,7 @@
         <mxCell id="izVwHubuXxZEv1W2QvRP-10" value="get_tstamp() -&gt; datetime" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="gUQ-q-52XsLSWtc9X4ot-0" vertex="1">
           <mxGeometry y="178" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="XLZvmo2WCLEzuC_Loi9u-0" value="reset( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="gUQ-q-52XsLSWtc9X4ot-0" vertex="1">
+        <mxCell id="XLZvmo2WCLEzuC_Loi9u-0" value="reset( p_instances : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="gUQ-q-52XsLSWtc9X4ot-0" vertex="1">
           <mxGeometry y="204" width="300" height="26" as="geometry" />
         </mxCell>
         <mxCell id="gUQ-q-52XsLSWtc9X4ot-5" value="get_instances( p_task_ids : list ) -&gt; InstDict" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="gUQ-q-52XsLSWtc9X4ot-0" vertex="1">
@@ -511,10 +511,10 @@
         <mxCell id="lvhqgCnyK4_7Xmcv2zhv-1" value="set_num_instances( p_num_instances:int )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="C-rfX_DPHn8f2_06dQrT-1" vertex="1">
           <mxGeometry y="204" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="C-rfX_DPHn8f2_06dQrT-10" value="omit_instance( p_inst:Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="C-rfX_DPHn8f2_06dQrT-1" vertex="1">
+        <mxCell id="C-rfX_DPHn8f2_06dQrT-10" value="omit_instance( p_instance:Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="C-rfX_DPHn8f2_06dQrT-1" vertex="1">
           <mxGeometry y="230" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="C-rfX_DPHn8f2_06dQrT-21" value="_omit_instance( p_inst:Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="C-rfX_DPHn8f2_06dQrT-1" vertex="1">
+        <mxCell id="C-rfX_DPHn8f2_06dQrT-21" value="_omit_instance( p_instance:Instance ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="C-rfX_DPHn8f2_06dQrT-1" vertex="1">
           <mxGeometry y="256" width="300" height="26" as="geometry" />
         </mxCell>
         <mxCell id="izVwHubuXxZEv1W2QvRP-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="K_ok7bvVgyCFEdtzs1Y9-0" target="fdyP1tWBDfPf_pqGQ-dC-17" edge="1">

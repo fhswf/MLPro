@@ -26,10 +26,11 @@
 ## -- 2024-05-24  1.2.1     LSB      Bug fix for Parameter update using only p_data_del in Z-transform
 ## -- 2024-05-27  1.2.2     LSB      Scientific Reference added
 ## -- 2024-12-09  1.3.0     DA       Method NormalizerZTrans.update_parameters(): review/optimization
+## -- 2025-06-25  2.0.0     DA       Refactoring and simplification
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-12-09)
+Ver. 2.0.0 (2025-06-25)
 
 This module provides a class for Z transformation.
 """
@@ -59,10 +60,10 @@ class NormalizerZTrans (Normalizer, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters(self,
-                          p_dataset: np.ndarray = None,
-                          p_data_new: Union[Element, np.ndarray] = None,
-                          p_data_del: Union[Element, np.ndarray] = None):
+    def update_parameters( self,
+                           p_dataset: np.ndarray = None,
+                           p_data_new: Union[Element, np.ndarray] = None,
+                           p_data_del: Union[Element, np.ndarray] = None):
         """
         Method to update the normalization parameters for Z transformer
 
@@ -149,40 +150,3 @@ class NormalizerZTrans (Normalizer, ScientificObject):
             self._param_old = self._param_new
 
         self._set_parameters( p_param = self._param_new )
-
-
-## -------------------------------------------------------------------------------------------------
-    def denormalize(self, p_data: Union[Element, np.ndarray]):
-        """
-        Method to denormalize a data (Element/ndarray) element based on MinMax or Z-transformation
-
-        Parameters
-        ----------
-        p_data:Element or a numpy array
-            Data element to be denormalized
-
-        Returns
-        -------
-        element:Element or numpy array
-            Denormalized Data
-        """
-
-        if self._param is None:
-            raise ImplementationError('Normalization parameters not set')
-
-        if not all(self._std):
-            return p_data.set_values(self._mean) if isinstance(p_data, Element) else self._mean
-
-        if isinstance(p_data, Element):
-
-            p_data.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
-                    self._param[1] / self._param[0]))
-
-        elif isinstance(p_data, np.ndarray):
-            p_data = np.multiply(p_data, 1 / self._param[0]) + \
-                     (self._param[1] / self._param[0])
-            p_data = np.nan_to_num(p_data)
-        else:
-            raise ParamError('Wrong datatype provided for denormalization')
-
-        return p_data

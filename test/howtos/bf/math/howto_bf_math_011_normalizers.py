@@ -13,10 +13,11 @@
 ## -- 2022-11-03  1.0.4     LSB      refacoring for update with replaced data (Z-
 ## -- 2023-09-23  1.0.5     LSB      Bug Fix, the input to normalizer shall be copied as it returns the same object
 ## -- 2024-04-30  1.1.0     DA       Refactoring
+## -- 2025-0605   1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-30)
+Ver. 1.2.0 (2025-06-05)
 
 Example file for demonstrating the use of MLPro's normalizer for normalizing and de-normalizing data.
 
@@ -37,7 +38,7 @@ You will learn:
 
 import numpy as np
 
-from mlpro.bf.math import Dimension
+from mlpro.bf.math import Dimension, Set, Element
 from mlpro.bf.math.normalizers import *
 
 

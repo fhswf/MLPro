@@ -46,7 +46,7 @@ class MyTask (StreamTask):
     C_NAME      = 'Custom'
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict):
+    def _run(self, p_instances : InstDict):
         pass
 
 
@@ -111,6 +111,7 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot()
+    myscenario.run()
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

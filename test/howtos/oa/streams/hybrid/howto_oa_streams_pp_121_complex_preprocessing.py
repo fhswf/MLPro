@@ -137,14 +137,11 @@ class MyScenario (OAStreamScenario):
         task5_bd = BoundaryDetector( p_name = '5 - Boundary Detector', 
                                      p_ada = p_ada, 
                                      p_visualize = p_visualize,   
-                                     p_logging = p_logging )
+                                     p_logging = p_logging,
+                                     p_boundary_provider = task4_window )
 
         workflow.add_task( p_task = task5_bd, 
                            p_pred_tasks = [task4_window] )
-
-        # 2.5.1 Here the event-based adaptation mechanism of the Boundary Betector is connected to the predecessor Windoow task
-        task4_window.register_event_handler( p_event_id = RingBuffer.C_EVENT_DATA_REMOVED, 
-                                             p_event_handler = task5_bd.adapt_on_event )
 
 
         # 2.6 Setup Z Transform-Normalizer in Parallel
