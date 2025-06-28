@@ -79,7 +79,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def normalize(self, p_data: Union[Element, np.ndarray], p_dim: int = None):
+    def normalize(self, p_data: Union[Element, list, np.ndarray], p_dim: int = None):
         """
         Method to normalize a data (Element/ndarray) element based on MinMax or Z-transformation
 
@@ -132,7 +132,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def denormalize(self, p_data: Union[Element, np.ndarray], p_dim: int = None):
+    def denormalize(self, p_data: Union[Element, list, np.ndarray], p_dim: int = None):
         """
         Method to denormalize a data (Element/ndarray) element based on MinMax or Z-transformation
 
@@ -182,7 +182,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def renormalize(self, p_data: Union[Element, np.ndarray], p_dim: int = None):
+    def renormalize(self, p_data: Union[Element, list, np.ndarray], p_dim: int = None):
         """
         Method to denormalize and renormalize an element based on old and current normalization parameters.
 

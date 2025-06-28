@@ -42,7 +42,8 @@ from mlpro.bf.math import normalizers as Norm
 from mlpro.oa.streams.basics import InstDict, OAStreamTask
 
 
-
+#!! DEBUG
+import numpy as np
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -166,6 +167,8 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
         self.renormalize( p_data = self._plot_2d_xdata, p_dim = 0 )
         self.renormalize( p_data = self._plot_2d_ydata, p_dim = 1 )
+
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------

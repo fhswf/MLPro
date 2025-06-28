@@ -26,10 +26,11 @@
 ## -- 2025-06-16  2.0.0     DA       Class NormalizerMinMax:
 ## --                                - New parameter p_dst_boundaries
 ## --                                - Refactoring of method update_parameters()
+## -- 2025-06-28  2.1.0     DA       Class NormalizerMinMax: new numerical stabilizer C_EPSILON
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-16)
+Ver. 2.1.0 (2025-06-28)
 
 This module provides a class for MinMax normalization.
 """
@@ -56,6 +57,8 @@ class NormalizerMinMax (Normalizer):
     p_dst_boundaries : list = [-1,1]
         Explicit list of (low, high) destination boundaries. Default is [-1, 1].
     """
+
+    C_EPSILON   = 1e-12
 
 # -------------------------------------------------------------------------------------------------
     def __init__( self, p_dst_boundaries : list = [-1,1]):
@@ -118,6 +121,9 @@ class NormalizerMinMax (Normalizer):
                 low  -= 1
 
             diff = high - low
+            if diff < self.C_EPSILON:
+                diff = self.C_EPSILON
+
             p0 = self._dst_diff / diff
             p1 = self._dst_boundaries[0] - low * p0
             self._param_new[:, i] = p0, p1
