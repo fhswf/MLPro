@@ -11,12 +11,13 @@
 ## -- 2022-12-16  1.0.2     DA       Little refactoring
 ## -- 2022-12-19  1.0.3     DA       New parameter p_duplicate_data
 ## -- 2024-05-22  1.1.0     DA       Refactoring
-## -- 2024-06-17  1.1.1.    DA       Method Rearranger._prepare_rearrangement(): takeover of feature 
+## -- 2024-06-17  1.1.1     DA       Method Rearranger._prepare_rearrangement(): takeover of feature 
 ## --                                and label space from first instance
+## -- 2025-06-06  1.2.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-06-17)
+Ver. 1.2.0 (2025-06-06)
 
 This module provides a stream task class Rearranger to rearrange the feature and label space of
 instances.
@@ -95,7 +96,7 @@ class Rearranger (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _prepare_rearrangement(self, p_inst:Instance):
+    def _prepare_rearrangement(self, p_instance : Instance):
 
         # 1 Preparation
         self._mapping_f2f = []
@@ -104,8 +105,8 @@ class Rearranger (StreamTask):
         self._mapping_l2l = []
 
         # 1.1 Feature space
-        features            = p_inst.get_feature_data().get_dim_ids()
-        self._feature_space = type(p_inst.get_feature_data().get_related_set())()
+        features            = p_instance.get_feature_data().get_dim_ids()
+        self._feature_space = type(p_instance.get_feature_data().get_related_set())()
 
         for f_entry in self._features_new: 
             for feature in f_entry[1]:
@@ -113,8 +114,8 @@ class Rearranger (StreamTask):
 
         # 1.2 Label space
         try:
-            labels            = p_inst.get_label_data().get_dim_ids()
-            self._label_space = type(p_inst.get_label_data().get_related_set())()
+            labels            = p_instance.get_label_data().get_dim_ids()
+            self._label_space = type(p_instance.get_label_data().get_related_set())()
 
             for l_entry in self._labels_new: 
                 for label in l_entry[1]:
@@ -197,17 +198,17 @@ class Rearranger (StreamTask):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict):
+    def _run(self, p_instances : InstDict):
 
         # 1 Late preparation based on first incoming instance
         if not self._prepared:
             try:
-                (inst_type, inst) = next(iter(p_inst.values()))
-                self._prepare_rearrangement(p_inst=inst)
+                (inst_type, inst) = next(iter(p_instances.values()))
+                self._prepare_rearrangement(p_instance=inst)
                 self._prepared = True
             except:
                 return
 
         # 2 Rearrange new instances (order doesn't matter)
-        for (inst_type,inst) in p_inst.values(): 
+        for (inst_type,inst) in p_instances.values(): 
             self._rearrange(p_inst=inst)

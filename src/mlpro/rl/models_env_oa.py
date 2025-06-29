@@ -10,10 +10,11 @@
 ## -- 2023-05-31  0.1.1     LSB      Cleaning
 ## -- 2023-05-31  0.1.2     LSB      Visualization fixed
 ## -- 2023-06-10  0.1.3     LSB      Fixed for refactoring on stream processing
+## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instance/s
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.3 (2023-06-10)
+Ver. 0.2.0 (2025-06-06)
 
 This module provides model classes for adaptive environments
 """
@@ -156,10 +157,11 @@ class OAFctReward(FctReward, Model):
             inst_new = [self._state_obj_new]
 
         # 3. Run the workflow
-        self._wf_reward.run(p_inst = dict(zip([inst.get_id() for inst in inst_new], [(InstTypeNew,inst) for inst in inst_new])))
+        self._wf_reward.run( p_instances = dict(zip([inst.get_id() for inst in inst_new], [(InstTypeNew,inst) for inst in inst_new])) )
 
         # 4. Return the results
         return self._wf_reward.get_so().get_results()[self.get_tid()]
+
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id: str, p_event_object: Event) -> bool:
@@ -175,6 +177,7 @@ class OAFctReward(FctReward, Model):
 
         """
         pass
+
 
 ## -------------------------------------------------------------------------------------------------
     def add_task_reward(self, p_task: StreamTask, p_pred_tasks: list = None):
@@ -193,24 +196,21 @@ class OAFctReward(FctReward, Model):
         self._wf_reward.add_task(p_task=p_task, p_pred_tasks=p_pred_tasks)
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wf_reward(self, p_inst:InstDict):
+    def _run_wf_reward(self, p_instances : InstDict):
         """
         Runs the reward computation workflow of the system.
 
         Parameters
         ----------
-        p_inst_new: list[State]
-            List of new instances to be processed by the workflow.
-
-        p_inst_del: list[State]
-            List of old instances to be processed by the workflow.
+        p_instances : InstDict
+            Instances to be processed.
 
         """
-        ids = sorted(p_inst.keys())
+        ids = sorted(p_instances.keys())
         if len(ids) > 1:
-            instances =  [p_inst[ids[0]][1], p_inst[ids[1]][1]]
+            instances =  [p_instances[ids[0]][1], p_instances[ids[1]][1]]
         else:
-            instances = [p_inst[ids[0]][1]]
+            instances = [p_instances[ids[0]][1]]
         if len(instances) == 2 :
             state_new = instances[1]
             self._inst_old = instances[0]
