@@ -39,10 +39,13 @@
 ## -- 2023-04-09  2.2.2     SY       Refactoring
 ## -- 2023-05-06  2.2.3     DA       Class Element: completion of data type definitions
 ## -- 2024-12-02  2.3.0     DA       Class Dimension: new parent KWArgs
+## -- 2025-06-29  3.0.0     DA       - New data type Data
+## --                                - Class Function: refactoring and extension
+## --                                - New class Scaler
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-12-02)
+Ver. 3.0.0 (2025-06-29)
 
 This module provides basic mathematical classes.
 """
@@ -482,6 +485,12 @@ class Element:
 
 
 
+Data = Union[ float, list, np.ndarray, Element ]
+
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class ElementList:
@@ -570,89 +579,419 @@ class Function:
     """
     Model class for an elementary bi-multivariate mathematical function that maps elements of a
     multivariate input space to elements of a multivariate output space.
+
+    Parameters
+    ----------
+    p_input_set : Set = None
+        Optional input set, needed for the mapping of objects of type Element.
+    p_output_set : Set = None
+        Optional output set, needed for the mapping of objects of type Element.
+    p_output_elem_cls : type = Element  
+        Output element class (compatible to class Element)
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_input_space: MSpace, p_output_space: MSpace, p_output_elem_cls=Element):
-        """
-        Parameters:
-            p_input_space       Input space
-            p_output_space      Output space
-            p_output_elem_cls   Output element class (compatible to class Element)
-        """
+    def __init__( self, 
+                  p_input_set : Set = None, 
+                  p_output_set : Set = None,
+                  p_input_space = None,       # hidden parameter ensuring backward compatibility
+                  p_output_space = None,      # hidden parameter ensuring backward compatibility
+                  p_output_elem_cls : type = Element,
+                  p_autocreate_elements : bool = True ):
 
-        self._input_space     = p_input_space
-        self._output_space    = p_output_space
-        self._output_elem_cls = p_output_elem_cls
-        self.__call__         = self.map 
+        if ( p_input_set is None ):
+            self._input_set = p_input_space
+        else:
+            self._input_set = p_input_set
+
+        if ( p_output_set is None ):
+            self._output_set = p_output_space
+        else:
+            self._output_set = p_output_set
+
+        # Obsolete private attibutes, kept for backward compatibility. Do not use in new implementations.
+        self._input_space         = self._input_set
+        self._output_space        = self._output_set
+
+        self._output_elem_cls     = p_output_elem_cls
+        self._autocreate_elements = p_autocreate_elements
+
+        if self._autocreate_elements and ( ( self._output_set is None ) or ( self._output_elem_cls is None ) ):
+            raise ParamError('For element auto-creation the output set and type of element needs to be supplied')
+
+        # Hard redirection of method self.__call__() to method self.map
+        self.__call__ = self.map
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __call__(self, p_input: Union[Element,np.array] ) -> Union[Element,np.array]:
+    def map( self, 
+             p_input : Data,
+             p_output : Data = None,
+             p_dim : int = None ) -> Data:
         """
-        Maps a multivariate abscissa/input element to a multivariate ordinate/output element by 
-        calling the custom method _map().
+        Maps an input to an output by calling the custom methods _map_[Type]().        
 
         Parameters
         ----------
-        p_input : Element
-            Input element to be mapped.
+        p_input : Data
+            Input to be mapped.
+        p_output : Data = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
         
         Returns
         -------
-        output : Element
-            Output element.
+        Data
+            Result of the mapping.
         """
 
-        return self.map(p_input=p_input)
+        try:
+            meth_name = '_map_' + type(p_input).__name__
+            method    = getattr(self, meth_name)
+            return method( p_input = p_input, 
+                           p_output = p_output, 
+                           p_dim = p_dim )
+        
+        except AttributeError:
+            # Treat parameters as of type Element...
+            output = p_output
+            if ( p_output is None ) and self._autocreate_elements:
+                output = self._output_elem_cls(self._output_set)
+
+            return self._map( p_input = p_input, 
+                              p_output = output, 
+                              p_dim = p_dim )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def map(self, p_input: Union[Element,np.array] ) -> Union[Element,np.array]:
+    def __call__(self, p_input : Data ) -> Data:
         """
-        Maps a multivariate abscissa/input element to a multivariate ordinate/output element by 
-        calling the custom method _map().        
+        Simplified pythonic mapping. Enables calls like y = my_fct(x). See the method map() for
+        further details.
 
         Parameters
         ----------
-        p_input : Union[Element,np.array]
+        p_input : Data
             Input to be mapped.
         
         Returns
         -------
-        output : Union[Element,np.array]
-            Output.
+        Data
+            Result of the mapping.
         """
 
-        output = self._output_elem_cls(self._output_space)
-        self._map(p_input, output)
-        return output
+        # This code is never executed due of the hard redirection to the method map() in the
+        # constructor. Redefinition has no effect.
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _map(self, p_input: Element, p_output: Element):
+    def _map( self, 
+              p_input: Element, 
+              p_output: Element = None,
+              p_dim : int = None ) -> Element:
         """
-        Custom method for own mapping algorithm. See methods __call__() and map() for further details.
+        Default custom method for own mappings of single objects of type Element.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input to be mapped.
+        p_output : Element = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        Element
+            Result of the mapping.
         """
         
         raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def map_inverse(self, p_input: Union[Element,np.array] ) -> Union[Element,np.array]:
-        """
-        Inverse mapping by calling custom method _map_inverse().
-        """
-
-        output = self._output_elem_cls(self._output_space)
-        self._map_inverse(p_input, output)
-        return output
-
+    
 
 ## -------------------------------------------------------------------------------------------------
-    def _map_inverse(self, p_input: Element, p_output: Element):
+    def _map_float( self, 
+                    p_input: float, 
+                    p_output: float = None,
+                    p_dim : int = None ) -> Element:
         """
-        Custom method for own inverse mapping algorithm. See method map_inverse() for further details.
+        Custom method for own mappings of single floats.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input to be mapped.
+        p_output : Element = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        float
+            Result of the mapping.
         """
         
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _map_list( self, 
+                   p_input: list, 
+                   p_output: list = None,
+                   p_dim : int = None ) -> list:
+        """
+        Custom method for own mass mappings of lists.
+
+        Parameters
+        ----------
+        p_input : list
+            Input to be mapped.
+        p_output : list = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        list
+            Result of the mapping.
+        """
+        
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _map_ndarray( self, 
+                      p_input: np.ndarray, 
+                      p_output: np.ndarray = None,
+                      p_dim : int = None ) -> np.ndarray:
+        """
+        Custom method for own mass mappings of Numpy arrays.
+
+        Parameters
+        ----------
+        p_input : list
+            Input to be mapped.
+        p_output : list = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        np.ndarray
+            Result of the mapping.
+        """
+        
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def map_inverse( self, 
+                     p_input : Data,
+                     p_output : Data = None,
+                     p_dim : int = None ) -> Data:
+        """
+        Inverse mapping of an input to an output by calling the custom methods _map_inverse_[Type]().        
+
+        Parameters
+        ----------
+        p_input : Data
+            Input to be mapped.
+        p_output : Data = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        Data
+            Result of the mapping.
+        """
+
+        try:
+            meth_name = '_map_inverse_' + type(p_input).__name__
+            method    = getattr(self, meth_name)
+            return method( p_input = p_input, 
+                           p_output = p_output, 
+                           p_dim = p_dim )
+        
+        except AttributeError:
+            # Treat parameters as of type Element...
+            output = p_output
+            if ( p_output is None ) and self._autocreate_elements:
+                output = self._output_elem_cls(self._input_set)
+
+            return self._map_inverse( p_input = p_input, 
+                                      p_output = output, 
+                                      p_dim = p_dim )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map_inverse( self, 
+                      p_input: Element, 
+                      p_output: Element = None,
+                      p_dim : int = None ) -> Element:
+        """
+        Default custom method for own inverse mappings of single objects of type Element.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input to be mapped.
+        p_output : Element = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        Element
+            Result of the mapping.
+        """
+        
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _map_inverse_float( self, 
+                            p_input: float, 
+                            p_output: float = None,
+                            p_dim : int = None ) -> Element:
+        """
+        Custom method for own inverse mappings of single floats.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input to be mapped.
+        p_output : Element = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        float
+            Result of the mapping.
+        """
+        
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _map_inverse_list( self, 
+                           p_input: list, 
+                           p_output: list = None,
+                           p_dim : int = None ) -> list:
+        """
+        Custom method for own mass inverse mappings of lists.
+
+        Parameters
+        ----------
+        p_input : list
+            Input to be mapped.
+        p_output : list = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        list
+            Result of the mapping.
+        """
+        
+        raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _map_inverse_ndarray( self, 
+                              p_input: np.ndarray, 
+                              p_output: np.ndarray = None,
+                              p_dim : int = None ) -> np.ndarray:
+        """
+        Custom method for own mass inverse mappings of Numpy arrays.
+
+        Parameters
+        ----------
+        p_input : list
+            Input to be mapped.
+        p_output : list = None
+            Optional output object as the intended receiver of the mapping result.
+        p_dim : int = None
+           An optional dimension index to which the mapping is restricted.
+        
+        Returns
+        -------
+        np.ndarray
+            Result of the mapping.
+        """
+        
+        raise NotImplementedError
+    
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Scaler (Function):
+    """
+    Template for scaler algorithms scaling, unscaling, rescaling data.    
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, *p_args, **p_kwargs ):
+        super().__init__( *p_args, **p_kwargs )
+
+        self._param     = None
+        self._param_old = None
+        self._param_new = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def scale( self, p_data : Data, p_dim : int = None ) -> Data:
+        self._set_parameters( p_param = self._param_new )
+        return self.map( p_input = p_data, p_dim = p_dim )
+
+
+## -------------------------------------------------------------------------------------------------
+    def unscale( self, p_data : Data, p_dim : int = None ) -> Data:
+        self._set_parameters( p_param = self._param_old )
+        return self.map( p_input = p_data, p_dim = p_dim )
+
+
+## -------------------------------------------------------------------------------------------------
+    def rescale( self, p_data : Data, p_dim : int = None ) -> Data:
+        return self.scale( p_data = self.unscale( p_data = p_data, p_dim = p_dim ), p_dim = p_dim )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_parameters( self, p_param ):
+        self._param = p_param
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_parameters( self, p_data : Data ) -> bool:
+        """
+        Custom method to update the parameters of the scaler based on specific data. Please set
+        the internal attribute p_param_new with new values and backup the previous content in
+        p_param_old before.
+
+        Parameters
+        ----------
+        p_data : Data
+            Data needed to update the parameters of the scaler.
+
+        Returns
+        -------
+        bool
+            True, if the parameters were changed. False otherwise.
+        """
+
         raise NotImplementedError
