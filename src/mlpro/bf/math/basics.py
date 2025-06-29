@@ -963,7 +963,7 @@ class Scaler (Function):
 ## -------------------------------------------------------------------------------------------------
     def unscale( self, p_data : Data, p_dim : int = None ) -> Data:
         self._set_parameters( p_param = self._param_old )
-        return self.map( p_input = p_data, p_dim = p_dim )
+        return self.map_inverse( p_input = p_data, p_dim = p_dim )
 
 
 ## -------------------------------------------------------------------------------------------------
