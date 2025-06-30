@@ -942,7 +942,23 @@ class Function:
 ## -------------------------------------------------------------------------------------------------
 class Scaler (Function):
     """
-    Template for scaler algorithms scaling, unscaling, rescaling data.    
+    Template for scaler algorithms scaling, unscaling, rescaling data. This class introduces a
+    parameter handling based on the three attributes _param, _param_old, and _param_new. All custom
+    methods inherited from the class Function shall apply the parameters stored in _param, which is 
+    a reference to eigther _param_old or _param_new.  
+
+    Parameters
+    ----------
+    See class Function for further details.
+
+    Attributes
+    ----------
+    _param
+        Internal reference to the active set of function parameters applied to the next scaler action.
+    _param_old
+        Previous parameter set.
+    _param_new
+        Current parameter set.   
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -955,24 +971,118 @@ class Scaler (Function):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def scale( self, p_data : Data, p_dim : int = None ) -> Data:
-        self._set_parameters( p_param = self._param_new )
+    def scale( self, 
+               p_data : Data, 
+               p_dim : int = None,
+               p_param = None ) -> Data:
+        """
+        Scales the specified data.
+
+        Parameters
+        ----------
+        p_data : Data
+            Data to be scaled.
+        p_dim : int = None
+            Optional index of the dimension to be scaled.
+        p_param = None
+            Optional parameter set to be applied to the scaling operation. If None the set stored in
+            self._param_new is used.
+
+        Returns
+        -------
+        Data
+            The scaled data.
+        """
+
+        if p_param is not None:
+            self._set_parameters( p_param = p_param )
+        else:
+            self._set_parameters( p_param = self._param_new )
+
         return self.map( p_input = p_data, p_dim = p_dim )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def unscale( self, p_data : Data, p_dim : int = None ) -> Data:
-        self._set_parameters( p_param = self._param_old )
+    def unscale( self, 
+                 p_data : Data, 
+                 p_dim : int = None,
+                 p_param = None ) -> Data:
+        """
+        Unscales the specified data.
+
+        Parameters
+        ----------
+        p_data : Data
+            Data to be unscaled.
+        p_dim : int = None
+            Optional index of the dimension to be unscaled.
+        p_param = None
+            Optional parameter set to be applied to the unscaling operation. If None the set stored in
+            self._param_old is used.
+
+        Returns
+        -------
+        Data
+            The unscaled data.
+        """
+
+        if p_param is not None:
+            self._set_parameters( p_param = p_param )
+        else:
+            self._set_parameters( p_param = self._param_new )
+
         return self.map_inverse( p_input = p_data, p_dim = p_dim )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def rescale( self, p_data : Data, p_dim : int = None ) -> Data:
-        return self.scale( p_data = self.unscale( p_data = p_data, p_dim = p_dim ), p_dim = p_dim )
+    def rescale( self, 
+                 p_data : Data, 
+                 p_dim : int = None,
+                 p_param_old = None,
+                 p_param_new = None ) -> Data:
+        """
+        Rescales the specified data by unscaling them with previous parameters stored in _param_old and
+        scaling them with the current parameters in _param_new.
+
+        Parameters
+        ----------
+        p_data : Data
+            Data to be rescaled.
+        p_dim : int = None
+            Optional index of the dimension to be rescaled.
+        p_param_old = None
+            Optional parameter set to be applied to the unscaling operation. If None the set stored in
+            self._param_old is used.
+        p_param_new = None
+            Optional parameter set to be applied to the scaling operation. If None the set stored in
+            self._param_new is used.
+
+        Returns
+        -------
+        Data
+            The rescaled data.
+        """
+
+        if ( self._param_old is None ) and ( p_param_old is None ): return p_data
+        
+        return self.scale( p_data = self.unscale( p_data = p_data, 
+                                                  p_dim = p_dim,
+                                                  p_param = p_param_old ), 
+                           p_dim = p_dim,
+                           p_param = p_param_new )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _set_parameters( self, p_param ):
+        """
+        Private service method to activate the parameter set suitable for the next scaler operation.
+
+        Parameters
+        ----------
+        p_param 
+            Parameter set to be activated.
+        """
+
         self._param = p_param
 
 

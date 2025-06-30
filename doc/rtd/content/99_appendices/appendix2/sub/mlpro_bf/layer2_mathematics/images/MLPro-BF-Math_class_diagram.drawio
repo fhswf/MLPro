@@ -7,7 +7,7 @@
         <mxCell id="z0QvJ6B_BdvuQfe3Sqzu-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="z0QvJ6B_BdvuQfe3Sqzu-0" target="z0QvJ6B_BdvuQfe3Sqzu-7" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="z0QvJ6B_BdvuQfe3Sqzu-0" target="z0QvJ6B_BdvuQfe3Sqzu-18">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="z0QvJ6B_BdvuQfe3Sqzu-0" target="z0QvJ6B_BdvuQfe3Sqzu-18" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="z0QvJ6B_BdvuQfe3Sqzu-0" value="Set" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;gradientColor=#ffffff;swimlaneFillColor=#ffffff;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -233,10 +233,10 @@
         <mxCell id="HHrvhmsQsyEggMaAUGNa-19" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="HHrvhmsQsyEggMaAUGNa-18" vertex="1">
           <mxGeometry y="26" width="40" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-0" value="Basic definitions:&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Data = Union[ float, list, np.ndarray, Element ]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" vertex="1" parent="HHrvhmsQsyEggMaAUGNa-10">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-0" value="Basic definitions:&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Data = Union[ float, list, np.ndarray, Element ]&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" parent="HHrvhmsQsyEggMaAUGNa-10" vertex="1">
           <mxGeometry x="200" y="260" width="280" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="z0QvJ6B_BdvuQfe3Sqzu-18" target="ruhi2UbvjiBjApWjwDuS-0">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="z0QvJ6B_BdvuQfe3Sqzu-18" target="ruhi2UbvjiBjApWjwDuS-0" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="z0QvJ6B_BdvuQfe3Sqzu-18" value="Element" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;gradientColor=#ffffff;swimlaneFillColor=#ffffff;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -305,7 +305,7 @@
         <mxCell id="J-QqGGnJOPUjVu77Mp3g-11" value="distance(p_e1, p_e2)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="J-QqGGnJOPUjVu77Mp3g-4" vertex="1">
           <mxGeometry y="34" width="300" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YAAxjvMtmQFIqXP0Cyvb-0" target="z0QvJ6B_BdvuQfe3Sqzu-18">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="YAAxjvMtmQFIqXP0Cyvb-0" target="z0QvJ6B_BdvuQfe3Sqzu-18" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="YAAxjvMtmQFIqXP0Cyvb-0" value="ElementList" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=1;fillColor=#dae8fc;strokeColor=#6c8ebf;gradientColor=#ffffff;swimlaneFillColor=#ffffff;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -355,7 +355,7 @@
         <mxCell id="3QcbmmoWGXjtFOoasTYU-5" value="&lt;span style=&quot;text-align: center;&quot;&gt;Multivariate&lt;/span&gt;&lt;br style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Euclidian space&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="116" y="-3107" width="110" height="38" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="2iTi9Pvyfxeb31oEl1vi-12" target="z0QvJ6B_BdvuQfe3Sqzu-18">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="2iTi9Pvyfxeb31oEl1vi-12" target="z0QvJ6B_BdvuQfe3Sqzu-18" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="769" y="-2710" as="sourcePoint" />
             <Array as="points">
@@ -390,7 +390,7 @@
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-19" value="_map( p_input : Element, &#xa;           p_output : Element = None,&#xa;           p_dim : int = None ) -&gt; Element" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-12" vertex="1">
           <mxGeometry y="260" width="300" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-2" value="_map_float( p_input : float,&#xa;                    p_output : float = None,&#xa;                    p_dim : int = None ) -&gt; float" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" vertex="1" parent="2iTi9Pvyfxeb31oEl1vi-12">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-2" value="_map_float( p_input : float,&#xa;                    p_output : float = None,&#xa;                    p_dim : int = None ) -&gt; float" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-12" vertex="1">
           <mxGeometry y="310" width="300" height="50" as="geometry" />
         </mxCell>
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-23" value="_map_list( p_input : list, &#xa;                 p_output : list = None,&#xa;                 p_dim : int = None ) -&gt; list" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-12" vertex="1">
@@ -405,13 +405,13 @@
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-27" value="_map_inverse( p_input : Element, &#xa;                         p_output : Element,&#xa;                         p_dim : int = None ) -&gt; Element" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-12" vertex="1">
           <mxGeometry y="510" width="300" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-12" value="_map_inverse_float( p_input : float,&#xa;                                 p_output : float = None,&#xa;                                 p_dim : int = None ) -&gt; float" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" vertex="1" parent="2iTi9Pvyfxeb31oEl1vi-12">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-12" value="_map_inverse_float( p_input : float,&#xa;                                 p_output : float = None,&#xa;                                 p_dim : int = None ) -&gt; float" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-12" vertex="1">
           <mxGeometry y="560" width="300" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-15" value="_map_inverse_list( p_input : list, &#xa;                               p_output : list = None,&#xa;                               p_dim : int = None ) -&gt; list" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" vertex="1" parent="2iTi9Pvyfxeb31oEl1vi-12">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-15" value="_map_inverse_list( p_input : list, &#xa;                               p_output : list = None,&#xa;                               p_dim : int = None ) -&gt; list" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-12" vertex="1">
           <mxGeometry y="610" width="300" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-16" value="_map_inverse_ndarray( p_input : np.ndarray, &#xa;                              p_output : np.ndarray = None,&#xa;                              p_dim : int = None ) -&gt; np.ndarray" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" vertex="1" parent="2iTi9Pvyfxeb31oEl1vi-12">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-16" value="_map_inverse_ndarray( p_input : np.ndarray, &#xa;                              p_output : np.ndarray = None,&#xa;                              p_dim : int = None ) -&gt; np.ndarray" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-12" vertex="1">
           <mxGeometry y="660" width="300" height="50" as="geometry" />
         </mxCell>
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="2iTi9Pvyfxeb31oEl1vi-30" target="2iTi9Pvyfxeb31oEl1vi-12" edge="1">
@@ -420,7 +420,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-30" value="Scaler (Function)" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=1;strokeWidth=3;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;gradientColor=#FFFFFF;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="619" y="-2050" width="300" height="262" as="geometry">
+          <mxGeometry x="619" y="-2050" width="300" height="350" as="geometry">
             <mxRectangle x="230" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -436,34 +436,34 @@
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-33" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
           <mxGeometry y="104" width="300" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="2iTi9Pvyfxeb31oEl1vi-44" value="scale( p_data : Data, p_dim : int = None ) -&gt; Data" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;fontStyle=1" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
-          <mxGeometry y="112" width="300" height="30" as="geometry" />
+        <mxCell id="2iTi9Pvyfxeb31oEl1vi-44" value="scale( p_data : Data, &#xa;           p_dim : int = None,&#xa;           p_param = None ) -&gt; Data" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;fontStyle=1" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
+          <mxGeometry y="112" width="300" height="57" as="geometry" />
         </mxCell>
-        <mxCell id="2iTi9Pvyfxeb31oEl1vi-45" value="unscale( p_data : Data, p_dim : int = None ) -&gt; Data" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;fontStyle=1" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
-          <mxGeometry y="142" width="300" height="30" as="geometry" />
+        <mxCell id="2iTi9Pvyfxeb31oEl1vi-45" value="unscale( p_data : Data, &#xa;                p_dim : int = None,&#xa;                p_param = None  ) -&gt; Data" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;fontStyle=1" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
+          <mxGeometry y="169" width="300" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="2iTi9Pvyfxeb31oEl1vi-46" value="rescale( p_data : Data, p_dim : int = None ) -&gt; Data" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;fontStyle=1" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
-          <mxGeometry y="172" width="300" height="30" as="geometry" />
+        <mxCell id="2iTi9Pvyfxeb31oEl1vi-46" value="rescale( p_data : Data,&#xa;               p_dim : int = None,&#xa;               p_param_old = None,&#xa;               p_param_new = None ) -&gt; Data" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;fontStyle=1" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
+          <mxGeometry y="221" width="300" height="69" as="geometry" />
         </mxCell>
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-50" value="_set_param( p_param )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
-          <mxGeometry y="202" width="300" height="30" as="geometry" />
+          <mxGeometry y="290" width="300" height="30" as="geometry" />
         </mxCell>
         <mxCell id="2iTi9Pvyfxeb31oEl1vi-51" value="update_parameters( **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2iTi9Pvyfxeb31oEl1vi-30" vertex="1">
-          <mxGeometry y="232" width="300" height="30" as="geometry" />
+          <mxGeometry y="320" width="300" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;endArrow=none;endFill=0;startFill=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="3QcbmmoWGXjtFOoasTYU-6" target="2iTi9Pvyfxeb31oEl1vi-13">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;endArrow=none;endFill=0;startFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="3QcbmmoWGXjtFOoasTYU-6" target="2iTi9Pvyfxeb31oEl1vi-13" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="3QcbmmoWGXjtFOoasTYU-6" value="&lt;span style=&quot;text-align: center;&quot;&gt;Template for&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Bi-Multivariate mathematical&amp;nbsp; functions.&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;text-align: center; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Key features are:&lt;/span&gt;&lt;div&gt;&lt;ul&gt;&lt;li style=&quot;&quot;&gt;Support of most used data types like floats, lists, Numpy arrays and Elements of Sets. Easily extendible in own child_classes. Just add own methods _map_[MyType]() or _map_inverse_[MyType]().&lt;br&gt;&lt;br&gt;&lt;/li&gt;&lt;li style=&quot;&quot;&gt;Mass mapping&lt;br&gt;&lt;br&gt;&lt;/li&gt;&lt;li style=&quot;&quot;&gt;Partial mapping per dimension&lt;br&gt;&lt;br&gt;&lt;/li&gt;&lt;li style=&quot;&quot;&gt;Optional inverse mapping&lt;br&gt;&lt;br&gt;&lt;/li&gt;&lt;li style=&quot;&quot;&gt;Custom methods support inplace and out-of-place implementations&lt;br&gt;&lt;br&gt;&lt;/li&gt;&lt;li style=&quot;&quot;&gt;Scientific referencing&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="290" y="-2890" width="273" height="300" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;endArrow=none;startFill=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="zgArxeGTixUVR4gSQhhW-3" target="2iTi9Pvyfxeb31oEl1vi-47">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;endArrow=none;startFill=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="zgArxeGTixUVR4gSQhhW-3" target="2iTi9Pvyfxeb31oEl1vi-47" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-3" value="&lt;div style=&quot;&quot;&gt;Function template specialized to (inplace) scaling of data.&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;Introduces the handling of two sets of parameters (old/new) and tree base operations&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;ul&gt;&lt;li&gt;scale (based on new parameters)&lt;/li&gt;&lt;li&gt;unscale (based on old parameters)&lt;/li&gt;&lt;li&gt;rescale = scale( unscale ( p_data ) )&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-3" value="&lt;div style=&quot;&quot;&gt;Function template specialized to (inplace) scaling of data.&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;Introduces the handling of two sets of parameters (old/new) and tree base operations&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;ul&gt;&lt;li&gt;scale (based on new parameters)&lt;/li&gt;&lt;li&gt;unscale (based on old parameters)&lt;/li&gt;&lt;li&gt;rescale = scale( unscale ( p_data ) )&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="290" y="-2050" width="273" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="zgArxeGTixUVR4gSQhhW-11" value="Element of a set containing values for each dimension." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="zgArxeGTixUVR4gSQhhW-11" value="Element of a set containing values for each dimension." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;gradientColor=none;shadow=1;fontStyle=1;align=left;verticalAlign=top;spacingLeft=2;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1320" y="-3380" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
