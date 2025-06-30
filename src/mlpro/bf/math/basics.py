@@ -54,7 +54,8 @@ This module provides basic mathematical classes.
 import numpy as np
 from itertools import repeat
 import uuid
-from mlpro.bf.various import Log, KWArgs
+
+from mlpro.bf.various import Log, KWArgs, ScientificObject
 from mlpro.bf.events import *
 from typing import Union
 
@@ -575,7 +576,7 @@ class ESpace(MSpace):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Function:
+class Function (KWArgs, ScientificObject):
     """
     Model class for an elementary bi-multivariate mathematical function that maps elements of a
     multivariate input space to elements of a multivariate output space.
@@ -588,6 +589,11 @@ class Function:
         Optional output set, needed for the mapping of objects of type Element.
     p_output_elem_cls : type = Element  
         Output element class (compatible to class Element)
+    p_autocreate_elements : bool = True
+        If True, elements of the output space are created automatically during mapping of objects of 
+        type Element.
+    **p_kwargs
+        Further optional keyword arguments needed for particular custom implementations.
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -597,7 +603,10 @@ class Function:
                   p_input_space = None,       # hidden parameter ensuring backward compatibility
                   p_output_space = None,      # hidden parameter ensuring backward compatibility
                   p_output_elem_cls : type = Element,
-                  p_autocreate_elements : bool = True ):
+                  p_autocreate_elements : bool = True,
+                  **p_kwargs ):
+        
+        KWArgs.__init__(self, **p_kwargs )
 
         if ( p_input_set is None ):
             self._input_set = p_input_space
@@ -1029,7 +1038,7 @@ class Scaler (Function):
         if p_param is not None:
             self._set_parameters( p_param = p_param )
         else:
-            self._set_parameters( p_param = self._param_new )
+            self._set_parameters( p_param = self._param_old )
 
         return self.map_inverse( p_input = p_data, p_dim = p_dim )
 

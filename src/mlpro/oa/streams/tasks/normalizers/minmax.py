@@ -24,10 +24,11 @@
 ## -- 2024-12-16  1.4.0     DA       Method NormalizerMinMax._run(): little code tuning
 ## -- 2025-06-05  1.5.0     DA       Refactoring
 ## -- 2025-06-25  1.6.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-30  2.0.0     DA       Refactoring: introduction of bf.math.Scaler
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2025-06-25)
+Ver. 2.0.0 (2025-06-30)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
@@ -42,8 +43,8 @@ from mlpro.bf.math import normalizers as Norm
 from mlpro.oa.streams.basics import InstDict, OAStreamTask
 
 
-#!! DEBUG
-import numpy as np
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -53,11 +54,11 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
     Parameters
     ----------
-    p_name: str, optional
-        Name of the task.
+    p_name: str = None,
+        Optional name of the task.
     p_range_max:
         Processing range of the task, default is a Thread.
-    p_ada:
+    p_ada : bool
         True if the task has adaptivity, default is true.
     p_duplicate_data : bool
         If True, instances will be duplicated before processing. Default = False.
@@ -67,7 +68,7 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         Logging level of the task. Default is Log.C_LOG_ALL
     p_dst_boundaries : list = [-1,1]
         Explicit list of (low, high) destination boundaries. Default is [-1, 1].
-    p_kwargs:
+    **p_kwargs:
         Additional task parameters
     """
 
@@ -93,9 +94,14 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
                                p_logging=p_logging,
                                **p_kwargs )
 
-
-        Norm.NormalizerMinMax.__init__(self, p_dst_boundaries = p_dst_boundaries)
-
+        Norm.NormalizerMinMax.__init__( self, 
+                                        p_input_set = None,
+                                        p_output_set = None,
+                                        p_output_elem_cls = None,
+                                        p_autocreate_elements = False,
+                                        p_dst_boundaries = p_dst_boundaries,
+                                        **p_kwargs )
+        
         if p_visualize:
             self._plot_data_2d = None
             self._plot_data_3d = None

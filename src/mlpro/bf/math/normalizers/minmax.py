@@ -41,7 +41,7 @@ from typing import Union
 import numpy as np
 
 from mlpro.bf.exceptions import ParamError
-from mlpro.bf.math import Set
+from mlpro.bf.math import Set, Element
 from mlpro.bf.math.normalizers import Normalizer
 
 
@@ -54,6 +54,15 @@ class NormalizerMinMax (Normalizer):
 
     Parameters
     ----------
+    p_input_set : Set = None
+        Optional input set, needed for the mapping of objects of type Element.
+    p_output_set : Set = None
+        Optional output set, needed for the mapping of objects of type Element.
+    p_output_elem_cls : type = Element  
+        Output element class (compatible to class Element)
+    p_autocreate_elements : bool = True
+        If True, elements of the output space are created automatically during mapping of objects of 
+        type Element.
     p_dst_boundaries : list = [-1,1]
         Explicit list of (low, high) destination boundaries. Default is [-1, 1].
     """
@@ -61,9 +70,20 @@ class NormalizerMinMax (Normalizer):
     C_EPSILON   = 1e-12
 
 # -------------------------------------------------------------------------------------------------
-    def __init__( self, p_dst_boundaries : list = [-1,1]):
-
-        super().__init__()
+    def __init__( self, 
+                  p_input_set : Set = None, 
+                  p_output_set : Set = None,
+                  p_output_elem_cls : type = Element,
+                  p_autocreate_elements : bool = True,
+                  p_dst_boundaries : list = [-1,1],
+                  **p_kwargs ):
+        
+        super().__init__( p_input_set = p_input_set,
+                          p_output_set = p_output_set,
+                          p_output_elem_cls = p_output_elem_cls,
+                          p_autocreate_elements = p_autocreate_elements,
+                          **p_kwargs )
+        
         self._dst_boundaries = p_dst_boundaries
         self._dst_diff       = p_dst_boundaries[1] - p_dst_boundaries[0]
 
