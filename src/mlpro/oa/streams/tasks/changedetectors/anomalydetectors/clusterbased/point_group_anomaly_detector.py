@@ -19,10 +19,11 @@
 ## -- 2025-06-10  0.3.3     DA/DS    Refactoring
 ## -- 2025-06-15  0.3.4     DS       Bug fixes
 ## -- 2025-06-27  0.3.5     DS       Bug fixes
+## -- 2025-06-30  0.3.6     DS       Bug fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.5 (2025-06-27)
+Ver. 0.3.6 (2025-06-27)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -120,6 +121,11 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
 
         # 2 Get the cluster property to be observed
             prop_cluster_size : Property = getattr(cluster, self._property[0])
+ 
+            #curr_cluster_size = prop_cluster_size.value if prop_cluster_size.value is not None else 0
+            #prev_cluster_size = prop_cluster_size.value_prev if prop_cluster_size.value_prev is not None else 0
+
+            #if curr_cluster_size == 1 and prev_cluster_size is None or prev_cluster_size > 1:
 
 
             # 2.1 Check for the  spatial group anomalies
@@ -134,6 +140,8 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
 
                 self._raise_anomaly_event( p_anomaly = point_anomaly, p_instance = p_instance )
                 self._latest_anomaly = point_anomaly
+            else:
+                self.log(Log.C_LOG_TYPE_I, f"No anomaly: Cluster {cluster_id} size {prop_cluster_size.value} (prev: {prop_cluster_size.value_prev})")
         
 
 ## ----------------------------------------------------------------------------------
