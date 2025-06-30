@@ -25,26 +25,30 @@
 ## -- 2024-12-06  1.3.6     DA       Fixes and optimization 
 ## -- 2025-06-06  1.4.0     DA       Refactoring: p_inst -> p_instance/s
 ## -- 2025-06-25  2.0.0     DA       Refactoring, simplification, correction
+## -- 2025-06-30  2.1.0     DA       Refactoring: new parent OAStreamNormalizer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-25)
+Ver. 2.1.0 (2025-06-30)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
 
 from mlpro.bf.various import Log
 from mlpro.bf.math import normalizers as Norm
+from mlpro.bf.streams import Instance, InstDict, InstTypeDel
 
-from mlpro.oa.streams.basics import Instance, InstDict, OAStreamTask
+from mlpro.oa.streams import OAStreamTask
+from mlpro.oa.streams.tasks.normalizers import OAStreamNormalizer
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
+class NormalizerZTransform (Norm.NormalizerZTrans, OAStreamNormalizer):
     """
-    Online adaptive normalization of instances with Z-Transformation
+    Online-adaptive normalization of instances with Z-transformation.
 
     Parameters
     ----------
@@ -60,11 +64,14 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
         True for visualization, false by default.
     p_logging:
         Logging level of the task. Default is Log.C_LOG_ALL
-    p_kwargs:
+    p_param_snapshots : bool = False
+        If True, snapshots of the normalization parameters are stored for each instance to enable
+        a proper normalization of outdated instances.
+    **p_kwargs:
         Additional task parameters
     """
 
-    C_NAME = 'Normalizer Z Transform'
+    C_NAME = 'ZTrans'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name: str = None,
@@ -73,20 +80,26 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
                  p_duplicate_data : bool = False,
                  p_visualize = False,
                  p_logging=Log.C_LOG_ALL,
+                 p_param_snapshots : bool = False,
                  **p_kwargs):
 
-        OAStreamTask.__init__(self,
-            p_name=p_name,
-            p_range_max=p_range_max,
-            p_ada=p_ada,
-            p_duplicate_data = p_duplicate_data,
-            p_visualize = p_visualize,
-            p_logging=p_logging,
-            **p_kwargs)
+        OAStreamNormalizer.__init__( self,
+                                     p_name = p_name,
+                                     p_range_max = p_range_max,
+                                     p_ada = p_ada,
+                                     p_duplicate_data = p_duplicate_data,
+                                     p_visualize = p_visualize,
+                                     p_logging=p_logging,
+                                     p_param_shapshots = p_param_snapshots,
+                                     **p_kwargs )
 
-        Norm.NormalizerZTrans.__init__(self)
-        self._parameters_updated:bool = None
-        self._test_data = None
+        Norm.NormalizerZTrans.__init__( self, 
+                                        p_input_set = None,
+                                        p_output_set = None,
+                                        p_output_elem_cls = None,
+                                        p_autocreate_elements = False,
+                                        **p_kwargs )
+        
         if p_visualize:
             self._plot_data_2d = None
             self._plot_data_3d = None
@@ -105,13 +118,19 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
         """
 
-        for inst_id, (inst_type, inst) in sorted(p_instances.items()):
+        for inst_id, (inst_type, inst) in p_instances.items():
 
             # 1 Adaptation per instance
             self.adapt( p_instances = { inst_id : (inst_type, inst) } )
 
             # 2 Z-transformation
             feature_data = inst.get_feature_data()
+
+            if inst_type == InstTypeDel:
+                param = self._restore_inst_param( p_instance = inst )
+            else:
+                param = self._store_inst_param( p_instance = inst )
+
             feature_data.set_values( p_values = self.normalize(feature_data).get_values() )
 
             # 3 Udpdate of plot data
@@ -135,9 +154,7 @@ class NormalizerZTransform (OAStreamTask, Norm.NormalizerZTrans):
 
         """
 
-        self.update_parameters( p_data_new = p_instance_new.get_feature_data() )
-
-        return True
+        return self.update_parameters( p_data_new = p_instance_new.get_feature_data() )
 
 
 ## -------------------------------------------------------------------------------------------------

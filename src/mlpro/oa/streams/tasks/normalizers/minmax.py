@@ -24,10 +24,11 @@
 ## -- 2024-12-16  1.4.0     DA       Method NormalizerMinMax._run(): little code tuning
 ## -- 2025-06-05  1.5.0     DA       Refactoring
 ## -- 2025-06-25  1.6.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-30  2.0.0     DA       Refactoring: new parent OAStreamNormalizer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2025-06-25)
+Ver. 2.0.0 (2025-06-30)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
@@ -38,25 +39,26 @@ from mlpro.bf.events import Event
 from mlpro.bf.exceptions import Error
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import normalizers as Norm
-
-from mlpro.oa.streams.basics import InstDict, OAStreamTask
+from mlpro.bf.streams import InstDict, InstTypeDel
+from mlpro.oa.streams.basics import OAStreamTask
+from mlpro.oa.streams.tasks.normalizers import OAStreamNormalizer
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
+class NormalizerMinMax (Norm.NormalizerMinMax, OAStreamNormalizer):
     """
     Class with functionality for adaptive normalization of instances using MinMax Normalization.
 
     Parameters
     ----------
-    p_name: str, optional
-        Name of the task.
+    p_name: str = None,
+        Optional name of the task.
     p_range_max:
         Processing range of the task, default is a Thread.
-    p_ada:
+    p_ada : bool
         True if the task has adaptivity, default is true.
     p_duplicate_data : bool
         If True, instances will be duplicated before processing. Default = False.
@@ -64,13 +66,16 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         True for visualization, false by default.
     p_logging:
         Logging level of the task. Default is Log.C_LOG_ALL
+    p_param_snapshots : bool = False
+        If True, snapshots of the normalization parameters are stored for each instance to enable
+        a proper normalization of outdated instances.
     p_dst_boundaries : list = [-1,1]
         Explicit list of (low, high) destination boundaries. Default is [-1, 1].
-    p_kwargs:
+    **p_kwargs:
         Additional task parameters
     """
 
-    C_NAME = 'Normalizer MinMax' 
+    C_NAME = 'MinMax' 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -80,21 +85,28 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
                   p_duplicate_data : bool = False,
                   p_visualize:bool = False,
                   p_logging = Log.C_LOG_ALL,
+                  p_param_snapshots : bool = False,
                   p_dst_boundaries : list = [-1, 1],
                   **p_kwargs ):
 
-        OAStreamTask.__init__( self,
-                               p_name = p_name,
-                               p_range_max = p_range_max,
-                               p_ada = p_ada,
-                               p_duplicate_data = p_duplicate_data,
-                               p_visualize = p_visualize,
-                               p_logging=p_logging,
-                               **p_kwargs )
+        OAStreamNormalizer.__init__( self,
+                                     p_name = p_name,
+                                     p_range_max = p_range_max,
+                                     p_ada = p_ada,
+                                     p_duplicate_data = p_duplicate_data,
+                                     p_visualize = p_visualize,
+                                     p_logging=p_logging,
+                                     p_param_shapshots = p_param_snapshots,
+                                     **p_kwargs )
 
-
-        Norm.NormalizerMinMax.__init__(self, p_dst_boundaries = p_dst_boundaries)
-
+        Norm.NormalizerMinMax.__init__( self, 
+                                        p_input_set = None,
+                                        p_output_set = None,
+                                        p_output_elem_cls = None,
+                                        p_autocreate_elements = False,
+                                        p_dst_boundaries = p_dst_boundaries,
+                                        **p_kwargs )
+        
         if p_visualize:
             self._plot_data_2d = None
             self._plot_data_3d = None
@@ -112,10 +124,16 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
             Instances to be processed
         """
         
-        # Normalization of all incoming stream instances (order doesn't matter)
-        for ids, (inst_type, inst) in p_instances.items():
-            feature_data = inst.get_feature_data()               
-            normalized_element = self.normalize(feature_data)
+        # Normalization of all incoming stream instances
+        for (inst_type, inst) in p_instances.values():
+            feature_data = inst.get_feature_data()    
+
+            if inst_type == InstTypeDel:
+                param = self._restore_inst_param( p_instance = inst )
+            else:
+                param = self._store_inst_param( p_instance = inst )
+
+            normalized_element = self.normalize( p_data = feature_data, p_param = param )
             feature_data.set_values(normalized_element.get_values())
 
 
@@ -141,7 +159,8 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
             Returns True, if the task has adapted. False otherwise.
         """
 
-        self.update_parameters( p_boundaries = p_event_object.get_raising_object().get_boundaries() )
+        adapted = self.update_parameters( p_boundaries = p_event_object.get_raising_object().get_boundaries() )
+        if not adapted: return False
 
         if self._visualize:
             if self._plot_settings.view == PlotSettings.C_VIEW_2D:
