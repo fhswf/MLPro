@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-24  0.1.0     DA/DS    New class ChangeObserver for change observation
+## -- 2025-06-27  0.1.1     DS       Added ChangeObserverCB for change observation with cluster information
+## -- 2025-06-29  0.1.2     DS       Bug fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-06-24)
+Ver. 0.1.2 (2025-06-29)
 
 This module provides the ChangeObserver class to be used for observation and visualization of stream
 adaptation events.
@@ -243,7 +245,11 @@ class ChangeObserverCB(ChangeObserver):
                 self.log(Log.C_LOG_TYPE_I, f"Centroid coordinates: {centroids}")
 
             if cluster_size is not None:
-                self.log(Log.C_LOG_TYPE_I, f"Cluster sizes: {cluster_size}")
-
+                if hasattr(cluster_size, "values"):
+                    self.log(Log.C_LOG_TYPE_I, f"Cluster sizes: {cluster_size.values}")
+                elif hasattr(cluster_size, "value"):
+                    self.log(Log.C_LOG_TYPE_I, f"Cluster size: {cluster_size.value}")
+                else:
+                    self.log(Log.C_LOG_TYPE_I, f"Cluster size: {cluster_size}")
         except:
             self.log(Log.C_LOG_TYPE_W, f"Could not extract cluster infomation")
