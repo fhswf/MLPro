@@ -971,8 +971,22 @@ class Scaler (Function):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, *p_args, **p_kwargs ):
-        super().__init__( *p_args, **p_kwargs )
+    def __init__( self, 
+                  p_input_set : Set = None, 
+                  p_output_set : Set = None,
+                  p_input_space = None,       # hidden parameter ensuring backward compatibility
+                  p_output_space = None,      # hidden parameter ensuring backward compatibility
+                  p_output_elem_cls : type = Element,
+                  p_autocreate_elements : bool = True,
+                  **p_kwargs ):
+        
+        super(). __init__( p_input_set = p_input_set, 
+                           p_output_set = p_output_set,
+                           p_input_space = p_input_space,        # hidden parameter ensuring backward compatibility
+                           p_output_space = p_output_space,      # hidden parameter ensuring backward compatibility
+                           p_output_elem_cls = p_output_elem_cls,
+                           p_autocreate_elements = p_autocreate_elements,
+                           **p_kwargs )
 
         self._param     = None
         self._param_old = None
@@ -1096,10 +1110,30 @@ class Scaler (Function):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters( self, p_data : Data ) -> bool:
+    def update_parameters( self, **p_kwargs ) -> bool:
         """
-        Custom method to update the parameters of the scaler based on specific data. Please set
-        the internal attribute p_param_new with new values and backup the previous content in
+        Method to update the parameters of the scaler. It calls the custom method _update_parameters(),
+        which specifies the actual parameters needed by the particular algorithm.
+
+        Parameters
+        ----------
+        p_data : Data
+            Data needed to update the parameters of the scaler.
+
+        Returns
+        -------
+        bool
+            True, if the parameters were changed. False otherwise.
+        """
+
+        return self._update_parameters( **p_kwargs )
+    
+
+## -------------------------------------------------------------------------------------------------
+    def _update_parameters( self, **p_kwargs ) -> bool:
+        """
+        Custom method to update the parameters of the scaler based on data specific to the particular 
+        algorithm. Please set the internal attribute p_param_new with new values and backup the previous content in
         p_param_old before.
 
         Parameters
