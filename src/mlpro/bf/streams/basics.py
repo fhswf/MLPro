@@ -83,10 +83,12 @@
 ## -- 2025-06-06  2.6.0     DA       Refactoring: p_inst -> p_instance/s
 ## -- 2025-06-08  2.7.0     DA       Refactoring of StreamTask._update_plot*: new return parameter 
 ## -- 2025-06-24  2.8.0     DA       Class StreamTask: tuning of plot updates
+## -- 2025-07-01  2.9.0     DA       Class StreamTask: replaced the exception by pass in _run() to
+## --                                make the class be usable as a plot host.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.8.0 (2025-06-24)
+Ver. 2.9.0 (2025-07-01)
 
 This module provides classes for standardized data stream processing. 
 
@@ -1207,7 +1209,7 @@ class StreamTask (Task):
             Instances to be processed.
         """
 
-        raise NotImplementedError
+        pass
   
 
 ## -------------------------------------------------------------------------------------------------
@@ -1282,13 +1284,6 @@ class StreamTask (Task):
         p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
         p_settings.axes.grid(visible=True)
-        # p_settings.axes.set_xlim(0,1)
-        # p_settings.axes.set_ylim(-1,1)
-
-        if p_settings.autoscale_local:
-            p_settings.axes.set_autoscalex_on(False)
-            p_settings.axes.set_autoscaley_on(True)
-            p_settings.axes.margins(y=0)
 
         self._plot_inst_ids  = []
         self._plot_nd_xdata  = []
@@ -1708,18 +1703,16 @@ class StreamTask (Task):
                     feature_value = feature_data[i]
                     fplot[0].append(feature_value)
                     
-                    if not p_settings.autoscale_local:
-                        if self._plot_y_min is None:
+                    if self._plot_y_min is None:
                             self._plot_y_min = feature_value
                             self._plot_y_max = feature_value
                             update_ax_limits_y = True
-                        else:
-                            if feature_value < self._plot_y_min:
-                                self._plot_y_min = feature_value
-                                update_ax_limits_y = True
-                            if feature_value > self._plot_y_max:
-                                self._plot_y_max = feature_value
-                                update_ax_limits_y = True
+                    elif feature_value < self._plot_y_min:
+                            self._plot_y_min = feature_value
+                            update_ax_limits_y = True
+                    elif feature_value > self._plot_y_max:
+                            self._plot_y_max = feature_value
+                            update_ax_limits_y = True
 
             else:
                 if inst_id == self._plot_inst_ids[0]:
@@ -1734,9 +1727,8 @@ class StreamTask (Task):
                     for fplot in self._plot_nd_plots:
                         del fplot[0][idx]
 
-                if not p_settings.autoscale_local:
-                    update_ax_limits_y = True   
-                    recalc_limits      = True
+                update_ax_limits_y = True   
+                recalc_limits      = True
 
 
         # 4 If buffer size is limited, remove obsolete data
@@ -1771,11 +1763,7 @@ class StreamTask (Task):
         if x_min != x_max:
             p_settings.axes.set_xlim(x_min, x_max)
 
-        if p_settings.autoscale_local:
-            p_settings.axes.relim()
-            p_settings.axes.autoscale_view(scalex=False, scaley=True)
-        
-        elif update_ax_limits_y:
+        if update_ax_limits_y:
             if recalc_limits:
                 self._plot_y_min = None
                 self._plot_y_max = None

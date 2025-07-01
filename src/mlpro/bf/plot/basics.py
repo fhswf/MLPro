@@ -71,11 +71,10 @@
 ## --                                    demand
 ## -- 2025-06-15  3.4.0     DA       Class PlotSettings: improved methods register(),unregister(),
 ## --                                is_last_registered()
-## -- 2025-06-23  3.5.0     DA       Class PlotSettings: new parameter p_autoscale_local
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.5.0 (2025-06-23)
+Ver. 3.4.0 (2025-06-15)
 
 This module provides various classes related to data plotting.
 
@@ -131,9 +130,6 @@ class PlotSettings (KWArgs):
     p_data_horizon : int
         Optional data horizon for ND plot. A value > 0 limits the number of data entities buffered 
         internally for plotting. Default = 1000.
-    p_autoscale_local : bool = False
-        Optional boolean flag. If True, the plot is autoscaled locally to the visible data within the plot horizon.
-        If False, the autoscale is applied to the entire data within the data horizon. Default = False.
     p_detail_level : int 
         Optional plot detail level. Default = 0.
     p_force_fg : bool
@@ -168,7 +164,6 @@ class PlotSettings (KWArgs):
                   p_step_rate : int = 1,
                   p_plot_horizon : int = 500,
                   p_data_horizon : int = 1000,
-                  p_autoscale_local : bool = False,
                   p_detail_level : int = 0,
                   p_force_fg : bool = True,
                   p_id : int = 1,
@@ -202,8 +197,6 @@ class PlotSettings (KWArgs):
         else:
             self.plot_horizon    = p_plot_horizon
             self.data_horizon    = p_data_horizon
-
-        self.autoscale_local = p_autoscale_local
 
         
 ## -------------------------------------------------------------------------------------------------
@@ -280,7 +273,6 @@ class PlotSettings (KWArgs):
                                p_step_rate = self.step_rate,
                                p_plot_horizon = self.plot_horizon,
                                p_data_horizon = self.data_horizon,
-                               p_autoscale_local = self.autoscale_local,
                                p_detail_level = self.detail_level,
                                p_force_fg = self.force_fg,
                                p_id = self.id,
@@ -753,11 +745,7 @@ class Plottable:
 
         if p_settings.axes is None:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id )
-
-        if p_settings.autoscale_local:
-            p_settings.axes.set_autoscalex_on(False)
-            p_settings.axes.set_autoscaley_on(True)
-            
+          
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
