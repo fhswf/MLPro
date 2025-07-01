@@ -26,10 +26,12 @@
 ## -- 2025-06-16  2.0.0     DA       Class NormalizerMinMax:
 ## --                                - New parameter p_dst_boundaries
 ## --                                - Refactoring of method update_parameters()
+## -- 2025-06-28  2.1.0     DA       Class NormalizerMinMax: new numerical stabilizer C_EPSILON
+## -- 2025-06-30  2.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-16)
+Ver. 2.2.0 (2025-06-30)
 
 This module provides a class for MinMax normalization.
 """
@@ -40,8 +42,9 @@ from typing import Union
 import numpy as np
 
 from mlpro.bf.exceptions import ParamError
-from mlpro.bf.math import Set
+from mlpro.bf.math import Set, Element
 from mlpro.bf.math.normalizers import Normalizer
+
 
 
 
@@ -53,20 +56,43 @@ class NormalizerMinMax (Normalizer):
 
     Parameters
     ----------
+    p_input_set : Set = None
+        Optional input set, needed for the mapping of objects of type Element.
+    p_output_set : Set = None
+        Optional output set, needed for the mapping of objects of type Element.
+    p_output_elem_cls : type = Element  
+        Output element class (compatible to class Element)
+    p_autocreate_elements : bool = True
+        If True, elements of the output space are created automatically during mapping of objects of 
+        type Element.
     p_dst_boundaries : list = [-1,1]
         Explicit list of (low, high) destination boundaries. Default is [-1, 1].
     """
 
-# -------------------------------------------------------------------------------------------------
-    def __init__( self, p_dst_boundaries : list = [-1,1]):
+    C_EPSILON   = 1e-12
 
-        super().__init__()
+# -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_input_set : Set = None, 
+                  p_output_set : Set = None,
+                  p_output_elem_cls : type = Element,
+                  p_autocreate_elements : bool = True,
+                  p_dst_boundaries : list = [-1,1],
+                  **p_kwargs ):
+        
+        Normalizer.__init__( self,
+                             p_input_set = p_input_set,
+                             p_output_set = p_output_set,
+                             p_output_elem_cls = p_output_elem_cls,
+                             p_autocreate_elements = p_autocreate_elements,
+                             **p_kwargs )
+        
         self._dst_boundaries = p_dst_boundaries
         self._dst_diff       = p_dst_boundaries[1] - p_dst_boundaries[0]
 
 
 # -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_set: Set = None, p_boundaries: Union[list, np.ndarray] = None):
+    def _update_parameters(self, p_set: Set = None, p_boundaries: Union[list, np.ndarray] = None) -> bool:
         """
         Update the normalization parameters using MinMax strategy.
 
@@ -118,10 +144,14 @@ class NormalizerMinMax (Normalizer):
                 low  -= 1
 
             diff = high - low
+            if diff < self.C_EPSILON:
+                diff = self.C_EPSILON
+
             p0 = self._dst_diff / diff
             p1 = self._dst_boundaries[0] - low * p0
             self._param_new[:, i] = p0, p1
 
 
         # 5 Activate _param_new by reference
-        self._param = self._param_new
+        self._set_parameters( p_param = self._param_new )
+        return True

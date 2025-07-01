@@ -1104,6 +1104,8 @@ class StreamTask (Task):
     C_PLOT_ND_XLABEL_TIME   = 'Time index'
     C_PLOT_ND_YLABEL        = 'Feature Data'
 
+    C_EPSILON               = 0.01
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
@@ -1416,6 +1418,7 @@ class StreamTask (Task):
 
         # 3 Update plot data
         update_ax_limits = False
+        recalc_ax_limits = False
 
         for inst_id, (inst_type, inst) in p_instances.items():
                
@@ -1471,9 +1474,14 @@ class StreamTask (Task):
                     del self._plot_2d_xdata[idx]
                     del self._plot_2d_ydata[idx]
 
-                if not update_ax_limits:
-                    update_ax_limits = ( x == self._plot_2d_xmin ) or ( x == self._plot_2d_xmax ) or \
-                                       ( y == self._plot_2d_ymin ) or ( y == self._plot_2d_ymax )
+                if not recalc_ax_limits:
+                    tol_x = ( self._plot_2d_xmax - self._plot_2d_xmin ) * self.C_EPSILON
+                    tol_y = ( self._plot_2d_ymax - self._plot_2d_ymin ) * self.C_EPSILON
+
+                    if ( not ( ( self._plot_2d_xmin + tol_x ) <= x <= ( self._plot_2d_xmax - tol_x ) ) ) or \
+                       ( not ( ( self._plot_2d_ymin + tol_y ) <= y <= ( self._plot_2d_ymax - tol_y ) ) ):
+                        update_ax_limits = True
+                        recalc_ax_limits = True
 
 
         # 4 If buffer size is limited, remove obsolete data
@@ -1508,8 +1516,15 @@ class StreamTask (Task):
 
         # 6 Update of ax limits
         if update_ax_limits:
-            p_settings.axes.relim()
-            p_settings.axes.autoscale_view(scalex=True, scaley=True)
+            if recalc_ax_limits:
+                self._plot_2d_xmin = min(self._plot_2d_xdata)
+                self._plot_2d_xmax = max(self._plot_2d_xdata)
+                self._plot_2d_ymin = min(self._plot_2d_ydata)
+                self._plot_2d_ymax = max(self._plot_2d_ydata)
+
+            p_settings.axes.set_xlim( [ self._plot_2d_xmin, self._plot_2d_xmax ] )
+            p_settings.axes.set_ylim( [ self._plot_2d_ymin, self._plot_2d_ymax ] )
+
 
         return True
 
