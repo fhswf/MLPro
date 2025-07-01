@@ -39,7 +39,7 @@ from mlpro.bf.events import Event
 from mlpro.bf.exceptions import Error
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import normalizers as Norm
-from mlpro.bf.streams import InstDict, InstTypeDel
+from mlpro.bf.streams import InstDict
 from mlpro.oa.streams.basics import OAStreamTask
 from mlpro.oa.streams.tasks.normalizers import OAStreamNormalizer
 
@@ -66,9 +66,6 @@ class NormalizerMinMax (Norm.NormalizerMinMax, OAStreamNormalizer):
         True for visualization, false by default.
     p_logging:
         Logging level of the task. Default is Log.C_LOG_ALL
-    p_param_snapshots : bool = False
-        If True, snapshots of the normalization parameters are stored for each instance to enable
-        a proper normalization of outdated instances.
     p_dst_boundaries : list = [-1,1]
         Explicit list of (low, high) destination boundaries. Default is [-1, 1].
     **p_kwargs:
@@ -85,7 +82,6 @@ class NormalizerMinMax (Norm.NormalizerMinMax, OAStreamNormalizer):
                   p_duplicate_data : bool = False,
                   p_visualize:bool = False,
                   p_logging = Log.C_LOG_ALL,
-                  p_param_snapshots : bool = False,
                   p_dst_boundaries : list = [-1, 1],
                   **p_kwargs ):
 
@@ -96,7 +92,6 @@ class NormalizerMinMax (Norm.NormalizerMinMax, OAStreamNormalizer):
                                      p_duplicate_data = p_duplicate_data,
                                      p_visualize = p_visualize,
                                      p_logging=p_logging,
-                                     p_param_shapshots = p_param_snapshots,
                                      **p_kwargs )
 
         Norm.NormalizerMinMax.__init__( self, 
@@ -127,13 +122,7 @@ class NormalizerMinMax (Norm.NormalizerMinMax, OAStreamNormalizer):
         # Normalization of all incoming stream instances
         for (inst_type, inst) in p_instances.values():
             feature_data = inst.get_feature_data()    
-
-            if inst_type == InstTypeDel:
-                param = self._restore_inst_param( p_instance = inst )
-            else:
-                param = self._store_inst_param( p_instance = inst )
-
-            normalized_element = self.normalize( p_data = feature_data, p_param = param )
+            normalized_element = self.normalize( p_data = feature_data )
             feature_data.set_values(normalized_element.get_values())
 
 
