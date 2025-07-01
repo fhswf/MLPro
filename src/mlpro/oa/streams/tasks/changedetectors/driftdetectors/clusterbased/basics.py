@@ -99,6 +99,8 @@ class DriftDetectorCB (ChangeDetectorCB, DriftDetector):
                                 p_thrs_inst = p_thrs_inst,
                                 **p_kwargs )
         
+        self.cb_drifts = self.cb_changes
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _triage(self, p_change : Change, **p_kwargs) -> bool:

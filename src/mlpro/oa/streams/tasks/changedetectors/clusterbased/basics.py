@@ -199,6 +199,7 @@ class ChangeDetectorCB (ChangeDetector):
         
         self._clusterer           = p_clusterer
         self._thrs_clusters : int = p_thrs_clusters
+        self.cb_changes           ={}
 
         unknown_prop = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
 
@@ -285,3 +286,37 @@ class ChangeDetectorCB (ChangeDetector):
                                           p_buffer = False )
 
             self._remove_change( p_change = change )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _buffer_change(self, p_change:Change):
+        """
+        Method to be used to add a new anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : AnomalyCB
+            Anomaly object to be added.
+        """
+
+        super()._buffer_change(p_change= p_change)
+
+        for cluster in p_change.clusters.values():
+            self.cb_changes[cluster.id] = p_change
+
+
+## -------------------------------------------------------------------------------------------------
+    def _remove_change(self, p_change:Change):
+        """
+        Method to remove an existing anomaly. Please use as part of your algorithm.
+
+        Parameters
+        ----------
+        p_anomaly : AnomalyCB
+            Anomaly object to be removed.
+        """
+
+        super()._remove_change(p_change = p_change)
+
+        for cluster in p_change.clusters.values():
+            del self.cb_changes[cluster.id]

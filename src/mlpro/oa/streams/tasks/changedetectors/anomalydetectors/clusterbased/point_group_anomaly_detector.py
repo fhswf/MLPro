@@ -128,11 +128,14 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
             #if curr_cluster_size == 1 and prev_cluster_size is None or prev_cluster_size > 1:
 
 
-            # 2.1 Check for the  spatial group anomalies
-            if (prop_cluster_size.value == 1) and (prop_cluster_size.value_prev is None or prop_cluster_size.value_prev > 2):
+            # 2.1 Check for the point anomalies
+            if (prop_cluster_size.value == 1) and (prop_cluster_size.value_prev is None or prop_cluster_size.value_prev == 0 ):
 
+                # 2.1.1 Check if the cluster is already in the anomaly buffer
+                if cluster_id in self.cb_anomalies:
+                    continue
             
-                # 2.1.1 Create a new point anomaly
+                    # 2.1.1 Create a new point anomaly
                 point_anomaly = self._cls_point_anomaly( p_clusters = {cluster_id: cluster},
                                                          p_tstamp = self._get_tstamp(),
                                                          p_visualize = self.get_visualization(),
@@ -140,8 +143,9 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
 
                 self._raise_anomaly_event( p_anomaly = point_anomaly, p_instance = p_instance )
                 self._latest_anomaly = point_anomaly
-            else:
-                self.log(Log.C_LOG_TYPE_I, f"No anomaly: Cluster {cluster_id} size {prop_cluster_size.value} (prev: {prop_cluster_size.value_prev})")
+                
+            #else:
+                #self.log(Log.C_LOG_TYPE_I, f"No anomaly: Cluster {cluster_id} size {prop_cluster_size.value} (prev: {prop_cluster_size.value_prev})")
         
 
 ## ----------------------------------------------------------------------------------
@@ -226,7 +230,6 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                   p_thres_percent : float = 0.05,
                   **p_kwargs ):
 
-        self.cb_anomalies               ={}
         self._property                  = p_property
         self._cls_spatial_group_anomaly = p_cls_spatial_group_anomaly
         self._thres_percent             = p_thres_percent
@@ -243,40 +246,6 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                           p_thrs_inst = P_thres_inst,
                           p_thrs_clusters = p_thres_clusters,                     
                           **p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _buffer_anomaly(self, p_anomaly:AnomalyCB):
-        """
-        Method to be used to add a new anomaly. Please use as part of your algorithm.
-
-        Parameters
-        ----------
-        p_anomaly : AnomalyCB
-            Anomaly object to be added.
-        """
-
-        super()._buffer_anomaly(p_anomaly)
-
-        for cluster in p_anomaly.clusters.values():
-            self.cb_anomalies[cluster.id] = p_anomaly
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_anomaly(self, p_anomaly:AnomalyCB):
-        """
-        Method to remove an existing anomaly. Please use as part of your algorithm.
-
-        Parameters
-        ----------
-        p_anomaly : AnomalyCB
-            Anomaly object to be removed.
-        """
-
-        super()._remove_anomaly(p_anomaly)
-
-        for cluster in p_anomaly.clusters.values():
-            del self.cb_anomalies[cluster.id]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -484,7 +453,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                 return False
 
             # 1.2 Check if the anomaly is still valid
-            if cluster_id not in self._temporal_anomalies or len(self._temporal_anomalies[cluster_id]) < 2:
+            if cluster.id not in self._temporal_anomalies or len(self._temporal_anomalies[cluster.id]) < 2:
                 return False
         
         return True
