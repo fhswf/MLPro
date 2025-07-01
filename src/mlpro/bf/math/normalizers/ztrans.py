@@ -26,11 +26,11 @@
 ## -- 2024-05-24  1.2.1     LSB      Bug fix for Parameter update using only p_data_del in Z-transform
 ## -- 2024-05-27  1.2.2     LSB      Scientific Reference added
 ## -- 2024-12-09  1.3.0     DA       Method NormalizerZTrans.update_parameters(): review/optimization
-## -- 2025-06-25  2.0.0     DA       Refactoring and simplification
+## -- 2025-06-30  2.0.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-25)
+Ver. 2.0.0 (2025-06-30)
 
 This module provides a class for Z transformation.
 """
@@ -40,6 +40,7 @@ from mlpro.bf.math.normalizers.basics import *
 import numpy as np
 from typing import Union
 from mlpro.bf.various import ScientificObject
+
 
 
 
@@ -81,8 +82,11 @@ class NormalizerZTrans (Normalizer, ScientificObject):
         """
 
         # 0 Backup current parameters
-        if self._param_new is not None: 
-            self._param_old = self._param_new.copy()
+        if self._param_new is not None:
+            if self._param_old is None or self._param_old.shape != self._param_new.shape:
+                self._param_old = self._param_new.copy()
+            else:
+                self._param_old[...] = self._param_new
 
 
         # 1 Update on dataset
@@ -146,7 +150,5 @@ class NormalizerZTrans (Normalizer, ScientificObject):
         self._param_new[0] = np.divide(1, self._std, out = np.zeros_like(self._std), where = self._std!=0)
         self._param_new[1] = np.divide(self._mean, self._std, out = np.zeros_like(self._std), where = self._std!=0)
 
-        if self._param_old is None:
-            self._param_old = self._param_new
-
         self._set_parameters( p_param = self._param_new )
+        return True
