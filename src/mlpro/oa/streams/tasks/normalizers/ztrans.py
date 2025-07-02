@@ -89,8 +89,6 @@ class NormalizerZTransform (Norm.NormalizerZTrans, OAStreamNormalizer):
                                      **p_kwargs )
 
         Norm.NormalizerZTrans.__init__( self, 
-                                        p_input_set = None,
-                                        p_output_set = None,
                                         p_output_elem_cls = None,
                                         p_autocreate_elements = False,
                                         **p_kwargs )

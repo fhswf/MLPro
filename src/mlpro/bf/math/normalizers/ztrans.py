@@ -36,47 +36,61 @@ This module provides a class for Z transformation.
 """
 
 
-from mlpro.bf.math.normalizers.basics import *
-import numpy as np
 from typing import Union
+
+import numpy as np
+
 from mlpro.bf.various import ScientificObject
+from mlpro.bf.math import Set, Element
+from mlpro.bf.math.normalizers import Normalizer
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTrans (Normalizer, ScientificObject):
+class NormalizerZTrans (Normalizer):
     """
     Class for Normalization based on Z transformation.
     """
-    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_URL = 'http://datagenetics.com/blog/november22017/index.html'
-    C_SCIREF_ACCESSED = '2024-05-27'
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_URL        = 'http://datagenetics.com/blog/november22017/index.html'
+    C_SCIREF_ACCESSED   = '2024-05-27'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-        super().__init__()
+    def __init__( self, 
+                  p_input_set : Set = None, 
+                  p_output_set : Set = None,
+                  p_output_elem_cls : type = Element,
+                  p_autocreate_elements : bool = True,
+                  **p_kwargs ):
+        
+        Normalizer.__init__( self,
+                             p_input_set = p_input_set,
+                             p_output_set = p_output_set,
+                             p_output_elem_cls = p_output_elem_cls,
+                             p_autocreate_elements = p_autocreate_elements,
+                             **p_kwargs )
         self._n = 0
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters( self,
-                           p_dataset: np.ndarray = None,
-                           p_data_new: Union[Element, np.ndarray] = None,
-                           p_data_del: Union[Element, np.ndarray] = None):
+    def _update_parameters( self,
+                            p_dataset: np.ndarray = None,
+                            p_data_new: Union[Element, np.ndarray] = None,
+                            p_data_del: Union[Element, np.ndarray] = None) -> bool:
         """
         Method to update the normalization parameters for Z transformer
 
         Parameters
         ----------
-        p_dataset:numpy array
+        p_dataset : np.ndarray = None
             Dataset related to the elements to be normalized. Using this parameter will reset the normalization
             parameters based on the dataset provided.
-        p_data_new:Element or numpy array
+        p_data_new : Union[Element, np.ndarray] = None
             New element to update the normalization parameters. Using this parameter will set/update the
             normalization parameters based on the data provided.
-        p_data_del:Element or Numpy array
+        p_data_del : Union[Element, np.ndarray] = None
             Old element that is replaced with the new element.
 
         """
@@ -112,7 +126,8 @@ class NormalizerZTrans (Normalizer, ScientificObject):
                     self._n    = 1
                     self._mean = data_new.copy()
                     self._s    = np.zeros(shape=data_new.shape)
-                    self._std  = np.zeros(shape=data_new.shape)
+                    # self._std  = np.zeros(shape=data_new.shape)
+                    self._std  = np.ones(shape=data_new.shape)
                 else:
                     self._n   += 1
                     old_mean   = self._mean.copy()
@@ -143,7 +158,8 @@ class NormalizerZTrans (Normalizer, ScientificObject):
                     self._n    = 0
                     self._mean = np.zeros(shape=data_del.shape)
                     self._s    = np.zeros(shape=data_del.shape)
-                    self._std  = np.zeros(shape=data_del.shape)
+                    # self._std  = np.zeros(shape=data_del.shape)
+                    self._std  = np.ones(shape=data_del.shape)
 
 
         # 4 Update of parameters

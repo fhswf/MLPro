@@ -193,6 +193,19 @@ class Normalizer (Scaler):
         return output
     
 
+# ## -------------------------------------------------------------------------------------------------
+#     def map_inverse( self, 
+#                      p_input : Data,
+#                      p_output : Data = None,
+#                      p_dim : int = None ) -> Data:
+
+#         scale, offset = self._param
+#         if np.any( scale == 0 ): 
+#             return p_output if p_output is not None else p_input
+
+#         return super().map_inverse(p_input, p_output, p_dim)
+    
+
 ## -------------------------------------------------------------------------------------------------
     def _map_inverse( self, 
                       p_input : Element, 
