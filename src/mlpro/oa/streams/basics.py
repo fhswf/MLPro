@@ -159,8 +159,8 @@ class OAStreamTask (StreamTask, Model):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs : dict
-        Further optional named parameters.
+    **p_kwargs 
+        Further optional keyword arguments.
     """
 
     C_TYPE              = 'OA Stream-Task'
