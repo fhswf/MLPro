@@ -35,8 +35,9 @@ This module provides implementation for adaptive normalizers for ZTransformation
 """
 
 from mlpro.bf.various import Log
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import normalizers as Norm
-from mlpro.bf.streams import Instance, InstDict, InstTypeDel
+from mlpro.bf.streams import Instance, InstDict, InstTypeDel, InstTypeNew
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.normalizers import OAStreamNormalizer
@@ -113,14 +114,11 @@ class NormalizerZTransform (Norm.NormalizerZTrans, OAStreamNormalizer):
 
         for inst_id, (inst_type, inst) in p_instances.items():
 
-            # 1 Adaptation per instance
-            self.adapt( p_instances = { inst_id : (inst_type, inst) } )
-
-            # 2 Z-transformation
             feature_data = inst.get_feature_data()
+            self.adapt( p_instances = { inst_id : (inst_type, inst) } )
             feature_data.set_values( p_values = self.normalize(feature_data).get_values() )
-
-            # 3 Udpdate of plot data
+            
+            # Udpdate of plot data
             self._update_plot_data()
 
 
@@ -210,16 +208,14 @@ class NormalizerZTransform (Norm.NormalizerZTrans, OAStreamNormalizer):
         """
 
         if not self.get_visualization(): return
+        view = self.get_plot_settings().view
 
-        try:
+        if view == PlotSettings.C_VIEW_2D:
             self._update_plot_data_2d()
-        except:
-            pass
-        try:
+        elif view == PlotSettings.C_VIEW_3D:
             self._update_plot_data_3d()
-        except:
-            pass
-        try:
+        elif view == PlotSettings.C_VIEW_ND:
             self._update_plot_data_nd()
-        except:
-            pass
+
+        self._update_ax_limits = True
+        self._recalc_ax_limits = True

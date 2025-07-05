@@ -161,6 +161,9 @@ class NormalizerMinMax (Norm.NormalizerMinMax, OAStreamNormalizer):
             else:
                 raise Error
             
+            self._update_ax_limits = True
+            self._recalc_ax_limits = True
+            
         return True
 
 
