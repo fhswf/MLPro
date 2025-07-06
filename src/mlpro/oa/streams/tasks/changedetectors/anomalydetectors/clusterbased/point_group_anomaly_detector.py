@@ -94,6 +94,8 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
                   p_thrs_clusters : int = 1,
                   **p_kwargs ):
         
+        if isinstance(p_property, tuple):
+            p_property = p_property[0]
         self._property          = p_property
         self._cls_point_anomaly = p_cls_point_anomaly
         self._latest_anomaly    = None
@@ -120,7 +122,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
         for cluster_id, cluster in p_clusters.items():
 
         # 2 Get the cluster property to be observed
-            prop_cluster_size : Property = getattr(cluster, self._property[0])
+            prop_cluster_size : Property = getattr(cluster, self._property)
  
             #curr_cluster_size = prop_cluster_size.value if prop_cluster_size.value is not None else 0
             #prev_cluster_size = prop_cluster_size.value_prev if prop_cluster_size.value_prev is not None else 0
@@ -257,8 +259,11 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
         super()._detect( p_clusters = p_clusters, p_instance = p_instance, **p_kwargs)
 
         # 1 Get average cluster size
-        avg_cluster_size = sum([getattr(c, cprop_size[0]).value for c in p_clusters.values()]) / len(p_clusters)
-
+        cluster_sizes = [getattr(c, cprop_size[0]).value 
+                         for c in p_clusters.values()
+                           if getattr(c,cprop_size[0]) is not None and getattr(c, cprop_size[0]).value is not None
+                        ]
+        avg_cluster_size = sum(cluster_sizes)/ len(p_clusters) if len(p_clusters) > 0 else 0
         # 2 Calculater the threshold for the cluster size
         self._thres_size = avg_cluster_size * self._thres_percent 
 
@@ -268,7 +273,8 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
             # 2.1 Get the cluster property to be observed
             prop_cluster_size : Property = getattr(cluster, self._property)
 
-
+            if prop_cluster_size.value is None:
+                continue
             # 2.2 Check for the  spatial group anomalies
             if 1 < prop_cluster_size.value <= self._thres_size:
 
