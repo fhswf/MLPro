@@ -1246,6 +1246,9 @@ class StreamTask (Task):
         self._plot_2d_ymin      = None
         self._plot_2d_ymax      = None
 
+        self._update_ax_limits  = False
+        self._recalc_ax_limits  = False
+
         p_settings.axes.margins(x=0, y=0)
  
 
@@ -1285,11 +1288,14 @@ class StreamTask (Task):
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
         p_settings.axes.grid(visible=True)
 
-        self._plot_inst_ids  = []
-        self._plot_nd_xdata  = []
-        self._plot_nd_plots  = None
-        self._plot_nd_ymin   = None
-        self._plot_nd_ymax   = None
+        self._plot_inst_ids    = []
+        self._plot_nd_xdata    = []
+        self._plot_nd_plots    = None
+        self._plot_nd_ymin     = None
+        self._plot_nd_ymax     = None
+
+        self._update_ax_limits = False
+        self._recalc_ax_limits = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1411,9 +1417,6 @@ class StreamTask (Task):
 
 
         # 3 Update plot data
-        update_ax_limits = False
-        recalc_ax_limits = False
-
         for inst_id, (inst_type, inst) in p_instances.items():
                
             feature_data   = inst.get_feature_data()
@@ -1440,21 +1443,21 @@ class StreamTask (Task):
                     self._plot_2d_xmax = x
                     self._plot_2d_ymin = y
                     self._plot_2d_ymax = y
-                    update_ax_limits   = True
+                    self._update_ax_limits   = True
                 else:
                     if x < self._plot_2d_xmin: 
                         self._plot_2d_xmin = x
-                        update_ax_limits   = True
+                        self._update_ax_limits   = True
                     elif x > self._plot_2d_xmax: 
                         self._plot_2d_xmax = x
-                        update_ax_limits   = True
+                        self._update_ax_limits   = True
 
                     if y < self._plot_2d_ymin: 
                         self._plot_2d_ymin = y
-                        update_ax_limits   = True
+                        self._update_ax_limits   = True
                     elif y > self._plot_2d_ymax: 
                         self._plot_2d_ymax = y
-                        update_ax_limits   = True
+                        self._update_ax_limits   = True
 
             else:
                 if inst_id == self._plot_inst_ids[0]:
@@ -1468,14 +1471,14 @@ class StreamTask (Task):
                     del self._plot_2d_xdata[idx]
                     del self._plot_2d_ydata[idx]
 
-                if not recalc_ax_limits:
+                if not self._recalc_ax_limits:
                     tol_x = ( self._plot_2d_xmax - self._plot_2d_xmin ) * self.C_EPSILON
                     tol_y = ( self._plot_2d_ymax - self._plot_2d_ymin ) * self.C_EPSILON
 
                     if ( not ( ( self._plot_2d_xmin + tol_x ) <= x <= ( self._plot_2d_xmax - tol_x ) ) ) or \
                        ( not ( ( self._plot_2d_ymin + tol_y ) <= y <= ( self._plot_2d_ymax - tol_y ) ) ):
-                        update_ax_limits = True
-                        recalc_ax_limits = True
+                        self._update_ax_limits = True
+                        self._recalc_ax_limits = True
 
 
         # 4 If buffer size is limited, remove obsolete data
@@ -1509,15 +1512,17 @@ class StreamTask (Task):
 
 
         # 6 Update of ax limits
-        if update_ax_limits:
-            if recalc_ax_limits:
+        if self._update_ax_limits:
+            if self._recalc_ax_limits:
                 self._plot_2d_xmin = min(self._plot_2d_xdata)
                 self._plot_2d_xmax = max(self._plot_2d_xdata)
                 self._plot_2d_ymin = min(self._plot_2d_ydata)
                 self._plot_2d_ymax = max(self._plot_2d_ydata)
+                self._recalc_ax_limits = False
 
             p_settings.axes.set_xlim( [ self._plot_2d_xmin, self._plot_2d_xmax ] )
             p_settings.axes.set_ylim( [ self._plot_2d_ymin, self._plot_2d_ymax ] )
+            self._update_ax_limits = False
 
 
         return True
@@ -1684,9 +1689,6 @@ class StreamTask (Task):
 
 
         # 3 Update plot data
-        update_ax_limits_y = False
-        recalc_limits      = False
-
         for inst_id, (inst_type, inst) in sorted(p_instances.items()):
 
             if inst_type == InstTypeNew:
@@ -1706,13 +1708,13 @@ class StreamTask (Task):
                     if self._plot_y_min is None:
                             self._plot_y_min = feature_value
                             self._plot_y_max = feature_value
-                            update_ax_limits_y = True
+                            self._update_ax_limits = True
                     elif feature_value < self._plot_y_min:
                             self._plot_y_min = feature_value
-                            update_ax_limits_y = True
+                            self._update_ax_limits = True
                     elif feature_value > self._plot_y_max:
                             self._plot_y_max = feature_value
-                            update_ax_limits_y = True
+                            self._update_ax_limits = True
 
             else:
                 if inst_id == self._plot_inst_ids[0]:
@@ -1727,8 +1729,8 @@ class StreamTask (Task):
                     for fplot in self._plot_nd_plots:
                         del fplot[0][idx]
 
-                update_ax_limits_y = True   
-                recalc_limits      = True
+                self._update_ax_limits = True   
+                self._recalc_ax_limits    = True
 
 
         # 4 If buffer size is limited, remove obsolete data
@@ -1738,8 +1740,9 @@ class StreamTask (Task):
                 self._plot_inst_ids = self._plot_inst_ids[num_del:]
                 self._plot_nd_xdata = self._plot_nd_xdata[num_del:]
                 for fplot in self._plot_nd_plots: fplot[0] = fplot[0][num_del:]
-                update_ax_limits_y = True
-                recalc_limits      = True
+
+                self._update_ax_limits   = True
+                self._recalc_ax_limits      = True
 
 
         # 5 Set new plot data of all feature plots
@@ -1763,8 +1766,8 @@ class StreamTask (Task):
         if x_min != x_max:
             p_settings.axes.set_xlim(x_min, x_max)
 
-        if update_ax_limits_y:
-            if recalc_limits:
+        if self._update_ax_limits:
+            if self._recalc_ax_limits:
                 self._plot_y_min = None
                 self._plot_y_max = None
                 for fplot in self._plot_nd_plots:
@@ -1775,10 +1778,15 @@ class StreamTask (Task):
                         self._plot_y_min = min(fplot[0])
                         self._plot_y_max = max(fplot[0])
 
+                self._recalc_ax_limits = False
+
             if self._plot_y_min < self._plot_y_max:
                 p_settings.axes.set_ylim(self._plot_y_min, self._plot_y_max)
 
+            self._update_ax_limits = False
+
         return True
+
 
 
 

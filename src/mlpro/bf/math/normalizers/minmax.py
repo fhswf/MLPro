@@ -127,7 +127,7 @@ class NormalizerMinMax (Normalizer):
             if self._param_old is None or self._param_old.shape != self._param_new.shape:
                 self._param_old = self._param_new.copy()
             else:
-                self._param_old[...] = self._param_new
+                np.copyto(self._param_old, self._param_new)
 
 
         # 3 Allocate or reuse _param_new
