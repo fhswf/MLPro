@@ -25,11 +25,11 @@
 ## -- 2024-12-06  1.3.6     DA       Fixes and optimization 
 ## -- 2025-06-06  1.4.0     DA       Refactoring: p_inst -> p_instance/s
 ## -- 2025-06-25  2.0.0     DA       Refactoring, simplification, correction
-## -- 2025-06-30  2.1.0     DA       Refactoring: new parent OAStreamNormalizer
+## -- 2025-07-05  2.1.0     DA       Refactoring: new parent OAStreamNormalizer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-06-30)
+Ver. 2.1.0 (2025-07-05)
 
 This module provides implementation for adaptive normalizers for ZTransformation
 """
@@ -37,7 +37,7 @@ This module provides implementation for adaptive normalizers for ZTransformation
 from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import normalizers as Norm
-from mlpro.bf.streams import Instance, InstDict, InstTypeDel, InstTypeNew
+from mlpro.bf.streams import Instance, InstDict
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.normalizers import OAStreamNormalizer

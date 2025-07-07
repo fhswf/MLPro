@@ -7,11 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-07-02  1.0.0     DA       Creation
 ## -- 2025-07-05  1.0.1     DA       Correction of renormalization
+## -- 2025-07-07  1.1.0     DA       Class MovingAverage: removal of crosshair in nD view
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2025-07-05)
+Ver. 1.1.0 (2025-07-07)
 
 Ths module provides the class MovingAverage calculating the moving average of incomming new and
 outdated instances. 
@@ -158,14 +159,18 @@ class MovingAverage (OAStreamTask, Properties):
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure = None, p_plot_settings = None):
         OAStreamTask.init_plot( self, p_figure = p_figure, p_plot_settings = p_plot_settings )
-        self.crosshair.init_plot( p_figure = self._figure, 
-                                  p_plot_settings = self.get_plot_settings() )
+
+        if self.get_plot_settings().view != PlotSettings.C_VIEW_ND:
+            self.crosshair.init_plot( p_figure = self._figure, 
+                                      p_plot_settings = self.get_plot_settings() )
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, p_instances : InstDict = None, **p_kwargs):
         OAStreamTask.update_plot( self, p_instances = p_instances, **p_kwargs )
-        self.crosshair.update_plot( p_instances = p_instances, **p_kwargs )
+
+        if self.get_plot_settings().view != PlotSettings.C_VIEW_ND:
+            self.crosshair.update_plot( p_instances = p_instances, **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------

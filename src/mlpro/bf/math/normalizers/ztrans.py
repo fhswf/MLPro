@@ -26,11 +26,11 @@
 ## -- 2024-05-24  1.2.1     LSB      Bug fix for Parameter update using only p_data_del in Z-transform
 ## -- 2024-05-27  1.2.2     LSB      Scientific Reference added
 ## -- 2024-12-09  1.3.0     DA       Method NormalizerZTrans.update_parameters(): review/optimization
-## -- 2025-06-30  2.0.0     DA       Refactoring
+## -- 2025-07-05  2.0.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-30)
+Ver. 2.0.0 (2025-07-05)
 
 This module provides a class for Z transformation.
 """
