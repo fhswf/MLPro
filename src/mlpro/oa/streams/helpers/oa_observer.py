@@ -53,6 +53,7 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_related_task : OAStreamTask,
+                  p_no_per_task : int = 0,
                   p_logarithmic_plot : bool = True,
                   p_filter_subtypes : list = [],
                   p_visualize : bool = True,
@@ -64,6 +65,7 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
         KWArgs.__init__(self, **p_kwargs)
 
         self._related_task      = p_related_task
+        self._no_per_task       = p_no_per_task
         self._logarithmic_plot  = p_logarithmic_plot
         self._filter_subtypes   = p_filter_subtypes
 
@@ -111,6 +113,9 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
             window_title = 'OA Observer for Task "' + self._related_task.get_name() + '"'
         else:
             window_title = p_window_title
+
+        if self._no_per_task > 0:
+            window_title = window_title + ' (' + str(self._no_per_task) + ')'
 
         super().init_plot( p_figure = p_figure,
                            p_plot_settings = p_plot_settings,
