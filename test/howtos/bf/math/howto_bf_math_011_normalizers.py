@@ -13,10 +13,12 @@
 ## -- 2022-11-03  1.0.4     LSB      refacoring for update with replaced data (Z-
 ## -- 2023-09-23  1.0.5     LSB      Bug Fix, the input to normalizer shall be copied as it returns the same object
 ## -- 2024-04-30  1.1.0     DA       Refactoring
+## -- 2025-06-05  1.2.0     DA       Refactoring
+## -- 2025-07-05  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2024-04-30)
+Ver. 1.3.0 (2025-07-05)
 
 Example file for demonstrating the use of MLPro's normalizer for normalizing and de-normalizing data.
 
@@ -37,7 +39,7 @@ You will learn:
 
 import numpy as np
 
-from mlpro.bf.math import Dimension
+from mlpro.bf.math import Dimension, Set, Element
 from mlpro.bf.math.normalizers import *
 
 
@@ -53,8 +55,8 @@ else:
 
 # Creating Numpy dummy Dataset
 my_dataset = np.asarray(([45,-7,65,-87],[21.3,47.1,-41.02,89],[0.12,98.11,11,-56.01],[7.12,55.01,4.78,5.3],
-                       [-44.371,-0.521,14.12,8.5],[77.13,-23.14,-7.54,12.32],[8.1,27.61,-31.01,17.8],
-                       [4.22,-84.21,47.12,82.11],[-53.22,1.024,5.044,71.23],[9.4,-4.39,12.51,83.01]))
+                         [-44.371,-0.521,14.12,8.5],[77.13,-23.14,-7.54,12.32],[8.1,27.61,-31.01,17.8],
+                         [4.22,-84.21,47.12,82.11],[-53.22,1.024,5.044,71.23],[9.4,-4.39,12.51,83.01]))
 
 
 # Creating a dummy set with dummy dimensions
@@ -69,8 +71,8 @@ my_state.set_values([19,8])
 
 
 # Creating Normalizer object
-my_normalizer_minmax = NormalizerMinMax()
-my_normalizer_ztrans = NormalizerZTrans()
+my_normalizer_minmax = NormalizerMinMax( p_input_set=my_set, p_output_set=my_set )
+my_normalizer_ztrans = NormalizerZTrans( p_input_set=my_set, p_output_set=my_set )
 
 
 # 1. Setting parameters for NormalizationZTrans
@@ -92,7 +94,7 @@ if p_printing:
 
 
 # 4. Updating the parameters using a new element to the dataset
-new_data = np.asarray([12,-71,74,-12], dtype=np.float64).reshape(1,4)
+new_data = np.asarray([12,-71,74,-12], dtype=np.float64)
 my_normalizer_ztrans.update_parameters(p_data_new = new_data)
 if p_printing:
     print('04. Parameters updated for the Z transformer\n\n')
@@ -106,7 +108,7 @@ if p_printing:
 
 # 6. Validating the changed parameters
 #    6.1 Adding the new element in the dataset
-my_dataset = np.append(my_dataset, new_data, axis=0)
+my_dataset = np.append(my_dataset, [new_data], axis=0)
 #    6.2 Setting up the parameters based on the new dataset
 my_normalizer_ztrans.update_parameters(p_dataset=my_dataset)
 #    6.3 Normalizing the element for validation
@@ -118,8 +120,8 @@ if p_printing:
 # 7. Updating parameters with replaced data
 
 p_data_old = my_dataset[1].copy()
-my_dataset[1] = np.asarray([4.1,7.8,-41, 15.3], dtype=np.float64).reshape(1,4)
-my_normalizer_ztrans.update_parameters(p_data_new=np.asarray([4.1,7.8,-41, 15.3], dtype=np.float64).reshape(1,4),
+my_dataset[1] = np.asarray([4.1,7.8,-41, 15.3], dtype=np.float64) 
+my_normalizer_ztrans.update_parameters(p_data_new=np.asarray([4.1,7.8,-41, 15.3], dtype=np.float64),
                                        p_data_del=p_data_old)
 if p_printing:
     print('\n07. Normalization parameters updated for z-transformer based on replaced data')
@@ -167,13 +169,13 @@ if p_printing:
 
 
 # 14. Updating tbe normalization parameters for the new set
-my_normalizer_minmax.update_parameters(my_set)
+my_normalizer_minmax.update_parameters( p_set = my_set )
 if p_printing:
     print('14. Parameters updated for MinMax normalizer\n\n')
 
 
 # 15. Renormalizing the previously normalized data with the new parameters
-re_normalized_state = my_normalizer_minmax.renormalize(normalized_state.copy())
+re_normalized_state = my_normalizer_minmax.renormalize( p_data = normalized_state.copy())
 if p_printing:
     print('15. Renormalized value (MinMax Normalizer):\n', re_normalized_state.get_values(),'\n\n')
 

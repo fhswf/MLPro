@@ -33,6 +33,7 @@ You will learn:
 
 """
 
+from datetime import datetime
 
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
@@ -98,9 +99,9 @@ class MyAdaptiveScenario (OAStreamScenario):
         task_bd = BoundaryDetector( p_name='T3 - Boundary Detector', 
                                     p_ada=True, 
                                     p_visualize=p_visualize,   
-                                    p_logging=p_logging )
+                                    p_logging=p_logging,
+                                    p_boundary_provider = task_window )
 
-        task_window.register_event_handler( p_event_id=RingBuffer.C_EVENT_DATA_REMOVED, p_event_handler=task_bd.adapt_on_event )
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
         # # 2.2.4 MinMax-Normalizer

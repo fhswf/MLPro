@@ -17,10 +17,11 @@
 ## -- 2024-02-09  1.2.2     DA       Completion of class documentations
 ## -- 2024-06-04  1.2.3     DA       Bugfix: ESpace instead of MSpace
 ## -- 2025-04-02  1.2.4     DA       Little refactoring
+## -- 2025-06-06  1.2.5     DA       Little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2025-04-02)
+Ver. 1.2.5 (2025-06-06)
 
 This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
 StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
@@ -35,8 +36,10 @@ import math
 
 import numpy as np
 
-from mlpro.bf.math import ESpace
-from mlpro.bf.streams.basics import *
+from mlpro.bf.various import Log
+from mlpro.bf.math import Element, MSpace, ESpace
+from mlpro.bf.streams.basics import Feature, Instance
+from mlpro.bf.exceptions import ParamError
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 

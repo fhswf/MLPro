@@ -45,10 +45,11 @@
 ## -- 2025-04-24  1.5.0     DA       Added method _get_clusters() since needed for wrappers(!!)
 ## -- 2025-04-27  1.5.1     DA       Class ClusterAnalyzer: changed internal access to clusters to 
 ## --                                self._clusters 
+## -- 2025-06-06  1.6.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2025-04-27)
+Ver. 1.6.0 (2025-06-06)
 
 This module provides a template class for online cluster analysis.
 """
@@ -202,8 +203,8 @@ class ClusterAnalyzer (OAStreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict):
-        self.adapt( p_inst=p_inst )
+    def _run(self, p_instances : InstDict):
+        self.adapt( p_instances = p_instances )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -280,7 +281,7 @@ class ClusterAnalyzer (OAStreamTask):
 ## -------------------------------------------------------------------------------------------------
     def _get_cluster_relations( self, 
                                 p_relation_type : int,
-                                p_inst : Instance,
+                                p_instance : Instance,
                                 p_scope : int ) -> List[ResultItem]:
         """
         Internal method to determine the relation of the given instance to each cluster as a value in 
@@ -293,7 +294,7 @@ class ClusterAnalyzer (OAStreamTask):
         ----------
         p_relation_type : int
             Possible values are 0 (cluster membership) and 1 (cluster influence)
-        p_inst : Instance
+        p_instance : Instance
             Instance to be evaluated.
         p_scope : int
             Scope of the result list. See class attributes C_RESULT_SCOPE_* for possible values.
@@ -314,9 +315,9 @@ class ClusterAnalyzer (OAStreamTask):
         for cluster in self._clusters.values():
 
             if p_relation_type == 0:
-                result_abs  = cluster.get_membership( p_inst = p_inst )
+                result_abs  = cluster.get_membership( p_instance = p_instance )
             else:
-                result_abs  = cluster.get_influence( p_inst = p_inst )
+                result_abs  = cluster.get_influence( p_instance = p_instance )
 
             sum_results += result_abs
 
@@ -348,7 +349,7 @@ class ClusterAnalyzer (OAStreamTask):
     
 ## -------------------------------------------------------------------------------------------------
     def get_cluster_memberships( self, 
-                                 p_inst : Instance,
+                                 p_instance : Instance,
                                  p_scope : int = C_RESULT_SCOPE_MAX ) -> List[ResultItem]:
         """
         Method to determine the relative membership of the given instance to each cluster as a value 
@@ -358,7 +359,7 @@ class ClusterAnalyzer (OAStreamTask):
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             Instance to be evaluated.
         p_scope : int
             Scope of the result list. See class attributes C_RESULT_SCOPE_* for possible values. Default
@@ -372,13 +373,13 @@ class ClusterAnalyzer (OAStreamTask):
         """
 
         return self._get_cluster_relations( p_relation_type = 0,
-                                            p_inst = p_inst,
+                                            p_instance = p_instance,
                                             p_scope = p_scope )
     
 
 ## -------------------------------------------------------------------------------------------------
     def get_cluster_influences( self, 
-                                p_inst : Instance,
+                                p_instance : Instance,
                                 p_scope : int = C_RESULT_SCOPE_MAX ) -> List[ResultItem]:
         """
         Method to determine the relative influence of the given instance to each cluster as a value 
@@ -388,7 +389,7 @@ class ClusterAnalyzer (OAStreamTask):
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             Instance to be evaluated.
         p_scope : int
             Scope of the result list. See class attributes C_RESULT_SCOPE_* for possible values. Default
@@ -402,7 +403,7 @@ class ClusterAnalyzer (OAStreamTask):
         """
 
         return self._get_cluster_relations( p_relation_type = 1,
-                                            p_inst = p_inst,
+                                            p_instance = p_instance,
                                             p_scope = p_scope )
 
         
@@ -419,13 +420,13 @@ class ClusterAnalyzer (OAStreamTask):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst : InstDict = None, 
+                     p_instances : InstDict = None, 
                      **p_kwargs ):
 
         if not self.get_visualization(): return
 
         for cluster in self._clusters.values():
-            cluster.update_plot(p_inst = p_inst, **p_kwargs)
+            cluster.update_plot( p_instances = p_instances, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
