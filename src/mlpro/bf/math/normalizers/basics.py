@@ -27,11 +27,11 @@
 ## -- 2025-06-24  1.3.0     DA       Refactoring and extension
 ## -- 2025-06-25  1.4.0     DA       Method Normalizer.renormalize(): tuning of dim-wise renormalization
 ## -- 2025-06-30  2.0.0     DA       Class Normalizer: new parent class Scaler
-## -- 2025-07-05  2.0.1     DA       Refactoring
+## -- 2025-07-07  2.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2025-07-05)
+Ver. 2.0.1 (2025-07-07)
 
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
@@ -189,7 +189,7 @@ class Normalizer (Scaler):
                       p_output : np.ndarray = None, 
                       p_dim = None ) -> np.ndarray:
         
-        scale, offset = self._param
+        scale, offset = self._param[0], self._param[1]
         output = p_input if p_output is None else p_output
     
         if p_dim is None:
@@ -247,7 +247,7 @@ class Normalizer (Scaler):
                               p_output : np.ndarray = None, 
                               p_dim = None ) -> np.ndarray:
 
-        scale, offset = self._param
+        scale, offset = self._param[0], self._param[1]
         output = p_input if p_output is None else p_output
 
         if p_dim is None:

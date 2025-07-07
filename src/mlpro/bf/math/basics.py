@@ -39,7 +39,7 @@
 ## -- 2023-04-09  2.2.2     SY       Refactoring
 ## -- 2023-05-06  2.2.3     DA       Class Element: completion of data type definitions
 ## -- 2024-12-02  2.3.0     DA       Class Dimension: new parent KWArgs
-## -- 2025-06-29  3.0.0     DA       - New data type Data
+## -- 2025-07-07  3.0.0     DA       - New data type Data
 ## --                                - Class Function: refactoring and extension
 ## --                                - New class Scaler
 ## -------------------------------------------------------------------------------------------------
@@ -625,7 +625,7 @@ class Function (KWArgs, ScientificObject):
         self._output_elem_cls     = p_output_elem_cls
         self._autocreate_elements = p_autocreate_elements
 
-        if self._autocreate_elements and ( ( self._output_set is None ) or ( self._output_elem_cls is None ) ):
+        if self._autocreate_elements and ( self._output_set is None ) and ( self._output_elem_cls is None ):
             raise ParamError('For element auto-creation the output set and type of element needs to be supplied')
 
         # Hard redirection of method self.__call__() to method self.map
@@ -1041,7 +1041,7 @@ class Scaler (Function):
             Optional index of the dimension to be unscaled.
         p_param = None
             Optional parameter set to be applied to the unscaling operation. If None the set stored in
-            self._param_old is used.
+            self._param_new is used.
 
         Returns
         -------
@@ -1052,7 +1052,7 @@ class Scaler (Function):
         if p_param is not None:
             self._set_parameters( p_param = p_param )
         else:
-            self._set_parameters( p_param = self._param_old )
+            self._set_parameters( p_param = self._param_new )
 
         return self.map_inverse( p_input = p_data, p_dim = p_dim )
 
