@@ -9,10 +9,11 @@
 ## -- 2023-03-01  0.1.0     SY       Initial design of FNN for MLPro v1.0.0
 ## -- 2023-03-07  1.0.0     SY       Release first version 
 ## -- 2023-03-10  1.1.0     SY       Combining _hyperparameters_check and _init_hyperparam
+## -- 2025-07-07  1.2.0     DA       Refactoring of method FNN._map()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-03-10)
+Ver. 1.2.0 (2025-07-07)
 
 This module provides model classes of feedforward neural networks for supervised learning tasks. 
 """
@@ -55,7 +56,7 @@ class FNN (SLAdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _map(self, p_input: Element, p_output: Element):
+    def _map(self, p_input: Element, p_output: Element = None, p_dim = None):
         """
         Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
 
@@ -69,6 +70,7 @@ class FNN (SLAdaptiveFunction):
         
         output = self.forward(input)
         p_output.set_values(output)
+        return p_output
 
 
 ## -------------------------------------------------------------------------------------------------

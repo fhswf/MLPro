@@ -27,10 +27,11 @@
 ## -- 2025-06-24  1.3.0     DA       Refactoring and extension
 ## -- 2025-06-25  1.4.0     DA       Method Normalizer.renormalize(): tuning of dim-wise renormalization
 ## -- 2025-06-30  2.0.0     DA       Class Normalizer: new parent class Scaler
+## -- 2025-07-07  2.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2025-06-30)
+Ver. 2.0.1 (2025-07-07)
 
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
@@ -39,7 +40,7 @@ normalization by Z transformation.
 
 import numpy as np
 
-from mlpro.bf.exceptions import *
+from mlpro.bf.exceptions import ParamError
 from mlpro.bf.math import Data, Element, Scaler
 
 
@@ -95,6 +96,35 @@ class Normalizer (Scaler):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def denormalize( self, 
+                     p_data : Data, 
+                     p_dim : int = None,
+                     p_param = None ) -> Data:
+        """
+        Denormalizes the specified data.
+
+        Parameters
+        ----------
+        p_data : Data
+            Data to be denormalized.
+        p_dim : int = None
+            Optional index of the dimension to be denormalized.
+        p_param = None
+            Optional parameter set to be applied to the denormalization. If None the set stored in
+            self._param_old is used.
+
+        Returns
+        -------
+        Data
+            The normalized data.
+        """
+
+        return self.unscale( p_data = p_data,
+                             p_dim = p_dim,
+                             p_param = p_param )
+    
+
+## -------------------------------------------------------------------------------------------------
     def renormalize( self, 
                      p_data : Data, 
                      p_dim : int = None,
@@ -128,11 +158,10 @@ class Normalizer (Scaler):
         if ( p_dim is not None ) and np.array_equal(self._param_new[:,p_dim], self._param_old[:,p_dim] ):
             return p_data
         
-        return self.scale( p_data = self.unscale( p_data = p_data, 
-                                                  p_dim = p_dim,
-                                                  p_param = p_param_old ), 
-                           p_dim = p_dim,
-                           p_param = p_param_new )
+        return self.rescale( p_data = p_data, 
+                             p_dim = p_dim,
+                             p_param_old = p_param_old,
+                             p_param_new = p_param_new )
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -160,7 +189,7 @@ class Normalizer (Scaler):
                       p_output : np.ndarray = None, 
                       p_dim = None ) -> np.ndarray:
         
-        scale, offset = self._param
+        scale, offset = self._param[0], self._param[1]
         output = p_input if p_output is None else p_output
     
         if p_dim is None:
@@ -218,7 +247,7 @@ class Normalizer (Scaler):
                               p_output : np.ndarray = None, 
                               p_dim = None ) -> np.ndarray:
 
-        scale, offset = self._param
+        scale, offset = self._param[0], self._param[1]
         output = p_input if p_output is None else p_output
 
         if p_dim is None:
