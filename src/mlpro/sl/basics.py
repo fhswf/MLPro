@@ -247,7 +247,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
             adapted = False
 
-            if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+            if self._output_space.distance(p_output, self.map(p_input=p_input)) <= self._threshold:
                 # Quality of function ok. No need to adapt.
                 self._mappings_total += 1
                 self._mappings_good += 1
@@ -259,7 +259,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
                 self._mappings_total = 1
 
                 # Second quality check after adaptation
-                if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+                if self._output_space.distance(p_output, self.map(p_input=p_input)) <= self._threshold:
                     self._mappings_good = 1
                 else:
                     self._mappings_good = 0
