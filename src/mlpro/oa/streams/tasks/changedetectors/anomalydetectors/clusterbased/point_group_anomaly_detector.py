@@ -295,8 +295,8 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                 # 2.2.2 Create a new spatial group anomaly    
                 if create_anomaly:
                     spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {cluster.id : cluster},
-                                                                             p_tstamp = self.get_tstamp(),
-                                                                             p_visualize = self.get_visualize,
+                                                                             p_tstamp = self._get_tstamp(),
+                                                                             p_visualize = self.get_visualization,
                                                                              p_raising_object = self)
 
                     # 2.2.2.1 Raise an anomaly event
