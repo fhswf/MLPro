@@ -24,5 +24,5 @@ In the actual MLPro-GT-DG, we provide standardized template modules for two type
    (2) Stackelberg Games
 
 **Cross Reference**
-    - :ref:`Howto GT-DG-003: Potential Games <Howto GT 003>`
-    - :ref:`Howto GT-DG-004: Stackelberg Games <Howto GT 004>`
+    - :ref:`Howto GT-DG-001: Potential Games <Howto GT 001>`
+    - :ref:`Howto GT-DG-002: Stackelberg Games <Howto GT 002>`

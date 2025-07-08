@@ -15,19 +15,25 @@
 ## -- 2024-06-04  1.1.3     DA       Bugfix: ESpace instead of MSpace
 ## -- 2024-07-04  1.1.4     SY       Allowing string in the datasets 
 ## -- 2024-07-19  1.1.5     SY       Allowing string in the datasets 
+## -- 2025-05-22  1.1.6     DA       Explicit import of depending classes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2024-07-19)
+Ver. 1.1.6 (2025-05-22)
 
 This module provides the native stream class StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
 """
 
 
+import math
 import numpy as np
-from mlpro.bf.data import *
-from mlpro.bf.streams.basics import *
+
+from mlpro.bf.various import ScientificObject
+from mlpro.bf.exceptions import *
+from mlpro.bf.data import DataStoring
+from mlpro.bf.math import MSpace, ESpace
+from mlpro.bf.streams import *
 
 
 
@@ -178,11 +184,13 @@ class StreamMLProCSV(Stream):
         if self._loaded == False:
             p_variable      = []
             self._from_csv  = DataStoring(p_variable)
-            self._from_csv.load_data(self._kwargs['p_path_load'],
-                                    self._kwargs['p_csv_filename'],
-                                    self._kwargs['p_delimiter'],
-                                    self._kwargs['p_frame'],
-                                    self._kwargs['p_header'])
+
+            if not self._from_csv.load_data( p_path = self._kwargs['p_path_load'],
+                                             p_filename = self._kwargs['p_csv_filename'],
+                                             p_delimiter = self._kwargs['p_delimiter'],
+                                             p_frame = self._kwargs['p_frame'],
+                                             p_header = self._kwargs['p_header'] ):
+                raise Error('CSV import from file "' + self._kwargs['p_csv_filename'] + '" failed!')
             
             try:
                 d_type_numeric  = []

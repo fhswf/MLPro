@@ -10,6 +10,7 @@
 ## --                                restrictions in Python 3.12
 ## -- 2024-12-05  2.2.0     DA       Changed name of tmp. branch to 'extension_hub_tmp'
 ## -- 2024-12-10  2.3.0     DA       Update actions/checkout to v4
+## -- 2025-05-07  2.4.0     DA       Stabilized step 2
 ## -------------------------------------------------------------------------------------------------
 
 name: Update Extension Hub
@@ -35,6 +36,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout main
+          git pull origin main
+
+          git push origin --delete extension_hub_tmp || true
           git checkout -b extension_hub_tmp
 
       - name: Step 3 - Updates on the extension hub

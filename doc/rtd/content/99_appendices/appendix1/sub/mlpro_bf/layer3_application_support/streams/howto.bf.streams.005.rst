@@ -4,7 +4,7 @@ Howto BF-STREAMS-005: Visualizing Multivariate Point Outlier Stream Provided By 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../../test/howtos/bf/howto_bf_streams_005_native_stream_PointOutliersND.py
+.. literalinclude:: ../../../../../../../../../test/howtos/bf/streams/howto_bf_streams_005_native_stream_PointOutliersND.py
 	:language: python
 
 

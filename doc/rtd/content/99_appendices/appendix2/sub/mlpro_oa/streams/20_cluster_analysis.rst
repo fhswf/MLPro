@@ -25,3 +25,10 @@ Cluster analysis
    :undoc-members:
    :private-members:
    :show-inheritance:
+
+
+.. automodule:: mlpro.oa.streams.tasks.clusteranalyzers.clusters.body
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:

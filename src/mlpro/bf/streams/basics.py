@@ -73,10 +73,22 @@
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
 ## -- 2024-12-11  2.4.1     DA       Pseudo class Figure if matplotlib is not installed
+## -- 2025-04-03  2.5.0     DA       - New class MultiStream
+## --                                - Class Stream: new parent class TStamp 
+## --                                - Class StreamTask: new method _get_tstamp()
+## --                                - Class StreamShared: new parent TStamp, new methods 
+## --                                  assign_stream(), get_tstamp() 
+## -- 2025-04-25  2.5.1     DA       Method Stream._get_tstamp_real(): 
+## --                                - replaced datetime.now() by time.perf_counter()
+## -- 2025-06-06  2.6.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-08  2.7.0     DA       Refactoring of StreamTask._update_plot*: new return parameter 
+## -- 2025-06-24  2.8.0     DA       Class StreamTask: tuning of plot updates
+## -- 2025-07-01  2.9.0     DA       Class StreamTask: replaced the exception by pass in _run() to
+## --                                make the class be usable as a plot host.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.1 (2024-12-11)
+Ver. 2.9.0 (2025-07-01)
 
 This module provides classes for standardized data stream processing. 
 
@@ -84,18 +96,23 @@ This module provides classes for standardized data stream processing.
 
 import random
 from typing import Dict, Tuple
+from collections.abc import Iterator
+from itertools import cycle
+import time
+from datetime import timedelta, datetime
 
 try:
     from matplotlib.figure import Figure
 except:
     class Figure : pass
 
-from mlpro.bf.math.basics import *
-from mlpro.bf.various import Id, TStamp, KWArgs
+from mlpro.bf.various import Id, TStampType, TStamp, KWArgs, ScientificObject, Log
+from mlpro.bf.exceptions import Error, ImplementationError, ParamError
 from mlpro.bf.ops import Mode, ScenarioBase
+from mlpro.bf.mt import Range, Shared, Task, Workflow
 from mlpro.bf.plot import PlotSettings
-from mlpro.bf.math import Dimension, Element
-from mlpro.bf.mt import *
+from mlpro.bf.math import Dimension, Element, MSpace
+
 
 
 
@@ -193,6 +210,10 @@ class Instance (Id, TStamp, KWArgs):
         return duplicate
 
 
+## -------------------------------------------------------------------------------------------------
+    id = property( fget=Id.get_id, fset=set_id )
+
+
 
 
 
@@ -203,106 +224,6 @@ InstType    = str
 InstTypeNew = '+'
 InstTypeDel = '-'
 InstDict    = Dict[InstId, Tuple[InstType, Instance]]
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class StreamShared (Shared):
-    """
-    Template class for shared objects in the context of stream processing.
-
-    Attributes
-    ----------
-    _instances : dict        
-        Dictionary of new/deleted instances per task. At the beginning of a cycle it contains the incoming
-        instance of a stream. The dictionalry evolves due to the manipulations of the stream tasks.
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
-        Shared.__init__(self, p_range=p_range)
-        self._instances = {}
-    
-
-## -------------------------------------------------------------------------------------------------
-    def reset(self, p_inst : InstDict):
-        """
-        Resets the shared object and prepares the processing of the given set of new instances.
-
-        Parameters
-        ----------
-        p_inst : List[Instance]
-            List of new instances to be processed.
-        """
-
-        self._instances.clear()
-        self._instances['wf'] = p_inst
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_instances(self, p_task_ids:list):
-        """
-        Provides the result instances of all given task ids.
-
-        Parameters
-        ----------
-        p_task_ids : list
-            List of task ids.
-
-        Returns
-        -------
-        inst : InstDict
-            Instances of all given task ids.
-        """
-
-        len_task_ids = len(p_task_ids)
-
-        if len_task_ids == 1:
-            # Most likely case: result instances of one predecessor are requested
-            try:
-                instances = self._instances[p_task_ids[0]]
-            except KeyError:
-                # Predecessor is the workflow
-                instances = self._instances['wf']
-
-            inst = instances.copy()
-
-        elif len_task_ids > 1:
-            # Result instances of more than one predecessors are requested
-            inst : InstDict = {}
-
-            for task_id in p_task_ids:
-                try:
-                    inst_task = self._instances[task_id]
-                except KeyError:
-                    inst_task = self._instances['wf']
-
-                inst.update(inst_task)
-
-        else:
-            # No predecessor task id -> origin incoming instances on workflow level are forwarded
-            inst = self._instances['wf'].copy()
-
-        return inst
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_instances(self, p_task_id, p_inst:InstDict):
-        """
-        Stores result instances of a task in the shared object.
-
-        Parameters
-        ----------
-        p_task_id
-            Id of related task.
-        p_inst : InstDict
-            Instances of related task.
-        """
-
-        self._instances[p_task_id] = p_inst
 
 
 
@@ -357,7 +278,7 @@ class Sampler (ScientificObject):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def set_num_instances(self, p_num_instances:int):
+    def set_num_instances(self, p_num_instances : int):
         """
         A method to set the number of instances that is going to be processed by the sampler.
 
@@ -372,13 +293,13 @@ class Sampler (ScientificObject):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def omit_instance(self, p_inst:Instance) -> bool:
+    def omit_instance(self, p_instance : Instance) -> bool:
         """
         A method to filter any incoming instances.
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             An input instance to be filtered.
 
         Returns
@@ -388,18 +309,18 @@ class Sampler (ScientificObject):
 
         """
         
-        return self._omit_instance(p_inst)
+        return self._omit_instance(p_instance)
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _omit_instance(self, p_inst:Instance) -> bool:
+    def _omit_instance(self, p_instance : Instance) -> bool:
         """
         A custom method to filter any incoming instances, which is being called by omit_instance()
         method. Please redefine this method!
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             An input instance to be filtered.
 
         Returns
@@ -417,7 +338,7 @@ class Sampler (ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream (Mode, Id, ScientificObject):
+class Stream (Mode, Id, TStamp, ScientificObject):
     """
     Template class for data streams. Objects of this type can be used as iterators.
 
@@ -461,7 +382,7 @@ class Stream (Mode, Id, ScientificObject):
                   **p_kwargs ):
 
         if p_name != '':
-            self.C_NAME         = self.C_SCIREF_TITLE = p_name
+            self.C_NAME = self.C_SCIREF_TITLE = p_name
 
         self._num_instances = p_num_instances
         self._version       = p_version
@@ -470,6 +391,7 @@ class Stream (Mode, Id, ScientificObject):
 
         Id.__init__(self, p_id = p_id)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
+        TStamp.__init__(self)
 
         self.set_options(**p_kwargs)
         
@@ -479,7 +401,7 @@ class Stream (Mode, Id, ScientificObject):
             except:
                 self._sampler = None
         else:
-            self._sampler   = p_sampler
+            self._sampler = p_sampler
  
 
 ## -------------------------------------------------------------------------------------------------
@@ -494,6 +416,11 @@ class Stream (Mode, Id, ScientificObject):
         """
 
         return self.C_NAME
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_version(self) -> str:
+        return self._version
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -606,18 +533,56 @@ class Stream (Mode, Id, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __iter__(self):
+    def get_tstamp(self) -> TStampType:
+        """
+        Returns the current streaming time. Depending on the stream mode (sim/real) the method
+        _get_tstamp_sim() or the custom method _get_tstamp_real() are called.
+
+        Returns
+        -------
+        TStampType
+            Current streaming time.
+        """
+        
+        if self.get_mode() == Mode.C_MODE_REAL:
+            return self._get_tstamp_real()
+        else:
+            return self._get_tstamp_sim()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_tstamp_sim(self) -> TStampType:
+        """
+        Custom method to determine the current time stamp of the running simulation.
+
+        Returns
+        -------
+        TStampType
+            Current streaming time.
+        """
+
+        return self._next_inst_id 
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_tstamp_real(self) -> TStampType:
+        return time.perf_counter() - self._perf_counter0
+
+
+## -------------------------------------------------------------------------------------------------
+    def __iter__(self) -> Iterator[Instance]:
         """
         Resets the stream by calling custom method _reset().
 
         Returns
         -------
-        iter
-            Iterable stream object
+        Iterator
+            Iterator object
         """
 
         self.log(self.C_LOG_TYPE_I, 'Reset')
-        self._next_inst_id = 0
+        self._next_inst_id  = 0
+        self._perf_counter0 = time.perf_counter()
         self._reset()
         
         if self._sampler is not None:
@@ -660,6 +625,10 @@ class Stream (Mode, Id, ScientificObject):
         instance : Instance
             Next instance of data stream or None.
         """
+
+        if ( self._num_instances > 0) and ( self._next_inst_id == self._num_instances ):
+            raise StopIteration
+
         
         if self._sampler is not None:
             ret = True
@@ -669,8 +638,13 @@ class Stream (Mode, Id, ScientificObject):
         else:
             inst = self._get_next()
             
-        inst.set_id(self._next_inst_id)
+
+        if inst.tstamp is None:
+            inst.tstamp = self.get_tstamp()
+
+        inst.id = self._next_inst_id
         self._next_inst_id += 1
+
         return inst
 
 
@@ -690,8 +664,277 @@ class Stream (Mode, Id, ScientificObject):
         raise NotImplementedError
 
 
+## -------------------------------------------------------------------------------------------------
+    tstamp = property( fget = get_tstamp )
 
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamShared (Shared, TStamp):
+    """
+    Template class for shared objects in the context of stream processing.
+
+    Attributes
+    ----------
+    _instances : dict        
+        Dictionary of new/deleted instances per task. At the beginning of a cycle it contains the incoming
+        instance of a stream. The dictionalry evolves due to the manipulations of the stream tasks.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+        Shared.__init__(self, p_range=p_range)
+        TStamp.__init__(self)
+        self._instances = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def assign_stream(self, p_stream : Stream):
+        self._stream : Stream = p_stream
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_tstamp(self) -> TStampType:
+        try:
+            return self._stream.tstamp
+        except:
+            return datetime.now()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_instances : InstDict):
+        """
+        Resets the shared object and prepares the processing of the given set of new instances.
+
+        Parameters
+        ----------
+        p_instances : InstDict
+            List of new instances to be processed.
+        """
+
+        self._instances.clear()
+        self._instances['wf'] = p_instances
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_instances(self, p_task_ids:list):
+        """
+        Provides the result instances of all given task ids.
+
+        Parameters
+        ----------
+        p_task_ids : list
+            List of task ids.
+
+        Returns
+        -------
+        inst : InstDict
+            Instances of all given task ids.
+        """
+
+        len_task_ids = len(p_task_ids)
+
+        if len_task_ids == 1:
+            # Most likely case: result instances of one predecessor are requested
+            try:
+                instances = self._instances[p_task_ids[0]]
+            except KeyError:
+                # Predecessor is the workflow
+                instances = self._instances['wf']
+
+            inst = instances.copy()
+
+        elif len_task_ids > 1:
+            # Result instances of more than one predecessors are requested
+            inst : InstDict = {}
+
+            for task_id in p_task_ids:
+                try:
+                    inst_task = self._instances[task_id]
+                except KeyError:
+                    inst_task = self._instances['wf']
+
+                inst.update(inst_task)
+
+        else:
+            # No predecessor task id -> origin incoming instances on workflow level are forwarded
+            inst = self._instances['wf'].copy()
+
+        return inst
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_instances(self, p_task_id, p_instances : InstDict):
+        """
+        Stores result instances of a task in the shared object.
+
+        Parameters
+        ----------
+        p_task_id
+            Id of related task.
+        p_instances : InstDict
+            Instances of related task.
+        """
+
+        self._instances[p_task_id] = p_instances
+
+
+## -------------------------------------------------------------------------------------------------
+    tstamp = property( fget = get_tstamp )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiStream (Stream):
+    """
+    Container class for multiple stream objects that can be streamed in sequence or parallel. Just
+    instantiate and use the add_stream method to add streams.
+
+    Pararmeters
+    -----------
+    p_id
+        Optional id of the stream. Default = None.
+    p_name : str
+        Optional name of the stream. Default = ''.
+    p_num_instances : int
+        Optional number of instances in the stream. Default = 0.
+    p_version : str
+        Optional version of the stream. Default = ''.
+    p_feature_space : MSpace
+        Optional feature space. Default = None.
+    p_label_space : MSpace
+        Optional label space. Default = None.
+    p_sampler
+        Optional sampler. Default: None.
+    p_mode
+        Operation mode. Default: Mode.C_MODE_SIM.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further stream specific parameters.
+    """
+
+    C_TYPE = 'Multi-Stream'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_id = None,
+                  p_name : str = '',
+                  p_num_instances : int = 0,
+                  p_version : str = '',
+                  p_sampler : Sampler = None,
+                  p_mode = Mode.C_MODE_SIM,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
+
+        super().__init__( p_id = p_id,
+                          p_name = p_name,
+                          p_num_instances = p_num_instances,
+                          p_version = p_version,
+                          p_sampler = p_sampler,
+                          p_mode = p_mode,
+                          p_logging = p_logging )
+
+        self.streams               = {}
+        self._iterables            = {}
+        self._num_streams          = 0
+        self._stream_cycle : cycle = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_stream( self, p_stream : Stream, p_batch_size : int = 1 ):
+        """
+        Adds a stream object to the multi-stream.
+
+        Parameters
+        ----------
+        p_stream : stream
+            Stream object to be added.
+        p_batch_size : int = 1
+            Number of instances to be taken from the stream in sequence, before moving on to the next
+            stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
+            the next stream.
+        """
+
+        self.streams[self._num_streams] = [p_stream, p_batch_size, None]
+        self._num_streams += 1
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self):
+        for stream_entry in self.streams.values():
+            stream_entry[2] = iter( stream_entry[0] )
+
+        self._stream_cycle = cycle( self.streams.values() )
+
+        self._switch_stream()
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _switch_stream(self):
+
+        for i in range(self._num_streams):
+            self._current_stream = next( self._stream_cycle )
+            self._current_iterable = self._current_stream[2]
+            if self._current_iterable is None: continue
+            self._batch_counter = 0
+            self._batch_size    = self._current_stream[1]
+            return
+
+        raise StopIteration
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_next(self) -> Instance:
+
+        if ( self._batch_size > 0 ) and ( self._batch_counter >= self._batch_size ):
+            self._switch_stream()
+
+        while True:
+            try:
+                next_inst = next( self._current_iterable )
+                self._batch_counter += 1
+                break
+            except StopIteration:
+                self._current_stream[2] = None
+                self._switch_stream()
+
+        return next_inst
+
+        
+## -------------------------------------------------------------------------------------------------
+    def get_tstamp( self ) -> TStampType:
+        return self._streams[0][0].tstamp
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed( self, p_seed = None ):
+        for stream_entry in self.streams.values():
+            stream_entry[0].set_random_seed( p_seed = p_seed )
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_feature_space( self ) -> MSpace:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_label_space( self ) -> MSpace:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    tstamp = property( fget = get_tstamp )
+
+
+
+       
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -862,6 +1105,8 @@ class StreamTask (Task):
     C_PLOT_ND_XLABEL_TIME   = 'Time index'
     C_PLOT_ND_YLABEL        = 'Feature Data'
 
+    C_EPSILON               = 0.01
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
@@ -889,10 +1134,15 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _get_tstamp(self):
+        return self.get_so().tstamp
+
+
+## -------------------------------------------------------------------------------------------------
     def run( self, 
              p_range : int = None, 
              p_wait: bool = False, 
-             p_inst : InstDict = None ):
+             p_instances : InstDict = None ):
         """
         Executes the specific actions of the task implemented in custom method _run(). At the end event
         C_EVENT_FINISHED is raised to start subsequent actions.
@@ -904,14 +1154,14 @@ class StreamTask (Task):
             range defined during instantiation is taken. Oterwise the minimum range of both is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be processed. If None, the instances are taken from the shared object. Default = None.
         """
 
         so : StreamShared = self.get_so()
 
-        if p_inst is not None:
-            instances = p_inst
+        if p_instances is not None:
+            instances = p_instances
         else:
             if so is None:
                 raise ImplementationError('Class StreamTask needs instance data as parameters or from a shared object')
@@ -932,31 +1182,34 @@ class StreamTask (Task):
 
             instances = inst_copy
 
-        Task.run(self, p_range=p_range, p_wait=p_wait, p_inst=instances)
+        Task.run( self, 
+                  p_range = p_range, 
+                  p_wait = p_wait, 
+                  p_instances = instances )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_wrapper( self, p_inst : InstDict ):
+    def _run_wrapper( self, p_instances : InstDict ):
         """
         Internal use.
         """
 
-        self._run( p_inst = p_inst )
-        self.get_so().set_instances( p_task_id = self.get_tid(), p_inst=p_inst )
+        self._run( p_instances = p_instances )
+        self.get_so().set_instances( p_task_id = self.get_tid(), p_instances = p_instances )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run( self, p_inst : InstDict ):
+    def _run( self, p_instances : InstDict ):
         """
         Custom method that is called by method run(). 
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances: InstDict
             Instances to be processed.
         """
 
-        raise NotImplementedError
+        pass
   
 
 ## -------------------------------------------------------------------------------------------------
@@ -968,8 +1221,6 @@ class StreamTask (Task):
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
             return
-
-        self._plot_num_inst = 0
 
         Task.init_plot( self,
                         p_figure=p_figure, 
@@ -985,13 +1236,20 @@ class StreamTask (Task):
 
         Task._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
 
-        self._plot_2d_plot   = None
-        self._plot_2d_xdata  = {}
-        self._plot_2d_ydata  = {}
-        self._plot_2d_xmin   = None
-        self._plot_2d_xmax   = None
-        self._plot_2d_ymin   = None
-        self._plot_2d_ymax   = None
+        self._plot_2d_plot      = None
+        self._plot_feature_ids  = []
+        self._plot_inst_ids     = []
+        self._plot_2d_xdata     = []
+        self._plot_2d_ydata     = []
+        self._plot_2d_xmin      = None
+        self._plot_2d_xmax      = None
+        self._plot_2d_ymin      = None
+        self._plot_2d_ymax      = None
+
+        self._update_ax_limits  = False
+        self._recalc_ax_limits  = False
+
+        p_settings.axes.margins(x=0, y=0)
  
 
 ## -------------------------------------------------------------------------------------------------
@@ -1003,16 +1261,18 @@ class StreamTask (Task):
 
         Task._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
 
-        self._plot_3d_plot   = None
-        self._plot_3d_xdata  = {}
-        self._plot_3d_ydata  = {}
-        self._plot_3d_zdata  = {}
-        self._plot_3d_xmin   = None
-        self._plot_3d_xmax   = None
-        self._plot_3d_ymin   = None
-        self._plot_3d_ymax   = None
-        self._plot_3d_zmin   = None
-        self._plot_3d_zmax   = None
+        self._plot_3d_plot      = None
+        self._plot_feature_ids  = []
+        self._plot_inst_ids     = []
+        self._plot_3d_xdata     = []
+        self._plot_3d_ydata     = []
+        self._plot_3d_zdata     = []
+        self._plot_3d_xmin      = None
+        self._plot_3d_xmax      = None
+        self._plot_3d_ymin      = None
+        self._plot_3d_ymax      = None
+        self._plot_3d_zmin      = None
+        self._plot_3d_zmax      = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1027,14 +1287,15 @@ class StreamTask (Task):
         p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
         p_settings.axes.grid(visible=True)
-        p_settings.axes.set_xlim(0,1)
-        p_settings.axes.set_ylim(-1,1)
 
-        self._plot_inst_ids  = []
-        self._plot_nd_xdata  = []
-        self._plot_nd_plots  = None
-        self._plot_nd_ymin   = None
-        self._plot_nd_ymax   = None
+        self._plot_inst_ids    = []
+        self._plot_nd_xdata    = []
+        self._plot_nd_plots    = None
+        self._plot_nd_ymin     = None
+        self._plot_nd_ymax     = None
+
+        self._update_ax_limits = False
+        self._recalc_ax_limits = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1081,14 +1342,14 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst : InstDict = None, 
+                     p_instances : InstDict = None, 
                      **p_kwargs ):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
@@ -1099,28 +1360,26 @@ class StreamTask (Task):
         except:
             return
 
-        if p_inst is None:
-            inst = self.get_so().get_instances(p_task_ids=[self.get_tid()])
+        if p_instances is None:
+            instances = self.get_so().get_instances(p_task_ids=[self.get_tid()])
         else:
-            inst = p_inst
+            instances = p_instances
 
         try:
             self._plot_view_finalized
         except:
-            if self._plot_settings.view_autoselect and ( len(inst) > 0 ):
-                self._finalize_plot_view(p_inst_ref=next(iter(inst.values()))[1])
+            if self._plot_settings.view_autoselect and ( len(instances) > 0 ):
+                self._finalize_plot_view(p_inst_ref=next(iter(instances.values()))[1])
                 self._plot_view_finalized = True
 
-        Task.update_plot(self, p_inst=inst, **p_kwargs)
-
-        self._plot_num_inst += len(inst)
+        Task.update_plot(self, p_instances = instances, **p_kwargs)
 
             
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d( self, 
                          p_settings : PlotSettings, 
-                         p_inst : InstDict, 
-                         **p_kwargs ):
+                         p_instances : InstDict, 
+                         **p_kwargs ) -> bool:
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -1129,119 +1388,151 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 Check: something to do?
-        if len(p_inst) == 0: return
+        if len(p_instances) == 0: return False
 
 
-        # 2 Update plot data
-        ax_limits_changed = False
-        ax_limits_force   = False
-        xmin              = None
-        xmax              = None
-        ymin              = None
-        ymax              = None
-        feature_ids       = None
+        # 2 Determine the feature ids to be plotted
+        if not self._plot_feature_ids:
+            inst_ref     = next(iter(p_instances.values()))[1]
+            feature_data = inst_ref.get_feature_data()
 
-        for inst_id, (inst_type, inst) in p_inst.items():
+            for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
+                if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                    self._plot_feature_ids.append(feature_id)
+
+            if len(self._plot_feature_ids) < 2:
+                raise Error('Data stream does not provide two numeric features')
+
+
+        # 3 Update plot data
+        for inst_id, (inst_type, inst) in p_instances.items():
                
-            if inst_type == InstTypeNew:
-                feature_data   = inst.get_feature_data()
+            feature_data   = inst.get_feature_data()
+            feature_values = feature_data.get_values()
+            x              = feature_values[self._plot_feature_ids[0]]
+            y              = feature_values[self._plot_feature_ids[1]]
 
-                if feature_ids is None:
-                    feature_ids = []
+            if inst_type == InstTypeNew:
+
+                if not self._plot_feature_ids:
                     for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
                         if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
-                            feature_ids.append(feature_id)
+                            self._plot_feature_ids.append(feature_id)
 
-                    if len(feature_ids) < 2:
+                    if len(self._plot_feature_ids) < 2:
                         raise Error('Data stream does not provide two numeric features')
 
-                feature_values = feature_data.get_values()
-                x = feature_values[feature_ids[0]]
-                y = feature_values[feature_ids[1]]
-                self._plot_2d_xdata[inst_id] = x
-                self._plot_2d_ydata[inst_id] = y
+                self._plot_2d_xdata.append(x)
+                self._plot_2d_ydata.append(y)
+                self._plot_inst_ids.append(inst_id)
 
-                if xmin is None:
-                    xmin = x
-                    xmax = x
-                    ymin = y
-                    ymax = y
+                if self._plot_2d_xmin is None:
+                    self._plot_2d_xmin = x
+                    self._plot_2d_xmax = x
+                    self._plot_2d_ymin = y
+                    self._plot_2d_ymax = y
+                    self._update_ax_limits   = True
                 else:
-                    if x < xmin: xmin = x
-                    elif x > xmax: xmax = x
+                    if x < self._plot_2d_xmin: 
+                        self._plot_2d_xmin = x
+                        self._update_ax_limits   = True
+                    elif x > self._plot_2d_xmax: 
+                        self._plot_2d_xmax = x
+                        self._update_ax_limits   = True
 
-                    if y < ymin: ymin = y
-                    elif y > ymax: ymax = y
+                    if y < self._plot_2d_ymin: 
+                        self._plot_2d_ymin = y
+                        self._update_ax_limits   = True
+                    elif y > self._plot_2d_ymax: 
+                        self._plot_2d_ymax = y
+                        self._update_ax_limits   = True
 
             else:
-                del self._plot_2d_xdata[inst_id]
-                del self._plot_2d_ydata[inst_id]
-                ax_limits_force = True
+                if inst_id == self._plot_inst_ids[0]:
+                    self._plot_inst_ids = self._plot_inst_ids[1:]
+                    self._plot_2d_xdata = self._plot_2d_xdata[1:]
+                    self._plot_2d_ydata = self._plot_2d_ydata[1:]
+
+                else:
+                    idx = self._plot_inst_ids.index(inst_id)
+                    del self._plot_inst_ids[idx]
+                    del self._plot_2d_xdata[idx]
+                    del self._plot_2d_ydata[idx]
+
+                if not self._recalc_ax_limits:
+                    tol_x = ( self._plot_2d_xmax - self._plot_2d_xmin ) * self.C_EPSILON
+                    tol_y = ( self._plot_2d_ymax - self._plot_2d_ymin ) * self.C_EPSILON
+
+                    if ( not ( ( self._plot_2d_xmin + tol_x ) <= x <= ( self._plot_2d_xmax - tol_x ) ) ) or \
+                       ( not ( ( self._plot_2d_ymin + tol_y ) <= y <= ( self._plot_2d_ymax - tol_y ) ) ):
+                        self._update_ax_limits = True
+                        self._recalc_ax_limits = True
 
 
-        # 3 Determine ax limits
-        if ax_limits_force:
-            self._plot_2d_xmin = min(self._plot_2d_xdata.values())
-            self._plot_2d_xmax = max(self._plot_2d_xdata.values())
-            self._plot_2d_ymin = min(self._plot_2d_ydata.values())
-            self._plot_2d_ymax = max(self._plot_2d_ydata.values())
-            ax_limits_changed = True
-        else:
-            if ( self._plot_2d_xmin is None ) or ( xmin < self._plot_2d_xmin ):
-                self._plot_2d_xmin = xmin
-                ax_limits_changed = True
-            if ( self._plot_2d_xmax is None ) or ( xmax > self._plot_2d_xmax ):
-                self._plot_2d_xmax = xmax
-                ax_limits_changed = True
-            if ( self._plot_2d_ymin is None ) or ( ymin < self._plot_2d_ymin ):
-                self._plot_2d_ymin = ymin
-                ax_limits_changed = True
-            if ( self._plot_2d_ymax is None ) or ( ymax > self._plot_2d_ymax ):
-                self._plot_2d_ymax = ymax
-                ax_limits_changed = True
-            
+        # 4 If buffer size is limited, remove obsolete data
+        if p_settings.data_horizon > 0:
+            num_del = max(0, len(self._plot_inst_ids) - p_settings.data_horizon )
+            if num_del > 0:
+                self._plot_inst_ids = self._plot_inst_ids[num_del:]
+                self._plot_2d_xdata = self._plot_2d_xdata[num_del:]
+                self._plot_2d_ydata = self._plot_2d_ydata[num_del:]
 
-        # 4 Plot current data
+
+        # 5 Plot current data
         if self._plot_2d_plot is None:            
-            # 4.1 First plot
-            inst_ref    = next(iter(p_inst.values()))[1]
+            # 5.1 First plot
+            inst_ref    = next(iter(p_instances.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
             p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
             p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
 
-            self._plot_2d_plot,  = p_settings.axes.plot( list(self._plot_2d_xdata.values()), 
-                                                         list(self._plot_2d_ydata.values()), 
+            self._plot_2d_plot,  = p_settings.axes.plot( self._plot_2d_xdata, 
+                                                         self._plot_2d_ydata, 
                                                          marker='+', 
                                                          color='blue', 
                                                          linestyle='',
                                                          markersize=3 )
 
         else:
-            # 4.2 Update of existing plot object
-            self._plot_2d_plot.set_xdata(list(self._plot_2d_xdata.values()))
-            self._plot_2d_plot.set_ydata(list(self._plot_2d_ydata.values()))
+            # 5.2 Update of existing plot object
+            self._plot_2d_plot.set_xdata(self._plot_2d_xdata)
+            self._plot_2d_plot.set_ydata(self._plot_2d_ydata)
 
 
-        # 5 Update of ax limits
-        if ax_limits_changed:
-            if self._plot_2d_xmin != self._plot_2d_xmax:
-                p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
-            if self._plot_2d_ymin != self._plot_2d_ymax:
-                p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
+        # 6 Update of ax limits
+        if self._update_ax_limits:
+            if self._recalc_ax_limits:
+                self._plot_2d_xmin = min(self._plot_2d_xdata)
+                self._plot_2d_xmax = max(self._plot_2d_xdata)
+                self._plot_2d_ymin = min(self._plot_2d_ydata)
+                self._plot_2d_ymax = max(self._plot_2d_ydata)
+                self._recalc_ax_limits = False
+
+            p_settings.axes.set_xlim( [ self._plot_2d_xmin, self._plot_2d_xmax ] )
+            p_settings.axes.set_ylim( [ self._plot_2d_ymin, self._plot_2d_ymax ] )
+            self._update_ax_limits = False
+
+
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d( self, 
                          p_settings : PlotSettings, 
-                         p_inst : InstDict,
-                         **p_kwargs ):
+                         p_instances : InstDict, 
+                         **p_kwargs ) -> bool:
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -1250,142 +1541,110 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 Check: something to do?
-        if len(p_inst) == 0: return
+        if len(p_instances) == 0: return False
 
 
-        # 2 Update plot data
-        ax_limits_changed = False
-        ax_limits_force   = False
-        xmin              = None
-        xmax              = None
-        ymin              = None
-        ymax              = None
-        zmin              = None
-        zmax              = None
-        feature_ids       = None
+        # 2 Determine the feature ids to be plotted
+        if not self._plot_feature_ids:
+            inst_ref     = next(iter(p_instances.values()))[1]
+            feature_data = inst_ref.get_feature_data()
 
-        for inst_id, (inst_type, inst) in p_inst.items():
-                
+            for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
+                if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                    self._plot_feature_ids.append(feature_id)
+
+            if len(self._plot_feature_ids) < 3:
+                raise Error('Data stream does not provide two numeric features')
+
+
+        # 3 Update plot data
+        for inst_id, (inst_type, inst) in p_instances.items():
+               
+            feature_data   = inst.get_feature_data()
+            feature_values = feature_data.get_values()
+            x              = feature_values[self._plot_feature_ids[0]]
+            y              = feature_values[self._plot_feature_ids[1]]
+            z              = feature_values[self._plot_feature_ids[2]]
+
             if inst_type == InstTypeNew:
 
-                feature_data   = inst.get_feature_data()
-
-                if feature_ids is None:
-                    feature_ids = []
+                if not self._plot_feature_ids:
                     for feature_id, feature in enumerate(feature_data.get_related_set().get_dims()):
                         if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
-                            feature_ids.append(feature_id)
+                            self._plot_feature_ids.append(feature_id)
 
-                    if len(feature_ids) < 3:
+                    if len(self._plot_feature_ids) < 2:
                         raise Error('Data stream does not provide two numeric features')
 
-                feature_values = feature_data.get_values()
-                                    
-                x = feature_values[feature_ids[0]]
-                y = feature_values[feature_ids[1]]
-                z = feature_values[feature_ids[2]]
-                    
-                self._plot_3d_xdata[inst_id] = x
-                self._plot_3d_ydata[inst_id] = y
-                self._plot_3d_zdata[inst_id] = z
-
-                if xmin is None:
-                    xmin = x
-                    xmax = x
-                    ymin = y
-                    ymax = y
-                    zmin = z
-                    zmax = z
-                else:
-                    if x < xmin: xmin = x
-                    elif x > xmax: xmax = x
-
-                    if y < ymin: ymin = y
-                    elif y > ymax: ymax = y
-
-                    if z < zmin: zmin = z
-                    elif z > zmax: zmax = z
+                self._plot_3d_xdata.append(x)
+                self._plot_3d_ydata.append(y)
+                self._plot_3d_zdata.append(z)
+                self._plot_inst_ids.append(inst_id)
 
             else:
-                del self._plot_3d_xdata[inst_id]
-                del self._plot_3d_ydata[inst_id]
-                del self._plot_3d_zdata[inst_id]
-                ax_limits_force = True
+                if inst_id == self._plot_inst_ids[0]:
+                    self._plot_inst_ids = self._plot_inst_ids[1:]
+                    self._plot_3d_xdata = self._plot_3d_xdata[1:]
+                    self._plot_3d_ydata = self._plot_3d_ydata[1:]
+                    self._plot_3d_zdata = self._plot_3d_zdata[1:]
+
+                else:
+                    idx = self._plot_inst_ids.index(inst_id)
+                    del self._plot_inst_ids[idx]
+                    del self._plot_3d_xdata[idx]
+                    del self._plot_3d_ydata[idx]
+                    del self._plot_3d_zdata[idx]
 
 
-        # 3 Determine ax limits
-        if ax_limits_force:
-            self._plot_3d_xmin = min(self._plot_3d_xdata.values())
-            self._plot_3d_xmax = max(self._plot_3d_xdata.values())
-            self._plot_3d_ymin = min(self._plot_3d_ydata.values())
-            self._plot_3d_ymax = max(self._plot_3d_ydata.values())
-            self._plot_3d_zmin = min(self._plot_3d_zdata.values())
-            self._plot_3d_zmax = max(self._plot_3d_zdata.values())
-            ax_limits_changed = True
-        else:
-            if ( self._plot_3d_xmin is None ) or ( xmin < self._plot_3d_xmin ):
-                self._plot_3d_xmin = xmin
-                ax_limits_changed = True
-            if ( self._plot_3d_xmax is None ) or ( xmax > self._plot_3d_xmax ):
-                self._plot_3d_xmax = xmax
-                ax_limits_changed = True
-            if ( self._plot_3d_ymin is None ) or ( ymin < self._plot_3d_ymin ):
-                self._plot_3d_ymin = ymin
-                ax_limits_changed = True
-            if ( self._plot_3d_ymax is None ) or ( ymax > self._plot_3d_ymax ):
-                self._plot_3d_ymax = ymax
-                ax_limits_changed = True
-            if ( self._plot_3d_zmin is None ) or ( zmin < self._plot_3d_zmin ):
-                self._plot_3d_zmin = zmin
-                ax_limits_changed = True
-            if ( self._plot_3d_zmax is None ) or ( zmax > self._plot_3d_zmax ):
-                self._plot_3d_zmax = zmax
-                ax_limits_changed = True
-            
+        # 4 If buffer size is limited, remove obsolete data
+        if p_settings.data_horizon > 0:
+            num_del = max(0, len(self._plot_inst_ids) - p_settings.data_horizon )
+            if num_del > 0:
+                self._plot_inst_ids = self._plot_inst_ids[num_del:]
+                self._plot_3d_xdata = self._plot_3d_xdata[num_del:]
+                self._plot_3d_ydata = self._plot_3d_ydata[num_del:]
+                self._plot_3d_zdata = self._plot_3d_zdata[num_del:]
 
-        # 4 Plot current data
+        # 5 Plot current data
         if self._plot_3d_plot is None:            
-            # 4.1 First plot
-            inst_ref    = next(iter(p_inst.values()))[1]
+            # 5.1 First plot
+            inst_ref    = next(iter(p_instances.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
-            p_settings.axes.set_xlabel(feature_dim[feature_ids[0]].get_name_short() )
-            p_settings.axes.set_ylabel(feature_dim[feature_ids[1]].get_name_short() )
-            p_settings.axes.set_zlabel(feature_dim[feature_ids[2]].get_name_short() )
+            p_settings.axes.set_xlabel(feature_dim[self._plot_feature_ids[0]].get_name_short() )
+            p_settings.axes.set_ylabel(feature_dim[self._plot_feature_ids[1]].get_name_short() )
+            p_settings.axes.set_zlabel(feature_dim[self._plot_feature_ids[2]].get_name_short() )
 
         else:
             self._plot_3d_plot.remove()
 
-        self._plot_3d_plot,  = p_settings.axes.plot( list(self._plot_3d_xdata.values()), 
-                                                     list(self._plot_3d_ydata.values()), 
-                                                     list(self._plot_3d_zdata.values()),
+        self._plot_3d_plot,  = p_settings.axes.plot( self._plot_3d_xdata, 
+                                                     self._plot_3d_ydata, 
+                                                     self._plot_3d_zdata,
                                                      marker='+', 
                                                      color='blue',
                                                      linestyle='',
-                                                     markersize=4 )                                                        
+                                                     markersize=4 )   
 
-
-        # 5 Update of ax limits
-        if ax_limits_changed:
-            if self._plot_3d_xmin != self._plot_3d_xmax:
-                p_settings.axes.set_xlim( self._plot_3d_xmin, self._plot_3d_xmax )
-            if self._plot_3d_ymin != self._plot_3d_ymax:
-                p_settings.axes.set_ylim( self._plot_3d_ymin, self._plot_3d_ymax )
-            if self._plot_3d_zmin != self._plot_3d_zmax:
-                p_settings.axes.set_zlim( self._plot_3d_zmin, self._plot_3d_zmax )
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd( self, 
                          p_settings : PlotSettings, 
-                         p_inst : InstDict, 
-                         **p_kwargs ):
+                         p_instances : InstDict, 
+                         **p_kwargs ) -> bool:
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -1394,38 +1653,43 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
+
+        Returns
+        -------
+        bool   
+            True, if changes on the plot require a refresh of the figure. False otherwise.          
         """
 
         # 1 Check: something to do?
-        if len(p_inst) == 0: return
+        if not p_instances: return False
 
 
         # 2 Late initialization of plot object
         if self._plot_nd_plots is None:
 
-            inst_ref = next(iter(p_inst.values()))[1]
+            inst_ref = next(iter(p_instances.values()))[1]
 
             # 2.1 Add plot for each feature
-            self._plot_nd_plots = []
-            feature_space       = inst_ref.get_feature_data().get_related_set()
+            feature_space        = inst_ref.get_feature_data().get_related_set()
+            self._plot_nd_plots  = []
+            self._plot_y_min     = None
+            self._plot_y_max     = None
 
             for feature in feature_space.get_dims():
                 if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
-                    feature_xdata = self._plot_nd_xdata
                     feature_ydata = []
-                    feature_plot, = p_settings.axes.plot( feature_xdata, 
-                                                          feature_ydata, 
-                                                          lw=1 )
-
+                    feature_plot, = p_settings.axes.plot([], [], lw=1, label = feature.get_name_short() )
                     self._plot_nd_plots.append( [feature_ydata, feature_plot] )
+
+            p_settings.axes.legend(title='Features', alignment='left', loc='upper right', draggable=True)
 
 
         # 3 Update plot data
-        for inst_id, (inst_type, inst) in sorted(p_inst.items()):
+        for inst_id, (inst_type, inst) in sorted(p_instances.items()):
 
             if inst_type == InstTypeNew:
                 self._plot_inst_ids.append(inst_id)
@@ -1439,57 +1703,90 @@ class StreamTask (Task):
 
                 for i, fplot in enumerate(self._plot_nd_plots):
                     feature_value = feature_data[i]
-
-                    if ( self._plot_nd_ymin is None ) or ( self._plot_nd_ymin > feature_value ):
-                        self._plot_nd_ymin = feature_value
-
-                    if ( self._plot_nd_ymax is None ) or ( self._plot_nd_ymax < feature_value ):
-                        self._plot_nd_ymax = feature_value
-
                     fplot[0].append(feature_value)
-            
+                    
+                    if self._plot_y_min is None:
+                            self._plot_y_min = feature_value
+                            self._plot_y_max = feature_value
+                            self._update_ax_limits = True
+                    elif feature_value < self._plot_y_min:
+                            self._plot_y_min = feature_value
+                            self._update_ax_limits = True
+                    elif feature_value > self._plot_y_max:
+                            self._plot_y_max = feature_value
+                            self._update_ax_limits = True
+
             else:
-                try:
+                if inst_id == self._plot_inst_ids[0]:
+                    self._plot_inst_ids = self._plot_inst_ids[1:]
+                    self._plot_nd_xdata = self._plot_nd_xdata[1:]
+                    for fplot in self._plot_nd_plots:
+                        fplot[0] = fplot[0][1:]
+                else:
                     idx = self._plot_inst_ids.index(inst_id)
                     del self._plot_inst_ids[idx]
                     del self._plot_nd_xdata[idx]
-                    for fplot in self._plot_nd_plots: del fplot[0][idx]
-                except:
-                    pass
+                    for fplot in self._plot_nd_plots:
+                        del fplot[0][idx]
 
-        
+                self._update_ax_limits = True   
+                self._recalc_ax_limits    = True
+
+
         # 4 If buffer size is limited, remove obsolete data
         if p_settings.data_horizon > 0:
             num_del = max(0, len(self._plot_nd_xdata) - p_settings.data_horizon )
+            if num_del > 0:
+                self._plot_inst_ids = self._plot_inst_ids[num_del:]
+                self._plot_nd_xdata = self._plot_nd_xdata[num_del:]
+                for fplot in self._plot_nd_plots: fplot[0] = fplot[0][num_del:]
 
-            for i in range(num_del):
-                del self._plot_inst_ids[0]
-                del self._plot_nd_xdata[0]
-                for fplot in self._plot_nd_plots: del fplot[0][0]
+                self._update_ax_limits   = True
+                self._recalc_ax_limits      = True
 
 
         # 5 Set new plot data of all feature plots
         for fplot in self._plot_nd_plots:
-            fplot[1].set_xdata(self._plot_nd_xdata)
-            fplot[1].set_ydata(fplot[0])
+            fplot[1].set_data(self._plot_nd_xdata, fplot[0])
 
 
-        # 6 Update ax limits
+        # 6 Update axes limits
         if p_settings.plot_horizon > 0:
             xlim_id = max(0, len(self._plot_nd_xdata) - p_settings.plot_horizon)
         else:
             xlim_id = 0
 
         if isinstance(self._plot_nd_xdata[xlim_id], timedelta):
-            # Handling if the tstamps are timedeltas
-            try:
-                p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id].total_seconds(), self._plot_nd_xdata[-1].total_seconds())
-            except:
-                raise Error("time delta could not be processed")
+            x_min = self._plot_nd_xdata[xlim_id].total_seconds()
+            x_max = self._plot_nd_xdata[-1].total_seconds()
         else:
-            p_settings.axes.set_xlim(self._plot_nd_xdata[xlim_id], self._plot_nd_xdata[-1])
-        p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
-                    
+            x_min = self._plot_nd_xdata[xlim_id]
+            x_max = self._plot_nd_xdata[-1]
+
+        if x_min != x_max:
+            p_settings.axes.set_xlim(x_min, x_max)
+
+        if self._update_ax_limits:
+            if self._recalc_ax_limits:
+                self._plot_y_min = None
+                self._plot_y_max = None
+                for fplot in self._plot_nd_plots:
+                    try:
+                        self._plot_y_min = min( self._plot_y_min, min( fplot[0]) )
+                        self._plot_y_max = max( self._plot_y_max, max( fplot[0]) )
+                    except:
+                        self._plot_y_min = min(fplot[0])
+                        self._plot_y_max = max(fplot[0])
+
+                self._recalc_ax_limits = False
+
+            if self._plot_y_min < self._plot_y_max:
+                p_settings.axes.set_ylim(self._plot_y_min, self._plot_y_max)
+
+            self._update_ax_limits = False
+
+        return True
+
 
 
 
@@ -1542,7 +1839,7 @@ class StreamWorkflow (StreamTask, Workflow):
     def run( self, 
              p_range : int = None, 
              p_wait: bool = False, 
-             p_inst : InstDict = None ):
+             p_instances : InstDict = None ):
         """
         Runs all stream tasks according to their predecessor relations.
 
@@ -1554,15 +1851,15 @@ class StreamWorkflow (StreamTask, Workflow):
             is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_inst : InstDict
+        p_instances : InstDict
             Optional list of stream instances to be processed. If None, the list of the shared object
             is used instead. Default = None.
         """
 
-        if p_inst is not None:
+        if p_instances is not None:
             # This workflow is the leading workflow and opens a new process cycle based on external instances
             try:
-                self.get_so().reset( p_inst )
+                self.get_so().reset( p_instances = p_instances )
             except AttributeError:
                 raise ImplementationError('Stream workflows need a shared object of type StreamShared (or inherited)')
 
@@ -1573,8 +1870,6 @@ class StreamWorkflow (StreamTask, Workflow):
     def init_plot( self, 
                    p_figure: Figure = None, 
                    p_plot_settings : PlotSettings = None ):
-
-        self._plot_num_inst = 0
 
         return Workflow.init_plot( self, 
                                    p_figure=p_figure, 
@@ -1613,21 +1908,21 @@ class StreamWorkflow (StreamTask, Workflow):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst : InstDict = None, 
+                     p_instances : InstDict = None, 
                      **p_kwargs ):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             Stream instances to be plotted.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
         # Update of workflow master plot by using the StreamTask default implementation
-        StreamTask.update_plot(self, p_inst=p_inst, **p_kwargs)
+        StreamTask.update_plot(self, p_instances = p_instances, **p_kwargs)
 
 
 
@@ -1649,8 +1944,8 @@ class StreamScenario (ScenarioBase):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
-    p_kwargs : dict
-        Custom keyword parameters handed over to custom method setup().
+    **p_kwargs 
+        Custom keyword arguments handed over to custom method setup().
     """
     
     C_TYPE              = 'Stream-Scenario'
@@ -1669,11 +1964,11 @@ class StreamScenario (ScenarioBase):
         self._workflow : StreamWorkflow = None
 
         ScenarioBase.__init__( self,
-                               p_mode, 
-                               p_cycle_limit=p_cycle_limit, 
-                               p_auto_setup=True, 
-                               p_visualize=p_visualize, 
-                               p_logging=p_logging,
+                               p_mode = p_mode, 
+                               p_cycle_limit = p_cycle_limit, 
+                               p_auto_setup = True, 
+                               p_visualize = p_visualize, 
+                               p_logging = p_logging,
                                **p_kwargs )
 
 
@@ -1693,6 +1988,8 @@ class StreamScenario (ScenarioBase):
                                                     p_visualize=self.get_visualization(),
                                                     p_logging=self.get_log_level(),
                                                     **p_kwargs )
+
+        self._workflow.get_so().assign_stream( p_stream = self._stream )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1759,7 +2056,7 @@ class StreamScenario (ScenarioBase):
         try:
             inst_new = next(self._iterator)
             inst     = { inst_new.id : (InstTypeNew, inst_new) }
-            self._workflow.run( p_inst = inst )
+            self._workflow.run( p_instances = inst )
             end_of_data = False
         except StopIteration:
             end_of_data = True

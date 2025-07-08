@@ -22,33 +22,43 @@
 ## -- 2024-10-29  1.3.3     DA       - Refactoring of NormalizerMinMax._adapt_on_event()
 ## --                                - Bugfix in NormalizerMinMax._update_plot_data_3d()
 ## -- 2024-12-16  1.4.0     DA       Method NormalizerMinMax._run(): little code tuning
+## -- 2025-06-05  1.5.0     DA       Refactoring
+## -- 2025-06-25  1.6.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-06-30  2.0.0     DA       Refactoring: new parent OAStreamNormalizer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-12-16)
+Ver. 2.0.0 (2025-06-30)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization.
 """
 
 
-from mlpro.oa.streams.basics import *
+from mlpro.bf.various import Log
+from mlpro.bf.events import Event
+from mlpro.bf.exceptions import Error
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import normalizers as Norm
+from mlpro.bf.streams import InstDict
+from mlpro.oa.streams.basics import OAStreamTask
+from mlpro.oa.streams.tasks.normalizers import OAStreamNormalizer
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
+class NormalizerMinMax (Norm.NormalizerMinMax, OAStreamNormalizer):
     """
     Class with functionality for adaptive normalization of instances using MinMax Normalization.
 
     Parameters
     ----------
-    p_name: str, optional
-        Name of the task.
+    p_name: str = None,
+        Optional name of the task.
     p_range_max:
         Processing range of the task, default is a Thread.
-    p_ada:
+    p_ada : bool
         True if the task has adaptivity, default is true.
     p_duplicate_data : bool
         If True, instances will be duplicated before processing. Default = False.
@@ -56,34 +66,42 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
         True for visualization, false by default.
     p_logging:
         Logging level of the task. Default is Log.C_LOG_ALL
-    p_kwargs:
+    p_dst_boundaries : list = [-1,1]
+        Explicit list of (low, high) destination boundaries. Default is [-1, 1].
+    **p_kwargs:
         Additional task parameters
     """
 
-    C_NAME = 'Normalizer MinMax' 
+    C_NAME = 'MinMax' 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,p_name: str = None,
-                  p_range_max = StreamTask.C_RANGE_THREAD,
+    def __init__( self,
+                  p_name: str = None,
+                  p_range_max = OAStreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize:bool = False,
                   p_logging = Log.C_LOG_ALL,
-                  **p_kwargs):
+                  p_dst_boundaries : list = [-1, 1],
+                  **p_kwargs ):
 
-        OAStreamTask.__init__(self,
-                        p_name = p_name,
-                        p_range_max = p_range_max,
-                        p_ada = p_ada,
-                        p_duplicate_data = p_duplicate_data,
-                        p_visualize = p_visualize,
-                        p_logging=p_logging,
-                        **p_kwargs )
+        OAStreamNormalizer.__init__( self,
+                                     p_name = p_name,
+                                     p_range_max = p_range_max,
+                                     p_ada = p_ada,
+                                     p_duplicate_data = p_duplicate_data,
+                                     p_visualize = p_visualize,
+                                     p_logging=p_logging,
+                                     **p_kwargs )
 
-
-        Norm.NormalizerMinMax.__init__(self)
-        self._parameters_updated:bool = None
-
+        Norm.NormalizerMinMax.__init__( self, 
+                                        p_input_set = None,
+                                        p_output_set = None,
+                                        p_output_elem_cls = None,
+                                        p_autocreate_elements = False,
+                                        p_dst_boundaries = p_dst_boundaries,
+                                        **p_kwargs )
+        
         if p_visualize:
             self._plot_data_2d = None
             self._plot_data_3d = None
@@ -91,29 +109,27 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst:InstDict):
+    def _run(self, p_instances : InstDict):
         """
         Runs MinMax Normalizer task for normalizing stream instances.
 
         Parameters
         ----------
-        p_inst : InstDict
+        p_instances : InstDict
             Instances to be processed
         """
         
-        # Normalization of all incoming stream instances (order doesn't matter)
-        for ids, (inst_type, inst) in p_inst.items():
-            feature_data = inst.get_feature_data()
-
-            if self._param is None:
-                self.update_parameters( p_set = feature_data.get_related_set() )
-                
-            normalized_element = self.normalize(feature_data)
+        # Normalization of all incoming stream instances
+        for (inst_type, inst) in p_instances.values():
+            feature_data = inst.get_feature_data()    
+            normalized_element = self.normalize( p_data = feature_data )
             feature_data.set_values(normalized_element.get_values())
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
+    def _adapt_on_event( self, 
+                         p_event_id:str, 
+                         p_event_object:Event ) -> bool:
         """
         Custom method to adapt the MinMax normalizer parameters based on event raised by Boundary object for changed
         boundaries.
@@ -128,13 +144,12 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
 
         Returns
         -------
-        adapted: bool
+        bool
             Returns True, if the task has adapted. False otherwise.
         """
 
-        set = p_event_object.get_raising_object().get_related_set()
-
-        self.update_parameters(set)
+        adapted = self.update_parameters( p_boundaries = p_event_object.get_raising_object().get_boundaries() )
+        if not adapted: return False
 
         if self._visualize:
             if self._plot_settings.view == PlotSettings.C_VIEW_2D:
@@ -145,119 +160,45 @@ class NormalizerMinMax (OAStreamTask, Norm.NormalizerMinMax):
                 self._update_plot_data_nd()
             else:
                 raise Error
-
+            
+            self._update_ax_limits = True
+            self._recalc_ax_limits = True
+            
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_2d(self):
         """
-        Updates the 2d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
+        Updates the 2D plot data after parameter changes by renormalizing the existing points.
         """
-        try:
-            if len(self._plot_2d_xdata) != 0 and len(self._plot_2d_xdata):
-                if ( self._plot_data_2d is None ) or ( len(self._plot_2d_xdata) > self._plot_data_2d.shape[0] ):
-                    self._plot_data_2d = np.zeros((len(self._plot_2d_xdata),2))
-                ids = []
-                for i, (id, val) in enumerate(self._plot_2d_xdata.items()):
-                    ids.extend([id])
-                    self._plot_data_2d[i][0] = self._plot_2d_xdata[id]
-                    self._plot_data_2d[i][1] = self._plot_2d_ydata[id]
+        
+        if not self._plot_2d_xdata: return
 
-                plot_data_renormalized = self.renormalize(self._plot_data_2d)
-
-                self._plot_2d_xdata = {}
-                self._plot_2d_ydata = {}
-
-                for i, data_2d in enumerate(plot_data_renormalized):
-                    self._plot_2d_xdata[ids[i]] = data_2d[0]
-                    self._plot_2d_ydata[ids[i]] = data_2d[1]
-
-
-                self._parameters_updated = False
-        except:
-            raise Error
+        self.renormalize( p_data = self._plot_2d_xdata, p_dim = 0 )
+        self.renormalize( p_data = self._plot_2d_ydata, p_dim = 1 )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_3d(self):
         """
         Method to update the 3d plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
-
         """
-        try:
-            if len(self._plot_3d_xdata) != 0:
-                if ( self._plot_data_3d is None ) or ( len(self._plot_3d_xdata) > self._plot_data_3d.shape[0] ):
-                    self._plot_data_3d = np.zeros((len(self._plot_3d_xdata),3))
 
-                ids = []
-                for i, (id,val) in enumerate(self._plot_3d_xdata.items()):
-                    ids.extend([id])
-                    self._plot_data_3d[i][0] = self._plot_3d_xdata[id]
-                    self._plot_data_3d[i][1] = self._plot_3d_ydata[id]
-                    self._plot_data_3d[i][2] = self._plot_3d_zdata[id]
+        if not self._plot_3d_xdata: return
 
-                plot_data_renormalized = self.renormalize(self._plot_data_3d)
-
-                self._plot_3d_xdata = {}
-                self._plot_3d_ydata = {}
-                self._plot_3d_zdata = {}
-
-                for i, data_3d in enumerate(plot_data_renormalized):
-                    self._plot_3d_xdata[ids[i]] = data_3d[0]
-                    self._plot_3d_ydata[ids[i]] = data_3d[1]
-                    self._plot_3d_zdata[ids[i]] = data_3d[2]
-        except:
-            pass
-
+        self.renormalize( p_data = self._plot_3d_xdata, p_dim = 0 )
+        self.renormalize( p_data = self._plot_3d_ydata, p_dim = 1 )
+        self.renormalize( p_data = self._plot_3d_zdata, p_dim = 2 )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_data_nd(self):
         """
-
         Method to update the nd plot for Normalizer. Extended to renormalize the obsolete data on change of parameters.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst : InstDict
-            Stream instances to be plotted.
-        p_kwargs : dict
-            Further optional plot parameters.
         """
 
-        try:
-            if self._plot_nd_plots:
-                if ( self._plot_data_nd is None ) or ( len(self._plot_nd_plots[0][0]) > self._plot_data_nd.shape[0] ):
-                        self._plot_data_nd = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
-                ids = []
-                for j in range(len(self._plot_nd_plots)):
-                    for i in range(len(self._plot_nd_plots[0][0])):
-                        self._plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
+        if not self._plot_nd_plots: return
 
-                plot_data_renormalized = self.renormalize(self._plot_data_nd)
-
-                for j in range(len(self._plot_nd_plots)):
-                    self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
-        except:
-            pass
+        for dim, plot_data in enumerate(self._plot_nd_plots):
+            self.renormalize(p_data=plot_data[0], p_dim=dim)

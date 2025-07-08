@@ -36,12 +36,14 @@
 ## --                                  depends on the shape of a cluster body
 ## --                                - implemented new method get_influence()
 ## -- 2024-06-18  1.3.0     DA       Removed method ClusterCentroid.__init__()
+## -- 2025-04-13  1.4.0     DA       Introduction of C_EPSILON
+## -- 2025-06-06  1.5.0     DA       Refactoring: p_inst -> p_instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-06-18)
+Ver. 1.5.0 (2025-06-06)
 
-This module provides templates for cluster analysis to be used in the context of online adaptivity.
+This module provides a template class for clusters with a centroid.
 """
 
 import sys
@@ -68,6 +70,7 @@ class ClusterCentroid (Cluster):
     """
 
     C_PROPERTIES    = [ cprop_centroid ]
+    C_EPSILON       = 0.0001
 
 # ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id):
@@ -76,13 +79,13 @@ class ClusterCentroid (Cluster):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_influence(self, p_inst: Instance) -> float:
+    def get_influence(self, p_instance: Instance) -> float:
         """
         Default strategy to determine the influence of a cluster on a specified instance based
         on the metric distance between the instance and the cluster centroid.
         """
 
-        feature_data = p_inst.get_feature_data()
+        feature_data = p_instance.get_feature_data()
 
         try:
             centroid_elem = self._centroid_elem
@@ -92,7 +95,4 @@ class ClusterCentroid (Cluster):
 
         centroid_elem.set_values( p_values=self.centroid.value )
 
-        try:
-            return 1 / feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = centroid_elem )
-        except ZeroDivisionError:
-            return sys.float_info.max
+        return 1 / ( feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = centroid_elem ) + self.C_EPSILON )

@@ -24,16 +24,22 @@
 ## -- 2022-12-31  1.1.4     LSB      Refactoring
 ## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
 ## -- 2024-05-22  1.2.0     DA       Refactoring and splitting
+## -- 2025-04-11  1.2.1     DA       Code review/cleanup
+## -- 2025-06-01  2.0.0     DA       Refactoring of class Window:
+## --                                - events removed
+## --                                - method get_boundaries(): new parameters
+## -- 2025-06-05  2.0.1     DA       Bugfix in Window.get_variance()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-22)
+Ver. 2.0.1 (2025-06-05)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
 
 import numpy as np
+from mlpro.bf.math.statistics import *
 from mlpro.bf.streams.basics import *
 from mlpro.bf.events import *
 
@@ -42,7 +48,7 @@ from mlpro.bf.events import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Window (StreamTask):
+class Window (StreamTask, BoundaryProvider):
     """
     This is the abstract root class for window implementations. 
 
@@ -68,23 +74,17 @@ class Window (StreamTask):
 
     C_PLOT_STANDALONE       = False
 
-    C_PLOT_IN_WINDOW        = 'In Window'
-    C_PLOT_OUTSIDE_WINDOW   = 'Out Window'
-
-    C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'     # raised the first time the buffer runs full
-    C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'    # raised whenever data were removed from the buffer
-
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_buffer_size:int,
-                 p_delay:bool = False,
-                 p_enable_statistics:bool = False,
-                 p_name:str   = None,
-                 p_range_max  = StreamTask.C_RANGE_THREAD,
-                 p_duplicate_data : bool = False,
-                 p_visualize:bool = False,
-                 p_logging    = Log.C_LOG_ALL,
-                 **p_kwargs):
+    def __init__( self,
+                  p_buffer_size:int,
+                  p_delay:bool = False,
+                  p_enable_statistics:bool = False,
+                  p_name:str   = None,
+                  p_range_max  = StreamTask.C_RANGE_THREAD,
+                  p_duplicate_data : bool = False,
+                  p_visualize:bool = False,
+                  p_logging    = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
         super().__init__( p_name = p_name,
                           p_range_max = p_range_max,
@@ -93,10 +93,10 @@ class Window (StreamTask):
                           p_logging = p_logging,
                           p_kwargs = p_kwargs )
 
-        self.buffer_size  = p_buffer_size
-        self._delay       = p_delay
-        self._buffer      = {}
-        self._buffer_pos  = 0
+        self.buffer_size         = p_buffer_size
+        self._delay              = p_delay
+        self._buffer             = {}
+        self._buffer_pos         = 0
         self._statistics_enabled = p_enable_statistics
 
 
@@ -114,20 +114,6 @@ class Window (StreamTask):
         """
 
         return (self._buffer, self._buffer_pos)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_boundaries(self) -> np.ndarray:
-        """
-        Returns the current value boundaries of the data stored in the buffer
-
-        Returns
-        -------
-        boundaries:np.ndarray
-            Returns the current window boundaries in the form of a Numpy array.
-        """
-        
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -155,7 +141,7 @@ class Window (StreamTask):
             Returns the variance of the current data in the window as a numpy array.
         """
 
-        return np.variance(self._buffer.values(), axis=0, dtype=np.float64)
+        return np.var(self._buffer.values(), axis=0, dtype=np.float64)
 
 
 ## -------------------------------------------------------------------------------------------------
