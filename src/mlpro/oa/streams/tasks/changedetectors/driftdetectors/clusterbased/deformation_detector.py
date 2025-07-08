@@ -46,6 +46,9 @@ class DriftDetectorCBGenDeformation (DriftDetectorCBGenSingleGradient):
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
+                  p_drift_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
+                  p_thrs_clusters : int = 1,
                   p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_clusterer = p_clusterer,
@@ -58,4 +61,7 @@ class DriftDetectorCBGenDeformation (DriftDetectorCBGenSingleGradient):
                           p_ada = p_ada,
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
+                          p_drift_buffer_size=  p_drift_buffer_size,
+                          p_thrs_inst = p_thrs_inst,
+                          p_thrs_clusters = p_thrs_clusters,
                           p_logging = p_logging )
