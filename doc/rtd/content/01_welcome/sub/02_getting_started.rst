@@ -29,16 +29,6 @@ installer for Python (pip) in two variants:
         pip install mlpro[full]
 
 
-Installation from Anaconda
---------------------------
-
-MLPro is also available on `Anaconda <https://anaconda.org/mlpro/mlpro/>`_ and can be installed 
-with the following command:
-
-  .. code-block:: bash
-
-      conda install -c mlpro mlpro
-
       
 .. _target_dependencies:      
 Dependencies

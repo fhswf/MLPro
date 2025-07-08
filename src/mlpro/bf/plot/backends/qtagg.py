@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-12-30  0.1.0     DA       Initial implementation
 ## -- 2025-01-03  0.2.0     DA       Refactoring
+## -- 2025-04-05  0.3.0     DA       Aligment with Qt6/PySide 6.9.0
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-01-03)
+Ver. 0.3.0 (2025-04-05)
 
 This module provides an integration for Matplotlib backend 'qtagg'.
 
@@ -41,7 +42,7 @@ class PlotBackendqtagg (PlotBackend):
 ## -------------------------------------------------------------------------------------------------
     def _figure_force_foreground_default(self, p_figure : Figure):
         window = p_figure.canvas.manager.window
-        window.setWindowFlags(window.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        window.setWindowFlags(window.windowFlags() | QtCore.Qt.WindowType.WindowStaysOnTopHint)
         window.show()
 
 
@@ -55,9 +56,9 @@ class PlotBackendqtagg (PlotBackend):
 
         # 2 Get window state
         state_qt = window.windowState()
-        if state_qt & QtCore.Qt.WindowMinimized:
+        if state_qt & QtCore.Qt.WindowState.WindowMinimized:
             state = WSMINIMIZED
-        elif state_qt & QtCore.Qt.WindowMaximized:
+        elif state_qt & QtCore.Qt.WindowState.WindowMaximized:
             state = WSMAXIMIZED
         else:
             state = WSNORMAL
@@ -81,11 +82,11 @@ class PlotBackendqtagg (PlotBackend):
         # 2 Set window state
         state = p_geometry['state']
         if state == WSMINIMIZED:
-            state_qt = QtCore.Qt.WindowMinimized
+            state_qt = QtCore.Qt.WindowState.WindowMinimized
         elif state == WSMAXIMIZED:
-            state_qt = QtCore.Qt.WindowMaximized
+            state_qt = QtCore.Qt.WindowState.WindowMaximized
         else:
-            state_qt = QtCore.Qt.WindowNoState
+            state_qt = QtCore.Qt.WindowState.WindowNoState
 
         window.setWindowState(state_qt)
 
