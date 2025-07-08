@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-12  0.1.0     DA       Creation
 ## -- 2025-03-19  0.1.1     DA       Refactoring (cprop_center_geo)
+## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instance/s
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2025-03-19)
+Ver. 0.2.0 (2025-06-06)
 
 This module provides a template class for the cluster property 'body'.
 
@@ -69,15 +70,14 @@ class Body (MultiProperty):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_membership(self, p_inst : Instance ) -> float:
+    def get_membership(self, p_instance : Instance ) -> float:
         """
         Custom method to determine a scalar membership value for the given instance.
 
         Parameters
         ----------
-        p_inst : Instance
+        p_instance : Instance
             Instance.
-
         Returns
         -------
         float

@@ -10,10 +10,11 @@
 ## -- 2024-04-26  1.1.0     DA       Refactoring: replaced parameter p_outlier_frequency by
 ## --                                p_outlier_rate
 ## -- 2024-06-04  1.1.1     DA       Bugfix: ESpace instead of MSpace
+## -- 2025-06-22  1.2.0     DA       Code cleanup and refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2024-06-04)
+Ver. 1.2.0 (2024-06-22)
 
 This module provides a multivariate benchmark stream with configurable baselines per feature and
 additional random point outliers.
@@ -24,8 +25,9 @@ additional random point outliers.
 import random
 import math
 
-from mlpro.bf.math import ESpace
-from mlpro.bf.streams.basics import *
+from mlpro.bf.various import Log
+from mlpro.bf.math import Element, MSpace, ESpace
+from mlpro.bf.streams import Feature, Instance
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 
@@ -37,8 +39,8 @@ class StreamMLProPOutliers (StreamMLProBase):
     This benchmark stream provides multidimensional instances with configurable baselines 
     per feature. Additionally, random point outliers per feature are induced.
 
-    p_num_dim : int
-        The number of dimensions or features of the data. Default = 3.
+    Parameters
+    ----------
     p_num_instances : int
         Total number of instances. The value '0' means indefinite. Default = 1000.
     p_functions : list[str]
@@ -60,7 +62,6 @@ class StreamMLProPOutliers (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_num_dim : int = 4,
                   p_num_instances : int = 1000,
                   p_functions : list[str] = ['sin', 'cos', 'const', 'lin'],
                   p_outlier_rate : float = 0.05,

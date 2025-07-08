@@ -14,10 +14,11 @@
 ## -- 2023-06-21  1.2.2     LSB      Updating _adapt_offline method
 ## -- 2023-07-04  1.2.3     LSB      Refactoring _complete_state for path conflict
 ## -- 2023-07-14  1.2.4     LSB      Refactoring for afct fct parameter, so it is provided after instanciating
+## -- 2025-07-07  1.3.0     DA       Refactoring of method PyTorchMLP._map()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2023-07-14)
+Ver. 1.3.0 (2025-07-07)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
@@ -321,7 +322,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _map(self, p_input:Element, p_output:Element):
+    def _map(self, p_input:Element, p_output:Element, p_dim=None):
         """
         Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
 
@@ -346,6 +347,8 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
         # Set list to Element
         p_output.set_values(output)
+
+        return p_output
 
 
 ## -------------------------------------------------------------------------------------------------

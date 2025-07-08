@@ -49,7 +49,7 @@ class MyTask (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst : InstDict):
+    def _run(self, p_instances : InstDict):
         pass
 
 
