@@ -14,4 +14,3 @@ sphinx
 sphinx_rtd_theme
 sphinxcontrib-jquery
 ablog
-
