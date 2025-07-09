@@ -2,7 +2,7 @@
 Common algorithms
 ================= 
 
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.instancebased.detectors_point_group
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.instancebased.detectors_point_group
    :members:
    :undoc-members:
    :private-members:

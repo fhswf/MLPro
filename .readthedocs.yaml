@@ -19,8 +19,9 @@ sphinx:
 
 
 # Build Other Format
-formats:
-  - pdf
+# 2025-07-09 DA This caused trouble in combination with ablog...
+#formats:
+#  - pdf
 
 
 # Optionally declare the Python requirements required to build your docs

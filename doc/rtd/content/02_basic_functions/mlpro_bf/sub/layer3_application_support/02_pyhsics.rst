@@ -1,4 +1,5 @@
 .. _target_physics:
+
 Physics
 =======
 

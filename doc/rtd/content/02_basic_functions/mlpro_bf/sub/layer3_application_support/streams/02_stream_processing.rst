@@ -1,4 +1,5 @@
 .. _target_bf_streams_processing:
+
 Stream processing
 =================
 Handling streaming data sources and mining knowledge from them requires special types of processing tasks because of

@@ -1,5 +1,5 @@
 PyTorch Helper Functions
-=================================
+========================
 
 .. image:: images/MLPro-SL-pool-afct-pytorch_class_diagram.drawio.png
    :scale: 50%
