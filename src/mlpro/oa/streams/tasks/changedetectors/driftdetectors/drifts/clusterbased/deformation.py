@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.tasks.driftdetectors.drifts.clusterbased
-## -- Module  : movement.py
+## -- Module  : deformation.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -14,7 +14,7 @@ Ver. 1.0.0 (2025-02-13)
 This module provides a sub-typ of class DriftCB related to cluster deformation.
 """
 
-from mlpro.oa.streams.tasks.driftdetectors.drifts.clusterbased.basics import DriftCB
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased.basics import DriftCB
 
 
 

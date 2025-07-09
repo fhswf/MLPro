@@ -8,10 +8,14 @@
 ## -- 2025-03-04  0.1.0     DA/DS    Creation
 ## -- 2025-03-18  0.2.0     DA/DS    Completion of method _get_drift_status()
 ## -- 2025-03-26  0.3.0     DA       Method _get_drift_status(): exception if property is misdefined
+## -- 2025-05-06  0.3.1     DA       Bugfix in method _get_drift-status()
+## -- 2025-05-20  0.3.2     DA/DS    Bugfixes
+## -- 2025-06-10  0.4.0     DA/DS    New class name: DriftDetectorCBGenSingleGradient
+## -- 2025-06-11  0.4.1     DA       Bugfixes 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-03-26)
+Ver. 0.4.1 (2025-06-11)
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
@@ -22,16 +26,17 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGenSingle
-from mlpro.oa.streams.tasks.driftdetectors.drifts.clusterbased import DriftCBMovement
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGeneric
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBMovement
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
+class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
     """
-    Generic cluster-based drift detector for movement drift detection.
+    Generic cluster-based drift detector for gradient changes of single properties.
 
     Parameters
     ----------
@@ -55,10 +60,13 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
+                  p_drift_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
+                  p_thrs_clusters : int = 1,
                   p_logging=Log.C_LOG_ALL ):
         
         super().__init__( p_clusterer = p_clusterer,
-                          p_property = p_property,
+                          p_properties = [p_property] ,
                           p_thrs_lower = p_thrs_lower,
                           p_thrs_upper = p_thrs_upper,
                           p_cls_drift = p_cls_drift,
@@ -67,6 +75,9 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
                           p_ada = p_ada,
                           p_duplicate_data = p_duplicate_data,
                           p_visualize = p_visualize,
+                          p_drift_buffer_size = p_drift_buffer_size,
+                          p_thrs_inst = p_thrs_inst,
+                          p_thrs_clusters = p_thrs_clusters,
                           p_logging = p_logging )
 
 
@@ -90,17 +101,20 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
                 raise ImplementationError('MLPro: Cluster property "' + p_properties[0][0] + '" needs to provide a maximum derivative order > 0')
 
             return False
+
+        if prop.dim == 1:
+            abs_derivative_o1 = [ abs_derivative_o1 ]
         
 
         # 3 Get current drift status
         try:
-            cluster_drifting = self.cluster_drifts[p_cluster.id].drift_status
+            cluster_drifting = self.cluster_drifts[p_cluster.id].status
         except:
             cluster_drifting = False
 
 
         # 4 Determine movement per dimension
-        drift_status = False
+        status = False
 
         for d in range( prop.dim ):
 
@@ -108,7 +122,7 @@ class DriftDetectorCBGenSingleMovement ( DriftDetectorCBGenSingle ):
                ( ( not cluster_drifting ) and ( abs_derivative_o1[d] > p_thrs_upper ) ):
             
                 # 4.1 Cluster is drifting in this dimension
-                drift_status = True
+                status = True
                 break
 
-        return drift_status
+        return status

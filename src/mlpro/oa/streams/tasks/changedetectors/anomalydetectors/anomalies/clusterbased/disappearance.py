@@ -19,7 +19,7 @@ Ver. 1.3.0 (2024-05-28)
 This module provides a template class for cluster disappearances to be used in anomaly detection algorithms.
 """
 
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
 
 
 
@@ -29,10 +29,9 @@ from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics impor
 ## -------------------------------------------------------------------------------------------------
 class ClusterDisappearance (AnomalyCB):
     """
-    Event class to be raised when a cluster disappears.
-    
+    Event class to be raised when a cluster disappears.   
     """
 
-    C_NAME      = 'Cluster disappearance'
+    pass
 
 

@@ -14,7 +14,7 @@ Ver. 0.0.0 (2025-02-11)
 This module provides a template class for cluster deformation to be used in anomaly detection algorithms.
 """
 
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
 
 
 
