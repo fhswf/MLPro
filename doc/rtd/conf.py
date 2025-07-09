@@ -39,7 +39,7 @@ extensions = [
     "sphinx_multitoc_numbering",
     "sphinxcontrib.jquery",
     "ablog",
-    'sphinx.ext.intersphinx',
+#    'sphinx.ext.intersphinx',
 ]
 autodoc_member_order = "bysource"
 

@@ -14,4 +14,4 @@ sphinx
 sphinx_rtd_theme
 sphinxcontrib-jquery
 ablog
-sphinx.ext.intersphinx
+
