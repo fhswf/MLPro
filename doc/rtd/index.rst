@@ -98,6 +98,25 @@ MLPro - Elevate your machine learning journey
    * - |mlpro_pypi|     `PyPI <https://pypi.org/project/mlpro>`_
      - |mlpro_github|   `GitHub <https://github.com/fhswf/MLPro>`_
 
+----------------------------------------------------------------------
+
+News ticker
+===========
+
+.. postlist:: 3
+   :author: MLPro team
+   :category: Manual
+   :location: Soest, Germany
+   :language: en
+   :tags: tips
+   :date: %A, %B %d, %Y
+   :format: {title} on {date}
+   :list-style: square
+   :excerpts:
+   :sort:
+   :expand: Read more ...
+
+:ref:`🔔 Subscribe to the MLPro news ticker (RSS feed) <target_new_feed_subscribe>`
 
 
 .. toctree::
@@ -116,6 +135,7 @@ MLPro - Elevate your machine learning journey
    :numbered:
 
    content/01_welcome/sub/*
+   news/index
 
 
 .. toctree::
