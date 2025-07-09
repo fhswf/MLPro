@@ -38,6 +38,8 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "sphinx_multitoc_numbering",
     "sphinxcontrib.jquery",
+    "ablog",
+#    'sphinx.ext.intersphinx',
 ]
 autodoc_member_order = "bysource"
 
@@ -94,3 +96,14 @@ html_context = {
     "github_repo": "MLPro",
     "github_version": "main/doc/docs/",
 }
+
+
+#
+# RSS feed
+#
+blog_title = 'MLPro News'
+blog_baseurl = 'https://mlpro.readthedocs.io'  
+blog_path = 'news'
+fontawesome_included = True
+blog_feed_archives = True
+blog_feed_fulltext = True
