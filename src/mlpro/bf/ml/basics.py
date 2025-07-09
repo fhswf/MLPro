@@ -573,7 +573,6 @@ class Model (Task, ScientificObject):
         raise NotImplementedError
 
 
-
 ## -------------------------------------------------------------------------------------------------
     def get_accuracy(self) -> float:
         """
