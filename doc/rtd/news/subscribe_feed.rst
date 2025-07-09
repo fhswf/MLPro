@@ -1,4 +1,5 @@
 .. _target_new_feed_subscribe:
+
 How to subscribe
 ================
 

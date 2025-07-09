@@ -1,4 +1,5 @@
 .. _target_new_feed:
+
 News ticker
 ===========
 

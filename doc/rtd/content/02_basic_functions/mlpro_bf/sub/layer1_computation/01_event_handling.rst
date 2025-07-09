@@ -1,4 +1,5 @@
 .. _target_bf_event:
+
 Event handling
 ==============
 

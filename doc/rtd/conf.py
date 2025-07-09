@@ -107,4 +107,3 @@ blog_path = 'news'
 fontawesome_included = True
 blog_feed_archives = True
 blog_feed_fulltext = True
-
