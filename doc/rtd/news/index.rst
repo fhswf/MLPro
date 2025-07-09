@@ -1,14 +1,11 @@
-
-.. News ticker index file, created by `ablog start` on Wed Jul  9 09:40:12 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
+.. _target_new_feed:
 News ticker
 ===========
 
-.. postlist:: 5
+.. postlist:: 
    :excerpts:
-
+   :date: %A, %B %d, %Y
+   :format: {title} on {date}
 
 .. `toctree` directive, below, contains list of non-post `.rst` files.
    This is how they appear in Navigation sidebar. Note that directive
@@ -23,4 +20,8 @@ News ticker
    subscribe_feed.rst
 
 
-:ref:`🔔 Subscribe to the MLPro news ticker (RSS feed) <target_new_feed_subscribe>`
+.. list-table::
+   :widths: 20
+
+   * - :ref:`🔔 Subscribe (RSS feed) <target_new_feed_subscribe>`
+
