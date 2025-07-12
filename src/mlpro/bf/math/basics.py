@@ -42,10 +42,11 @@
 ## -- 2025-07-07  3.0.0     DA       - New data type Data
 ## --                                - Class Function: refactoring and extension
 ## --                                - New class Scaler
+## -- 2025-07-11  3.0.1     DA       Bugfix in method Scaler.rescale()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.0 (2025-06-29)
+Ver. 3.0.1 (2025-07-11)
 
 This module provides basic mathematical classes.
 """
@@ -1087,12 +1088,15 @@ class Scaler (Function):
         """
 
         if ( self._param_old is None ) and ( p_param_old is None ): return p_data
+
+        param_old = p_param_old if p_param_old is not None else self._param_old
+        param_new = p_param_new if p_param_new is not None else self._param_new
         
         return self.scale( p_data = self.unscale( p_data = p_data, 
                                                   p_dim = p_dim,
-                                                  p_param = p_param_old ), 
+                                                  p_param = param_old ), 
                            p_dim = p_dim,
-                           p_param = p_param_new )
+                           p_param = param_new )
 
 
 ## -------------------------------------------------------------------------------------------------
