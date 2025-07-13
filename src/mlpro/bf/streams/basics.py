@@ -85,10 +85,11 @@
 ## -- 2025-06-24  2.8.0     DA       Class StreamTask: tuning of plot updates
 ## -- 2025-07-01  2.9.0     DA       Class StreamTask: replaced the exception by pass in _run() to
 ## --                                make the class be usable as a plot host.
+## -- 2025-07-12  2.9.1     DA       Method StreamTask._update_plot_3d(): added explicite ax scaling
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.0 (2025-07-01)
+Ver. 2.9.1 (2025-07-12)
 
 This module provides classes for standardized data stream processing. 
 
@@ -1274,6 +1275,9 @@ class StreamTask (Task):
         self._plot_3d_zmin      = None
         self._plot_3d_zmax      = None
 
+        self._update_ax_limits  = False
+        self._recalc_ax_limits  = False
+
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
@@ -1593,6 +1597,36 @@ class StreamTask (Task):
                 self._plot_3d_zdata.append(z)
                 self._plot_inst_ids.append(inst_id)
 
+                if self._plot_3d_xmin is None:
+                    self._plot_3d_xmin = x
+                    self._plot_3d_xmax = x
+                    self._plot_3d_ymin = y
+                    self._plot_3d_ymax = y
+                    self._plot_3d_zmin = z
+                    self._plot_3d_zmax = z
+                    self._update_ax_limits   = True
+                else:
+                    if x < self._plot_3d_xmin: 
+                        self._plot_3d_xmin = x
+                        self._update_ax_limits   = True
+                    elif x > self._plot_3d_xmax: 
+                        self._plot_3d_xmax = x
+                        self._update_ax_limits   = True
+
+                    if y < self._plot_3d_ymin: 
+                        self._plot_3d_ymin = y
+                        self._update_ax_limits   = True
+                    elif y > self._plot_3d_ymax: 
+                        self._plot_3d_ymax = y
+                        self._update_ax_limits   = True
+
+                    if z < self._plot_3d_zmin: 
+                        self._plot_3d_zmin = z
+                        self._update_ax_limits   = True
+                    elif z > self._plot_3d_zmax: 
+                        self._plot_3d_zmax = z
+                        self._update_ax_limits   = True
+
             else:
                 if inst_id == self._plot_inst_ids[0]:
                     self._plot_inst_ids = self._plot_inst_ids[1:]
@@ -1606,6 +1640,17 @@ class StreamTask (Task):
                     del self._plot_3d_xdata[idx]
                     del self._plot_3d_ydata[idx]
                     del self._plot_3d_zdata[idx]
+
+                if not self._recalc_ax_limits:
+                    tol_x = ( self._plot_3d_xmax - self._plot_3d_xmin ) * self.C_EPSILON
+                    tol_y = ( self._plot_3d_ymax - self._plot_3d_ymin ) * self.C_EPSILON
+                    tol_z = ( self._plot_3d_zmax - self._plot_3d_zmin ) * self.C_EPSILON
+
+                    if ( not ( ( self._plot_3d_xmin + tol_x ) <= x <= ( self._plot_3d_xmax - tol_x ) ) ) or \
+                       ( not ( ( self._plot_3d_ymin + tol_y ) <= y <= ( self._plot_3d_ymax - tol_y ) ) ) or \
+                       ( not ( ( self._plot_3d_ymin + tol_z ) <= z <= ( self._plot_3d_zmax - tol_z ) ) ):
+                        self._update_ax_limits = True
+                        self._recalc_ax_limits = True
 
 
         # 4 If buffer size is limited, remove obsolete data
@@ -1636,6 +1681,24 @@ class StreamTask (Task):
                                                      color='blue',
                                                      linestyle='',
                                                      markersize=4 )   
+
+
+        # 6 Update of ax limits
+        if self._update_ax_limits:
+            if self._recalc_ax_limits:
+                self._plot_3d_xmin = min(self._plot_3d_xdata)
+                self._plot_3d_xmax = max(self._plot_3d_xdata)
+                self._plot_3d_ymin = min(self._plot_3d_ydata)
+                self._plot_3d_ymax = max(self._plot_3d_ydata)
+                self._plot_3d_zmin = min(self._plot_3d_zdata)
+                self._plot_3d_zmax = max(self._plot_3d_zdata)
+                self._recalc_ax_limits = False
+
+            p_settings.axes.set_xlim( [ self._plot_3d_xmin, self._plot_3d_xmax ] )
+            p_settings.axes.set_ylim( [ self._plot_3d_ymin, self._plot_3d_ymax ] )
+            p_settings.axes.set_zlim( [ self._plot_3d_zmin, self._plot_3d_zmax ] )
+            self._update_ax_limits = False
+
 
         return True
 
