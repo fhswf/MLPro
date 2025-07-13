@@ -1,4 +1,5 @@
 .. _target_extension_hub_intro:
+
 General information
 ===================
 

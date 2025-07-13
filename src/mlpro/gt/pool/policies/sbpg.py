@@ -14,9 +14,10 @@ Ver. 1.0.0 (2025-04-09)
 
 This module implements a dynamic game policy class for State-Based Potential Games (SbPG),
 including three learning algorithms:
-    - Best Response (BR) -  DOI: 10.1109/TCYB.2020.3006620
-    - Gradient-Based (GB) - DOI: 10.1109/IECON55916.2024.10905619
-    - Gradient-Based with Momentum (GB_MOM) - DOI: 10.1109/IECON55916.2024.10905619
+
+- Best Response (BR) -  DOI: 10.1109/TCYB.2020.3006620
+- Gradient-Based (GB) - DOI: 10.1109/IECON55916.2024.10905619
+- Gradient-Based with Momentum (GB_MOM) - DOI: 10.1109/IECON55916.2024.10905619
 
 The class SbPG supports learning in multi-agent environments where agents update their actions
 based on individual utility gradients or best-response dynamics over discretized states.

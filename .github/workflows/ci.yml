@@ -118,6 +118,7 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install sphinx_multitoc_numbering
+        pip install ablog
 
     - name: Build the Documentation
       run: |

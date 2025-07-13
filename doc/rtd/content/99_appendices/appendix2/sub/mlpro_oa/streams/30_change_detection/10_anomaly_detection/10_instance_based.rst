@@ -7,14 +7,14 @@ Instance-based anomalies and detectors
    :scale: 50%
 
 
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.instancebased.basics
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.instancebased.basics
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.basics
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.basics
    :members:
    :undoc-members:
    :private-members:
