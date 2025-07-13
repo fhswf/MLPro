@@ -116,7 +116,6 @@ News ticker
    :format: {title} on {date}
    :list-style: square
    :excerpts:
-   :sort:
    :expand: Read more ...
 
 
