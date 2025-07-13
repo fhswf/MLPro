@@ -31,3 +31,58 @@
 body, h1, h2, h3, h4, h5, h6 {
     font-family: "Roboto", sans-serif;
 }
+
+
+
+
+/* Container of the postlist */
+ul.postlist {
+    margin-top: 2em;
+    padding-left: 0;
+}
+
+/* Einzelne Post-Boxen */
+ul.postlist > li {
+    background: #f9f9f9;
+    padding: 1em;
+    margin-bottom: 1em;
+    border-left: 4px solid #005fbf;
+    list-style-type: none;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+/* Hover-Effekt für Boxen */
+ul.postlist > li:hover {
+    background: #eef6ff;
+    border-color: #007fff;
+}
+
+/* Post-Titel (Link) */
+ul.postlist > li a {
+    font-weight: bold;
+    color: #005fbf;
+    text-decoration: none;
+}
+
+ul.postlist > li a:hover {
+    text-decoration: underline;
+}
+
+/* Excerpt-Text (Zusammenfassung) */
+ul.postlist > li p {
+    margin-top: 0.5em;
+    color: #555;
+    font-size: 0.95em;
+}
+
+/* "Read more" Link */
+ul.postlist > li span.readmore a {
+    display: inline-block;
+    margin-top: 0.5em;
+    font-style: italic;
+    color: #007fff;
+}
+
+ul.postlist > li span.readmore a:hover {
+    text-decoration: underline;
+}

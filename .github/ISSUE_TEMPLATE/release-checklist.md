@@ -3,7 +3,7 @@ name: Release-Checklist
 about: List of all necessary steps before, during and after a release.
 title: Release vX.Y.Z
 labels: admin
-assignees: detlefarend, steveyuwono
+assignees: detlefarend
 
 ---
 
@@ -41,3 +41,4 @@ Release Checklist
 - [ ] 3.3 Check [MLPro in Zenodo](https://zenodo.org/account/settings/github/repository/fhswf/MLPro)
 - [ ] 3.4 Update all open branches from main
 - [ ] 3.5 Inform the team on slack
+- [ ] 3.6 Create a news post

@@ -1,4 +1,5 @@
 .. _DataPlotting:
+
 Plotting and visualization
 ==========================
 

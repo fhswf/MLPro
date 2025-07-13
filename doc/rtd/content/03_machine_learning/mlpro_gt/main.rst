@@ -1,4 +1,5 @@
 .. _target_mlpro_gt:
+
 MLPro-GT - Game Theory
 ======================
 

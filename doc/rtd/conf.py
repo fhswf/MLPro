@@ -23,7 +23,7 @@ copyright = "2025 South Westphalia University of Applied Sciences, Germany"
 author = "Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, Laxmikant Shrikant Baheti et al"
 
 # The full version, including alpha/beta/rc tags
-release = "2.0.2"
+release = "2.0.3"
 
 
 # -- General configuration ---------------------------------------------------
@@ -38,6 +38,8 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "sphinx_multitoc_numbering",
     "sphinxcontrib.jquery",
+    "ablog",
+#    'sphinx.ext.intersphinx',
 ]
 autodoc_member_order = "bysource"
 
@@ -94,3 +96,14 @@ html_context = {
     "github_repo": "MLPro",
     "github_version": "main/doc/docs/",
 }
+
+
+#
+# RSS feed
+#
+blog_title = 'MLPro News'
+blog_baseurl = 'https://mlpro.readthedocs.io'  
+blog_path = 'news'
+fontawesome_included = True
+blog_feed_archives = True
+blog_feed_fulltext = True
