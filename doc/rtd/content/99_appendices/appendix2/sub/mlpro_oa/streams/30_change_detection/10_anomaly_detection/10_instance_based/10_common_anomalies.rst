@@ -2,21 +2,21 @@
 Common anomalies
 ================
 
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.point
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.point
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.group
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.group
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.oa.streams.tasks.anomalydetectors.anomalies.instancebased.contextual
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.contextual
    :members:
    :undoc-members:
    :private-members:

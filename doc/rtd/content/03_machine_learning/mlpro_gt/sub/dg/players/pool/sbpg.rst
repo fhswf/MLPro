@@ -1,4 +1,5 @@
 .. _target_player_sbpg:
+
 State-Based Potential Games (SbPG)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

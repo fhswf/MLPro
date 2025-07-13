@@ -1,5 +1,5 @@
 PyTorch-based MLP
-=================================
+=================
 
 .. image:: images/MLPro-SL-pool-afct-fnn-pytorch_class_diagram.drawio.png
    :scale: 50%

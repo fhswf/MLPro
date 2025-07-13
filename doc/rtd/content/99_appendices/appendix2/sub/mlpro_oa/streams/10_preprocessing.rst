@@ -6,7 +6,7 @@ Preprocessing
    :scale: 50%
    
 
-.. automodule:: mlpro.oa.streams.tasks.boundarydetector
+.. automodule:: mlpro.oa.streams.tasks.boundarydetectors.basic
    :members:
    :undoc-members:
    :private-members:

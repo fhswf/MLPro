@@ -83,20 +83,48 @@ MLPro - Elevate your machine learning journey
 
 .. |mlpro_pypi| image:: content/00_start_page/images/pypi.svg
    :target: https://pypi.org/project/mlpro
-   :scale: 50 %
+   :scale: 30 %
 
 .. |mlpro_github| image:: content/00_start_page/images/github.png
    :target: https://github.com/fhswf/MLPro
-   :scale: 2 %
+   :scale: 1 %
 
+.. |mlpro_zenodo| image:: content/00_start_page/images/zenodo.png
+   :target: https://github.com/fhswf/MLPro
+   :scale: 4 %
 
-📦 MLPro is available on...
 
 .. list-table::
-   :widths: 50 50
+   :widths: 50 50 50
 
    * - |mlpro_pypi|     `PyPI <https://pypi.org/project/mlpro>`_
      - |mlpro_github|   `GitHub <https://github.com/fhswf/MLPro>`_
+     - |mlpro_zenodo|   `Zenodo <https://zenodo.org/communities/mlpro>`_
+
+----------------------------------------------------------------------
+
+News ticker
+===========
+
+.. postlist:: 3
+   :author: MLPro team
+   :category: Manual
+   :location: Soest, Germany
+   :language: en
+   :tags: tips
+   :date: %A, %B %d, %Y
+   :format: {title} on {date}
+   :list-style: square
+   :excerpts:
+   :sort:
+   :expand: Read more ...
+
+
+.. list-table::
+   :widths: 20 20
+
+   * - :ref:`🗂️ All news <target_new_feed>`
+     - :ref:`🔔 Subscribe (RSS feed) <target_new_feed_subscribe>`
 
 
 
@@ -116,6 +144,7 @@ MLPro - Elevate your machine learning journey
    :numbered:
 
    content/01_welcome/sub/*
+   news/index
 
 
 .. toctree::
