@@ -7,14 +7,14 @@ Instance-based drifts and detectors
    :scale: 50%
 
 
-.. automodule:: mlpro.oa.streams.tasks.driftdetectors.instancebased.basics
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.driftdetectors.instancebased.basics
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.oa.streams.tasks.driftdetectors.drifts.instancebased.basics
+.. automodule:: mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.instancebased.basics
    :members:
    :undoc-members:
    :private-members:

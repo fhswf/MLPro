@@ -1,0 +1,25 @@
+
+.. post:: Jul 09, 2025
+   :tags: mlpro-oa
+   :author: MLPro team
+
+MLPro 2.0.2 released
+=====================
+
+Version 2.0.2 of MLPro has been released. While this update is formally classified as a bugfix release, it includes significant architectural revisions aimed at improving the consistency and robustness of scaling and normalization processes across both online and batch learning workflows.
+
+Key changes in version 2.0.2:
+-----------------------------
+
+**MLPro-OA-Streams:**
+
+- Comprehensive redesign and integration of the scaler and normalizer system to ensure a unified handling of data preprocessing in all scenarios.
+- Performance optimizations targeting the real-time visualization of streaming data scenarios.
+- Ready-to-run stream tasks for **auto-renormalization** in stream workflows, based on z-transformation or min-max 
+
+This release focuses on consolidating core functionality and improving the foundation for future developments. By resolving architectural inconsistencies and enhancing performance, version 2.0.2 provides a more stable and predictable base for upcoming features.
+
+For a detailed list of changes, please refer to the `changelog on GitHub <https://github.com/fhswf/MLPro/releases/tag/v2.0.2>`_.
+
+We thank all contributors and users for their valuable feedback.
+

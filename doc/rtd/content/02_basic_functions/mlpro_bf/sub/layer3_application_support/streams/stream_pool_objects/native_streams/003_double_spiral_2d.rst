@@ -1,7 +1,7 @@
 2D Double Spiral
 ----------------
 
-.. automodule:: mlpro.bf.streams.streams.double_spiral
+.. automodule:: mlpro.bf.streams.streams.doublespiral2d
 
 
 .. image::

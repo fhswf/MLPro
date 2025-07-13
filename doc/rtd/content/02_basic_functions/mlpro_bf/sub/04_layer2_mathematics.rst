@@ -1,4 +1,5 @@
 .. _target_bf_mathematics:
+
 Layer 2 - Mathematics
 =====================
 
