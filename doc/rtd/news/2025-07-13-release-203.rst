@@ -1,0 +1,11 @@
+
+.. post:: Jul 13, 2025
+   :tags: mlpro-oa
+   :author: MLPro team
+
+MLPro 2.0.3 released
+=====================
+
+Some of the features introduced in version 2.0.2 have shown bugs during more detailed testing, which we are correcting in this version.
+
+For a detailed list of changes, please refer to the `changelog on GitHub <https://github.com/fhswf/MLPro/releases/tag/v2.0.3>`_.

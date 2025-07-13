@@ -8,11 +8,12 @@
 ## -- 2025-07-02  1.0.0     DA       Creation
 ## -- 2025-07-05  1.0.1     DA       Correction of renormalization
 ## -- 2025-07-07  1.1.0     DA       Class MovingAverage: removal of crosshair in nD view
+## -- 2025-07-11  1.2.0     DA       Class MovingAverage: new parameter p_renormalize_plot_data
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.1.0 (2025-07-07)
+Ver. 1.2.0 (2025-07-11)
 
 Ths module provides the class MovingAverage calculating the moving average of incomming new and
 outdated instances. 
@@ -77,6 +78,7 @@ class MovingAverage (OAStreamTask, Properties):
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL, 
                   p_remove_obs : bool = True,
+                  p_renormalize_plot_data : bool = True,
                   **p_kwargs ):
         
         Properties.__init__( self, p_visualize = p_visualize )
@@ -91,10 +93,11 @@ class MovingAverage (OAStreamTask, Properties):
                                p_logging = p_logging, 
                                **p_kwargs )
                  
-        self._moving_avg     = None
-        self._num_inst       = 0
-        self._remove_obs     = p_remove_obs
-        self.crosshair.color = 'red'
+        self._moving_avg            = None
+        self._num_inst              = 0
+        self._remove_obs            = p_remove_obs
+        self._renormalize_plot_data = p_renormalize_plot_data
+        self.crosshair.color        = 'red'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -153,7 +156,8 @@ class MovingAverage (OAStreamTask, Properties):
         except:
             pass
 
-        self._update_plot_data( p_normalizer = p_normalizer )
+        if self._renormalize_plot_data:
+            self._update_plot_data( p_normalizer = p_normalizer )
 
 
 ## -------------------------------------------------------------------------------------------------
