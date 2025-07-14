@@ -22,6 +22,7 @@ from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
 from mlpro.bf.math.geometry import cprop_center_geo1
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_centroid1
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBCenterGeo
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBMovement
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
 
 
@@ -84,7 +85,7 @@ class DriftDetectorCBGenMovement (DriftDetectorCBGenSingleGradient):
                   p_clusterer : ClusterAnalyzer,
                   p_thrs_lower : float,
                   p_thrs_upper : float,
-                  p_cls_drift : type = DriftCBCenterGeo,
+                  p_cls_drift : type = DriftCBMovement,
                   p_name : str = None,
                   p_range_max = OAStreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
