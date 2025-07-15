@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-07-01T10:15:54.510Z" version="24.4.13" etag="iE1Vt_Emru3kJI3xiKS1" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.13 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" modified="2025-07-15T14:44:15.668Z" etag="z7GYoEMALVjw5tDHNPDS" version="24.4.13" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="1823" dy="866" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="1595" dy="758" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -390,7 +390,7 @@
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-37" value="_thrs_clusters : int" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" parent="P8m3U_S5QSKX-hw6cI7y-0" vertex="1">
           <mxGeometry y="117" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="do9QJcIUAk-ISC9gmYgT-2" value="cb_changes : dict[]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="P8m3U_S5QSKX-hw6cI7y-0">
+        <mxCell id="do9QJcIUAk-ISC9gmYgT-2" value="cb_changes : dict[]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="P8m3U_S5QSKX-hw6cI7y-0" vertex="1">
           <mxGeometry y="143" width="350" height="26" as="geometry" />
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-9" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" parent="P8m3U_S5QSKX-hw6cI7y-0" vertex="1">
@@ -405,10 +405,10 @@
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-17" value="_run( p_inst : InstDict )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=default;" parent="P8m3U_S5QSKX-hw6cI7y-0" vertex="1">
           <mxGeometry y="374" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="do9QJcIUAk-ISC9gmYgT-0" value="_buffer_change(p_change: Change)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=default;" vertex="1" parent="P8m3U_S5QSKX-hw6cI7y-0">
+        <mxCell id="do9QJcIUAk-ISC9gmYgT-0" value="_buffer_change(p_change: Change)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=default;" parent="P8m3U_S5QSKX-hw6cI7y-0" vertex="1">
           <mxGeometry y="404" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="do9QJcIUAk-ISC9gmYgT-1" value="_remove_change(p_change: Change)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=default;" vertex="1" parent="P8m3U_S5QSKX-hw6cI7y-0">
+        <mxCell id="do9QJcIUAk-ISC9gmYgT-1" value="_remove_change(p_change: Change)" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=default;" parent="P8m3U_S5QSKX-hw6cI7y-0" vertex="1">
           <mxGeometry y="434" width="350" height="30" as="geometry" />
         </mxCell>
         <mxCell id="P8m3U_S5QSKX-hw6cI7y-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=block;endFill=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="P8m3U_S5QSKX-hw6cI7y-22" target="azBydEVot9yI6jtSICJJ-2" edge="1">
@@ -467,7 +467,7 @@
         <mxCell id="4LvH10w1mnI7Oj8NLsvD-1" value="C_TYPE = &#39;Cluster-based Anomaly Detector&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" parent="4LvH10w1mnI7Oj8NLsvD-0" vertex="1">
           <mxGeometry y="41" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="do9QJcIUAk-ISC9gmYgT-3" value="cb_anomalies : dict[]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="4LvH10w1mnI7Oj8NLsvD-0">
+        <mxCell id="do9QJcIUAk-ISC9gmYgT-3" value="cb_anomalies : dict[]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4LvH10w1mnI7Oj8NLsvD-0" vertex="1">
           <mxGeometry y="67" width="350" height="26" as="geometry" />
         </mxCell>
         <mxCell id="4LvH10w1mnI7Oj8NLsvD-5" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" parent="4LvH10w1mnI7Oj8NLsvD-0" vertex="1">
@@ -499,7 +499,7 @@
         <mxCell id="4LvH10w1mnI7Oj8NLsvD-12" value="C_TYPE = &#39;Cluster-based Drift Detector&#39;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;fontColor=default;" parent="4LvH10w1mnI7Oj8NLsvD-11" vertex="1">
           <mxGeometry y="41" width="350" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="do9QJcIUAk-ISC9gmYgT-4" value="cb_drifts : dict[]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" vertex="1" parent="4LvH10w1mnI7Oj8NLsvD-11">
+        <mxCell id="do9QJcIUAk-ISC9gmYgT-4" value="cb_drifts : dict[]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="4LvH10w1mnI7Oj8NLsvD-11" vertex="1">
           <mxGeometry y="67" width="350" height="26" as="geometry" />
         </mxCell>
         <mxCell id="4LvH10w1mnI7Oj8NLsvD-13" value="" style="line;html=1;strokeWidth=1;align=center;verticalAlign=top;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;rounded=0;shadow=1;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=3;fillColor=#dae8fc;gradientColor=#ffffff;" parent="4LvH10w1mnI7Oj8NLsvD-11" vertex="1">
@@ -595,17 +595,11 @@
         <mxCell id="NV-0vVaFLCSNl-G3C2-m-5" value="__init__( p_clusterer : ClusterAnalyzer,&#xa;               p_properties : PropertyDefinitions,&#xa;               p_cls_drift : type[DriftCB],&#xa;               p_name : str = None,&#xa;               p_range_max=OAStreamTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_duplicate_data : bool = False,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               p_drift_buffer_size : int = 100,&#xa;               p_thrs_inst : int = 0,&#xa;               p_thrs_clusters : int = 1,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1" parent="NV-0vVaFLCSNl-G3C2-m-0" vertex="1">
           <mxGeometry y="121" width="350" height="196" as="geometry" />
         </mxCell>
-        <mxCell id="NV-0vVaFLCSNl-G3C2-m-6" value="_buffer_drift( p_drift : Drift )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="NV-0vVaFLCSNl-G3C2-m-0" vertex="1">
+        <mxCell id="NV-0vVaFLCSNl-G3C2-m-8" value="_detect( p_clusters : dict, p_instance : Instance, **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="NV-0vVaFLCSNl-G3C2-m-0" vertex="1">
           <mxGeometry y="317" width="350" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="NV-0vVaFLCSNl-G3C2-m-7" value="_remove_drift( p_drift : Drift )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="NV-0vVaFLCSNl-G3C2-m-0" vertex="1">
-          <mxGeometry y="347" width="350" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="NV-0vVaFLCSNl-G3C2-m-8" value="_detect( p_clusters : dict, p_instance : Instance, **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;" parent="NV-0vVaFLCSNl-G3C2-m-0" vertex="1">
-          <mxGeometry y="377" width="350" height="30" as="geometry" />
-        </mxCell>
         <mxCell id="NV-0vVaFLCSNl-G3C2-m-9" value="_get_drift_status( p_cluster : Cluster,&#xa;                             p_properties : PropertyDefinitons,&#xa;                             **p_kwargs ) -&gt; bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;shadow=1;fontColor=#0000FF;" parent="NV-0vVaFLCSNl-G3C2-m-0" vertex="1">
-          <mxGeometry y="407" width="350" height="53" as="geometry" />
+          <mxGeometry y="347" width="350" height="53" as="geometry" />
         </mxCell>
         <mxCell id="NV-0vVaFLCSNl-G3C2-m-11" value="Template for generic cluster-based drift detection" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;align=left;fontStyle=1;verticalAlign=top;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="1830" y="2270" width="130" height="50" as="geometry" />
