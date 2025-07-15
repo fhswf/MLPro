@@ -10,6 +10,7 @@
 ## -- 2025-06-10  1.1.0     DA       Review/rework of ChangeDetectorCB._run()
 ## -- 2025-06-11  1.1.1     DA       Workaround in ChangeDetectorCB.__init__(): parent/super()
 ## -- 2025-06-13  1.2.0     DA       Class Change: param p_id is now initialized to -1
+## -- 2025-07-15  1.2.1     DA       Class ChangeCB: bugfix in 
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -96,41 +97,55 @@ class ChangeCB (Change):
         
         self.clusters.update(p_clusters)
 
-
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-
-        super()._init_plot_2d(p_figure=p_figure, p_settings=p_settings)
+    def _update_plot_2d(self, p_settings, **p_kwargs):
+        super()._update_plot_2d(p_settings, **p_kwargs)
 
         cluster : Cluster = None
 
         for cluster in self.clusters.values(): 
             if self.status:
-                cluster.color_bak = cluster.color
+                try:
+                    if cluster.color_bak is None:
+                        cluster.color_bak = cluster.color
+                except:
+                    cluster.color_bak = cluster.color
+
                 cluster.color = "red"
             else:
                 try:
-                    cluster.color = cluster.color_bak
+                    cluster.color     = cluster.color_bak
+                    cluster.color_bak = None
                 except:
                     pass
 
+        return True
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+    def _update_plot_3d(self, p_settings, **p_kwargs):
+        super()._update_plot_3d(p_settings, **p_kwargs)
 
-        super()._init_plot_3d(p_figure=p_figure, p_settings=p_settings)
-    
         cluster : Cluster = None
 
         for cluster in self.clusters.values(): 
             if self.status:
-                cluster.color_bak = cluster.color
-                cluster.color = "red"
-            else:
-                try:
-                    cluster.color = cluster.color_bak
-                except:
-                    pass
+                pass
+            #     try:
+            #         if cluster.color_bak is None:
+            #             cluster.color_bak = cluster.color
+            #     except:
+            #         cluster.color_bak = cluster.color
+
+            #     cluster.color = "red"
+            # else:
+            #     try:
+            #         cluster.color     = cluster.color_bak
+            #         cluster.color_bak = None
+            #     except:
+            #         pass
+
+        return True
     
 
 
