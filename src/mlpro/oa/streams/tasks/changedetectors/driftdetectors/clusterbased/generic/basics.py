@@ -69,7 +69,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
         
         self.C_REQ_CLUSTER_PROPERTIES   = p_properties
         self._cls_drift : type[DriftCB] = p_cls_drift
-        self.cluster_drifts             = {}
+        
 
         super().__init__( p_clusterer = p_clusterer,
                           p_property= p_properties,
@@ -86,20 +86,6 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _buffer_drift(self, p_drift : Drift):
-        super()._buffer_drift(p_drift)
-        cluster_id = next( iter(p_drift.clusters.keys()) )
-        self.cluster_drifts[cluster_id] = p_drift
-
-
-## -------------------------------------------------------------------------------------------------
-    def _remove_drift(self, p_drift : Drift):
-        super()._remove_drift(p_drift)
-        cluster_id = next( iter(p_drift.clusters.keys()) )
-        del self.cluster_drifts[cluster_id]
- 
-
-## -------------------------------------------------------------------------------------------------
     def _detect(self, p_clusters : dict, p_instance : Instance, **p_kwargs):
         
         # 1 Observation of clusters
@@ -112,7 +98,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
             
             # 1.2 Get last drift event for the current cluster from the internal buffer
             try:
-                existing_drift = self.cluster_drifts[cluster.id]
+                existing_drift = self.cb_drifts[cluster.id]
             except:
                 existing_drift = None
 
@@ -133,6 +119,7 @@ class DriftDetectorCBGeneric ( DriftDetectorCB ):
             elif ( existing_drift is not None ) and ( existing_drift.status != drift_status ):
                 # 1.3.2 An existing drift changed its status
                 drift = existing_drift
+                drift.status = drift_status
                 drift.tstamp = p_instance.tstamp
                 
                 

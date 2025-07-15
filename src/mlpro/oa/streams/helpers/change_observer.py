@@ -8,10 +8,11 @@
 ## -- 2025-06-24  0.1.0     DA/DS    New class ChangeObserver for change observation
 ## -- 2025-06-27  0.1.1     DS       Added ChangeObserverCB for change observation with cluster information
 ## -- 2025-06-29  0.1.2     DS       Bug fixes
+## -- 2025-07-15  0.1.3     DS       Removed ChangeObserverCB class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.2 (2025-06-29)
+Ver. 0.1.2 (2025-07-15)
 
 This module provides the ChangeObserver class to be used for observation and visualization of stream
 adaptation events.
@@ -191,65 +192,3 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ChangeObserverCB(ChangeObserver):
-    """
-    This class observes adaptations of particular oa stream tasks. Its event handler method can be 
-    registered for adaptation events of a stream task.
-
-    Parameters
-    ----------
-    
-    """
-
-    C_TYPE              = 'Helper'
-    C_NAME              = 'Event Observer (CB)'
-
-    C_PLOT_ACTIVE       = True
-    C_PLOT_STANDALONE   = True
-    C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_related_task : OAStreamTask,
-                  p_change_types : list = [],
-                  p_logarithmic_plot : bool = True,
-                  p_visualize : bool = True,
-                  p_logging = Log.C_LOG_ALL,
-                  **p_kwargs ):
-        
-        super().__init__( p_related_task = p_related_task,
-                          p_change_types = p_change_types,
-                          p_logarithmic_plot = p_logarithmic_plot,
-                          p_visualize = p_visualize,
-                          p_logging = p_logging,
-                          **p_kwargs )
-        
-
-## -------------------------------------------------------------------------------------------------
-    def _event_handler(self, p_event_id, p_event_object):
-        
-        super()._event_handler(p_event_id, p_event_object)
-
-        try:
-            clusters = getattr(p_event_object, "clusters", None)
-            centroids = getattr(p_event_object, "centroids", None)
-            cluster_size = getattr(p_event_object, "cluster_size", None)
-
-            if clusters is not None:
-                self.log(Log.C_LOG_TYPE_I, f"Related cluster IDs: {clusters}")
-
-            if centroids is not None:
-                self.log(Log.C_LOG_TYPE_I, f"Centroid coordinates: {centroids}")
-
-            if cluster_size is not None:
-                if hasattr(cluster_size, "values"):
-                    self.log(Log.C_LOG_TYPE_I, f"Cluster sizes: {cluster_size.values}")
-                elif hasattr(cluster_size, "value"):
-                    self.log(Log.C_LOG_TYPE_I, f"Cluster size: {cluster_size.value}")
-                else:
-                    self.log(Log.C_LOG_TYPE_I, f"Cluster size: {cluster_size}")
-        except:
-            self.log(Log.C_LOG_TYPE_W, f"Could not extract cluster infomation")

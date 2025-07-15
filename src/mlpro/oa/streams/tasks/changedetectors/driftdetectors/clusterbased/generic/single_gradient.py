@@ -108,7 +108,7 @@ class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
 
         # 3 Get current drift status
         try:
-            cluster_drifting = self.cluster_drifts[p_cluster.id].status
+            cluster_drifting = self.cb_drifts[p_cluster.id].status
         except:
             cluster_drifting = False
 
@@ -119,7 +119,7 @@ class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
         for d in range( prop.dim ):
 
             if ( cluster_drifting and ( abs_derivative_o1[d] > p_thrs_lower ) ) or \
-               ( ( not cluster_drifting ) and ( abs_derivative_o1[d] > p_thrs_upper ) ):
+               ( ( not cluster_drifting ) and ( abs_derivative_o1[d] < p_thrs_upper ) ):
             
                 # 4.1 Cluster is drifting in this dimension
                 status = True
