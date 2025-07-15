@@ -33,11 +33,12 @@
 ## -- 2025-06-06  1.4.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-06-15  1.4.1     DA       Class OAStreamScenario: added parameter **p_kwargs to
 ## --                                - __init__()
-## --                                - setup() and _setup()       
+## --                                - setup() and _setup()   
+## -- 2025-07-15  1.4.2     DA       Class OAStreamAdaptationType: new parent class AdaptationType    
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2025-06-15)
+Ver. 1.4.2 (2025-07-15)
 
 Core classes for online-adaptive data stream processing (OADSP).
 
@@ -52,7 +53,7 @@ from mlpro.bf.mt import Task
 from mlpro.bf.ops import Mode
 from mlpro.bf.streams import InstDict, Instance, InstTypeNew, StreamShared, StreamTask, StreamWorkflow, StreamScenario
 from mlpro.bf.math.normalizers import Normalizer
-from mlpro.bf.ml import Adaptation, Model, AWorkflow
+from mlpro.bf.ml import AdaptationType, Adaptation, Model, AWorkflow
 
 
 
@@ -72,14 +73,11 @@ class OAStreamShared (StreamShared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAStreamAdaptationType (StrEnum):
+class OAStreamAdaptationType (AdaptationType):
     """
     Extended types of adaptation, specific to online-adaptive data stream processing.
     """
 
-    NONE        = ''
-    FORWARD     = 'Forward'
-    EVENT       = 'Event'
     REVERSE     = 'Reverse'
     RENORM      = 'Re-Norm'
     
