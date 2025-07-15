@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-27  0.1.1     DS       Creation
 ## -- 2025-06-29  0.1.2     DS       Bug fixes
+## -- 2025-07-15  0.2.0     DA/DS    Class ChangeObserverCB: new parameter p_cluster_ids
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.2 (2025-06-29)
+Ver. 0.2.0 (2025-07-15)
 
 This module provides the ChangeObserver class to be used for observation and visualization of stream
 adaptation events.
@@ -44,9 +45,31 @@ class ChangeObserverCB(ChangeObserver):
     C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_related_task : OAStreamTask,
+                  p_change_event_ids : list = [],
+                  p_cluster_ids : list = [],
+                  p_logarithmic_plot : bool = True,
+                  p_visualize : bool = True,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
+        
+        super().__init__( p_related_task = p_related_task, 
+                          p_change_event_ids = p_change_event_ids, 
+                          p_logarithmic_plot = p_logarithmic_plot, 
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging, 
+                          **p_kwargs )
+        
+        self._cluster_ids = p_cluster_ids
+
 
 ## -------------------------------------------------------------------------------------------------
     def _event_handler(self, p_event_id, p_event_object):
+
+        if self._cluster_ids and not set(self._cluster_ids).issubset(list(p_event_object.clusters.keys())):
+            return
         
         super()._event_handler(p_event_id, p_event_object)
 
