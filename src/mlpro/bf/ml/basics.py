@@ -75,10 +75,11 @@
 ## --                                  - Method _set_adapted(): new parameters
 ## --                                  - Incorporation of new class Adaptation
 ## -- 2025-06-02  2.5.0     DA       New class AdaptationType
+## -- 2025-07-15  2.5.1     DA       Class AdaptationType: replaced parent class StrEnum by str
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2025-06-02)
+Ver. 2.5.1 (2025-07-15)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -190,11 +191,10 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AdaptationType(StrEnum):
+class AdaptationType (str): #(StrEnum):
     """
     Basic types of adaptation.
     """
-
     NONE        = ''
     FORWARD     = 'Forward'
     EVENT       = 'Event'
