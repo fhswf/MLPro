@@ -6,13 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-24  0.1.0     DA/DS    New class ChangeObserver for change observation
-## -- 2025-06-27  0.1.1     DS       Added ChangeObserverCB for change observation with cluster information
-## -- 2025-06-29  0.1.2     DS       Bug fixes
-## -- 2025-07-15  0.1.3     DS       Removed ChangeObserverCB class
+## -- 2025-07-15  0.2.0     DA       Class ChangeObserver: new parameter p_change_event_ids
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.2 (2025-07-15)
+Ver. 0.2.0 (2025-07-15)
 
 This module provides the ChangeObserver class to be used for observation and visualization of stream
 adaptation events.
@@ -58,7 +56,7 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_related_task : OAStreamTask,
-                  p_change_types : list = [],
+                  p_change_event_ids : list = [],
                   p_logarithmic_plot : bool = True,
                   p_visualize : bool = True,
                   p_logging = Log.C_LOG_ALL,
@@ -70,33 +68,18 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
 
         self._related_task      = p_related_task
         self._logarithmic_plot  = p_logarithmic_plot
-        self._change_types      = p_change_types
         self._color_max         = len( ChangeObserver.C_ANOMALY_COLORS )
         self._color_id          = 0
         self._change_colors     = {}
-
         self.stat_change_events = {}
-
-        if len(self._change_types) == 1:
-            self._related_task.register_event_handler( p_event_id = self._change_types[0].get_event_id( p_status = True ),
-                                                       p_event_handler = self._event_handler )
-            
-            self._change_colors[self._change_types[0].get_event_id( p_status = True)] = self.C_ANOMALY_COLORS[0]
-            
-            self._related_task.register_event_handler( p_event_id = self._change_types[0].get_event_id( p_status = False ),
-                                                       p_event_handler = self._event_handler )
-            
-            self._change_colors[self._change_types[0].get_event_id( p_status = False)] = self.C_ANOMALY_COLORS[1]
-
-        elif len(self._change_types) > 1:
-            for anomaly_type in self._change_types:
-                self._related_task.register_event_handler( p_event_id = anomaly_type.get_event_id( p_status = True),
-                                                           p_event_handler = self._event_handler )
-                self._change_colors[anomaly_type.get_event_id( p_status = True)] = self.C_ANOMALY_COLORS[self._color_id]
-                self._color_id = ( self._color_id + 1 ) & self._color_max
-                
-        else:
+    
+        if len(p_change_event_ids) == 0:
             raise ParamError( 'ChangeObserver: No change types given for observation.' )
+            
+        for event_id in p_change_event_ids:
+            self._related_task.register_event_handler( p_event_id = event_id, p_event_handler = self._event_handler )
+            self._change_colors[event_id] = self.C_ANOMALY_COLORS[self._color_id]
+            self._color_id = ( self._color_id + 1 ) & self._color_max
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -141,7 +124,6 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
         axes = self.get_plot_settings().axes
         axes.legend(title='Changes')
         axes.set_xlabel('Time index')
-        # axes.set_ylabel('Adapted instances')     
 
         if self._logarithmic_plot:
             axes.set_yscale('log')
