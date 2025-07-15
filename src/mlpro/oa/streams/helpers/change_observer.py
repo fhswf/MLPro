@@ -35,7 +35,18 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
 
     Parameters
     ----------
-    
+    p_related_task : OAStreamTask
+        The stream task to be observed.
+    p_change_event_ids : list
+        List of change event ids to be observed. Each entry can be a string or a tuple of (event_id, color).
+    p_logarithmic_plot : bool
+        If True, the y-axis of the plot is logarithmic.
+    p_visualize : bool
+        If True, the plot is visualized.
+    p_logging : int
+        Logging level for this helper. Default is Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further keyword arguments for the helper.
     """
 
     C_TYPE              = 'Helper'
@@ -76,10 +87,17 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
         if len(p_change_event_ids) == 0:
             raise ParamError( 'ChangeObserver: No change types given for observation.' )
             
-        for event_id in p_change_event_ids:
+        for event_entry in p_change_event_ids:
+            if isinstance(event_entry, str):
+                event_id    = event_entry
+                event_color = self.C_ANOMALY_COLORS[self._color_id]
+                self._color_id = ( self._color_id + 1 ) % self._color_max
+            else:
+                event_id    = event_entry[0]
+                event_color = event_entry[1]
+                
             self._related_task.register_event_handler( p_event_id = event_id, p_event_handler = self._event_handler )
-            self._change_colors[event_id] = self.C_ANOMALY_COLORS[self._color_id]
-            self._color_id = ( self._color_id + 1 ) & self._color_max
+            self._change_colors[event_id] = event_color
 
 
 ## -------------------------------------------------------------------------------------------------
