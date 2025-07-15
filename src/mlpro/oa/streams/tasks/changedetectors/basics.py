@@ -16,10 +16,11 @@
 ## --                                - corrected method update_plot()
 ## --                                - added methods _update_plot_*()
 ## -- 2025-06-24  1.5.1     DA/DS    status attribute is changed into a public attribute
+## -- 2025-07-15  1.5.2     DA/DS    Class Change: removed self._event_id
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2025-06-24)
+Ver. 1.5.2 (2025-07-15)
 
 This module provides templates for change detection to be used in the context of online adaptivity.
 """
@@ -99,8 +100,6 @@ class Change (Id, Event, Plottable, Renormalizable):
 
         self.status: bool = p_status
         
-        self._event_id = self.get_event_id( p_status = p_status )
-
 
 ## -------------------------------------------------------------------------------------------------
     @classmethod
@@ -124,7 +123,7 @@ class Change (Id, Event, Plottable, Renormalizable):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_event_id(self) -> str:
-        return self._event_id
+        return self.get_event_id( p_status = self.status )
 
 
 ## -------------------------------------------------------------------------------------------------
