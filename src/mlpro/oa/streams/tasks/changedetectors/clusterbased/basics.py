@@ -129,22 +129,9 @@ class ChangeCB (Change):
         cluster : Cluster = None
 
         for cluster in self.clusters.values(): 
-            if self.status:
-                pass
-            #     try:
-            #         if cluster.color_bak is None:
-            #             cluster.color_bak = cluster.color
-            #     except:
-            #         cluster.color_bak = cluster.color
-
-            #     cluster.color = "red"
-            # else:
-            #     try:
-            #         cluster.color     = cluster.color_bak
-            #         cluster.color_bak = None
-            #     except:
-            #         pass
-
+            color = 'red' if self.status else None
+            if cluster.color != color: cluster.color = color
+            
         return True
     
 
