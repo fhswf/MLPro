@@ -44,22 +44,6 @@ class ChangeObserverCB(ChangeObserver):
     C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_related_task : OAStreamTask,
-                  p_change_types : list = [],
-                  p_logarithmic_plot : bool = True,
-                  p_visualize : bool = True,
-                  p_logging = Log.C_LOG_ALL,
-                  **p_kwargs ):
-        
-        super().__init__( p_related_task = p_related_task,
-                          p_change_types = p_change_types,
-                          p_logarithmic_plot = p_logarithmic_plot,
-                          p_visualize = p_visualize,
-                          p_logging = p_logging,
-                          **p_kwargs )
-        
 
 ## -------------------------------------------------------------------------------------------------
     def _event_handler(self, p_event_id, p_event_object):
