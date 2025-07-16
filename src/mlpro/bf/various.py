@@ -503,6 +503,7 @@ class Persistent (Id, Log):
         """
 
         pkl.settings["byref"] = True
+        warnings.filterwarnings("ignore", category=pkl.PicklingWarning)
 
         # 1 Create folder if it doesn't exist
         if not os.path.exists(p_path): os.makedirs(p_path)
