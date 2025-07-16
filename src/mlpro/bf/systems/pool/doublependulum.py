@@ -22,14 +22,35 @@ Pendulum consists of an input motor providing the torque in either directions to
 """
 
 import random
+from collections import deque
+from datetime import timedelta
+
 import numpy as np
 from numpy import sin, cos
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
-from collections import deque
 
 from mlpro.bf.various import *
+from mlpro.bf.exceptions import ParamError
+from mlpro.bf.events import *
+from mlpro.bf.mt import *
+from mlpro.bf.ops import Mode
+from mlpro.bf.plot import PlotSettings
+from mlpro.bf.math import ESpace, Dimension
+from mlpro.bf.streams import *
 from mlpro.bf.systems import *
+
+
+
+# Export list for public API
+__all__ = [ 'DoublePendulumSystemRoot',
+            'DoublePendulumSystemS4',
+            'DoublePendulumSystemS7' ]
+
+
+
+class Figure : pass
+
 
 
 

@@ -29,6 +29,8 @@ You will learn:
 """
 
 
+from mlpro.bf.ops import Mode
+from mlpro.bf.various import Log
 from mlpro.bf.mt import Task
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *

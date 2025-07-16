@@ -41,9 +41,10 @@ from typing import Tuple
 
 import numpy as np
 
-from mlpro.bf.math.statistics import *
-from mlpro.bf.streams.basics import *
+from mlpro.bf.various import Log
 from mlpro.bf.events import *
+from mlpro.bf.math.statistics import *
+from mlpro.bf.streams import *
 
 
 
