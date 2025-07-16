@@ -39,6 +39,10 @@ from mlpro.bf.streams import Instance, InstDict, InstTypeNew
 from mlpro.oa.streams import OAStreamTask
 
 
+# Export list for public API
+__all__ = [ 'Change',
+            'ChangeDetector' ]
+
 
 
 ## -------------------------------------------------------------------------------------------------

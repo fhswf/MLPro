@@ -75,6 +75,11 @@ from mlpro.oa.streams.basics import OAStreamTask, OAStreamAdaptationType
 
 
 
+# Export list for public API
+__all__ = [ 'BoundaryDetector' ]
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------

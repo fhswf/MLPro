@@ -20,6 +20,14 @@ from mlpro.bf.math.properties import MultiProperty, PropertyDefinition
 
 
 
+# Export list for public API
+__all__ = [ 'DeformationIndex',
+            'cprop_deformation_index',
+            'cprop_deformation_index1',
+            'cprop_deformation_index2' ]
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------

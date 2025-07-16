@@ -1,3 +1,3 @@
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import ClusterId, Cluster
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.centroid import ClusterCentroid, cprop_centroid
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.body import ClusterBody
+from .basics import *
+from .centroid import *
+from .body import *

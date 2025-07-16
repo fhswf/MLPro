@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.streams
 ## -- Module  : provider_mlpro.py
 ## -------------------------------------------------------------------------------------------------
@@ -23,7 +23,16 @@ This module consists of a native stream provider and a template for builtin stre
 
 from mlpro.bf.various import Log, ScientificObject
 from mlpro.bf.ops import Mode
-from mlpro.bf.streams.basics import *
+from mlpro.bf.various import Log
+from mlpro.bf.math import Element
+from mlpro.bf.streams import *
+
+
+
+
+# Export list for public API
+__all__ = [ 'StreamMLProBase',
+            'StreamProviderMLPro' ]
 
 
 

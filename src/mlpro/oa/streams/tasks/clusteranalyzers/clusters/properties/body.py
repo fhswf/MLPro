@@ -26,6 +26,12 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_de
 
 
 
+# Export list for public API
+__all__ = [ 'Body',
+            'cprop_body' ]
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------

@@ -17,6 +17,14 @@ This module provides exception classes.
 """
 
 
+# Export list for public API
+__all__ = [ 'ParamError',
+            'ImplementationError',
+            'Error' ]
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class ParamError(Exception):

@@ -31,6 +31,7 @@ This module provides a property class for the geometric shape 'point'.
 
 """ 
 
+import numpy as np
 
 try:
     from matplotlib.figure import Figure
@@ -40,6 +41,17 @@ except:
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.normalizers import Normalizer
+
+
+
+# Export list for public API
+__all__ = [ 'Point',
+            'cprop_point',
+            'cprop_point1',
+            'cprop_point2',
+            'cprop_center_geo',
+            'cprop_center_geo1',
+            'cprop_center_geo2' ]
 
 
 

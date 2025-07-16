@@ -57,6 +57,14 @@ from mlpro.bf.math.properties import PropertyDefinitions, Properties
 from mlpro.bf.streams import Instance
 
 
+
+# Export list for public API
+__all__ = [ 'Cluster',
+            'ClusterId' ]
+
+
+
+
 ClusterId = int
 
 

@@ -23,12 +23,17 @@ This module provides a property class for the geometric shape 'hypercuboid'.
 
 """ 
 
+from typing import Union
+from datetime import datetime
+
 import numpy as np
 
 try:
+    from matplotlib.figure import Figure
     from matplotlib.patches import Rectangle
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3D
 except:
+    class Figure : pass
     class Rectangle : pass
     class Poly3DCollection : pass
     class Line3D : pass
@@ -37,7 +42,14 @@ from mlpro.bf.plot import *
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.math.geometry.basics import cprop_size_geo
-from mlpro.bf.math.geometry.point import Point, cprop_center_geo
+from mlpro.bf.math.geometry.point import cprop_center_geo
+
+
+
+# Export list for public API
+__all__ = [ 'Hypercuboid',
+            'cprop_hypercuboid',
+            'cprop_hypercuboid_prev' ]
 
 
 
