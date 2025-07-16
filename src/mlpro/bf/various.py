@@ -57,10 +57,11 @@
 ## --                                - Class Log: code optimization
 ## -- 2025-01-17  2.7.1     DA/SY    Correction of method Persistent.save()
 ## -- 2025-03-11  2.7.2     SY       Enable recurse while pickling 
+## -- 2025-07-16  2.7.3     SY       Pickling desearilisation issue 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.7.2 (2025-03-11)
+Ver. 2.7.3 (2025-07-16)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -70,6 +71,7 @@ For example: logging, persistence, timer...
 from datetime import datetime, timedelta
 from time import sleep
 import dill as pkl
+import warnings
 import os
 import sys
 import uuid
@@ -512,6 +514,9 @@ class Persistent (Id, Log):
         successful : bool
             True, if file content was saved successfully. False otherwise.
         """
+
+        pkl.settings["byref"] = True
+        warnings.filterwarnings("ignore", category=pkl.PicklingWarning)
 
         # 1 Create folder if it doesn't exist
         if not os.path.exists(p_path): os.makedirs(p_path)
