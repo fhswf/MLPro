@@ -46,13 +46,17 @@ Ver. 1.5.0 (2025-06-06)
 This module provides a template class for clusters with a centroid.
 """
 
-import sys
-
 from mlpro.bf.streams import Instance
 from mlpro.bf.math import Element
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_centroid
+
+
+
+# Export list for public API
+__all__ = [ 'ClusterCentroid' ]
+
 
 
 

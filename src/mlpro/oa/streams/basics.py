@@ -34,27 +34,34 @@
 ## -- 2025-06-15  1.4.1     DA       Class OAStreamScenario: added parameter **p_kwargs to
 ## --                                - __init__()
 ## --                                - setup() and _setup()   
-## -- 2025-07-15  1.4.2     DA       Class OAStreamAdaptationType: new parent class AdaptationType    
+## -- 2025-07-15  1.4.2     DA       Class OAStreamAdaptationType: new parent class AdaptationType   
+## -- 2025-07-16  1.4.3     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2025-07-15)
+Ver. 1.4.3 (2025-07-16)
 
 Core classes for online-adaptive data stream processing (OADSP).
 
 """
 
-from enum import StrEnum
-
 from mlpro.bf.mt import Event
 from mlpro.bf.various import Log, TStampType
-from mlpro.bf.plot import PlotSettings, Plottable
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.mt import Task
 from mlpro.bf.ops import Mode
 from mlpro.bf.streams import InstDict, Instance, InstTypeNew, StreamShared, StreamTask, StreamWorkflow, StreamScenario
 from mlpro.bf.math.normalizers import Normalizer
 from mlpro.bf.ml import AdaptationType, Adaptation, Model, AWorkflow
 
+
+# Export list for public API
+__all__ = [ 'OAStreamShared', 
+            'OAStreamAdaptationType',
+            'OAStreamAdaptation',
+            'OAStreamTask',
+            'OAStreamWorkflow',
+            'OAStreamScenario' ]
 
 
 
@@ -79,7 +86,7 @@ class OAStreamAdaptationType (AdaptationType):
     """
 
     REVERSE     = 'Reverse'
-    RENORM      = 'Re-Norm'
+    RENORM      = 'Renorm'
     
     
     
@@ -120,19 +127,6 @@ class OAStreamAdaptation (Adaptation):
 
 
 
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class OAStreamHelper (Plottable):
-    """
-    Template class for own helpers to be added to an oa stream workflow
-    """
-
-    C_PLOT_ACTIVE    = False
-    
-    
-    
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -485,18 +479,11 @@ class OAStreamWorkflow (StreamWorkflow, AWorkflow):
                             p_visualize = p_visualize,
                             p_logging = p_logging,
                             **p_kwargs )
-        
-        self._helpers = []
 
 
 ## -------------------------------------------------------------------------------------------------
     def add_task(self, p_task : StreamTask, p_pred_tasks: list = None):
         AWorkflow.add_task( self, p_task=p_task, p_pred_tasks=p_pred_tasks )
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_helper(self, p_helper : OAStreamHelper):
-        self._helpers.append(p_helper)
 
 
 ## -------------------------------------------------------------------------------------------------

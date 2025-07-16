@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.streams
 ## -- Module  : clusters.py
 ## -------------------------------------------------------------------------------------------------
@@ -14,10 +14,11 @@
 ## -- 2024-06-16  1.2.1     SK       Optimization and restructuring
 ## -- 2024-06-17  1.3.0     SK       Functionality for appearance of outliers
 ## -- 2025-04-02  1.3.1     DA       Little refactoring
+## -- 2025-07-16  1.3.2     DA       Little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2025-04-02)
+Ver. 1.3.2 (2025-07-16)
 
 This module provides the native stream class StreamMLProClusterGenerator.
 These stream provides instances with self._num_dim dimensional random feature data, placed around
@@ -31,9 +32,16 @@ import math
 
 import numpy as np
 
-from mlpro.bf.math import MSpace, ESpace
+from mlpro.bf.various import Log
+from mlpro.bf.math import Element, MSpace, ESpace
 from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
+
+
+
+# Export list for public API
+__all__ = [ 'StreamMLProClusterGenerator' ]
+
 
 
 
