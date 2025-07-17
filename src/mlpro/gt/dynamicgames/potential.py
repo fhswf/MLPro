@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.gt
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Package : mlpro.gt.dynamicgames
 ## -- Module  : potential.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -9,10 +9,11 @@
 ## -- 2023-04-12  1.0.0     SY       Release of first version
 ## -- 2023-05-11  1.1.0     SY       Refactoring
 ## -- 2023-09-25  1.1.1     SY       Refactoring
+## -- 2025-07-17  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-05-11)
+Ver. 1.2.0 (2025-07-17) 
 
 This module provides model classes for Potential Games in dynamic programming.
 """

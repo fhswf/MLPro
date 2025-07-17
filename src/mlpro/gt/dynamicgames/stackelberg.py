@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.gt
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Package : mlpro.gt.dynamicgames
 ## -- Module  : stackelberg.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -9,14 +9,19 @@
 ## -- 2023-04-12  1.0.0     SY       Release of first version
 ## -- 2023-05-11  1.1.0     SY       Refactoring
 ## -- 2021-08-22  1.1.1     SY       Refactoring due to compatibility in mlpro.gt.dynamicsgames
+## -- 2025-07-17  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-08-22)
+Ver. 1.2.0 (2025-07-17) 
 
 This module provides model classes for Stackelberg Games in dynamic programming.
 """
 
+
+from mlpro.bf import Log
+from mlpro.bf.systems import State, Action
+from mlpro.rl import ActionPlanner, Policy, EnvModel, SARSElement, Reward
 from mlpro.gt.dynamicgames.basics import *
 
 

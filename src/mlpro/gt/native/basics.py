@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.gt.native
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
@@ -8,26 +8,48 @@
 ## -- 2023-03-30  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
 ## -- 2023-12-27  1.0.1     SY       Adding Docstring
+## -- 2025-07-17  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-12-27)
+Ver. 1.1.0 (2025-07-17) 
 
 This module provides model classes for tasks related to a Native Game Theory.
 
 """
 
+from random import random
+from datetime import timedelta
+from typing import Union
+import statistics as st
 
-from mlpro.bf.various import *
-from mlpro.bf.systems import *
-from mlpro.bf.ml import *
+import numpy as np
+
+from mlpro.bf import *
+from mlpro.bf.various import Persistent, TStamp, ScientificObject
+from mlpro.bf.data import DataStoring
+
 from mlpro.bf.mt import *
 from mlpro.bf.math import *
 from mlpro.bf.physics import *
-from typing import Union
-import statistics as st
+from mlpro.bf.systems import Action
+from mlpro.bf.ml import *
         
         
+
+# Export list for public API
+__all__ = [ 'GTStrategy',
+            'GTFunction',
+            'GTPayoffMatrix',
+            'GTSolver',
+            'GTPlayer',
+            'GTCoalition',
+            'GTCompetition',
+            'GTDataStoring',
+            'GTGame',
+            'GTTrainingResults',
+            'GTTraining' ]
+
 
 
 
