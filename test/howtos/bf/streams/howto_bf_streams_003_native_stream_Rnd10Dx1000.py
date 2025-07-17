@@ -27,9 +27,7 @@ You will learn:
 """
 
 
-from mlpro.bf.various import Log
-from mlpro.bf.ops import Mode
-from mlpro.bf.plot import PlotSettings
+from mlpro.bf import Log, Mode, PlotSettings
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
 

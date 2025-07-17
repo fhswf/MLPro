@@ -25,8 +25,7 @@ ver. 1.0.1 (2023-05-03)
 
 """
 
-from mlpro.bf.various import Log
-from mlpro.bf.ops import Mode
+from mlpro.bf import Log, Mode
 from mlpro.bf.systems import *
 from mlpro.bf.systems.pool import DoublePendulumSystemS4, DoublePendulumSystemS7
 

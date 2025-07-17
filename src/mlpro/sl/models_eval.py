@@ -18,8 +18,10 @@ This module provides SL metrics classes for supervised learning tasks.
 
 
 import numpy as np
-from mlpro.bf.math import *
 import warnings
+
+from mlpro.bf import Log
+from mlpro.bf.math import *
 
 
 

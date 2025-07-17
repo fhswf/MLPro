@@ -93,7 +93,8 @@ from mlpro.bf.data import ConfigFile
 
 
 # Export list for public API
-__all__ = [ 'PlotSettings',
+__all__ = [ 'Figure',
+            'PlotSettings',
             'Plottable' ]   
 
 

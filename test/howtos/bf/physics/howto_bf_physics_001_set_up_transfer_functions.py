@@ -31,7 +31,7 @@ You will learn:
 
 """
 
-
+from mlpro.bf import Log
 from mlpro.bf.math import *
 from mlpro.bf.physics import *
 import math

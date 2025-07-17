@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl
 ## -- Module  : models_env.py
 ## -------------------------------------------------------------------------------------------------
@@ -9,19 +9,34 @@
 ## -- 2023-03-08  1.0.1     SY       Update EnvModel
 ## -- 2023-03-10  1.0.2     SY       Update AFctReward: _setup_spaces, _compute_reward, and _adapt
 ## -- 2023-03-10  1.1.0     SY       Shifted Afct* to BF-ML-Systems
+## -- 2025-07-17  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-04-03)
+Ver. 1.2.0 (2025-07-17) 
 
 This module provides model classes for adaptive environment models.
 """
 
+from datetime import timedelta
+
+import numpy as np
+
+from mlpro.bf import Log, ParamError
+from mlpro.bf.data import Buffer, BufferElement
+from mlpro.bf.math import MSpace, Dimension, Element
+from mlpro.bf.systems import State, Action 
 from mlpro.bf.ml import *
 from mlpro.bf.ml.systems import AFctBase, AFctBroken, AFctSTrans, AFctSuccess
 from mlpro.rl.models_env import *
 
 
+
+# Export list for public API
+__all__ = [ 'AFctReward',
+            'SARSElement',
+            'SARSBuffer',
+            'EnvModel' ]
 
 
 

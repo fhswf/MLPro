@@ -17,8 +17,13 @@ Ver. 1.1.1 (2023-08-22)
 This module provides model classes for Stackelberg Games in dynamic programming.
 """
 
-from mlpro.gt.dynamicgames import *
+from mlpro.gt.dynamicgames.basics import *
 
+
+
+# Export list for public API
+__all__ = [ 'GTPlayer_SG', 
+            'GTMultiPlayer_SG' ]
 
 
 

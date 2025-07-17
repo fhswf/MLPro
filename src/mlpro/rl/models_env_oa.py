@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl
 ## -- Module  : models_adaptive_environment.py
 ## -------------------------------------------------------------------------------------------------
@@ -11,19 +11,30 @@
 ## -- 2023-05-31  0.1.2     LSB      Visualization fixed
 ## -- 2023-06-10  0.1.3     LSB      Fixed for refactoring on stream processing
 ## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-07-17  0.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-06-06)
+Ver. 0.3.0 (2025-07-17) 
 
 This module provides model classes for adaptive environments
 """
 
+from datetime import timedelta
 
-from mlpro.oa.streams import *
+from mlpro.bf import Log, ParamError, Mode
+from mlpro.bf.events import Event
+from mlpro.bf.mt import *
+from mlpro.bf.math import MSpace, ESpace
+
 from mlpro.oa.systems import *
 from mlpro.rl.models import *
 
+
+
+# Export list for public API
+__all__ = [ 'OAFctReward',
+            'OAEnvironment' ]
 
 
 
@@ -57,7 +68,6 @@ class OAFctReward(FctReward, Model):
     p_logging
     p_kwargs
     """
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -195,6 +205,7 @@ class OAFctReward(FctReward, Model):
 
         self._wf_reward.add_task(p_task=p_task, p_pred_tasks=p_pred_tasks)
 
+
 ## -------------------------------------------------------------------------------------------------
     def _run_wf_reward(self, p_instances : InstDict):
         """
@@ -233,6 +244,7 @@ class OAFctReward(FctReward, Model):
             self._wf_reward.get_so().add_result(self.get_id(), FctReward.compute_reward(self,
                                                                              p_state_new=state_new,
                                                                              p_state_old=state_old))
+
 
 # -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
@@ -284,7 +296,6 @@ class OAFctReward(FctReward, Model):
         self._wf_reward.add_task(p_task=PseudoTask(p_wrap_method=self._run_wf_reward),
                                   p_pred_tasks=p_pred_tasks)
         return True
-
 
 
 

@@ -33,6 +33,16 @@ from mlpro.rl import *
 
 
 
+# Export list for public API
+__all__ = [ 'GameBoard',
+            'Player',
+            'MultiPlayer',
+            'Game',
+            'GTTrainingResults',
+            'GTTraining' ]
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GameBoard (Environment):

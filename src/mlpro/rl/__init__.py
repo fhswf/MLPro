@@ -7,4 +7,4 @@
 
 """
 
-from mlpro.rl.models import *
+from .models import *

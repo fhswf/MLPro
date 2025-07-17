@@ -28,11 +28,11 @@ Ver. 0.5.1 (2023-06-24)
 This module provides model classes for supervised learning tasks. 
 """
 
-
+from typing import List
 
 from mlpro.bf.ml import *
+
 from mlpro.sl.models_eval import Metric
-from typing import List
 
 
 

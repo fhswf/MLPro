@@ -44,6 +44,9 @@ The most commonly used classes can be imported from **mlpro.bf** directly:
 - :class:`mlpro.bf.various.Log` - Central logging system
 - :class:`mlpro.bf.ops.Mode` - Operating mode definition
 - :class:`mlpro.bf.plot.PlotSettings` - Plot configuration class
+- :class:`mlpro.bf.exceptions.ParamError` - Parameter error
+- :class:`mlpro.bf.exceptions.Error` - General error
+- :class:`mlpro.bf.exceptions.ImplementationError` - Implementation error
 
 ---
 
@@ -52,10 +55,14 @@ The most commonly used classes can be imported from **mlpro.bf** directly:
 
 from .various import Log
 from .ops import Mode
+from .exceptions import ParamError, Error, ImplementationError
 from .plot import PlotSettings
 
 
 # Export list for public API
 __all__ = [ 'Log',
             'Mode',
-            'PlotSettings' ]
+            'PlotSettings',
+            'ParamError',
+            'Error',
+            'ImplementationError' ]
