@@ -9,10 +9,11 @@
 ## -- 2024-07-10  1.0.0     MRD/SY   Release of first version
 ## -- 2024-07-12  1.0.1     SY       Add initial and target points into the state space
 ## -- 2024-07-16  1.0.2     SY       Update _compute_broken() method
+## -- 2025-07-17  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2024-07-16)
+Ver. 1.1.0 (2025-07-17) 
 
 This module provides a 2D environment for collision avoidance of a trajectory planning with
 dynamic goals. The DynamicTrajectoryPlanner environment simulates a 2D space where an agent must

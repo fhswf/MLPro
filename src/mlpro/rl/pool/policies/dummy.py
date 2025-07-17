@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.pool.policies
 ## -- Module  : dummy
 ## -------------------------------------------------------------------------------------------------
@@ -9,16 +9,30 @@
 ## -- 2022-11-02  1.1.0     DA       - Refactoring: methods adapt(), _adapt()
 ## --                                - Code cleaning
 ## -- 2022-11-07  1.2.0     DA       Refactoring
+## -- 2025-07-17  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-11-07)
+Ver. 1.3.0 (2025-07-17) 
 
 This module provide Policy Dummy for unittest purpose.
 """
 
-from mlpro.rl import *
+from random import random
+
+import numpy as np
+
+from mlpro.bf import Log
+from mlpro.bf.math import MSpace
+from mlpro.bf.systems import State, Action
+
+from mlpro.rl import SARSElement, Policy
 from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
+
+
+
+# Export list for public API
+__all__ = [ 'MyDummyPolicy' ]
 
 
 

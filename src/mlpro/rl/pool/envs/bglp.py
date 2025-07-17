@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.envs
 ## -- Module  : bglp.py
 ## -------------------------------------------------------------------------------------------------
@@ -36,10 +36,11 @@
 ## -- 2023-03-27  2.3.1     DA       Method BGLP._compute_reward(): refactoring of reward type
 ## --                                Reward.C_TYPE_EVERY_AGENT
 ## -- 2023-08-22  2.3.2     SY       Storing power consumption per actuator in data storing
+## -- 2025-07-17  2.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.2 (2023-08-22)
+Ver. 2.4.0 (2025-07-17) 
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """

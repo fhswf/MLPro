@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.envs
 ## -- Module  : doublependulum.py
 ## -------------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ __all__ = [ 'DoublePendulumRoot',
             'DoublePendulumS4', 
             'DoublePendulumS7',
             'DoublePendulumOA4',
-            'DoublePendulumOA7',]
+            'DoublePendulumOA7' ]
 
 
 
