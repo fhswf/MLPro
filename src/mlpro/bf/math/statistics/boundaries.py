@@ -23,6 +23,14 @@ from numpy.typing import NDArray
 
 
 
+# Export list for public API
+__all__ = [ 'Boundaries',
+            'BoundarySide',
+            'BoundaryProvider' ]
+
+            
+
+
 Boundaries = NDArray[np.float64]
 
 

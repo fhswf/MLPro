@@ -1,1 +1,1 @@
-from mlpro.oa.streams.basics import *
+from .basics import *

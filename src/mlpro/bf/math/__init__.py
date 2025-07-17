@@ -1,1 +1,1 @@
-from mlpro.bf.math.basics import *
+from .basics import *

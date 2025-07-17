@@ -25,6 +25,8 @@ from mlpro.bf.exceptions import ParamError
 import random
 
 
+# Export list for public API
+__all__ = [ 'SamplerMinWise' ]
 
 
 
@@ -55,7 +57,6 @@ class SamplerMinWise(Sampler):
     C_SCIREF_DOI                = '10.1145/1031495.1031525'
     C_SCIREF_BOOKTITLE          = 'Proceedings of the 2nd International Conference on Embedded Networked Sensor Systems'
     C_SCIREF_PAGES              = '250–262'
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_num_instances:int=0, p_cluster_size:float=1, p_seed:int=0):
@@ -118,8 +119,3 @@ class SamplerMinWise(Sampler):
         else:
             self._idx += 1
             return True
-        
-
-
-        
-            
