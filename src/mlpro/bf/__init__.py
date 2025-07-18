@@ -42,6 +42,7 @@ It is organized into a total of five layers and contains the following sub-modul
 The most commonly used classes can be imported from **mlpro.bf** directly:
 
 - :class:`mlpro.bf.various.Log` - Central logging system
+- :class:`mlpro.bf.various.TStampType` - Time stamp type
 - :class:`mlpro.bf.ops.Mode` - Operating mode definition
 - :class:`mlpro.bf.plot.PlotSettings` - Plot configuration class
 - :class:`mlpro.bf.exceptions.ParamError` - Parameter error
@@ -53,7 +54,7 @@ The most commonly used classes can be imported from **mlpro.bf** directly:
 **Learn more:** `MLPro-BF documentation <https://mlpro.readthedocs.io/en/latest/content/02_basic_functions/mlpro_bf/main.html>`_
 """
 
-from .various import Log
+from .various import Log, TStampType
 from .ops import Mode
 from .exceptions import ParamError, Error, ImplementationError
 from .plot import PlotSettings
@@ -61,6 +62,7 @@ from .plot import PlotSettings
 
 # Export list for public API
 __all__ = [ 'Log',
+            'TStampType',
             'Mode',
             'PlotSettings',
             'ParamError',
