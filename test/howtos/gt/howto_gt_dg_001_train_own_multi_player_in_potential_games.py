@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.gt.examples
 ## -- Module  : howto_gt_dg_001_train_own_multi_player_in_potential_games.py
 ## -------------------------------------------------------------------------------------------------
@@ -10,10 +10,11 @@
 ## -- 2023-05-11  1.0.1     SY       Refactoring
 ## -- 2021-08-22  1.0.2     SY       Refactoring due to compatibility in mlpro.gt.dynamicsgames
 ## -- 2024-02-16  1.0.3     SY       Renaming Module
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2024-02-16)
+Ver. 1.1.0 (2025-07-18) 
  
 This module shows how to train an own multi-player in potential games.
 
@@ -28,15 +29,20 @@ You will learn:
 """
 
 
-from mlpro.rl import *
-from mlpro.gt import *
-from mlpro.gt.dynamicgames.potential import *
-from mlpro.rl.models import Reward
-from mlpro.rl.pool.envs.bglp import BGLP
 import random
-import numpy as np
 from pathlib import Path
 
+import numpy as np
+
+from mlpro.bf import Log
+from mlpro.bf.systems import State, Action
+from mlpro.bf.ml import Model
+
+from mlpro.rl import *
+from mlpro.rl.pool.envs.bglp import BGLP
+
+from mlpro.gt import *
+from mlpro.gt.dynamicgames.potential import *
 
 
 

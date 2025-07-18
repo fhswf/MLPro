@@ -1,1 +1,1 @@
-from mlpro.bf.streams.basics import *
+from .basics import *

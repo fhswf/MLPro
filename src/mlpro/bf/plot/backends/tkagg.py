@@ -32,6 +32,12 @@ from mlpro.bf.plot.backends import PlotBackend, WindowGeometry, WindowState, WSN
 
 
 
+# Export list for public API
+__all__ = [ 'PlotBackendTkAgg' ]
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PlotBackendTkAgg (PlotBackend):

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro
 ## -- Module  : robotinhtm
 ## -------------------------------------------------------------------------------------------------
@@ -20,16 +20,32 @@
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-11-09  1.1.8     DA       Refactoring due to changes on plot systematics
 ## -- 2023-08-21  1.1.9     MRD      Remove Transformation package, and quaternion converter
+## -- 2025-07-17  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.9 (2023-08-21)
+Ver. 1.2.0 (2025-07-17) 
 
 This module provides an environment of a robot manipulator based on Homogeneous Matrix
 """
 
+from datetime import timedelta
+import random
+
+import numpy as np
 import torch
-from mlpro.rl.models import *
+
+from mlpro.bf import Log
+from mlpro.bf.math import Dimension, ESpace     
+from mlpro.bf.systems import State, Action 
+from mlpro.rl.models import Reward, Environment
+
+
+
+# Export list for public API
+__all__ = [ 'RobotArm3D',
+            'RobotHTM' ]
+
 
 
 

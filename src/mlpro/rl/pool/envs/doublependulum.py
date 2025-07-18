@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.envs
 ## -- Module  : doublependulum.py
 ## -------------------------------------------------------------------------------------------------
@@ -71,10 +71,11 @@
 ## -- 2023-05-30  3.0.0     LSB      Adaptive Extensions for Double Pendulum:
 ##                                       - DoublePendulumA4
 ##                                       - DoublePendulumA7
+## -- 2025-07-17  3.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.0 (2023-05-30)
+Ver. 3.1.0 (2025-07-17) 
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -83,19 +84,31 @@ connected to a fixed point at one end and to outer pole at other end. The native
 Pendulum consists of an input motor providing the torque in either directions to actuate the system.
 """
 
-import random
+
+from datetime import timedelta  
+
+import numpy as np
+
+from mlpro.bf import *
+from mlpro.bf.mt import *
+from mlpro.bf.plot import Figure
+from mlpro.bf.systems import *
 
 from mlpro.rl import *
-from mlpro.bf.various import *
-import numpy as np
-from numpy import sin, cos
-from matplotlib.patches import Arc, RegularPolygon
-import scipy.integrate as integrate
-from collections import deque
 from mlpro.bf.systems.pool.doublependulum import *
 from mlpro.rl.models_env_oa import *
+
+from mlpro.oa.streams import OAStreamWorkflow
 import mlpro.oa.systems.pool.doublependulum as oadp
 
+
+
+# Export list for public API
+__all__ = [ 'DoublePendulumRoot', 
+            'DoublePendulumS4', 
+            'DoublePendulumS7',
+            'DoublePendulumOA4',
+            'DoublePendulumOA7' ]
 
 
 

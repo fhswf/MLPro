@@ -1,2 +1,2 @@
-from mlpro.sl.pool.afct.pytorch import PyTorchIOElement, PyTorchBuffer, PyTorchHelperFunctions
-from mlpro.sl.pool.afct.fnn import *
+from .pytorch import PyTorchIOElement, PyTorchBuffer, PyTorchHelperFunctions
+from .fnn import *

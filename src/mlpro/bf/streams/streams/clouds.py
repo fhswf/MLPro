@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.streams
 ## -- Module  : clouds.py
 ## -------------------------------------------------------------------------------------------------
@@ -41,6 +41,16 @@ from mlpro.bf.math import Element, MSpace, ESpace
 from mlpro.bf.streams.basics import Feature, Instance
 from mlpro.bf.exceptions import ParamError
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
+
+
+
+# Export list for public API
+__all__ = [ 'StreamMLProClouds',
+            'StreamMLProClouds2D4C1000Static',
+            'StreamMLProClouds3D8C2000Static',
+            'StreamMLProClouds2D4C5000Dynamic',
+            'StreamMLProClouds3D8C10000Dynamic' ]
+
 
 
 

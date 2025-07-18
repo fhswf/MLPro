@@ -1,3 +1,2 @@
-
-from mlpro.bf.ml.basics import *
+from .basics import *
 

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.pool.native.games
 ## -- Module  : routingproblems_3p.py
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2024-01-12  0.0.0     SY       Creation
 ## -- 2024-01-18  1.0.0     SY       Release of first version
 ## -- 2024-01-28  1.0.1     SY       Refactoring
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-28)
+Ver. 1.1.0 (2025-07-18) 
 
 This module provides a 3-player game of routing problems, where each player has to move simultaneously
 from the starting node to the target node. We also set up this game as a congestion game, which means
@@ -53,19 +54,31 @@ this game is going to be updated accordingly.
 
 """
 
+import numpy as np
+
+from mlpro.bf.math import Dimension, MSpace
+from mlpro.bf.physics import TransferFunction
+from mlpro.bf.ml import Model  
+
 from mlpro.gt.native.basics import *
-from mlpro.bf.physics.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
 from mlpro.gt.pool.native.solvers.greedypolicy import MinGreedyPolicy
          
         
         
+# Export list for public API
+__all__ = [ 'PayoffFunction_Routing3P',
+            'PayoffMatrix_Routing3P',
+            'TransferFunction_Routing3P',
+            'MinGreedyPolicy_Routing3P',
+            'Routing_3P' ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class TransferFunction_Routing3P(TransferFunction):
-
 
 ## -------------------------------------------------------------------------------------------------
     def _set_function_parameters(self, p_args) -> bool:
@@ -163,7 +176,6 @@ class TransferFunction_Routing3P(TransferFunction):
 ## -------------------------------------------------------------------------------------------------
 class PayoffFunction_Routing3P(GTFunction):
 
-
 ## -------------------------------------------------------------------------------------------------
     def _setup_transfer_functions(self):
 
@@ -183,7 +195,6 @@ class PayoffFunction_Routing3P(GTFunction):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PayoffMatrix_Routing3P(GTPayoffMatrix):
-
 
 ## -------------------------------------------------------------------------------------------------
     def _call_mapping(self, p_input:str, p_strategies:GTStrategy) -> float:
@@ -214,7 +225,6 @@ class PayoffMatrix_Routing3P(GTPayoffMatrix):
 ## -------------------------------------------------------------------------------------------------
 class MinGreedyPolicy_Routing3P(MinGreedyPolicy):
 
-
 ## -------------------------------------------------------------------------------------------------
     def _call_compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
         
@@ -234,7 +244,6 @@ class MinGreedyPolicy_Routing3P(MinGreedyPolicy):
 class Routing_3P (GTGame):
 
     C_NAME  = 'Routing_3P'
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
@@ -332,7 +341,3 @@ class Routing_3P (GTGame):
         )
         
         return competition
-        
-        
-        
-

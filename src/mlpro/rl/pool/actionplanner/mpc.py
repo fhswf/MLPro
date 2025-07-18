@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.pool.actionplanner
 ## -- Module  : mpc
 ## -------------------------------------------------------------------------------------------------
@@ -11,19 +11,32 @@
 ## -- 2023-01-02  1.1.0     SY       Add multiprocessing functionality
 ## -- 2023-02-04  1.1.1     SY       Bug fixing
 ## -- 2025-04-24  1.1.2     DA       Bugfix in method MPC._async_subtask()
+## -- 2025-07-17  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2025-04-24)
+Ver. 1.2.0 (2025-07-17) 
 
 This module provides a default implementation of model predictive control (MPC).
 """
 
-from mlpro.rl.models import *
-import mlpro.bf.mt as mt
 import random
+
 import numpy as np
-         
+
+from mlpro.bf import Log, ParamError
+from mlpro.bf.various import ScientificObject
+from mlpro.bf.systems import State, Action 
+import mlpro.bf.mt as mt
+
+from mlpro.rl.models import *
+
+        
+
+# Export list for public API
+__all__ = [ 'MPC' ]
+
+
         
         
 ## -------------------------------------------------------------------------------------------------

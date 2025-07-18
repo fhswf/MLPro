@@ -44,10 +44,11 @@
 ## -- 2024-12-10  2.3.1     DA       - Method Task.init_plot(): refactoring
 ## --                                - Method Workflow.init_plot(): Bugfix and optimization
 ## -- 2024-12-11  2.4.0     DA       New method Workflow.remove_plot()
+## -- 2025-07-18  2.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-12-11)
+Ver. 2.5.0 (2025-07-18)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -74,6 +75,15 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.various import *
 from mlpro.bf.events import EventManager, Event
 from mlpro.bf.plot import PlotSettings, Plottable
+
+
+
+# Export list for public API
+__all__ = [ 'Range',
+            'Shared',
+            'Async',
+            'Task',
+            'Workflow' ]
 
 
 

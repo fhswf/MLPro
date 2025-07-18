@@ -1,1 +1,1 @@
-from mlpro.oa.streams.tasks.statistics.moving_average import MovingAverage
+from .moving_average import *

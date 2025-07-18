@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl.pool.envs
 ## -- Module  : gridworld
 ## -------------------------------------------------------------------------------------------------
@@ -23,18 +23,30 @@
 ## -- 2022-11-29  2.0.3     DA       Bug fixing
 ## -- 2023-04-12  2.0.4     SY       Refactoring 
 ## -- 2024-10-09  2.0.5     SY       Updating _reset() due to seeding errors
+## -- 2025-07-17  2.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.5 (2024-10-09)
+Ver. 2.1.0 (2025-07-17) 
 
 This module provides an environment of customizable Gridworld.
 """
 
-from mlpro.rl.models import *
+from datetime import timedelta
+
 import numpy as np
+
+from mlpro.bf import Log    
+from mlpro.bf.math import Dimension, ESpace
+from mlpro.bf.systems import State, Action 
+
+from mlpro.rl import Reward, Environment
       
 
+
+# Export list for public API
+__all__ = [ 'GridWorld' ]
+    
     
         
         

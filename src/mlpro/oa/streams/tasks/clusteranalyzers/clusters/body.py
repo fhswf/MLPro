@@ -27,9 +27,12 @@ from mlpro.bf.math.geometry import cprop_size_geo, cprop_center_geo
 from mlpro.bf.streams import Instance
 
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterId
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterCentroid, cprop_centroid
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_body, cprop_deformation_index, cprop_density
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters import ClusterCentroid 
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import *
+
+
+# Export list for public API
+__all__ = [ 'ClusterBody' ]
 
 
 
