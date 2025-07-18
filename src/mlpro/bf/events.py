@@ -13,10 +13,11 @@
 ## -- 2023-11-18  1.2.1     DA       Class Event: time stamp is set to now() if not provided
 ## -- 2024-05-23  1.3.0     DA       Method EventManger._raise_event(): reduction to TypeError   
 ## -- 2025-05-27  1.4.0     DA       Class Event: new parent class KWArgs
+## -- 2025-07-18  1.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-05-27)
+Ver. 1.5.0 (2025-07-18)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
