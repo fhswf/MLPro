@@ -1,3 +1,3 @@
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased import *
-from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import *
+from .basics import *
+from .instancebased import *
+from .clusterbased import *

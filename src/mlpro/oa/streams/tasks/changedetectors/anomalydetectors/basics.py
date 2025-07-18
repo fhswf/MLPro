@@ -20,22 +20,28 @@
 ## -- 2025-05-30  2.0.0     DA/DS    New parent class ChangeDetector
 ## -- 2025-06-06  2.1.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-06-09  2.1.1     DA       Corrections in AnomalyDetector._triage()
+## -- 2025-07-18  2.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.1 (2025-06-09)
+Ver. 2.2.0 (2025-07-18)
 
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
 
-
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.streams import Instance
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.changedetectors import ChangeDetector
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies import Anomaly
+
+
+
+# Export list for public API
+__all__ = [ 'AnomalyDetector' ]
+
 
 
 

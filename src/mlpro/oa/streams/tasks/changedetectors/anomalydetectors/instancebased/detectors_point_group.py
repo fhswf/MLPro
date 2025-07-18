@@ -17,22 +17,29 @@
 ## -- 2025-03-05  1.6.0     DA       Refactoring and simplification
 ## -- 2025-06-08  1.6.1     DA       Review/refactoring
 ## -- 2025-06-13  1.6.2     DA       Bugfix in method _buffer_anomaly()
+## -- 2025-07-18  1.7.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.2 (2025-06-13)
+Ver. 1.7.0 (2025-07-18)
 
 This module provides an extended template for instance-based anomaly detectors that supports an optional
 group anomaly detection based on point anomalies.
 """
 
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.streams import Instance
 
 from mlpro.oa.streams.basics import StreamTask
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.instancebased.basics import AnomalyDetectorIB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies import Anomaly, PointAnomaly, GroupAnomaly
+
+
+
+# Export list for public API
+__all__ = [ 'AnomalyDetectorIBPG' ]
+
 
 
 

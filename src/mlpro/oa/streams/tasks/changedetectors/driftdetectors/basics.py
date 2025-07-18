@@ -10,21 +10,27 @@
 ## -- 2025-05-30  1.0.0     DA/DS    Class DriftDetector: new parent ChangeDetector
 ## -- 2025-06-06  1.1.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-06-09  1.1.1     DA       Corrections in DriftDetector._triage()
+## -- 2025-07-18  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2025-06-09)
+Ver. 1.2.0 (2025-07-18)
 
 This module provides templates for drift detection to be used in the context of online adaptivity.
 """
 
 
-
+from mlpro.bf import Log
 from mlpro.bf.streams import Instance
-from mlpro.bf.various import Log
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts import Drift
 from mlpro.oa.streams.tasks.changedetectors import ChangeDetector
+
+
+
+# Export list for public API
+__all__ = [ 'DriftDetector' ]
+
 
 
 
