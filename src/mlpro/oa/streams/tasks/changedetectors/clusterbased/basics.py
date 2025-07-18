@@ -11,27 +11,30 @@
 ## -- 2025-06-11  1.1.1     DA       Workaround in ChangeDetectorCB.__init__(): parent/super()
 ## -- 2025-06-13  1.2.0     DA       Class Change: param p_id is now initialized to -1
 ## -- 2025-07-15  1.2.1     DA       Class ChangeCB: bugfix in 
+## -- 2025-07-18  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-06-13)
+Ver. 1.3.0 (2025-07-18)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
 """
 
-try:
-    from matplotlib.figure import Figure
-except:
-    class Figure : pass
 
-from mlpro.bf.various import Log, TStampType
-from mlpro.bf.plot import PlotSettings
+from mlpro.bf import Log, TStampType
 from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.bf.streams import InstDict, InstTypeNew, Instance
 
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import Cluster, ClusterAnalyzer
 from mlpro.oa.streams.tasks.changedetectors.basics import Change, ChangeDetector
+
+
+
+# Export list for public API
+__all__ = [ 'ChangeCB', 
+            'ChangeDetectorCB' ]
+
 
 
 

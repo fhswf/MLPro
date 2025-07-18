@@ -11,20 +11,27 @@
 ## -- 2025-06-09  1.0.0     DA       Refactoring: new parent ChangeCB
 ## -- 2025-06-11  1.0.1     DA       Corrections
 ## -- 2025-06-13  1.1.0     DA       Class Change: param p_id is now initialized to -1
+## -- 2025-07-18  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-13)
+Ver. 1.2.0 (2025-07-18) 
 
 This module provides a template class for cluster-based drifts to be used in cluster-based drift 
 detection algorithms.
 """
 
-from mlpro.bf.various import TStampType
+from mlpro.bf import TStampType
 from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.oa.streams.tasks.changedetectors.clusterbased import ChangeCB
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.basics import Drift
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
+
+
+
+# Export list for public API
+__all__ = [ 'DriftCB' ]
+
 
 
 
@@ -55,6 +62,7 @@ class DriftCB (ChangeCB, Drift):
         Further optional keyword arguments.
     """
     
+## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_id : int = 0,
                   p_status : bool = True,

@@ -6,15 +6,16 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-09  0.0.0     DS       Creation
+## -- 2025-07-18  0.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2025-06-09)
+Ver. 0.1.0 (2025-07-18) 
 
 This module provides a cluster-based deformation detector.
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.exceptions import *
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
@@ -22,6 +23,12 @@ from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.body import cprop_size_geo
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBSize
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
+
+
+
+# Export list for public API
+__all__ = [ 'DriftDetectorCBGenSizeChange' ]
+
 
 
 

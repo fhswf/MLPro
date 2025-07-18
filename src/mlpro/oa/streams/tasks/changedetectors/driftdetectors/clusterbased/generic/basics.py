@@ -13,23 +13,29 @@
 ## -- 2025-04-13  0.4.0     DA       Refactoring
 ## -- 2025-06-10  0.5.0     DA/DS    Refactoring
 ## -- 2025-06-11  0.5.1     DA       Corrections
+## -- 2025-07-18  0.6.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.1 (2025-06-11)
+Ver. 0.6.0 (2025-07-18) 
 
 This module provides template classes for generic cluster-based drift detection
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.bf.streams import Instance
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
-from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts import Drift
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased import DriftDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased  import DriftCB
+
+
+
+# Export list for public API
+__all__ = [ 'DriftDetectorCBGeneric' ]
+
 
 
 

@@ -9,22 +9,28 @@
 ## -- 2025-05-05  0.2.0     Ds       Refactoring : DriftDetectorCBSingle, DriftDetectorCBMulti
 ## -- 2025-06-09  1.0.0     DA       Refactoring: new parent ChangeDetectorCB
 ## -- 2025-06-11  1.0.1     DA       Corrections
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2025-06-11)
+Ver. 1.1.0 (2025-07-18) 
 
 This module provides a template for cluster-based drift detection algorithms.
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.math.properties import *
 
 from mlpro.oa.streams.tasks.changedetectors import Change
 from mlpro.oa.streams.tasks.changedetectors.clusterbased import ChangeDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.basics import DriftDetector
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import *
-from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
+from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
+
+
+
+# Export list for public API
+__all__ = [ 'DriftDetectorCB' ]
 
 
 

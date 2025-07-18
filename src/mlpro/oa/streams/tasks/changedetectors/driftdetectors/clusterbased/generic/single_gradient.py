@@ -12,22 +12,27 @@
 ## -- 2025-05-20  0.3.2     DA/DS    Bugfixes
 ## -- 2025-06-10  0.4.0     DA/DS    New class name: DriftDetectorCBGenSingleGradient
 ## -- 2025-06-11  0.4.1     DA       Bugfixes 
+## -- 2025-07-18  0.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.1 (2025-06-11)
+Ver. 0.5.0 (2025-07-18) 
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
 
 
-from mlpro.bf.various import Log
-from mlpro.bf.exceptions import *
+from mlpro.bf import Log, ImplementationError
 from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGeneric
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBMovement
+
+
+
+# Export list for public API
+__all__ = [ 'DriftDetectorCBGenSingleGradient' ]
 
 
 

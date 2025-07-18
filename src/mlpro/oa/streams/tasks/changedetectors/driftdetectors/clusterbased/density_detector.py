@@ -7,21 +7,28 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-09  0.0.0     DS       Creation
 ## -- 2025-06-10  0.0.1     DA/DS    Refactoring
+## -- 2025-07-18  0.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.1 (2025-06-10)
+Ver. 0.1.0 (2025-07-18)
 
 This module provides a cluster-based density detector.
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.density import cprop_density1
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBDensity
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
+
+
+
+# Export list for public API
+__all__ = [ 'DriftDetectorCBGenDensity' ]
+
 
 
 
