@@ -58,10 +58,11 @@
 ## -- 2025-01-17  2.7.1     DA/SY    Correction of method Persistent.save()
 ## -- 2025-03-11  2.7.2     SY       Enable recurse while pickling 
 ## -- 2025-07-16  2.7.3     SY       Pickling desearilisation issue 
+## -- 2025-07-18  2.8.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.7.3 (2025-07-16)
+Ver. 2.8.0 (2025-07-18)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...

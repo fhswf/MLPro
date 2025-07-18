@@ -8,10 +8,11 @@
 ## -- 2021-09-27  1.0.0     DA       Creation
 ## -- 2021-11-10  1.0.1     DA       Added new exception ImplementationError
 ## -- 2021-12-12  1.0.2     DA       Added new exception Error
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-12)
+Ver. 1.1.0 (2025-07-18)
 
 This module provides exception classes.
 """

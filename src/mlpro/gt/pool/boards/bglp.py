@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.gt.pool.boards
 ## -- Module  : bglp.py
 ## -------------------------------------------------------------------------------------------------
@@ -14,10 +14,11 @@
 ## -- 2023-04-12  1.0.5     SY       Refactoring 
 ## -- 2023-05-11  1.0.6     SY       Refactoring
 ## -- 2023-06-27  1.0.7     SY       Refactoring module name
+## -- 2025-07-17  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2023-06-27)
+Ver. 1.1.0 (2025-07-17) 
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP)
 following GT interface. This module provides game board classed based on BGLP
@@ -29,7 +30,11 @@ from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.gt import *
 
         
-        
+
+ # Export list for public API
+__all__ = [ 'BGLP_GT' ]
+
+
         
         
 ## -------------------------------------------------------------------------------------------------

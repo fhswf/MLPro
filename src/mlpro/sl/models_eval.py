@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.sl
 ## -- Module  : models_metrics.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,20 +7,30 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-18  0.0.0     LSB      Creation
 ## -- 2023-07-15  1.0.0     LSB      Release
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-07-15)
+Ver. 1.1.0 (2025-07-18)
 
 This module provides SL metrics classes for supervised learning tasks.
 """
 
 
-
-import numpy as np
-from mlpro.bf.math import *
 import warnings
 
+import numpy as np
+
+from mlpro.bf import Log
+from mlpro.bf.math import *
+
+
+
+# Export list for public API
+__all__ = [ 'MetricValue',
+            'Metric',
+            'MetricAccuracy',
+            'MSEMetric' ]
 
 
 
@@ -74,7 +84,6 @@ class MetricValue(Element):
         """
 
         self._cycle = p_cycle
-
 
 
 
@@ -283,7 +292,6 @@ class Metric(Log):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MetricAccuracy(Metric):
@@ -315,7 +323,6 @@ class MetricAccuracy(Metric):
         self._mappings_total = 0
         self._num_instances = 0
         self._sum = 0
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -359,7 +366,6 @@ class MetricAccuracy(Metric):
 
 
         output = p_model(input)
-
 
 
         for i in range(0, len(target.get_values()) if isinstance(input, BatchElement) else 1):
@@ -417,7 +423,6 @@ class MetricAccuracy(Metric):
         self._num_instances += 1
 
         return self._sum / self._num_instances
-
 
 
 
@@ -513,7 +518,6 @@ class MSEMetric(Metric):
         mse = np.mean([np.square(np.array(outputs[i]) - np.array(targets[i])) for i in range(len(targets))])
 
         return mse
-
 
 
 ## -------------------------------------------------------------------------------------------------
