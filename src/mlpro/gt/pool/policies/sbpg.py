@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-09  0.0.0     SY       Creation
 ## -- 2025-04-09  1.0.0     SY       Release of first version
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-09)
+Ver. 1.1.0 (2025-07-18) 
 
 This module implements a dynamic game policy class for State-Based Potential Games (SbPG),
 including three learning algorithms:
@@ -23,13 +24,24 @@ The class SbPG supports learning in multi-agent environments where agents update
 based on individual utility gradients or best-response dynamics over discretized states.
 """
 
-from mlpro.rl.models import *
-from mlpro.bf.ml import *
 import random
 import math as m
+
+import numpy as np
 import torch
          
+from mlpro.bf import Log
+from mlpro.bf.math import MSpace
+from mlpro.bf.systems import State, Action
+from mlpro.bf.ml import *
+
+from mlpro.rl.models import *
         
+
+
+# Export list for public API
+__all__ = [ 'SbPG' ]
+
 
 
 

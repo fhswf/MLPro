@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.physics
 ## -- Module  : unitconverter.py
 ## -------------------------------------------------------------------------------------------------
@@ -23,6 +23,10 @@ This module provides models for unit conversions.
 from mlpro.bf.physics import TransferFunction
 from mlpro.bf.various import Log
 
+
+
+# Export list for public API
+__all__ = [ 'UnitConverter' ]
 
 
 

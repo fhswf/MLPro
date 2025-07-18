@@ -20,10 +20,11 @@
 ## -- 2023-05-04  2.0.4     LSB      Refactoring
 ## -- 2024-02-16  2.0.5     SY       Renaming Module
 ## -- 2025-04-24  2.0.6     DA       Bugfix
+## -- 2025-07-18  2.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.6 (2025-04-24)
+Ver. 2.1.0 (2025-07-18)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem as well as using
 PyTorch-based MLP network from MLPro-SL's pool of objects.
@@ -41,22 +42,25 @@ You will learn:
 """
 
 
+from pathlib import Path
+
 import torch
-import numpy as np
 import matplotlib.pyplot as plt
 
-
+from mlpro.bf import Log
 from mlpro.bf.plot import DataPlotting
 from mlpro.bf.math import *
+import mlpro.bf.mt as mt
+from mlpro.bf.ml import Model
+from mlpro.bf.ml.systems import AFctSTrans
+
 from mlpro.rl import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.gridworld import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
-from pathlib import Path
 from mlpro.rl.pool.actionplanner.mpc import MPC
 from mlpro.rl.pool.envs.gridworld import *
-import mlpro.bf.mt as mt
               
 
             

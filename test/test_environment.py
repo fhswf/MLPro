@@ -29,12 +29,15 @@ Unit test classes for environment.
 import pytest
 import random
 import numpy as np
+
+from mlpro.bf.math import ESpace
+from mlpro.bf.systems import State, Action
+
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.envs.gridworld import GridWorld
-from mlpro.rl.pool.envs.doublependulum import DoublePendulumS7
-from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
+from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4, DoublePendulumS7
 
 
 ## -------------------------------------------------------------------------------------------------

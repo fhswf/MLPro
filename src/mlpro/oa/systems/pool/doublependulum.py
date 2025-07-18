@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.systems.pool
 ## -- Module  : doublependulum.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,19 +7,32 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-30  1.0.0     LSB      Creation
 ## -- 2023-06-07  1.0.1     LSB      Refactoring due to removal of DP at BF-ML-Pool level
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-06-07)
+Ver. 1.1.0 (2025-07-18)
 
 This module provides the online adaptive extensions of the Double Pendulum System.
 
 """
 
 
-from mlpro.oa.systems import *
+from datetime import timedelta
+
+from mlpro.bf import Log, Mode
+from mlpro.bf.mt import *
+from mlpro.bf.systems import FctSTrans, FctSuccess, FctBroken
 from mlpro.bf.systems.pool.doublependulum import *
 
+from mlpro.oa.streams import OAStreamWorkflow
+from mlpro.oa.systems import *
+
+
+
+# Export list for public API
+__all__ = [ 'DoublePendulumOA4',
+            'DoublePendulumOA7' ]
 
 
 

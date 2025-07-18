@@ -12,18 +12,30 @@
 ## -- 2022-10-08  1.0.3     SY       Bug fixing
 ## -- 2022-11-02  1.0.4     DA       Refactoring: method _adapt()
 ## -- 2023-09-21  1.0.5     SY       Typo on description
+## -- 2025-07-17  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2023-09-21)
+Ver. 1.1.0 (2025-07-17) 
 
 This module provides random genarator for multi purposes, e.g. testing environment, etc..
 """
 
-from mlpro.rl.models import *
 import random
+
+import numpy as np
+
+from mlpro.bf import ParamError
+from mlpro.bf.systems import State, Action
+from mlpro.rl import Policy
          
         
+        
+# Export list for public API
+__all__ = [ 'RandomGenerator' ]
+
+
+
         
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------

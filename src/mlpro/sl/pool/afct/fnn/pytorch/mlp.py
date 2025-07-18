@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.sl.pool.FNN.pytorch
 ## -- Module  : mlp.py
 ## -------------------------------------------------------------------------------------------------
@@ -15,16 +15,31 @@
 ## -- 2023-07-04  1.2.3     LSB      Refactoring _complete_state for path conflict
 ## -- 2023-07-14  1.2.4     LSB      Refactoring for afct fct parameter, so it is provided after instanciating
 ## -- 2025-07-07  1.3.0     DA       Refactoring of method PyTorchMLP._map()
+## -- 2025-07-18  1.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2025-07-07)
+Ver. 1.4.0 (2025-07-18)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
+
+import numpy as np
 import torch
+
+from mlpro.bf import Log, ParamError
+from mlpro.bf.math import Element, MSpace
+from mlpro.bf.ml import HyperParam, HyperParamTuple
+
 from mlpro.sl.pool.afct.pytorch import *
 from mlpro.sl.fnn import MLP
+
+
+
+# Export list for public API
+__all__ = [ 'PyTorchMLP' ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------

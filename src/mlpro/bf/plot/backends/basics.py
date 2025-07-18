@@ -30,11 +30,21 @@ except:
     class Figure : pass
 
 
+# Export list for public API
+__all__ = [ 'WindowState',
+            'WSMINIMIZED',
+            'WSNORMAL',
+            'WSMAXIMIZED',
+            'WindowGeometry',
+            'PlotBackend' ]
+
+
 
 WindowState = int
 WSMINIMIZED = 0
 WSNORMAL    = 1
 WSMAXIMIZED = 2
+
 
 
 

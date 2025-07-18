@@ -9,22 +9,32 @@
 ## -- 2021-09-22  1.0.0     WB       Added PrioritizedBuffer Class and PrioritizedBufferElement,
 ## --                                including the required SegmentTree data structure
 ## -- 2021-09-26  1.0.1     WB       Bug Fix 
+## -- 2025-07-17  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
-## -- Reference
-## -- https://github.com/openai/baselines/blob/master/baselines/deepq/replay_buffer.py
-
 
 """
-Ver. 1.0.1 (2021-09-26)
+Ver. 1.2.0 (2025-07-17) 
 
 This module provides the Prioritized Buffer based on the reference.
 """
 
-import numpy as np
-from typing import List, Callable
+
+from typing import Callable
 import random
 import operator
-from mlpro.rl.models import *
+
+import numpy as np
+
+from mlpro.rl.models import SARSElement, SARSBuffer 
+
+
+
+# Export list for public API
+__all__ = [ 'PrioritizedBufferElement', 
+            'PrioritizedBuffer', 
+            'SegmentTree', 
+            'SumSegmentTree', 
+            'MinSegmentTree' ]
 
 
 

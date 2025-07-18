@@ -24,8 +24,15 @@ You will learn:
 
 """
 
+from matplotlib.figure import Figure
 
+from mlpro.bf.various import Log, ScientificObject
+from mlpro.bf.mt import Range
+from mlpro.bf.events import Event
+from mlpro.bf.plot import PlotSettings
+from mlpro.bf.math import Dimension
 from mlpro.bf.ml import *
+
 
 
 

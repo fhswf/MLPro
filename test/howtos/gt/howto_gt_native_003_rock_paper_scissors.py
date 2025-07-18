@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.gt.examples
 ## -- Module  : howto_gt_native_003_rock_paper_scissors.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-12-08  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-12-12)
+Ver. 1.1.0 (2025-07-18) 
 
 This module shows how to run a duel of two coalitions of a game of Rock Paper Scissors.
 
@@ -24,9 +25,13 @@ You will learn:
     
 """
 
-from mlpro.gt.native.basics import *
-from mlpro.gt.pool.native.games.rockpaperscissors import *
 from pathlib import Path
+
+from mlpro.bf import Log
+
+from mlpro.gt.native import *
+from mlpro.gt.pool.native.games.rockpaperscissors import *
+
 
 
 

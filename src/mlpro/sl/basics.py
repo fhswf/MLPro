@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.sl
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
@@ -19,21 +19,29 @@
 ## -- 2023-06-20  0.4.4     LSB      Moved the quality check to the adapt online method
 ## -- 2023-06-20  0.5.0     LSB      New methods: adapt_offline and adapt_online
 ## -- 2023-07-24  0.5.1     LSB      Merged the new methods back to _adapt method
+## -- 2025-07-18  0.6.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
-
 """
-Ver. 0.5.1 (2023-06-24)
+Ver. 0.6.0 (2025-07-18)
 
 This module provides model classes for supervised learning tasks. 
 """
 
-
-
-from mlpro.bf.ml import *
-from mlpro.sl.models_eval import Metric
 from typing import List
 
+from mlpro.bf import Log
+from mlpro.bf.data import Buffer
+from mlpro.bf.mt import Async, Task
+from mlpro.bf.math import Set, MSpace, Element, ESpace
+from mlpro.bf.ml import *
+
+from mlpro.sl.models_eval import Metric
+
+
+
+# Export list for public API
+__all__ = [ 'SLAdaptiveFunction' ]
 
 
 
@@ -81,7 +89,6 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
     C_TYPE = 'Adaptive Function (SL)'
     C_NAME = '????'
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,

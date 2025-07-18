@@ -25,8 +25,8 @@ You will learn:
 """
 
 
+from mlpro.bf import Log
 from mlpro.bf.physics.unitconverter import UnitConverter
-from mlpro.bf.various import Log
 
 
 

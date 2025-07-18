@@ -16,10 +16,11 @@
 ## -- 2023-03-25  1.2.3     DA       Class ScenarioBase: new parent class Persistent
 ## -- 2024-11-09  1.3.0     DA       Class ScenarioBase: new parent class KWArgs
 ## -- 2024-12-29  1.4.0     DA       Method ScenarioBase.run(): logging of duration/speed
+## -- 2025-07-18  1.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2024-12-29)
+Ver. 1.5.0 (2025-07-18)
 
 This module provides classes for operation.
 """
@@ -30,6 +31,13 @@ from datetime import timedelta, datetime
 from mlpro.bf.various import Log, Persistent, Timer, KWArgs
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
+from mlpro.bf.exceptions import ParamError
+
+
+
+# Export list for public API
+__all__ = [ 'Mode',
+            'ScenarioBase' ]
 
 
 
