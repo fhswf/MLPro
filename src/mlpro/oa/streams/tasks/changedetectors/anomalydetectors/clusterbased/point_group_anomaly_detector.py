@@ -20,15 +20,16 @@
 ## -- 2025-06-15  0.3.4     DS       Bug fixes
 ## -- 2025-06-27  0.3.5     DS       Bug fixes
 ## -- 2025-06-30  0.3.6     DS       Bug fixes
+## -- 2025-07-18  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.6 (2025-06-27)
+Ver. 0.4.0 (2025-07-18)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.math.properties import Property, PropertyDefinition
 from mlpro.bf.streams import Instance
 from mlpro.oa.streams import OAStreamTask
@@ -36,6 +37,15 @@ from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_size, cprop_size_prev
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased.basics import AnomalyDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import AnomalyCB, PointAnomaly, SpatialGroupAnomaly, TemporalGroupAnomaly
+
+
+
+# Export list for public API
+__all__ = [ 'AnomalyDetectorCBPA',
+            'AnomalyDetectorCBSGA',
+            'AnomalyDetectorCBTGA' ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------

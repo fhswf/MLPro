@@ -7,16 +7,23 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-03-11  0.1.0     DA       Creation
 ## -- 2025-04-22  0.2.0     DA/DS    Removed the individual visualization
+## -- 2025-07-18  0.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-04-22)
+Ver. 0.3.0 (2025-07-18)
 
 
 This module provides a template class for point anomaly event to be used in anomaly detection algorithms.
 """
 
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
+
+
+
+# Export list for public API
+__all__ = [ 'PointAnomaly' ]
+
 
 
 

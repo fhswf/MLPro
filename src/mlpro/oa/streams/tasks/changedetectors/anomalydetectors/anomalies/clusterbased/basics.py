@@ -15,10 +15,11 @@
 ## -- 2025-06-09  2.0.0     DA       Refactoring: new parent ChangeCB
 ## -- 2025-06-11  2.0.1     DA       Corrections
 ## -- 2025-06-13  2.1.0     DA       Class Change: param p_id is now initialized to -1
+## -- 2025-07-18  2.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-06-13)
+Ver. 2.2.0 (2025-07-18)
 
 This module provides a template class for cluster-based anomalies to be used in anomaly detection algorithms.
 """
@@ -29,6 +30,12 @@ from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.oa.streams.tasks.changedetectors.clusterbased import ChangeCB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.basics import Cluster
+
+
+
+# Export list for public API
+__all__ = [ 'AnomalyCB' ]
+
 
 
 

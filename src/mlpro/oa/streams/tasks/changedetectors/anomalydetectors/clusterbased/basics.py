@@ -13,15 +13,16 @@
 ## -- 2024-05-28  1.3.0     SK       Refactoring
 ## -- 2025-06-09  2.0.0     DA       Refactoring: new parent ChangeDetectorCB
 ## -- 2025-06-24  2.0.1     DA/DS    Bugfixes
+## -- 2025-07-18  2.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2025-06-24)
+Ver. 2.1.0 (2025-07-18)
 
 This module provides templates for cluster-based anomaly detection algorithms.
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.math.properties import *
 
 from mlpro.oa.streams.tasks.changedetectors import Change
@@ -29,6 +30,11 @@ from mlpro.oa.streams.tasks.changedetectors.clusterbased import ChangeDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.basics import AnomalyDetector
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import *
 from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
+
+
+
+# Export list for public API
+__all__ = [ 'AnomalyDetectorCB' ]
 
 
 

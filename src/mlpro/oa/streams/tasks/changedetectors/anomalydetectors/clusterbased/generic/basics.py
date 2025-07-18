@@ -10,15 +10,16 @@
 ## -- 2025-04-01  0.3.0     DA       Class AnomalyDetectorCBGeneric: integration of new method 
 ## --                                _get_tstamp()
 ## -- 2025-04-13  0.4.0     DA       Refactoring
+## -- 2025-07-18  0.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2025-04-13)
+Ver. 0.5.0 (2025-07-18)
 
 This module provides template classes for generic cluster-based anomaly detection
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.math.properties import PropertyDefinitions
 from mlpro.bf.streams import Instance
 
@@ -26,6 +27,12 @@ from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.clusterbased import AnomalyDetectorCB
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased import AnomalyCB
+
+
+
+# Export list for public API
+__all__ = [ 'AnomalyDetectorCBGeneric' ]
+
 
 
 
