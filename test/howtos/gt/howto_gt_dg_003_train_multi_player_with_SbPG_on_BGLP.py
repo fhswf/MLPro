@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-09  0.0.0     SY       Creation
 ## -- 2025-04-10  1.0.0     SY       Release of first version
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-10)
+Ver. 1.1.0 (2025-07-18) 
  
 This module shows how to train a multi-player in SbPG on the BGLP game board.
 
@@ -22,12 +23,13 @@ You will learn:
     
 """
 
+from pathlib import Path
+
+from mlpro.bf import Log
 
 from mlpro.gt import *
 from mlpro.gt.pool.boards.bglp import BGLP_GT
 from mlpro.gt.pool.policies.sbpg import SbPG
-from pathlib import Path
-
 
 
 

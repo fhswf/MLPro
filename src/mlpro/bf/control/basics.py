@@ -32,10 +32,11 @@
 ## --                                determine the initial system state
 ## -- 2025-06-02  1.0.1     DA       Implemented method ControlledSystem._reset()
 ## -- 2025-06-11  1.1.0     DA       Refactoring
+## -- 2025-07-18  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-11)
+Ver. 1.2.0 (2025-07-18)
 
 This module provides basic classes around the topic closed-loop control.
 
@@ -44,9 +45,7 @@ This module provides basic classes around the topic closed-loop control.
 from typing import Iterable, Tuple, List
 from datetime import datetime, timedelta
 
-from matplotlib.figure import Figure
-
-from mlpro.bf.plot import PlotSettings
+from mlpro.bf.plot import Figure, PlotSettings
 from mlpro.bf.various import Log, TStampType, Timer
 from mlpro.bf.mt import Range, Task, Workflow, Shared
 from mlpro.bf.ops import Mode
@@ -54,6 +53,27 @@ from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, Function, MSpace
 from mlpro.bf.streams import InstDict, InstTypeNew, Instance, StreamTask, StreamWorkflow, StreamShared, StreamScenario
 from mlpro.bf.systems import Action, System
+
+
+
+# Export list for public API
+__all__ = [ 'ControlData',
+            'get_ctrl_data',
+            'replace_ctrl_data',
+            'SetPoint',
+            'ControlError',
+            'ControlVariable',
+            'ControlledVariable',
+            'ControlTask',
+            'Operator',
+            'Controller',
+            'ControllerFct',
+            'ControlledSystem',
+            'ControlPanel',
+            'ControlShared',
+            'ControlPanelEntry',
+            'ControlWorkflow',
+            'ControlSystem' ]
 
 
 

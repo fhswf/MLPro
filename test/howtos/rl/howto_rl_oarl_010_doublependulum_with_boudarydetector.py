@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-31  1.0.0     LSB      Creation/release
 ## -- 2023-06-01  1.0.1     LSB      Beutified, Renamed
+## -- 2025-07-17  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-06-01)
+Ver. 1.1.0 (2025-07-17)
 
 This module is an illustration of howto run the online adaptive double pendulum (OADP) environment.
 
@@ -25,10 +26,15 @@ You will learn:
 """
 
 
+from mlpro.bf import Log, Mode
+from mlpro.bf.mt import Range
+from mlpro.bf.ml import Model
+
+from mlpro.rl import RLScenario, Agent
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumOA7
-from mlpro.rl import *
-from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
+
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 
 
 

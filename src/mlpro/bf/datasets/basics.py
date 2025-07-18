@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.datasets
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
@@ -14,13 +14,25 @@ Ver. 1.0.0 (2023-07-24)
 
 This module provides dataset classes for supervised learning tasks.
 """
-import os
 
+
+import os
+import random
+
+import numpy as np
+import pandas as pd
+
+from mlpro.bf.various import Log
+from mlpro.bf.events import *
+from mlpro.bf.exceptions import ParamError, Error
 from mlpro.bf.math import *
 from mlpro.bf.math.normalizers import NormalizerMinMax
-from mlpro.bf.events import *
-import random
-import pandas as pd
+
+
+
+# Export list for public API
+__all__ = [ 'Dataset',
+            'SASDataset' ]
 
 
 

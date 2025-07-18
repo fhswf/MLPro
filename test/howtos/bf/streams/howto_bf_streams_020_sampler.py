@@ -31,7 +31,7 @@ You will learn:
 from datetime import datetime
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.samplers import *
-from mlpro.bf.various import *
+from mlpro.bf.various import Log
 from mlpro.bf.data import *
 
 

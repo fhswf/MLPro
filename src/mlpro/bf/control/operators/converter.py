@@ -8,22 +8,26 @@
 ## -- 2024-11-05  0.1.0     AP       Creation and initial implementation
 ## -- 2024-11-10  0.2.0     DA       Turned off visualization
 ## -- 2025-06-11  0.3.0     DA       Refactoring
+## -- 2025-07-18  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-06-11)
+Ver. 0.4.0 (2025-07-18)
 
 This module provides an implementation of a converter that convertsdetermins the next control variable by
 buffering and cumulating it.
 
 """
 
-import numpy as np
-
-from mlpro.bf.math.basics import Log
-from mlpro.bf.mt import Log, Task
+from mlpro.bf import Log
+from mlpro.bf.mt import Task
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.bf.control import ControlData, Operator, get_ctrl_data
+
+
+
+# Export list for public API
+__all__ = [ 'Converter' ]
 
 
 

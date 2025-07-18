@@ -1,1 +1,1 @@
-from mlpro.bf.physics.basics import *
+from .basics import *

@@ -1,30 +1,43 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.sl
-## -- Module  : basics.py
+## -- Module  : models_train.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-06-13  0.0.0     LSB      Creation
 ## -- 2023-07-15  1.0.0     LSB      Release
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-07-15)
+Ver. 1.1.0 (2025-07-18)
 
 This module provides training classes for supervised learning tasks.
 """
 
+import os
+from datetime import datetime, timedelta
 
-import warnings
 import matplotlib.pyplot as plt
-from mlpro.bf.data import *
-from mlpro.sl import *
-from mlpro.sl.basics import *
-from mlpro.bf.plot import DataPlotting
-from mlpro.bf.datasets import *
-from mlpro.bf.ml import *
 
+from mlpro.bf import Log, Mode, ImplementationError
+from mlpro.bf.data import DataStoring
+from mlpro.bf.plot import DataPlotting
+from mlpro.bf.datasets import Dataset
+from mlpro.bf.math import BatchElement
+from mlpro.bf.ml import Model, Scenario, Training, TrainingResults
+
+from mlpro.sl import SLAdaptiveFunction
+
+
+
+# Export list for public API
+__all__ = [ 'SLDataStoring',
+            'SLDataPlotting',
+            'SLScenario',   
+            'SLTrainingResults',
+            'SLTraining' ]
 
 
 

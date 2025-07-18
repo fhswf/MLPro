@@ -30,8 +30,12 @@ You will learn:
 
 """
 
+from datetime import timedelta
 
-from mlpro.bf.various import Log
+import numpy as np
+
+from mlpro.bf import Log, Mode
+from mlpro.bf.math import ESpace, Dimension
 from mlpro.bf.systems import *
 import random
 

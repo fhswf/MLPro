@@ -90,6 +90,16 @@ from mlpro.bf.exceptions import ImplementationError, ParamError
 from mlpro.bf.plot.backends import *
 from mlpro.bf.data import ConfigFile
 
+
+
+# Export list for public API
+__all__ = [ 'Figure',
+            'PlotSettings',
+            'Plottable' ]   
+
+
+
+
 # Pseudo definitions until the final plot classes are imported
 class Figure: pass
 class Axes: pass

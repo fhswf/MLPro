@@ -30,6 +30,7 @@ You will learn:
 
 """
 
+from mlpro.bf import Log, Mode, PlotSettings
 from mlpro.oa.streams import *
 from mlpro.bf.streams.streams import *
 from mlpro.oa.streams.tasks.normalizers import NormalizerZTransform

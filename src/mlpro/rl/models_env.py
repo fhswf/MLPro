@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl
 ## -- Module  : models_env.py
 ## -------------------------------------------------------------------------------------------------
@@ -44,17 +44,28 @@
 ## --                                to p_state_old
 ## -- 2023-02-13  1.7.3     MRD       Simplify State Space and Action Space generation
 ## -- 2023-05-30  1.7.4     LSB      Redefining the inheritence order in EnvBase to resolve MRO in OAEnv
+## -- 2025-07-17  1.8.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.4 (2023-05-30)
+Ver. 1.8.0 (2025-07-17) 
 
 This module provides model classes for environments.
 """
 
+from datetime import timedelta
 
+from mlpro.bf import Log, Mode, ParamError
+from mlpro.bf.various import TStamp
 from mlpro.bf.systems import *
 
+
+
+# Export list for public API
+__all__ = [ 'Reward',
+            'FctReward',
+            'EnvBase',
+            'Environment' ]
 
 
 

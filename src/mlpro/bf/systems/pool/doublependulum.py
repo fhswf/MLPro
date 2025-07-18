@@ -9,10 +9,11 @@
 ## -- 2023-03-05  1.0.0     LSB      Release
 ## -- 2023-03-08  1.0.1     LSB      Refactoring for visualization
 ## -- 2024-12-11  1.0.2     DA       Refactoring      
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2024-12-11)
+Ver. 1.1.0 (2025-07-18)
 
 The Double Pendulum System is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -22,14 +23,31 @@ Pendulum consists of an input motor providing the torque in either directions to
 """
 
 import random
+from collections import deque
+from datetime import timedelta
+
 import numpy as np
 from numpy import sin, cos
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
-from collections import deque
 
 from mlpro.bf.various import *
+from mlpro.bf.exceptions import ParamError
+from mlpro.bf.events import *
+from mlpro.bf.mt import *
+from mlpro.bf.ops import Mode
+from mlpro.bf.plot import Figure, PlotSettings
+from mlpro.bf.math import ESpace, Dimension
+from mlpro.bf.streams import *
 from mlpro.bf.systems import *
+
+
+
+# Export list for public API
+__all__ = [ 'DoublePendulumSystemRoot',
+            'DoublePendulumSystemS4',
+            'DoublePendulumSystemS7' ]
+
 
 
 

@@ -26,7 +26,7 @@ You will learn:
 """
 
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 
 
 

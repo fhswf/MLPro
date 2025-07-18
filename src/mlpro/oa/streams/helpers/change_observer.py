@@ -6,35 +6,61 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-06-24  0.1.0     DA/DS    New class ChangeObserver for change observation
+## -- 2025-07-15  0.2.0     DA       Class ChangeObserver: new parameter p_change_event_ids
+## -- 2025-07-16  0.3.0     DA       Class ChangeObserver: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-06-24)
+Ver. 0.3.0 (2025-07-16)
 
 This module provides the ChangeObserver class to be used for observation and visualization of stream
 adaptation events.
 
 """
 
-from mlpro.bf.various import Log, KWArgs
+from mlpro.bf.various import Log
 from mlpro.bf.exceptions import ParamError
 from mlpro.bf.plot import PlotSettings
+from mlpro.bf.streams import StreamTaskHelper
 
+from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.changedetectors import Change 
-from mlpro.oa.streams import OAStreamHelper, OAStreamTask
+
+
+
+# Export list for public API
+__all__ = [ 'ChangeObserver' ]
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ChangeObserver (OAStreamHelper, Log, KWArgs):
+class ChangeObserver (StreamTaskHelper):
     """
     This class observes adaptations of particular oa stream tasks. Its event handler method can be 
     registered for adaptation events of a stream task.
 
     Parameters
     ----------
-    
+    p_related_task : OAStreamTask
+        The stream task to be observed.
+    p_no_per_task : int = 0
+        Helper number of the task. This is used to distinguish between multiple helpers for the same task.
+    p_annotation : str = None
+        Optional annotation for the helper.
+    p_window_title: str = None
+        Optional window title for the helper. If None, a default title is generated.
+    p_change_event_ids : list
+        List of change event ids to be observed. Each entry can be a string or a tuple of (event_id, color).
+    p_logarithmic_plot : bool = True
+        If True, the y-axis of the plot is logarithmic.
+    p_visualize : bool
+        If True, the plot is visualized.
+    p_logging : int
+        Logging level for this helper. Default is Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further keyword arguments for the helper.
     """
 
     C_TYPE              = 'Helper'
@@ -45,55 +71,63 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
     C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
-    C_ANOMALY_COLORS = [ 'blue',
-                         'red',
-                         'green',
-                         'purple', 
-                         'yellow',
-                         'orange' ]
+    C_ANOMALY_COLORS    = [ 'blue',
+                            'red',
+                            'green',
+                            'purple', 
+                            'yellow',
+                            'orange' ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_related_task : OAStreamTask,
-                  p_change_types : list = [],
+                  p_no_per_task : int = 0,
+                  p_annotation : str = None,
+                  p_window_title: str = None,
+                  p_change_event_ids : list = [],
                   p_logarithmic_plot : bool = True,
                   p_visualize : bool = True,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        OAStreamHelper.__init__(self, p_visualize = p_visualize )
-        Log.__init__(self, p_logging = p_logging)
-        KWArgs.__init__(self, **p_kwargs)
-
-        self._related_task      = p_related_task
         self._logarithmic_plot  = p_logarithmic_plot
-        self._change_types      = p_change_types
         self._color_max         = len( ChangeObserver.C_ANOMALY_COLORS )
         self._color_id          = 0
         self._change_colors     = {}
-
         self.stat_change_events = {}
-
-        if len(self._change_types) == 1:
-            self._related_task.register_event_handler( p_event_id = self._change_types[0].get_event_id( p_status = True ),
-                                                       p_event_handler = self._event_handler )
-            
-            self._change_colors[self._change_types[0].get_event_id( p_status = True)] = self.C_ANOMALY_COLORS[0]
-            
-            self._related_task.register_event_handler( p_event_id = self._change_types[0].get_event_id( p_status = False ),
-                                                       p_event_handler = self._event_handler )
-            
-            self._change_colors[self._change_types[0].get_event_id( p_status = False)] = self.C_ANOMALY_COLORS[1]
-
-        elif len(self._change_types) > 1:
-            for anomaly_type in self._change_types:
-                self._related_task.register_event_handler( p_event_id = anomaly_type.get_event_id( p_status = True),
-                                                           p_event_handler = self._event_handler )
-                self._change_colors[anomaly_type.get_event_id( p_status = True)] = self.C_ANOMALY_COLORS[self._color_id]
-                self._color_id = ( self._color_id + 1 ) & self._color_max
-                
-        else:
+        
+        if len(p_change_event_ids) == 0:
             raise ParamError( 'ChangeObserver: No change types given for observation.' )
+        
+
+        event_ids = []
+        for event_entry in p_change_event_ids:
+            if isinstance(event_entry, str):
+                event_id       = event_entry
+                event_color    = self.C_ANOMALY_COLORS[self._color_id]
+                self._color_id = ( self._color_id + 1 ) % self._color_max
+            else:
+                event_id    = event_entry[0]
+                event_color = event_entry[1]
+
+            event_ids.append(event_entry)                 
+            self._change_colors[event_id] = event_color
+
+
+        super().__init__( p_related_task = p_related_task,
+                          p_event_ids = event_ids,
+                          p_no_per_task = p_no_per_task,
+                          p_annotation = p_annotation,
+                          p_window_title = p_window_title,
+                          p_logging = p_logging,
+                          p_visualize = p_visualize,
+                          **p_kwargs )
+        
+    
+
+            
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -138,7 +172,6 @@ class ChangeObserver (OAStreamHelper, Log, KWArgs):
         axes = self.get_plot_settings().axes
         axes.legend(title='Changes')
         axes.set_xlabel('Time index')
-        # axes.set_ylabel('Adapted instances')     
 
         if self._logarithmic_plot:
             axes.set_yscale('log')

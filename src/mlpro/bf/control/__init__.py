@@ -1,1 +1,1 @@
-from mlpro.bf.control.basics import *
+from .basics import *

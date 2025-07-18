@@ -14,10 +14,11 @@
 ## --                                both SetPoint and ControlledVariable are detected
 ## -- 2024-12-03  0.6.1     DA       Bugfix in method Comparator.get_control_error()
 ## -- 2025-06-11  0.7.0     DA       Refactoring
+## -- 2025-07-18  0.8.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2025-06-11)
+Ver. 0.8.0 (2025-07-18)
 
 This module provides an implementation of a comparator that determins the control error based on 
 setpoint and controlled variable (system state).
@@ -26,10 +27,15 @@ setpoint and controlled variable (system state).
 
 import numpy as np
 
-from mlpro.bf.various import Log
-from mlpro.bf.math import Element
+from mlpro.bf import Log
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.bf.control import SetPoint, ControlledVariable, ControlError, Operator, get_ctrl_data
+
+
+
+# Export list for public API
+__all__ = [ 'Comparator' ]
+
 
 
 

@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-10-10  0.1.0     DA       Initial implementation
 ## -- 2024-10-13  0.2.0     DA       Random state jump
+## -- 2025-07-18  0.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2024-10-13)
+Ver. 0.3.0 (2025-07-18)
 
 This module provides a simple demo system that just cumulates a percentage part of the incoming
 action to the inner state.
@@ -27,6 +28,11 @@ from mlpro.bf.ops import Mode
 from mlpro.bf.mt import Task
 from mlpro.bf.math import Dimension, MSpace, ESpace
 from mlpro.bf.systems import State, Action, System
+
+
+
+# Export list for public API
+__all__ = [ 'Fox' ]
 
 
 

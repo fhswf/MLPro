@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2024-11-08  0.1.0     DA       Initial implementation
 ## -- 2024-11-09  1.0.0     DA       Extended ControlledSystemList by type System
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-11-089)
+Ver. 1.1.0 (2025-07-18)
 
 This module provides a container class for cascade control systems.
 
@@ -18,11 +19,19 @@ This module provides a container class for cascade control systems.
 
 from typing import List, Union
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.exceptions import *
 from mlpro.bf.systems import System
-from mlpro.bf.control import *
+from mlpro.bf.control.basics import *
 from mlpro.bf.control.operators import Comparator, Converter
+
+
+
+# Export list for public API
+__all__ = [ 'ControllerList', 
+            'ControlledSystemList', 
+            'CascadeControlSystem' ]
+
 
 
 
