@@ -8,10 +8,11 @@
 ## -- 2025-06-24  0.1.0     DA/DS    New class ChangeObserver for change observation
 ## -- 2025-07-15  0.2.0     DA       Class ChangeObserver: new parameter p_change_event_ids
 ## -- 2025-07-16  0.3.0     DA       Class ChangeObserver: refactoring
+## -- 2025-07-18  0.3.1     DA       Bugfix in ChangeObserver.__init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-07-16)
+Ver. 0.3.1 (2025-07-18)
 
 This module provides the ChangeObserver class to be used for observation and visualization of stream
 adaptation events.
@@ -110,7 +111,7 @@ class ChangeObserver (StreamTaskHelper):
                 event_id    = event_entry[0]
                 event_color = event_entry[1]
 
-            event_ids.append(event_entry)                 
+            event_ids.append(event_id)                 
             self._change_colors[event_id] = event_color
 
 
