@@ -1,1 +1,1 @@
-from mlpro.sl.pool.afct.fnn.pytorch import *
+from .pytorch import *
