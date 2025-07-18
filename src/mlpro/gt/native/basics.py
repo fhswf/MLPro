@@ -18,7 +18,7 @@ This module provides model classes for tasks related to a Native Game Theory.
 
 """
 
-from random import random
+import random
 from datetime import timedelta
 from typing import Union
 import statistics as st
