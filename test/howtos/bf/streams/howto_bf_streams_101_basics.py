@@ -113,6 +113,7 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot()
+    myscenario.run()
     input('Press ENTER to start stream processing...')
 
 myscenario.run()
