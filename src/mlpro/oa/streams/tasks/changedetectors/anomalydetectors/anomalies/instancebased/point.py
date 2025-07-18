@@ -12,10 +12,11 @@
 ## -- 2025-02-28  1.3.0     DA       Refactoring and simplification
 ## -- 2025-06-08  1.4.0     DA       Refactoring of PointAnomaly._update_plot*: new return param
 ## -- 2025-06-15  1.4.1     DA       Activated plotting for PointAnomaly
+## -- 2025-07-18  1.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2025-06-15)
+Ver. 1.5.0 (2025-07-18)
 
 
 This module provides a template class for point anomaly event to be used in anomaly detection algorithms.
@@ -30,6 +31,12 @@ except:
     
 from mlpro.bf.plot import PlotSettings
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
+
+
+
+# Export list for public API
+__all__ = [ 'PointAnomaly' ]
+
 
 
 
