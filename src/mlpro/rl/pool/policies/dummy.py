@@ -18,7 +18,7 @@ Ver. 1.3.0 (2025-07-17)
 This module provide Policy Dummy for unittest purpose.
 """
 
-from random import random
+import random
 
 import numpy as np
 

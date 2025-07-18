@@ -30,7 +30,7 @@ This module provides an environment of a robot manipulator based on Homogeneous 
 """
 
 from datetime import timedelta
-from random import random
+import random
 
 import numpy as np
 import torch
