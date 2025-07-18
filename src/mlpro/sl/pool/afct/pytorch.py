@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.sl.pool.afct
 ## -- Module  : pytorch.py
 ## -------------------------------------------------------------------------------------------------
@@ -19,10 +19,11 @@
 ## -- 2023-06-20  3.0.5     LSB       Updating the sampling method
 ## -- 2023-07-02  3.0.6     LSB       Refactoring the postproc and preproc methods
 ## -- 2023-07-14  3.0.7     LSB       Bug Fix
+## -- 2025-07-18  3.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.7 (2023-07-14)
+Ver. 3.1.0 (2025-07-18)
 
 This a helper module for supervised learning models using PyTorch. 
 """
@@ -31,10 +32,18 @@ This a helper module for supervised learning models using PyTorch.
 import torch
 import numpy as np
 from torch.utils.data.sampler import SubsetRandomSampler
-from mlpro.sl.basics import *
-from mlpro.bf.ml import *
-from mlpro.bf.data import BufferElement, Buffer
 
+from mlpro.bf.data import BufferElement, Buffer
+from mlpro.bf.math import Element
+
+from mlpro.sl import *
+
+
+
+# Export list for public API
+__all__ = [ 'PyTorchIOElement',
+            'PyTorchBuffer',
+            'PyTorchHelperFunctions' ]
 
 
 

@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.oa.systems
-## -- Module  : systems.py
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -15,22 +15,41 @@
 ## --                                - method _run(): changes on parameters
 ## -- 2024-06-10  0.2.1     LSB      Fixing for the refactoring on stream processing
 ## -- 2025-06-06  0.3.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-07-18  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-06-06)
+Ver. 0.4.0 (2025-07-18)
 
 This module provides modules and template classes for adaptive systems and adaptive functions.
 """
 
 
 import copy
-from mlpro.bf.ml.systems import *
-from mlpro.bf.systems import *
-from mlpro.bf.ml import Model
-from mlpro.bf.streams import *
-from mlpro.oa.streams import *
 from typing import Callable
+from datetime import timedelta
+
+from mlpro.bf import Log, ParamError, PlotSettings, Mode 
+from mlpro.bf.plot import Figure 
+from mlpro.bf.events import Event
+from mlpro.bf.mt import *
+from mlpro.bf.math import ESpace, MSpace
+from mlpro.bf.systems import *
+from mlpro.bf.streams import *
+from mlpro.bf.ml import Model
+from mlpro.bf.ml.systems import *
+
+from mlpro.oa.streams import *
+
+
+
+# Export list for public API
+__all__ = [ 'PseudoTask',
+            'OAFctSTrans',
+            'OAFctSuccess',
+            'OAFctBroken',
+            'OASystem' ]
+
 
 
 

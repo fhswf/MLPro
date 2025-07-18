@@ -14,10 +14,11 @@
 ## -- 2023-05-02  1.1.1     DA       Correction in class MyAdaptiveScenario
 ## -- 2023-08-23  1.1.2     DA       Minor corrections 
 ## -- 2024-05-24  1.2.0     DA       Refactoring
+## -- 2025-07-18  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-05-24)
+Ver. 1.3.0 (2025-07-18)
 
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
@@ -31,8 +32,10 @@ You will learn:
 
 """
 
-from mlpro.oa.streams import *
+from mlpro.bf import Log, Mode, PlotSettings
 from mlpro.bf.streams.streams import *
+
+from mlpro.oa.streams import *
 from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 
 

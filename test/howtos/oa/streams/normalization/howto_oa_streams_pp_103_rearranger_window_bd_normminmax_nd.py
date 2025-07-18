@@ -35,6 +35,7 @@ You will learn:
 
 from datetime import datetime
 
+from mlpro.bf import Log, Mode
 from mlpro.bf.mt import Task
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *

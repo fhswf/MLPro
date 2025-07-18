@@ -40,6 +40,8 @@ You will learn:
 """
 
 
+from mlpro.bf import Log, Mode, PlotSettings
+from mlpro.bf.mt import Task
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.tasks import *
 

@@ -34,9 +34,8 @@ from datetime import timedelta
 
 import numpy as np
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log, Mode
 from mlpro.bf.math import ESpace, Dimension
-from mlpro.bf.ops import Mode
 from mlpro.bf.systems import *
 import random
 

@@ -87,10 +87,11 @@
 ## --                                make the class be usable as a plot host.
 ## -- 2025-07-12  2.9.1     DA       Method StreamTask._update_plot_3d(): added explicite ax scaling
 ## -- 2025-07-16  3.0.0     DA       New classes StreamHelper, StreamTaskHelper
+## -- 2025-07-18  3.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.0 (2025-07-16)
+Ver. 3.1.0 (2025-07-18)
 
 This module provides classes for standardized data stream processing. 
 

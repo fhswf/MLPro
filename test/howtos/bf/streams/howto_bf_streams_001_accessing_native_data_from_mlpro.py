@@ -27,8 +27,9 @@ You will learn:
 
 
 from datetime import datetime
+
+from mlpro.bf import Log
 from mlpro.bf.streams.streams import *
-from mlpro.bf.various import Log
 
 
 

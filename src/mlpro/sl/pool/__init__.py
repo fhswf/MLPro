@@ -1,1 +1,1 @@
-from mlpro.sl.pool.afct import *
+from .afct import *

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro
 ## -- Module  : test_pool_policies.py
 ## -------------------------------------------------------------------------------------------------
@@ -10,16 +10,21 @@
 ## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -- 2023-04-19  1.1.1     MRD      Refactor module import gym to gymnasium
 ## -- 2024-02-16  1.1.2     SY       Replace gym environment to BGLP to remove dependency
+## -- 2025-07-18  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-04-19)
+Ver. 1.2.0 (2025-07-18)
 
 Unit test classes for policies.
 """
 
 
 import pytest
+
+from mlpro.bf import Log
+from mlpro.bf.ml import Model
+
 from mlpro.rl import *
 from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy

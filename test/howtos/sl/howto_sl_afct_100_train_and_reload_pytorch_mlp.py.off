@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.sl
 ## -- Module  : models_data.py
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2023-06-18  0.0.0     LSB      Creation
 ## -- 2023-07-15  1.0.0     LSB      Release
 ## -- 2023-07-30  1.0.1     LSB      Updates regarding selected output variables
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-07-30)
+Ver. 1.1.0 (2025-07-18)
 
 This module provides dataset classes for supervised learning tasks.
 
@@ -37,12 +38,19 @@ Note::
 # 1. Importing necessary packages
 import os
 from pathlib import Path
-from mlpro.rl.pool.envs.doublependulum import *
-from mlpro.sl.pool.afct.fnn.pytorch.mlp import *
-from mlpro.sl import *
-from mlpro.bf.datasets.basics import *
+
 import torch.optim as opt
 import torch.nn as nn
+
+from mlpro.bf import Log
+from mlpro.bf.datasets import *
+from mlpro.bf.math import BatchElement
+from mlpro.bf.ml import Model 
+
+from mlpro.sl import *
+from mlpro.rl.pool.envs.doublependulum import *
+from mlpro.sl.pool.afct.fnn.pytorch.mlp import *
+
 
 
 # 2. Setting Path variables for training and offline dataset resources (CSV files in this case).

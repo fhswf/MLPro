@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl
 ## -- Module  : models_agents.py
 ## -------------------------------------------------------------------------------------------------
@@ -55,18 +55,32 @@
 ## -- 2023-03-10  1.6.7     SY       Class Agent and RLScenarioMBInt : update logging
 ## -- 2023-03-27  1.7.0     DA       Refactoring of persistence
 ## -- 2025-04-24  1.7.1     DA       Bugfix in Policy.__init__(): param p_name
+## -- 2025-07-17  1.8.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2025-04-24) 
+Ver. 1.8.0 (2025-07-17) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
 
-from mlpro.bf.ml import Model
+from mlpro.bf import Log, ParamError
+from mlpro.bf.plot import Figure
+from mlpro.bf.math import MSpace
+from mlpro.bf.systems import State, Action 
+from mlpro.bf.ml import Model, HyperParamDispatcher
 from mlpro.rl.models_env import *
 from mlpro.rl.models_env_ada import *
 from mlpro.rl.models_train import RLScenario, RLTraining
+
+
+
+# Export list for public API
+__all__ = [ 'Policy',
+            'ActionPlanner',           
+            'Agent',
+            'MultiAgent' ]
+
 
 
 

@@ -8,19 +8,28 @@
 ## -- 2023-09-21  0.0.0     SY       Creation
 ## -- 2023-09-22  1.0.0     SY       Release of first version
 ## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-12)
+Ver. 1.1.0 (2025-07-18) 
 
 This module provides solver with random GT strategy.
 """
 
-from mlpro.gt.native.basics import *
 import random
+
+import numpy as np
+
+from mlpro.bf import ParamError
+from mlpro.gt.native.basics import *
          
         
-        
+
+# Export list for public API
+__all__ = [ 'RandomSolver' ]  
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
