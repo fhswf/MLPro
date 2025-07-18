@@ -8,10 +8,11 @@
 ## -- 2024-10-04  0.1.0     DA       Initial implementation 
 ## -- 2024-10-09  0.2.0     DA       Refactoring
 ## -- 2024-11-09  0.3.0     DA       Refactoring
+## -- 2025-07-18  0.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2024-11-09)
+Ver. 0.4.0 (2025-07-18)
 
 This module provides a simplified container class for a basic synchronous control system containing
 
@@ -23,11 +24,16 @@ This module provides a simplified container class for a basic synchronous contro
 
 from typing import Union
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.systems import System
 from mlpro.bf.control import Controller, ControlledSystem
 from mlpro.bf.control.controlsystems import CascadeControlSystem
 from mlpro.bf.control.operators import Integrator
+
+
+
+# Export list for public API
+__all__ = [ 'BasicControlSystem' ]
 
 
 

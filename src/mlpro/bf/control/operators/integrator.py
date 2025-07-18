@@ -10,10 +10,11 @@
 ## -- 2024-10-13  0.3.0     DA       Refactoring
 ## -- 2024-11-09  0.3.1     DA       Class Integrator: correction of C_NAME
 ## -- 2024-11-10  0.4.0     DA       Refactoring
+## -- 2025-07-18  0.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2024-11-010)
+Ver. 0.5.0 (2025-07-18)
 
 This module provides an implementation of an integrator that determins the next control variable by
 buffering and cumulating it.
@@ -26,6 +27,11 @@ from mlpro.bf.math.basics import Log
 from mlpro.bf.mt import Log, Task
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.bf.control import ControlVariable, Operator, get_ctrl_data
+
+
+
+# Export list for public API
+__all__ = [ 'Integrator' ]
 
 
 

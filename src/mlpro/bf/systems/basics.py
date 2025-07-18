@@ -53,10 +53,11 @@
 ## --                                - new method State.get_kwargs()
 ## -- 2024-10-06  2.5.0     DA       New property attribute State.value
 ## -- 2024-12-11  2.5.0     DA       New method DemoScenario.init_plot()
+## -- 2025-07-18  2.6.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2024-12-11)
+Ver. 2.6.0 (2025-07-18)
 
 This module provides models and templates for state based systems.
 """
@@ -67,8 +68,6 @@ from datetime import timedelta
 import random
 
 import numpy as np
-from matplotlib.figure import Figure
-
 
 from mlpro.bf.various import Log, TStampType, ScientificObject, Persistent
 from mlpro.bf.ops import Mode, ScenarioBase
@@ -76,7 +75,7 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.events import Event, EventManager
 from mlpro.bf.mt import *
 from mlpro.bf.data import *
-from mlpro.bf.plot import Plottable, PlotSettings
+from mlpro.bf.plot import Figure, Plottable, PlotSettings
 from mlpro.bf.math import *
 from mlpro.bf.streams import Instance
 
@@ -96,7 +95,6 @@ __all__ = [ 'State',
             'System',
             'MultiSystem',
             'DemoScenario' ]
-
 
 
 

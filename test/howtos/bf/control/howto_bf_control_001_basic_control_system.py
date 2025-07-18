@@ -30,9 +30,7 @@ You will learn:
 
 import numpy as np
 
-from mlpro.bf.various import Log
-from mlpro.bf.plot import PlotSettings
-from mlpro.bf.ops import Mode
+from mlpro.bf import Log, PlotSettings, Mode
 
 from mlpro.bf.systems.pool import Fox
 from mlpro.bf.control.controllers import Hunter
