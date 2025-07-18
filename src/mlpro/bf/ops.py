@@ -323,6 +323,7 @@ class ScenarioBase (Mode, Persistent, Plottable, KWArgs):
 
 
         # 3 Update visualization
+
         if self._visualize:
             self.update_plot()
 
