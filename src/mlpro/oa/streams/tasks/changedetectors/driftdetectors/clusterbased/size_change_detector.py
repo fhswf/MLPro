@@ -55,7 +55,7 @@ class DriftDetectorCBGenSizeChange (DriftDetectorCBGenSingleGradient):
                   p_logging=Log.C_LOG_ALL,
                   p_drift_buffer_size : int = 100,
                   p_thrs_inst : int = 0,
-                  p_thrs_cluster : int = 1 ):
+                  p_thrs_clusters : int = 1 ):
 
         super().__init__( p_clusterer = p_clusterer,
                           p_property = cprop_size_geo,
@@ -70,4 +70,4 @@ class DriftDetectorCBGenSizeChange (DriftDetectorCBGenSingleGradient):
                           p_logging = p_logging,
                           p_drift_buffer_size = p_drift_buffer_size,
                           p_thrs_inst = p_thrs_inst,
-                          p_thrs_cluster = p_thrs_cluster )
+                          p_thrs_clusters = p_thrs_clusters )
