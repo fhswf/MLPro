@@ -153,7 +153,8 @@ if visualize:
                                                             p_view_autoselect = True,
                                                             p_step_rate = step_rate,
                                                             p_plot_horizon = 100 ) )
-input('\nPlease arrange all windows and press ENTER to start control processing...')    
+    if __name__ == '__main__':
+        input('\nPlease arrange all windows and press ENTER to start control processing...')    
     
 mycontrolsystem.run()
 
