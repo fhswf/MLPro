@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.gt.examples
 ## -- Module  : howto_gt_native_002_prisoners_dilemma_3p.py
 ## -------------------------------------------------------------------------------------------------
@@ -26,9 +26,12 @@ You will learn:
     
 """
 
-from mlpro.gt.native.basics import *
-from mlpro.gt.pool.native.games.prisonersdilemma_3p import *
 from pathlib import Path
+
+from mlpro.bf import Log
+from mlpro.gt.native import *
+from mlpro.gt.pool.native.games.prisonersdilemma_3p import *
+
 
 
 

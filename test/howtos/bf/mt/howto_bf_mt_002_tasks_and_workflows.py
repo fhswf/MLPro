@@ -79,6 +79,8 @@ class MyTask (mt.Task):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, **p_kwargs):
 
+        print('Hello World')
+
         tid = self.get_tid()
         
         # 1 Dummy implementation to simulate a busy sub-task

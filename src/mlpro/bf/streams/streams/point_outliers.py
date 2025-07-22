@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.streams
 ## -- Module  : point_outliers.py
 ## -------------------------------------------------------------------------------------------------
@@ -29,6 +29,12 @@ from mlpro.bf.various import Log
 from mlpro.bf.math import Element, MSpace, ESpace
 from mlpro.bf.streams import Feature, Instance
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
+
+
+
+# Export list for public API
+__all__ = [ 'StreamMLProPOutliers' ]
+
 
 
 

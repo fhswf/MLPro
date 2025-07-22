@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.physics
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
@@ -23,6 +23,11 @@ try:
     import matplotlib.pyplot as plt
 except:
     pass
+
+
+
+# Export list for public API
+__all__ = [ 'TransferFunction' ]
 
 
 

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.pool.native.games
 ## -- Module  : supplydemand_3p.py
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2023-12-12  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
 ## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-12)
+Ver. 1.1.0 (2025-07-18) 
 
 This module provides a 3-player game of supply and demand games, where each player represents a seller.
 Each seller has the capability to produce the same product with a quantity between 1-5 items everyday.
@@ -38,12 +39,26 @@ going to add more solvers and this game is going to be updated accordingly.
 
 """
 
+import numpy as np
+
+from mlpro.bf.math import Dimension, MSpace
+from mlpro.bf.physics import TransferFunction
+from mlpro.bf.ml import Model  
+
 from mlpro.gt.native.basics import *
-from mlpro.bf.physics.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
 from mlpro.gt.pool.native.solvers.greedypolicy import MaxGreedyPolicy
          
-        
+
+
+# Export list for public API
+__all__ = [ 'PayoffFunction_SD3P',
+            'PayoffMatrix_SD3P',
+            'TransferFunction_SD3P',
+            'MaxGreedyPolicy_SD3P_P1',
+            'MaxGreedyPolicy_SD3P_P2',
+            'SupplyDemand_3P' ]
+  
         
 
 

@@ -29,6 +29,8 @@ You will learn:
 """
 
 
+from mlpro.bf import Log, Mode
+from mlpro.bf.mt import Task
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
 
@@ -111,6 +113,7 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot()
+    myscenario.run()
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

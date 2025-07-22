@@ -75,23 +75,47 @@
 ## --                                  - Method _set_adapted(): new parameters
 ## --                                  - Incorporation of new class Adaptation
 ## -- 2025-06-02  2.5.0     DA       New class AdaptationType
+## -- 2025-07-15  2.5.1     DA       Class AdaptationType: replaced parent class StrEnum by str
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2025-06-02)
+Ver. 2.5.1 (2025-07-15)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
 """
 
-from enum import StrEnum
 import random
+from datetime import datetime
+import os
 
 from mlpro.bf.various import *
+from mlpro.bf.events import Event
+from mlpro.bf.exceptions import *
+from mlpro.bf.plot import PlotSettings 
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.mt import *
 from mlpro.bf.ops import Mode, ScenarioBase
+
+class Figure: pass
+
+
+
+# Export list for public API
+__all__ = [ 'Model',
+            'AWorkflow',
+            'Adaptation',
+            'AdaptationType',
+            'HyperParam',
+            'HyperParamSpace',
+            'HyperParamTuple',
+            'HyperParamDispatcher',
+            'Scenario',
+            'Training',
+            'TrainingResults',
+            'HyperParamTuner',
+            'AdaptiveFunction' ]
 
 
 
@@ -190,11 +214,10 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AdaptationType(StrEnum):
+class AdaptationType (str): #(StrEnum):
     """
     Basic types of adaptation.
     """
-
     NONE        = ''
     FORWARD     = 'Forward'
     EVENT       = 'Event'
@@ -571,7 +594,6 @@ class Model (Task, ScientificObject):
         """
 
         raise NotImplementedError
-
 
 
 ## -------------------------------------------------------------------------------------------------

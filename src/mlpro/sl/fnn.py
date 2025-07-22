@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.sl
 ## -- Module  : fnn.py
 ## -------------------------------------------------------------------------------------------------
@@ -10,18 +10,27 @@
 ## -- 2023-03-07  1.0.0     SY       Release first version 
 ## -- 2023-03-10  1.1.0     SY       Combining _hyperparameters_check and _init_hyperparam
 ## -- 2025-07-07  1.2.0     DA       Refactoring of method FNN._map()
+## -- 2025-07-18  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-07-07)
+Ver. 1.3.0 (2025-07-18)
 
 This module provides model classes of feedforward neural networks for supervised learning tasks. 
 """
 
 
-from mlpro.sl.basics import *
+from mlpro.bf import ParamError
+from mlpro.bf.math import Element
+from mlpro.bf.ml import HyperParam, HyperParamTuple
+
+from mlpro.sl.basics import SLAdaptiveFunction
 
 
+
+# Export list for public API
+__all__ = [ 'FNN', 
+            'MLP' ]
 
 
 

@@ -24,6 +24,24 @@ This module provides typical cluster properties to be reused in own cluster anal
 from mlpro.bf.math.properties import PropertyDefinition, Property
 
 
+# Export list for public API
+__all__ = [ 'cprop_size',
+            'cprop_size1',
+            'cprop_size2',
+            'cprop_size_prev',
+            'cprop_size1_prev',
+            'cprop_size2_prev',
+            'cprop_age',
+            'cprop_age1',
+            'cprop_age2',
+            'cprop_density',
+            'cprop_density1',
+            'cprop_density2',
+            'cprop_compactness',
+            'cprop_compactness1',
+            'cprop_compactness2' ]
+
+
 #
 # Typical cluster properties to be reused in your own cluster analyzers
 #

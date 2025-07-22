@@ -60,7 +60,6 @@ Hint: plot and renormalization functionality is to be implemented in child class
 from typing import List, Union, Tuple
 from datetime import datetime
 
-from collections.abc import Iterable 
 import numpy as np
 
 try:
@@ -71,6 +70,21 @@ except:
 from mlpro.bf.various import KWArgs
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.math.normalizers import Normalizer, Renormalizable
+
+
+
+# Export list for public API
+__all__ = [ 'Property',
+            'Properties',
+            'MultiProperty',
+            'PropertyName',
+            'DerivativeOrderMax',
+            'ValuePrev',
+            'PropertyClass',
+            'PropertyDefinition',
+            'PropertyDefinitions' ]
+
+
 
 
 

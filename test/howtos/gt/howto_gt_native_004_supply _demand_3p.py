@@ -8,10 +8,11 @@
 ## -- 2023-12-12  0.0.0     SY       Creation
 ## -- 2023-12-12  1.0.0     SY       Release of first version
 ## -- 2024-01-12  1.0.1     SY       Refactoring
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-12)
+Ver. 1.1.0 (2025-07-18) 
 
 This module shows how to run a 3 sellers competition game of supply and demand.
 
@@ -25,9 +26,12 @@ You will learn:
     
 """
 
-from mlpro.gt.native.basics import *
-from mlpro.gt.pool.native.games.supplydemand_3p import *
 from pathlib import Path
+
+from mlpro.bf import Log
+
+from mlpro.gt.native import *
+from mlpro.gt.pool.native.games.supplydemand_3p import *
 
 
 

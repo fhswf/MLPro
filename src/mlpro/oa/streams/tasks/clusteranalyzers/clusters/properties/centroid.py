@@ -47,6 +47,17 @@ from mlpro.oa.streams.tasks.clusteranalyzers.clusters import Cluster
 
 
 
+# Export list for public API
+__all__ = [ 'Centroid',
+            'cprop_centroid',
+            'cprop_centroid1',
+            'cprop_centroid2',
+            'cprop_centroid_prev',
+            'cprop_centroid_prev1',
+            'cprop_centroid_prev2' ]
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------

@@ -36,6 +36,7 @@
 ## -- 2024-05-31  1.9.2     DA       Class Task: new exception rule for MacOs in meth. init_plot()
 ## -- 2024-06-17  2.0.0     DA       Class Workflow: new method get_tasks()
 ## -- 2024-06-18  2.1.0     DA       Class Task: new parent class KWArgs
+## -- 2024-10-07  2.2.0     DA       Classes Task, Workflow: new method reset()
 ## -- 2024-11-10  2.2.0     DA       Refactoring of class Workflow regarding plotting
 ## -- 2024-11-11  2.3.0     DA       Class Task:
 ## --                                - new method _on_finished()
@@ -43,10 +44,11 @@
 ## -- 2024-12-10  2.3.1     DA       - Method Task.init_plot(): refactoring
 ## --                                - Method Workflow.init_plot(): Bugfix and optimization
 ## -- 2024-12-11  2.4.0     DA       New method Workflow.remove_plot()
+## -- 2025-07-18  2.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2024-12-11)
+Ver. 2.5.0 (2025-07-18)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -73,6 +75,15 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.various import *
 from mlpro.bf.events import EventManager, Event
 from mlpro.bf.plot import PlotSettings, Plottable
+
+
+
+# Export list for public API
+__all__ = [ 'Range',
+            'Shared',
+            'Async',
+            'Task',
+            'Workflow' ]
 
 
 
@@ -567,6 +578,11 @@ class Task (Async, EventManager, Plottable, Persistent, KWArgs):
         """
 
         return self.get_id()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, **p_kwargs):
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -927,6 +943,12 @@ class Workflow (Task):
 ## -------------------------------------------------------------------------------------------------
     def get_tasks(self) -> list:
         return self._tasks
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, **p_kwargs):
+        for task in self._tasks:
+            task.reset(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -1,1 +1,1 @@
-from mlpro.bf.datasets.basics import *
+from .basics import *

@@ -17,10 +17,11 @@
 ## -- 2025-03-05  1.4.0     DA       Code optimization
 ## -- 2025-06-08  1.5.0     DA       Refactoring of GroupAnomaly._update_plot_nd(): new return param
 ## -- 2025-06-13  1.6.0     DA       Class GroupAnomaly: param p_id is now initialized to -1
+## -- 2025-07-18  1.7.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2025-06-13)
+Ver. 1.7.0 (2025-07-18)
 
 This module provides a class for group anomalies to be used in anomaly detection algorithms.
 """
@@ -40,6 +41,12 @@ from mlpro.bf.various import TStampType
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.instancebased.basics import AnomalyIB
+
+
+
+# Export list for public API
+__all__ = [ 'GroupAnomaly' ]
+
 
 
 

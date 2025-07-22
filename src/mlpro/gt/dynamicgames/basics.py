@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.gt
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
+## -- Package : mlpro.gt.dynamicgames
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -19,17 +19,30 @@
 ## -- 2023-04-03  2.0.1     SY       Remove Potential Games and refactoring
 ## -- 2023-04-12  2.1.0     SY       MLPro-GT-DP to MLPro-GT-DG (Dynamic Games)
 ## -- 2023-05-11  2.2.0     SY       Remove PGameBoard and refactoring
-## -- 2021-08-22  2.2.1     SY       Refactoring due to compatibility
-## -- 2021-09-25  2.3.0     SY       Introduction of GTTrainingResults
+## -- 2023-08-22  2.2.1     SY       Refactoring due to compatibility
+## -- 2023-09-25  2.3.0     SY       Introduction of GTTrainingResults
+## -- 2025-07-17  2.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2023-09-25)
+Ver. 2.4.0 (2025-07-17) 
 
 This module provides model classes for tasks related to Game Theory in dynamic games.
 """
 
+from mlpro.bf.systems import State
 from mlpro.rl import *
+
+
+
+# Export list for public API
+__all__ = [ 'GameBoard',
+            'Player',
+            'MultiPlayer',
+            'Game',
+            'GTTrainingResults',
+            'GTTraining' ]
+
 
 
 

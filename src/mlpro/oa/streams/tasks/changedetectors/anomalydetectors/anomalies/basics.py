@@ -20,16 +20,23 @@
 ## --                                - new attribute event_id
 ## --                                - new parent Renormalizable
 ## -- 2025-05-28  2.1.0     DA/DS    Class Anomaly: new parent Change
+## -- 2025-07-18  2.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2025-05-28)
+Ver. 2.2.0 (2025-07-18)
 
 This module provides a template class for anomalies to be used in anomaly detection algorithms.
 """
 
 
 from mlpro.oa.streams.tasks.changedetectors import Change
+
+
+
+# Export list for public API
+__all__ = [ 'Anomaly' ]
+
 
 
 
