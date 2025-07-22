@@ -1,0 +1,12 @@
+.. _target_api_bf_systems_pool_pt2_system:
+Second-Order-System
+======================
+
+.. image:: images/MLPro-BF-Systems-PT2_System_class_diagram.drawio.png
+   :scale: 50%
+
+.. automodule:: mlpro.bf.systems.pool.second_order_system
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:

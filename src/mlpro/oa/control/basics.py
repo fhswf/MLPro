@@ -14,23 +14,37 @@
 ## -- 2024-12-05  0.5.0     DA       Refactoring and code cleanup
 ## -- 2024-12-06  0.5.1     DA       Bugfixes in methods OAController.__init__(), ._run()
 ## -- 2025-06-11  0.6.0     DA       Refactoring
+## -- 2025-07-22  0.8.0     DA       Refactoring: __all__ export list, docstring, imports
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2025-06-11)
+Ver. 0.8.0 (2025-07-22)
 
 This module provides basic classes around the topic online-adaptive closed-loop control.
 
 """
 
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.events import Event
 from mlpro.bf.mt import Task
 from mlpro.bf.math import MSpace
 from mlpro.bf.control import Controller, get_ctrl_data, ControlError, ControlVariable
 from mlpro.bf.streams import InstDict, InstTypeNew
 from mlpro.bf.ml import Model, Training, TrainingResults
+
+
+
+# Export list for public API
+__all__ = [ 'OAController',
+            'OAMultiController',
+            'OAControlledSystem',
+            'OAControlPanel',
+            'OAControlShared',
+            'OAControlWorkflow',
+            'OAControlSystem',
+            'OAControlTrainingResults',
+            'OAControlTraining' ]
 
 
 
