@@ -1,6 +1,6 @@
 .. _Howto_BF_CONTROL_102:
 Howto BF-CONTROL-102: PID-Controller with PT2 system
-===============================
+====================================================
 
 **Executable code**
 
@@ -11,16 +11,9 @@ Howto BF-CONTROL-102: PID-Controller with PT2 system
 
 **Results**
 
-As shown below, the howto logs all steps and a demo window for visualization appears...
-
-.. image:: images/PID_PT2/MLPro:_Controlled_System_Workflow_0,_PT2_(ND).png
-    :scale: 75%
-
-.. image:: images/PID_PT2/MLPro:_Controller_Workflow_0,_PID_Controller_(ND).png
-    :scale: 75%
-
-.. image:: images/PID_PT2/MLPro:_Operator_Workflow_0,_Comparator_(ND).png
-    :scale: 75%
+.. image::
+    images/howto_bf_control_102.gif
+    :width: 1000px
 
     
 **Cross Reference**

@@ -87,8 +87,9 @@ The online adaptive PID controller is suitable for systems where conditions chan
 
 **Cross Reference**
 
-- :ref:`Howto_OA_CONTROL_101 <Howto_OA_CONTROL_101>`
-
+- `Paper "Online-adaptive PID control using Reinforcement Learning" (Preprint) <https://www.researchgate.net/publication/388816787_Online-adaptive_PID_control_using_Reinforcement_Learning>`_   
+- `Paper "Online-adaptive PID control using Reinforcement Learning" (GitHub repo) <https://github.com/fhswf/paper-da-ieee-codit-2025>`_
+.. - :ref:`Howto_OA_CONTROL_101 <Howto_OA_CONTROL_101>`
 - :ref:`API References RLPID <target_api_oa_control_controllers_pid_controller>`
 
 

@@ -21,21 +21,32 @@
 ##                                      - changed self.K to self._K
 ##                                      - changed self.T to self._T
 ## -- 2025-01-26  0.8.0     ASP       class PT1: Changed parameters and attributes comments
+## -- 2025-07-22  0.9.0     DA       Refactoring: __all__ export list, docstring, imports
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2025-01-26)
+Ver. 0.9.0 (2025-07-22)
+
 This module provides a simple demo system that represent a first-order-system
-    Further information: https://www.circuitbread.com/tutorials/first-order-systems-2-2
+
+Learn more:
+
+ https://www.circuitbread.com/tutorials/first-order-systems-2-2
+
 """
 
 import random
 from datetime import timedelta
-from mlpro.bf.various import Log
-from mlpro.bf.ops import Mode
+
+from mlpro.bf import Log, Mode
 from mlpro.bf.mt import Task
 from mlpro.bf.math import Dimension, MSpace, ESpace
 from mlpro.bf.systems import State, Action, System
+
+
+
+# Export list for public API
+__all__ = [ 'PT1' ]
 
 
 

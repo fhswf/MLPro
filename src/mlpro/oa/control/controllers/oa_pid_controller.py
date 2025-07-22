@@ -17,20 +17,30 @@
 ## -- 2025-01-02  0.8.0     ASP      -Renaming of variable names 
 ## -- 2025-01-26  0.9.0     ASP      class RLPID: Changed parameters and attributes comments
 ## -- 2025-06-11  1.0.0     DA       Refactoring
+## -- 2025-07-22  1.1.0     DA       Refactoring: __all__ export list, docstring, imports
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-06-11)
+Ver. 1.1.0 (2025-07-22)
 
 This module provides an implementation of a OA PID controller.
 
 """
 
+from mlpro.bf import Log
+from mlpro.bf.mt import Shared
+from mlpro.bf.math import MSpace
 from mlpro.bf.control.controllers.pid_controller import PIDController
-from mlpro.bf.ml.basics import *
-from mlpro.rl import Policy,SARSElement
-from mlpro.rl import Action, State, SARSElement,Policy
 from mlpro.bf.streams import InstDict
+from mlpro.bf.systems import Action, State
+from mlpro.bf.ml import *
+
+from mlpro.rl import SARSElement,Policy
+
+
+
+# Export list for public API
+__all__ = [ 'RLPID' ]
 
 
 

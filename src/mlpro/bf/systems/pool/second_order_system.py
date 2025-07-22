@@ -17,16 +17,24 @@
 ## -- 2025-01-05  0.6.0     ASP       class PT2: Refactoring
 ##                                      - changed self.K to self._K
 ## -- 2025-01-26  0.7.0     ASP       class PT2: Changed parameters and attributes comments
+## -- 2025-07-22  0.8.0     DA       Refactoring: __all__ export list, docstring, imports
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2025-01-26)
+Ver. 0.8.0 (2025-07-22)
 
 This module provides a simple demo system that represent second order system.
-    Further infos : https://www.circuitbread.com/tutorials/second-order-systems-2-3
 
-Simulation approximated with the Runge-Kutta algorithm. 
-    Further infos : https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods
+Learn more:
+
+https://www.circuitbread.com/tutorials/second-order-systems-2-3
+
+Simulation approximated with the Runge-Kutta algorithm.
+
+Learn more:
+
+https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods
+
 """
 
 
@@ -38,6 +46,11 @@ from mlpro.bf.ops import Mode
 from mlpro.bf.mt import Task
 from mlpro.bf.math import Dimension, MSpace, ESpace
 from mlpro.bf.systems import State, Action, System
+
+
+
+# Export list for public API
+__all__ = [ 'PT2' ]
 
 
 

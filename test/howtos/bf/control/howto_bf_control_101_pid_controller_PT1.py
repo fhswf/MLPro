@@ -9,10 +9,11 @@
 ## -- 2024-12-03  0.2.0     ASP      Update
 ## -- 2025-01-06  0.3.0     ASP      Update HowTo
 ## -- 2025-01-07  0.4.0     ASP      Refactoring
+## -- 2025-07-22  0.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2025-01-07)
+Ver. 0.5.0 (2025-07-22)
 
 This howto demonstrates a basic control system consisting of a PID
 controller and a first-order-system (PT1) as a controlled system.
@@ -29,10 +30,9 @@ You will learn:
 """
 
 import numpy as np
-from mlpro.bf.various import Log
-from mlpro.bf.plot import PlotSettings
-from mlpro.bf.ops import Mode
 from datetime import timedelta
+
+from mlpro.bf import Log, PlotSettings, Mode
 from mlpro.bf.systems.pool import PT1
 from mlpro.bf.control.controllers.pid_controller import PIDController
 from mlpro.bf.control.controlsystems import BasicControlSystem

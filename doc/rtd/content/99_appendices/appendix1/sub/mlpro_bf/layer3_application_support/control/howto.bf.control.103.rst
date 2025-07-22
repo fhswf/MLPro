@@ -1,6 +1,6 @@
 .. _Howto_BF_CONTROL_103:
 Howto BF-CONTROL-103: PID-Controller cascaded
-===============================
+=============================================
 
 **Executable code**
 
@@ -11,7 +11,6 @@ Howto BF-CONTROL-103: PID-Controller cascaded
 
 **Results**
 
-As shown below, the howto logs all steps and a demo window for visualization appears...
 
 
 

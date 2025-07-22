@@ -15,10 +15,11 @@
 ##                                      - adjust values of controlled systems properties and PID properties 
 ## -- 2024-12-03  1.1.0     ASP       Update PT1 und PT2  
 ## -- 2025-01-06  1.2.0     ASP       Update whole HowTo                         
+## -- 2025-07-22  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2025-01-06)
+Ver. 1.3.0 (2025-07-22)
 
 This HowTo is intended to simulate the temperature control of a stirred vessel. 
 The cascade control consists of two cascades, the inner cascade consists of a P-controller and a first-order system, 
@@ -34,11 +35,11 @@ You will learn:
 3) Temperature behaviour of a stirred vessel
 
 """
-from mlpro.bf.various import Log
-from mlpro.bf.plot import PlotSettings
-from mlpro.bf.ops import Mode
+
 import numpy as np
 from datetime import timedelta
+
+from mlpro.bf import Log, PlotSettings, Mode
 from mlpro.bf.systems.pool import PT1,PT2
 from mlpro.bf.control.controlsystems import CascadeControlSystem
 from mlpro.bf.control.controllers.pid_controller import PIDController
@@ -49,7 +50,7 @@ from mlpro.bf.control.controllers.pid_controller import PIDController
 if __name__ == "__main__":
     logging     = Log.C_LOG_ALL
     visualize   = True
-    step_rate   = 1
+    step_rate   = 10
     num_dim     = 1
 else:
     cycle_limit = 5

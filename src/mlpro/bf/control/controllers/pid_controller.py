@@ -13,10 +13,11 @@
 ## -- 2024-11-16  0.5.0     ASP      Changed Task.C_RANGE_NONE to Range.C_RANGE_NONE
 ## -- 2025-01-06  0.6.0     ASP      Refactor PIDController
 ## -- 2025-01-26  0.7.0     ASP      class PIDController: Changed parameters and attributes comments
+## -- 2025-07-22  0.8.0     DA       Refactoring: __all__ export list, docstring, imports
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2025-01-26)
+Ver. 0.8.0 (2025-07-22)
 
 This module provides an implementation of a PID controller.
 
@@ -26,10 +27,16 @@ https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_c
 
 """
 
-from mlpro.bf.mt import Log,Range
-from mlpro.bf.control.basics import ControlError, Controller
-from mlpro.bf.systems.basics import ActionElement
 import numpy as np 
+
+from mlpro.bf.mt import Log,Range
+from mlpro.bf.control import ControlError, Controller
+from mlpro.bf.systems import ActionElement
+
+
+
+# Export list for public API
+__all__ = [ 'PIDController' ]
 
 
 
