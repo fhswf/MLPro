@@ -1,2 +1,5 @@
-from mlpro.oa.control.basics import *
-#from mlpro.oa.control.controlsystems.basic import OAControlSystemBasic
+"""
+### MLPro-OA-Control - Sub-framework for online-adaptive closed-loop control ('mlpro.oa.control')
+"""
+
+from .basics import *

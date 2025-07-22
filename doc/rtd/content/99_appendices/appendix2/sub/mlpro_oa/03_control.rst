@@ -1,12 +1,9 @@
 .. _target_api_oa_control:
-OA Control
-==========
+MLPro-OA-Control - Online-adaptive closed-loop control
+======================================================
 
-.. image:: control/images/MLPro-OA-Control.drawio.png
-   :scale: 50%
-   
-.. automodule:: mlpro.oa.control.basics
-   :members:
-   :undoc-members:
-   :private-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   control/*

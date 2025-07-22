@@ -16,22 +16,29 @@
 ## -- 2025-06-02  0.4.2     DA       - Bugfix in OAControllerRL.__init__()
 ## --                                - Plot methods of OAControllerRL disabled
 ## -- 2025-06-11  0.5.0     DA       Refactoring
+## -- 2025-07-22  0.6.0     DA       Refactoring: __all__ export list, docstring, imports
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2025-06-11)
+Ver. 0.6.0 (2025-07-22)
 
 This module provides a wrapper class for MLPro's RL policies.
 
 """
 
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
 from mlpro.bf.mt import Task
 from mlpro.bf.control import ControlError, ControlVariable
-from mlpro.oa.control import OAController
+from mlpro.bf.systems import State, Action
 
-from mlpro.rl import Action, State, SARSElement, FctReward, Policy
+from mlpro.oa.control import OAController
+from mlpro.rl import SARSElement, FctReward, Policy
+
+
+
+# Export list for public API
+__all__ = [ 'OAControllerRL' ]
 
 
 
@@ -128,6 +135,7 @@ class OAControllerRL (OAController):
 
 
 ## -------------------------------------------------------------------------------------------------
+
     def _adapt(self, p_ctrl_error: ControlError, p_ctrl_var: ControlVariable) -> bool:
        
         # 0 Intro
