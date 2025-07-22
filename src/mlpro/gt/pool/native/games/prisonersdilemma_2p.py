@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.pool.native.games
 ## -- Module  : prisonersdilemma_2p.py
 ## -------------------------------------------------------------------------------------------------
@@ -9,10 +9,11 @@
 ## -- 2023-12-08  1.0.0     SY       Release of first version
 ## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
 ## -- 2024-01-27  1.0.2     SY       Refactoring: Payoff Matrix
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2024-01-27)
+Ver. 1.1.0 (2025-07-18) 
 
 This module provides a 2-player game of Prisoners' Dilemma with random solver. In the near future,
 we are going to add more solvers and this howto is going to be updated accordingly.
@@ -34,17 +35,26 @@ To be noted, the decision making of the prisoners take place simultaneously, whe
 
 """
 
+import numpy as np
+
+from mlpro.bf.math import Dimension, MSpace
+from mlpro.bf.ml import Model  
+
 from mlpro.gt.native.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
          
         
         
+# Export list for public API
+__all__ = [ 'PayoffFunction_PD2P', 
+            'PrisonersDilemma2PGame' ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PayoffFunction_PD2P (GTFunction):
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_mapping_matrix(self) -> np.ndarray:
@@ -76,7 +86,6 @@ class PayoffFunction_PD2P (GTFunction):
 class PrisonersDilemma2PGame (GTGame):
 
     C_NAME  = 'PrisonersDilemma2PGame'
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:

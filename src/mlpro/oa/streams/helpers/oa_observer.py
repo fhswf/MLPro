@@ -7,37 +7,59 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-05-28  0.1.0     DA       New class OAObserver for adaptation observation
 ## -- 2025-06-04  0.2.0     DA       Refactoring
+## -- 2025-07-16  0.3.0     DA       Refactoring: new parent class StreamTaskHelper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-06-04)
+Ver. 0.3.0 (2025-07-16)
 
 This module provides the OAObserver class to be used for observation and visualization of stream
 adaptation events.
 
 """
 
-from mlpro.bf.various import Log, KWArgs
+
+from mlpro.bf.various import Log
 from mlpro.bf.plot import PlotSettings
+from mlpro.bf.streams import StreamTaskHelper
 
-from mlpro.oa.streams import OAStreamAdaptation, OAStreamAdaptationType, OAStreamHelper, OAStreamTask
+from mlpro.oa.streams import OAStreamAdaptation, OAStreamAdaptationType, OAStreamTask
+
+
+
+# Export list for public API
+__all__ = [ 'OAObserver' ]
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAObserver (OAStreamHelper, Log, KWArgs):
+class OAObserver (StreamTaskHelper):
     """
     This class observes adaptations of particular oa stream tasks. Its event handler method can be 
     registered for adaptation events of a stream task.
 
     Parameters
     ----------
-    
+    p_related_task : StreamTask
+        Related stream task that raises events.
+    p_no_per_task : int = 0
+        Helper number of the task. This is used to distinguish between multiple helpers for the same task.
+    p_annotation : str = None
+        Optional annotation for the helper.
+    p_window_title: str = None
+        Optional window title for the helper. If None, a default title is generated. 
+    p_logarithmic_plot : bool = True
+        If True, the y-axis of the plot is logarithmic.
+    p_visualize : bool = True
+        If True, the plot is visualized.
+    p_logging : int = Log.C_LOG_ALL
+        Logging level for this helper. Default is Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further keyword arguments for the helper.
     """
 
-    C_TYPE              = 'Helper'
     C_NAME              = 'OA Observer'
 
     C_PLOT_ACTIVE       = True
@@ -54,26 +76,29 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
     def __init__( self, 
                   p_related_task : OAStreamTask,
                   p_no_per_task : int = 0,
+                  p_annotation : str = None,
+                  p_window_title: str = None,
                   p_logarithmic_plot : bool = True,
                   p_filter_subtypes : list = [],
                   p_visualize : bool = True,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        OAStreamHelper.__init__(self, p_visualize = p_visualize )
-        Log.__init__(self, p_logging = p_logging)
-        KWArgs.__init__(self, **p_kwargs)
 
-        self._related_task      = p_related_task
-        self._no_per_task       = p_no_per_task
         self._logarithmic_plot  = p_logarithmic_plot
         self._filter_subtypes   = p_filter_subtypes
 
         self.stat_adaptation_events = {}
         self.stat_adaptation_inst   = {}
-
-        self._related_task.register_event_handler( p_event_id = OAStreamTask.C_EVENT_ADAPTED,
-                                                   p_event_handler = self._event_handler )
+        
+        super().__init__( p_related_task = p_related_task,
+                          p_event_ids = [ OAStreamTask.C_EVENT_ADAPTED ],
+                          p_no_per_task = p_no_per_task,
+                          p_annotation = p_annotation,
+                          p_window_title = p_window_title,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -109,17 +134,9 @@ class OAObserver (OAStreamHelper, Log, KWArgs):
                    p_plot_settings: PlotSettings = None,
                    p_window_title: str = None ) -> bool:
         
-        if p_window_title is None:
-            window_title = 'OA Observer for Task "' + self._related_task.get_name() + '"'
-        else:
-            window_title = p_window_title
-
-        if self._no_per_task > 0:
-            window_title = window_title + ' (' + str(self._no_per_task) + ')'
-
         super().init_plot( p_figure = p_figure,
                            p_plot_settings = p_plot_settings,
-                           p_window_title = window_title )
+                           p_window_title = p_window_title )
         
         axes = self.get_plot_settings().axes
         axes.legend(title='Adaptations')

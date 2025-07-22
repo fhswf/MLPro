@@ -37,11 +37,19 @@ Ver. 2.0.1 (2025-06-05)
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
+from typing import Tuple
 
 import numpy as np
-from mlpro.bf.math.statistics import *
-from mlpro.bf.streams.basics import *
+
+from mlpro.bf.various import Log
 from mlpro.bf.events import *
+from mlpro.bf.math.statistics import *
+from mlpro.bf.streams import *
+
+
+
+# Export list for public API
+__all__ = [ 'Window' ]
 
 
 

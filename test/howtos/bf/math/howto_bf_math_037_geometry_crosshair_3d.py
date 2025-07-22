@@ -31,8 +31,7 @@ import random
 
 import numpy as np
 
-from mlpro.bf.various import Log
-from mlpro.bf.plot import PlotSettings
+from mlpro.bf import Log, PlotSettings
 from mlpro.bf.math.geometry import Crosshair
 
 

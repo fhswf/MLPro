@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.pool.native.games
 ## -- Module  : prisonersdilemma_3p.py
 ## -------------------------------------------------------------------------------------------------
@@ -9,10 +9,11 @@
 ## -- 2023-12-08  1.0.0     SY       Release of first version
 ## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
 ## -- 2024-01-27  1.0.2     SY       Refactoring: Payoff Matrix
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2024-01-27)
+Ver. 1.1.0 (2025-07-18) 
 
 This module provides a 2-player game of Prisoners' Dilemma with greedy and random solvers.
 In the near future, we are going to add more solvers and this howto is going to be updated accordingly.
@@ -37,12 +38,22 @@ To be noted, the decision making of the prisoners take place simultaneously, whe
 
 """
 
+import numpy as np
+
+from mlpro.bf.math import Dimension, MSpace
+from mlpro.bf.ml import Model 
+
 from mlpro.gt.native.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
 from mlpro.gt.pool.native.solvers.greedypolicy import MinGreedyPolicy
          
         
         
+# Export list for public API
+__all__ = [ 'PayoffFunction_PD3P',
+            'PrisonersDilemma3PGame' ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------

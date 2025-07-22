@@ -8,19 +8,25 @@
 ## -- 2025-02-28  1.0.0     DA       Creation
 ## -- 2025-06-08  1.0.1     DA       Review/refactoring
 ## -- 2025-06-13  1.1.0     DA       Class AnomalyIB: param p_id is now initialized to -1
+## -- 2025-07-18  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-06-13)
+Ver. 1.2.0 (2025-07-18)
 
 This module provides a template class for instance-based anomalies to be used in instance-based
 anomaly detection algorithms.
 """
 
 
-from mlpro.bf.various import TStampType
+from mlpro.bf import TStampType
 from mlpro.bf.streams import Instance
 from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.basics import Anomaly
+
+
+
+# Export list for public API
+__all__ = [ 'AnomalyIB' ]
 
 
 

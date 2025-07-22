@@ -27,6 +27,10 @@ import random
 
 
 
+# Export list for public API
+__all__ = [ 'SamplerReservoir' ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -59,7 +63,6 @@ class SamplerReservoir(Sampler):
     C_SCIREF_JOURNAL        = 'ACM Trans. Math. Softw.'
     C_SCIREF_MONTH          = 'Mar'
     C_SCIREF_PAGES          = '37-57'
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_num_instances:int=None, p_reservoir_size:int=10, p_seed:int=0):

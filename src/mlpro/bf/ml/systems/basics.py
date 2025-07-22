@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.systems
 ## -- Module  : adaptive_systems.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,23 +7,38 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-09  0.0.0     LSB      Creation
 ## -- 2023-04-03  0.1.0     LSB      Moved Adaptive Functions from RL to BF-ML-AdaptiveSystems
+## -- 2025-07-17  0.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-04-03)
+Ver. 0.2.0 (2025-07-17)
 
 This module provides models and templates for adaptive state based systems.
 """
 
 
 
-from mlpro.bf.ml.basics import HyperParamTuner
-from mlpro.bf.systems import *
-from mlpro.bf.ml import Model, Mode
-from mlpro.bf.math import *
 from typing import Union
+from datetime import timedelta
+
+import numpy as np
+
+from mlpro.bf import Log, Mode, ParamError
+from mlpro.bf.plot import Figure
+from mlpro.bf.mt import *
+from mlpro.bf.math import *
+from mlpro.bf.systems import *
+from mlpro.bf.ml import Model, HyperParamTuner
 from mlpro.sl.basics import SLAdaptiveFunction
 
+
+
+# Export list for public API
+__all__ = [ 'AFctBase',
+            'AFctSTrans',
+            'AFctSuccess',
+            'AFctBroken',
+            'ASystem' ]
 
 
 

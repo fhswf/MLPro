@@ -9,16 +9,23 @@
 ## -- 2025-02-13  0.2.0     DA       Class Drift: new attributes event_id, drift_status
 ## -- 2025-02-19  0.3.0     DA       Class Drift: new parent Renomalizable
 ## -- 2025-05-28  0.4.0     DA/DS    Class Drift: new parent Change
+## -- 2025-07-18  0.5.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2025-05-28)
+Ver. 0.5.0 (2025-07-18)
 
 This module provides a template class for types of data drift to be used in drift detection algorithms.
 """
 
 
 from mlpro.oa.streams.tasks.changedetectors import Change
+
+
+
+# Export list for public API
+__all__ = [ 'Drift' ]
+
 
 
 

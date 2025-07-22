@@ -69,6 +69,7 @@
 ## -- 2024-07-19  2.0.3     DA       Class StreamTask: excluded non-numeric feature data from default
 ## --                                visualization 2D,3D,ND
 ## -- 2024-09-11  2.1.0     DA       Class Instance: new parent KWArgs
+## -- 2024-10-01  2.1.1     DA       Method StreamScenario.__init__(): simplification
 ## -- 2024-10-29  2.2.0     DA       Changed definiton of InstType, InstTypeNew, InstTypeDel
 ## -- 2024-10-30  2.3.0     DA       Refactoring of StreamTask.update_plot()
 ## -- 2024-11-10  2.4.0     DA       Refactoring of StreamWorkflow.init_plot()
@@ -86,10 +87,12 @@
 ## -- 2025-07-01  2.9.0     DA       Class StreamTask: replaced the exception by pass in _run() to
 ## --                                make the class be usable as a plot host.
 ## -- 2025-07-12  2.9.1     DA       Method StreamTask._update_plot_3d(): added explicite ax scaling
+## -- 2025-07-16  3.0.0     DA       New classes StreamHelper, StreamTaskHelper
+## -- 2025-07-18  3.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.1 (2025-07-12)
+Ver. 3.1.0 (2025-07-18)
 
 This module provides classes for standardized data stream processing. 
 
@@ -109,11 +112,33 @@ except:
 
 from mlpro.bf.various import Id, TStampType, TStamp, KWArgs, ScientificObject, Log
 from mlpro.bf.exceptions import Error, ImplementationError, ParamError
+from mlpro.bf.events import Event
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.mt import Range, Shared, Task, Workflow
-from mlpro.bf.plot import PlotSettings
+from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.math import Dimension, Element, MSpace
 
+
+
+# Export list for public API
+__all__ = [ 'Feature',
+            'Label',
+            'InstId',
+            'Instance',
+            'InstType',
+            'InstTypeNew',
+            'InstTypeDel',
+            'InstDict',
+            'Sampler',
+            'Stream', 
+            'StreamShared', 
+            'MultiStream',
+            'StreamProvider',
+            'StreamTask', 
+            'StreamHelper',
+            'StreamTaskHelper',
+            'StreamWorkflow', 
+            'StreamScenario' ]
 
 
 
@@ -1856,6 +1881,140 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class StreamHelper (Plottable, Log, KWArgs):
+    """
+    Template class for own helpers to be added to a stream workflow
+
+    Parameters
+    ----------
+    p_window_title : str = None
+        Optional window title for the helper. If None, a default title is generated.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    **p_kwargs
+        Further keyword arguments.
+    """
+
+    C_TYPE           = 'Stream Helper'
+    C_PLOT_ACTIVE    = False
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_window_title: str = None,
+                  p_visualize : bool = True,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
+        
+        Plottable.__init__(self, p_visualize = p_visualize)
+        Log.__init__(self, p_logging = p_logging)
+        KWArgs.__init__(self, **p_kwargs)
+    
+        self._window_title = p_window_title
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_figure(self, p_window_title : str = None):
+
+        window_title = self._window_title if self._window_title is not None else p_window_title
+        return super()._init_figure( p_window_title = window_title )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamTaskHelper (StreamHelper):
+    """
+    Extended task-related template class for own helpers to be added to a stream workflow. It reacts
+    automatically on events raised by the related task. 
+
+    Parameters
+    ----------
+    p_related_task : StreamTask
+        Related stream task that raises events.
+    p_event_ids : list
+        List of event IDs that this helper should react on. Default is an empty list.
+    p_no_per_task : int = 0
+        Helper number of the task. This is used to distinguish between multiple helpers for the same task.
+    p_annotation : str = None
+        Optional annotation for the helper.
+    p_window_title: str = None
+        Optional window title for the helper. If None, a default title is generated. 
+    p_visualize : bool = True
+        Boolean switch for visualisation. 
+    p_logging = Log.C_LOG_ALL
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    **p_kwargs
+        Further keyword arguments.
+    """
+
+    C_TYPE           = 'Stream Task Helper'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_related_task : StreamTask,
+                  p_event_ids : list = [],
+                  p_no_per_task : int = 0,
+                  p_annotation : str = None,
+                  p_window_title: str = None,
+                  p_visualize : bool = True,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
+        
+        self._related_task : StreamTask = p_related_task
+        self._no_per_task  : int        = p_no_per_task
+
+        if p_window_title is not None:
+            window_title = p_window_title
+        else:
+            window_title = self.C_NAME + ' for Task "' + self._related_task.get_name() + '"'
+            if self._no_per_task > 0:
+                window_title += ' (' + str(self._no_per_task) + ')'
+
+            if p_annotation is not None:
+                window_title += ' - ' + p_annotation
+        
+        StreamHelper.__init__( self, 
+                               p_window_title = window_title, 
+                               p_visualize = p_visualize, 
+                               p_logging = p_logging, 
+                               **p_kwargs )
+        
+
+        for event_id in p_event_ids:
+            self._related_task.register_event_handler( p_event_id = event_id, p_event_handler = self._event_handler )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _event_handler(self, p_event_id, p_event_object : Event ):
+        """
+        Template event handler for task related events. This method is called by the task
+        when an event is raised and can be redefined in a child class.
+
+        Parameters
+        ----------
+        p_event_id 
+            ID of the event.
+        p_event_object : Event
+            Event object that contains the raising task and further information.
+        """
+
+        # 0 Intro
+        self.log( Log.C_LOG_TYPE_W, 'Task "' + p_event_object.get_raising_object().get_name() + '" raised an event of type "' + str(p_event_id) + '"' )
+
+
+        # 1 Update plot
+        self.update_plot( p_event_object = p_event_object )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class StreamWorkflow (StreamTask, Workflow):
     """
     Workflow for stream processing. See class bf.mt.Workflow for further details.
@@ -1888,6 +2047,8 @@ class StreamWorkflow (StreamTask, Workflow):
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
+        
+        self._helpers = []
 
         Workflow.__init__( self,
                            p_name=p_name, 
@@ -1926,7 +2087,12 @@ class StreamWorkflow (StreamTask, Workflow):
             except AttributeError:
                 raise ImplementationError('Stream workflows need a shared object of type StreamShared (or inherited)')
 
-        Workflow.run(self, p_range=p_range, p_wait=p_wait)                          
+        Workflow.run(self, p_range=p_range, p_wait=p_wait)   
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_helper(self, p_helper : StreamHelper):
+        self._helpers.append(p_helper)                       
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -2021,10 +2187,6 @@ class StreamScenario (ScenarioBase):
                   p_visualize:bool=False, 
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
-
-        self._stream : Stream           = None
-        self._iterator : Stream         = None
-        self._workflow : StreamWorkflow = None
 
         ScenarioBase.__init__( self,
                                p_mode = p_mode, 

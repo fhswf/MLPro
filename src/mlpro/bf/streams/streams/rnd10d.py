@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.bf.streams.streams
 ## -- Module  : rnd10d.py
 ## -------------------------------------------------------------------------------------------------
@@ -19,9 +19,17 @@ with 10-dimensional random feature data and 2-dimensional random label data.
 """
 
 import numpy as np
-from mlpro.bf.streams.basics import *
-from mlpro.bf.math import ESpace, MSpace
+
+from mlpro.bf.various import Log
+from mlpro.bf.math import Element, ESpace, MSpace
+from mlpro.bf.streams import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
+
+
+
+# Export list for public API
+__all__ = [ 'StreamMLProRnd10D' ]
+
 
 
 

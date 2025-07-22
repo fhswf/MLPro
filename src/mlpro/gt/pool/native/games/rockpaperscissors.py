@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.pool.native.games
 ## -- Module  : rockpaperscissors.py
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2023-12-08  0.0.0     SY       Creation
 ## -- 2023-12-08  1.0.0     SY       Release of first version
 ## -- 2024-01-12  1.0.1     SY       Refactoring: Module Name
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2024-01-12)
+Ver. 1.1.0 (2025-07-18) 
 
 This module provides a duel of two coalitions of a game of Rock Paper Scissors with random solver.
 In the near future, we are going to add more solvers and this howto is going to be updated accordingly.
@@ -27,17 +28,26 @@ To be noted, the decision making of the coalitions take place simultaneously, wh
 
 """
 
+import numpy as np
+
+from mlpro.bf.math import Dimension, MSpace
+from mlpro.bf.ml import Model 
+
 from mlpro.gt.native.basics import *
 from mlpro.gt.pool.native.solvers.randomsolver import RandomSolver
          
         
         
+# Export list for public API
+__all__ = [ 'PayoffFunction_RSP',
+            'RockPaperScissors' ]
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PayoffFunction_RSP (GTFunction):
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_mapping_matrix(self) -> np.ndarray:
@@ -69,7 +79,6 @@ class PayoffFunction_RSP (GTFunction):
 class RockPaperScissors (GTGame):
 
     C_NAME  = 'RockPaperScissors'
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
@@ -219,7 +228,3 @@ class RockPaperScissors (GTGame):
         )
         
         return competition
-        
-
-
-

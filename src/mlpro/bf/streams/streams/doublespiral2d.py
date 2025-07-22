@@ -20,9 +20,17 @@ This module provides the native stream class DoubleSpiral2D. It provides 721 ins
 
 import numpy as np
 from math import sin, cos, pi
+
+from mlpro.bf.various import Log
 from mlpro.bf.math import MSpace, ESpace
 from mlpro.bf.streams.basics import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
+
+
+
+# Export list for public API
+__all__ = [ 'DoubleSpiral2D' ]
+
 
 
 

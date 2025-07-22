@@ -1,0 +1,47 @@
+{
+  "title": "MLPro – The integrative middleware framework for standardized machine learning in Python",
+  "description": "MLPro is a modular, open-source middleware framework in Python for standardized, versatile machine learning workflows. See the online documentation for full details.",
+  "creators": [
+    {
+      "name": "Arend, Detlef",
+      "affiliation": "South Westphalia University of Applied Sciences, Germany",
+      "orcid": "0000-0002-8315-2346"
+    },
+    {
+      "name": "Yuwono, Steve",
+      "affiliation": "South Westphalia University of Applied Sciences, Germany",
+      "orcid": "0000-0001-7570-2726"
+    },
+    {
+      "name": "Diprasetya, Mochammad Rizky",
+      "affiliation": "South Westphalia University of Applied Sciences, Germany",
+      "orcid": "0000-0001-5879-4657"
+    },
+    {
+      "name": "Baheti, Laxmikant Shrikant",
+      "affiliation": "South Westphalia University of Applied Sciences, Germany",
+      "orcid": "0000-0001-5879-4657"
+    },
+    {
+      "name": "Schwung, Andreas",
+      "affiliation": "South Westphalia University of Applied Sciences, Germany",
+      "orcid": "0000-0001-8405-0977"
+    }
+  ],
+  "license": "Apache-2.0",
+  "upload_type": "software",
+  "keywords": [
+    "machine learning",
+    "Python",
+    "middleware",
+    "framework",
+    "open source"
+  ],
+  "communities": [
+    {
+      "identifier": "mlpro"
+    }
+  ],
+  "language": "eng",
+  "access_right": "open"
+}

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : MLPro - The integrative middleware framework for standardized machine learning
 ## -- Package : mlpro.rl
 ## -- Module  : models_train.py
 ## -------------------------------------------------------------------------------------------------
@@ -50,20 +50,35 @@
 ## -- 2023-03-09  1.9.1     DA       Class RLTrainingResults: removed parameter p_path
 ## -- 2023-03-26  2.0.0     DA       Class RLScenario: refactoring persistence
 ## -- 2023-09-25  2.0.1     SY       Class RLScenario: debugging reward storing in _run_cycle 
+## -- 2025-07-17  2.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2023-09-25)
+Ver. 2.1.0 (2025-07-17) 
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
 
+from datetime import timedelta
 
-import dill as pkl
+import numpy as np  
+
+from mlpro.bf import Log, Mode, ImplementationError, ParamError, Error
 from mlpro.bf.data import DataStoring
+from mlpro.bf.plot import Figure, PlotSettings
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
+
 from mlpro.rl.models_env import *
+
+
+
+# Export list for public API
+__all__ = [ 'RLDataStoring',
+            'RLDataStoringEval',
+            'RLScenario',
+            'RLTrainingResults',
+            'RLTraining' ]
 
 
 
