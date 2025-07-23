@@ -10,9 +10,9 @@ MLPro: Integration OpenML
     * - **Topics**
       - machine-learning, mlpro-extension, openml, wrapper
     * - **Version**
-      - v1.0.2  - Zenodo integration (2)
+      - v1.1.0  - Alignment with MLPro 2.1.0
     * - **Last update**
-      - Wed, 02 Jul 2025 08:52:37 GMT
+      - Wed, 23 Jul 2025 11:56:19 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-OpenML
     * - **URL**
