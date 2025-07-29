@@ -4,3 +4,4 @@ from .deformation import *
 from .size import *
 from .density import *
 from .geometric_center import *
+from .size_geo import *
