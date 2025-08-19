@@ -15,10 +15,11 @@
 ## -- 2024-06-17  1.3.0     SK       Functionality for appearance of outliers
 ## -- 2025-04-02  1.3.1     DA       Little refactoring
 ## -- 2025-07-16  1.3.2     DA       Little refactoring
+## -- 2025-08-19  1.4.0     DA       New parameter p_boundaries_rescale enabling specific scales per dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2025-07-16)
+Ver. 1.4.0 (2025-08-19)
 
 This module provides the native stream class StreamMLProClusterGenerator.
 These stream provides instances with self._num_dim dimensional random feature data, placed around
@@ -32,9 +33,10 @@ import math
 
 import numpy as np
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
+from mlpro.bf.exceptions import ParamError
 from mlpro.bf.math import Element, MSpace, ESpace
-from mlpro.bf.streams.basics import *
+from mlpro.bf.streams import Feature, Instance
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 
@@ -60,6 +62,10 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         Total number of instances. The value '0' means indefinite. Default = 1000.
     p_num_clusters : int
         Number of clusters. Default = 4.
+    p_boundaries_rescale : list = None
+        Optional list of alternative boundaries per dimension. The generated clusters will be rescaled
+        to fit within these boundaries. If not provided, the boundaries [-1000,1000] will be used for all
+        dimensions.
     p_outlier_appearance : bool
         If there are outliers. Default = False.
     p_outlier_rate : float
@@ -130,6 +136,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
                   p_num_dim : int = 2,
                   p_num_instances : int = 1000,
                   p_num_clusters : int = 4,
+                  p_boundaries_rescale : list = None,
                   p_outlier_appearance : bool = False,
                   p_outlier_rate : float = 0.05,
                   p_radii : list = [100.0],
@@ -171,6 +178,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         # Initialize parameters        
         self._num_dim               = p_num_dim
         self._num_clusters          = p_num_clusters
+        self._rescaling_params      = self._get_rescaling_params(p_boundaries_rescale)
         self._radii                 = self._extend_property_list(p_radii, self._num_clusters)
         self._velocities            = self._extend_property_list(p_velocities, self._num_clusters)
         self._distribution_bias     = self._extend_property_list(p_distribution_bias, self._num_clusters)
@@ -239,6 +247,23 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
                                   **p_kwargs)
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _get_rescaling_params(self, p_rescale_boundaries : list):
+        if p_rescale_boundaries is None: return None
+
+        if len(p_rescale_boundaries) != self._num_dim:
+            raise ParamError(f"Expected {self._num_dim} dimensions for rescale boundaries.")
+
+        params = np.zeros((self._num_dim, 2))
+
+        for dim in range(self._num_dim):
+            params[dim,0] = ( p_rescale_boundaries[dim][1] - p_rescale_boundaries[dim][0] ) / ( self.C_BOUNDARIES[1] - self.C_BOUNDARIES[0] )
+            params[dim,1] = p_rescale_boundaries[dim][0] - self.C_BOUNDARIES[0] * params[dim,0]
+
+        return params
+
 
 ## -------------------------------------------------------------------------------------------------
     def _extend_property_list(self, property : list, size : int):
@@ -322,8 +347,9 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         """
         Function to define the cluster.
         """
-        center = np.array([random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-                           for _ in range(self._num_dim)])
+
+        center = np.array( [random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1]) for _ in range(self._num_dim)] )
+            
         velocity = self._find_velocity(self._velocities[cluster_id - 1])
         return {
             "center": center,
@@ -342,8 +368,8 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         if len(final_point) != 0:
             return [(float(final_point[d]) - init_point[d]) / steps for d in range(self._num_dim)]
 
-        velocity_vector = np.array([random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-                                    for _ in range(self._num_dim)])
+        velocity_vector = np.array( [random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1]) for _ in range(self._num_dim)] )
+            
         dist = np.linalg.norm(velocity_vector)
         return velocity_vector * (velocity / dist)
     
@@ -360,11 +386,15 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         feature_data = Element(self._feature_space)
 
         if self._outlier_appearance and (random.uniform(0, 1) <= self._outlier_rate):
-            point_values = np.array([random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1])
-                                     for _ in range(self._num_dim)])
+            point_values = np.array( [random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1]) for _ in range(self._num_dim)] )
+       
         else:
             point_values = self._generate_random_point_around_cluster(cluster_id)
         
+        # Optional rescaling of generated point values
+        if self._rescaling_params is not None:
+            point_values = point_values * self._rescaling_params[:,0] + self._rescaling_params[:,1]
+
         feature_data.set_values(point_values)
 
         self._index += 1

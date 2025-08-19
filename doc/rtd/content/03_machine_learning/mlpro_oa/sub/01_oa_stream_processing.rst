@@ -30,3 +30,4 @@ Browse the menu and see Section 'Cross reference' for further details.
   - :ref:`Howtos MPro-OA-Streams <target_appendix1_OA_streams>`
   - :ref:`API reference: MLPro-OA-Streams <target_api_oa_streams>`
   - :ref:`Basics of data stream processing in MLPro <target_bf_streams>`
+  - `Paper "MLPro 2.0 - Online machine learning in Python" (2025) <https://doi.org/10.1016/j.mlwa.2025.100715>`_
