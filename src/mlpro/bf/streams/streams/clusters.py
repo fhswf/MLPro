@@ -15,7 +15,10 @@
 ## -- 2024-06-17  1.3.0     SK       Functionality for appearance of outliers
 ## -- 2025-04-02  1.3.1     DA       Little refactoring
 ## -- 2025-07-16  1.3.2     DA       Little refactoring
-## -- 2025-08-19  1.4.0     DA       New parameter p_boundaries_rescale enabling specific scales per dimension
+## -- 2025-08-19  1.4.0     DA       - New parameter p_boundaries_rescale enabling different scales
+## --                                  per feature
+## --                                - Bugfix: replaced random.randint with random.uniform for
+## --                                  random point generation
 ## -------------------------------------------------------------------------------------------------
 
 """
