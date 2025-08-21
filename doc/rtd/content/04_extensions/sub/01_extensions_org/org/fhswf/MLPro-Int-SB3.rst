@@ -10,9 +10,9 @@ MLPro: Integration StableBaselines3
     * - **Topics**
       - machine-learning, mlpro-extension, reinforcement-learning, stable-baselines3, wrapper
     * - **Version**
-      - v1.0.5  - Bug Fixing: Multi-Discrete on State and Action Spaces
+      - v1.0.7  - Fixing documentation error
     * - **Last update**
-      - Sat, 08 Feb 2025 18:48:54 GMT
+      - Thu, 21 Aug 2025 16:05:27 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-SB3
     * - **URL**

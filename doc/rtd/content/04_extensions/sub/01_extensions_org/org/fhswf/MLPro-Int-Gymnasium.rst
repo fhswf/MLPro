@@ -10,9 +10,9 @@ MLPro: Integration Gymnasium
     * - **Topics**
       - gymnasium, machine-learning, mlpro-extension, reinforcement-learning, wrapper
     * - **Version**
-      - v1.0.3  - Bug Fixing: Errors on other enviroments than classic control
+      - v1.0.4  - Add compatibility with mlpro>=2.1.0 and Python 3.13
     * - **Last update**
-      - Tue, 01 Oct 2024 09:44:58 GMT
+      - Thu, 21 Aug 2025 14:21:52 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-Gymnasium
     * - **URL**
