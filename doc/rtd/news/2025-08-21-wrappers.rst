@@ -5,7 +5,7 @@
 New Release Announcement: MLPro-Int Wrappers Updated
 ===============================================================
 
-We are excited to announce updates to several MLPro integration wrappers (MLPro-Int-*), bringing enhanced compatibility and stability:
+We are excited to announce updates to several MLPro integration wrappers, bringing enhanced compatibility and stability:
 
 - Compatibility with **MLPro ≥ 2.1.0**
 - **Python 3.13** support across most packages
