@@ -1,0 +1,23 @@
+.. post:: Aug 21, 2025
+   :tags: mlpro-int
+   :author: MLPro team
+
+New Release Announcement: MLPro-Int Wrappers Updated
+===============================================================
+
+We are excited to announce updates to several MLPro integration wrappers (MLPro-Int-*), bringing enhanced compatibility and stability:
+
+- Compatibility with **MLPro ≥ 2.1.0**
+- **Python 3.13** support across most packages
+- Minor bug fixes and debugging improvements
+
+The following packages have been upgraded:
+
+- `MLPro-Int-SB3 v1.0.6 <https://mlpro-int-sb3.readthedocs.io/en/latest/>`_
+- `MLPro-Int-Gymnasium v1.0.4 <https://mlpro-int-gymnasium.readthedocs.io/en/latest/>`_
+- `MLPro-Int-PettingZoo v1.0.2 <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/>`_
+- `MLPro-Int-Mujoco v1.0.3 <https://mlpro-int-mujoco.readthedocs.io/en/latest/>`_
+- `MLPro-Int-Optuna v1.0.1 <https://mlpro-int-optuna.readthedocs.io/en/latest/>`_
+- `MLPro-Int-Hyperopt v1.0.2 <https://mlpro-int-hyperopt.readthedocs.io/en/latest/>`_
+
+These updates ensure smoother integration and forward compatibility with the latest versions of MLPro and Python.
