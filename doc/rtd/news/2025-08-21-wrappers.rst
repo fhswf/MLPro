@@ -13,7 +13,7 @@ We are excited to announce updates to several MLPro integration wrappers, bringi
 
 The following packages have been upgraded:
 
-- `MLPro-Int-SB3 v1.0.6 <https://mlpro-int-sb3.readthedocs.io/en/latest/>`_
+- `MLPro-Int-SB3 v1.0.7 <https://mlpro-int-sb3.readthedocs.io/en/latest/>`_
 - `MLPro-Int-Gymnasium v1.0.4 <https://mlpro-int-gymnasium.readthedocs.io/en/latest/>`_
 - `MLPro-Int-PettingZoo v1.0.2 <https://mlpro-int-pettingzoo.readthedocs.io/en/latest/>`_
 - `MLPro-Int-Mujoco v1.0.3 <https://mlpro-int-mujoco.readthedocs.io/en/latest/>`_
