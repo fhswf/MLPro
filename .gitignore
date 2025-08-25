@@ -16,3 +16,7 @@ _build/
 
 # Temp
 .gitlab-ci.yml
+
+
+# VS Code settings
+.vscode/launch.json
