@@ -1,0 +1,21 @@
+
+.. post:: Jul 22, 2025
+   :tags: mlpro-oa-control
+   :author: MLPro team
+
+MLPro 2.1.0 released
+=====================
+
+We are pleased to announce today that we have expanded MLPro with two new sub-frameworks related to closed-loop control:
+
+- **MLPro-BF-Control:** classic closed-loop control
+- **MLPro-OA-Control:** online-adaptive closed-loop control
+
+As part of this development, we created an **online-adaptive PID controller** that tunes itself using a reinforcement learning algorithm.
+
+The online documentation is not yet complete, but initial howtos are available. We have also described the key innovations and the 
+RLPID architecture in our paper `"Online-adaptive PID control using Reinforcement Learning" <https://www.researchgate.net/publication/388816787_Online-adaptive_PID_control_using_Reinforcement_Learning>`_. 
+The experiment for the paper can be found in the GitHub repository `fhswf/paper-da-ieee-codit-2025 <https://github.com/fhswf/paper-da-ieee-codit-2025>`_. 
+Have fun trying it out! We welcome your feedback.
+
+For a detailed list of changes, please refer to the `changelog on GitHub <https://github.com/fhswf/MLPro/releases/tag/v2.1.0>`_.
