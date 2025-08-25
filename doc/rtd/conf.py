@@ -102,7 +102,7 @@ html_context = {
 # RSS feed
 #
 blog_title = 'MLPro News'
-blog_baseurl = 'https://mlpro.readthedocs.io'  
+blog_baseurl = 'https://mlpro.readthedocs.io/en/latest'  
 blog_path = 'news'
 fontawesome_included = True
 blog_feed_archives = True

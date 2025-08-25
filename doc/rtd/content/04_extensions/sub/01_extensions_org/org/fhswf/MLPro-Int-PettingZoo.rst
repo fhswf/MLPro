@@ -10,9 +10,9 @@ MLPro: Integration PettingZoo
     * - **Topics**
       - machine-learning, mlpro-extension, pettingzoo, reinforcement-learning, wrapper
     * - **Version**
-      - v1.0.1  - Compatibility with PettingZoo v1.25.0
+      - v1.0.2  - Add compatibility with mlpro>=2.1.0
     * - **Last update**
-      - Mon, 12 May 2025 14:48:57 GMT
+      - Thu, 21 Aug 2025 14:25:07 GMT
     * - **URL (GitHub)**
       - https://github.com/fhswf/MLPro-Int-PettingZoo
     * - **URL**
