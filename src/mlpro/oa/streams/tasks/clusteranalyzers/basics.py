@@ -46,10 +46,12 @@
 ## -- 2025-04-27  1.5.1     DA       Class ClusterAnalyzer: changed internal access to clusters to 
 ## --                                self._clusters 
 ## -- 2025-06-06  1.6.0     DA       Refactoring: p_inst -> p_instances
+## -- 2025-08-20  1.7.0     DA       Method ClusterAnalyzer._get_cluster_relations: 
+## --                                new parameter p_relative_values
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2025-06-06)
+Ver. 1.7.0 (2025-08-20)
 
 This module provides a template class for online cluster analysis.
 """
@@ -288,6 +290,7 @@ class ClusterAnalyzer (OAStreamTask):
     def _get_cluster_relations( self, 
                                 p_relation_type : int,
                                 p_instance : Instance,
+                                p_relative_values : bool ,
                                 p_scope : int ) -> List[ResultItem]:
         """
         Internal method to determine the relation of the given instance to each cluster as a value in 
@@ -302,6 +305,8 @@ class ClusterAnalyzer (OAStreamTask):
             Possible values are 0 (cluster membership) and 1 (cluster influence)
         p_instance : Instance
             Instance to be evaluated.
+        p_relative_values : bool
+            If True, the result values are relative (i.e., normalized to the sum of all results).
         p_scope : int
             Scope of the result list. See class attributes C_RESULT_SCOPE_* for possible values.
 
@@ -324,6 +329,9 @@ class ClusterAnalyzer (OAStreamTask):
                 result_abs  = cluster.get_membership( p_instance = p_instance )
             else:
                 result_abs  = cluster.get_influence( p_instance = p_instance )
+                if result_abs < self._thrs_cluster_influence: 
+                    # Influence clipping
+                    result_abs = 0
 
             sum_results += result_abs
 
@@ -340,19 +348,22 @@ class ClusterAnalyzer (OAStreamTask):
             list_results_abs.append( cluster_max_results )            
             sum_results = cluster_max_results[1]
 
+        if not p_relative_values:
+            return list_results_abs
+
 
         # 2 Determination of relative result values according to the required scope
         for result_abs in list_results_abs:
             try:
                 result_rel = result_abs[1] / sum_results
-            except:
+            except ZeroDivisionError:
                 result_rel = 0
 
             list_results_rel.append( ( result_abs[0].id, result_rel, result_abs[0] ) )
 
         return list_results_rel
+        
 
-    
 ## -------------------------------------------------------------------------------------------------
     def get_cluster_memberships( self, 
                                  p_instance : Instance,
@@ -380,6 +391,7 @@ class ClusterAnalyzer (OAStreamTask):
 
         return self._get_cluster_relations( p_relation_type = 0,
                                             p_instance = p_instance,
+                                            p_relative_values = True,
                                             p_scope = p_scope )
     
 
@@ -410,6 +422,7 @@ class ClusterAnalyzer (OAStreamTask):
 
         return self._get_cluster_relations( p_relation_type = 1,
                                             p_instance = p_instance,
+                                            p_relative_values = True,
                                             p_scope = p_scope )
 
         
