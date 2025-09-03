@@ -48,10 +48,13 @@
 ## -- 2025-06-06  1.6.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-08-20  1.7.0     DA       Method ClusterAnalyzer._get_cluster_relations: 
 ## --                                new parameter p_relative_values
+## -- 2025-09-03  1.8.0     DA       Class ClusterAnalyzer: 
+## --                                - Bugfix: added missing parameter p_thrs_cluster_influence
+## --                                - Method _get_cluster_relations(): robustness for negative influences
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2025-08-20)
+Ver. 1.8.0 (2025-09-03)
 
 This module provides a template class for online cluster analysis.
 """
@@ -101,10 +104,6 @@ class ClusterAnalyzer (OAStreamTask):
     
     Parameters
     ----------
-    p_cls_cluster 
-        Cluster class (Class Cluster or a child class).
-    p_cluster_limit : int
-        Optional limit for clusters to be created. Default = 0 (no limit).
     p_name : str
         Optional name of the task. Default is None.
     p_range_max : int
@@ -113,6 +112,12 @@ class ClusterAnalyzer (OAStreamTask):
         Boolean switch for adaptivitiy. Default = True.
     p_duplicate_data : bool
         If True, instances will be duplicated before processing. Default = False.
+    p_cls_cluster 
+        Cluster class (Class Cluster or a child class).
+    p_cluster_limit : int
+        Optional limit for clusters to be created. Default = 0 (no limit).
+    p_thrs_cluster_influence : float
+        Threshold for cluster influence. Default = 0.0.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -124,8 +129,6 @@ class ClusterAnalyzer (OAStreamTask):
     ----------
     C_RESULT_SCOPE_ALL : int = 0
         Result scope, that includes all clusters
-    C_RESULT_SCOPE_NONZERO : int = 1
-        Result scope, that includes just clusters with result values > 0
     C_RESULT_SCOPE_MAX : int = 2
         Result scope, that includes just the cluster with the highest result value.
     C_CLUSTER_PROPERTIES : PropertyDefinitions
@@ -143,20 +146,24 @@ class ClusterAnalyzer (OAStreamTask):
 
     # Possible result scopes for methods get_cluster_memberships() and get_cluster_influences()
     C_RESULT_SCOPE_ALL : int        = 0
-    C_RESULT_SCOPE_NONZERO : int    = 1
+    # C_RESULT_SCOPE_NONZERO : int    = 1
     C_RESULT_SCOPE_MAX : int        = 2
 
     # List of cluster properties supported/maintained by the algorithm
     C_CLUSTER_PROPERTIES : PropertyDefinitions = []
 
+    # Small value for cluster influence computation (CI). See method _get_cluster_relations().
+    C_EPSILON_CI                    = 1e-6  
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_cls_cluster : type = Cluster,
-                  p_cluster_limit : int = 0,
                   p_name: str = None, 
                   p_range_max = OAStreamTask.C_RANGE_THREAD, 
                   p_ada: bool = True, 
                   p_duplicate_data: bool = False, 
+                  p_cls_cluster : type = Cluster,
+                  p_cluster_limit : int = 0,
+                  p_thrs_cluster_influence : float = None,
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -169,12 +176,14 @@ class ClusterAnalyzer (OAStreamTask):
                           p_logging = p_logging, 
                           **p_kwargs )
 
-        self._cls_cluster   = p_cls_cluster
-        self._clusters      = {}
-        self._cluster_limit = p_cluster_limit
+        self._clusters                    = {}
         self._next_cluster_id : ClusterId = -1
 
-        self._cluster_properties = {}
+        self._cls_cluster                 = p_cls_cluster
+        self._cluster_limit               = p_cluster_limit
+        self._thrs_cluster_influence      = p_thrs_cluster_influence
+
+        self._cluster_properties          = {}
         for prop in self.C_CLUSTER_PROPERTIES:
             self._cluster_properties[prop[0]] = prop
 
@@ -318,7 +327,7 @@ class ClusterAnalyzer (OAStreamTask):
         """
 
         # 1 Determination of membership values of the instance for all clusters
-        sum_results         = 0
+        min_abs             = None
         list_results_abs    = []
         list_results_rel    = []
         cluster_max_results = None
@@ -329,13 +338,11 @@ class ClusterAnalyzer (OAStreamTask):
                 result_abs  = cluster.get_membership( p_instance = p_instance )
             else:
                 result_abs  = cluster.get_influence( p_instance = p_instance )
-                if result_abs < self._thrs_cluster_influence: 
-                    # Influence clipping
-                    result_abs = 0
+                if ( self._thrs_cluster_influence is not None ) and ( result_abs < self._thrs_cluster_influence ):
+                    # Cluster influence clipping (CIC)
+                    continue
 
-            sum_results += result_abs
-
-            if ( p_scope != self.C_RESULT_SCOPE_ALL ) and ( result_abs == 0 ): continue
+            min_abs = result_abs if min_abs is None else min(min_abs, result_abs)
 
             if p_scope == self.C_RESULT_SCOPE_MAX:
                 # Cluster with highest membership value is buffered
@@ -344,15 +351,32 @@ class ClusterAnalyzer (OAStreamTask):
             else:
                 list_results_abs.append( (cluster, result_abs) )
 
-        if cluster_max_results is not None:
-            list_results_abs.append( cluster_max_results )            
-            sum_results = cluster_max_results[1]
 
+        # 2 Option: Maximum value only?
+        if cluster_max_results is not None:
+            if p_relative_values:
+                return [ ( cluster_max_results[0].id, 1.0, cluster_max_results[0] ) ]
+            else:
+                return [ cluster_max_results ]
+
+
+        # 3 Value shift on negative influence values
+        if ( min_abs is not None ) and ( min_abs <= 0 ):
+            min_abs -= self.C_EPSILON_CI
+            for i in range(len(list_results_abs)):
+                list_results_abs[i] = (list_results_abs[i][0], list_results_abs[i][1] - min_abs)
+
+
+        # 4 Option: Absolute values only?
         if not p_relative_values:
             return list_results_abs
 
 
-        # 2 Determination of relative result values according to the required scope
+        # 5 Determination of relative result values according to the required scope
+        for result_abs in list_results_abs:
+            sum_results += result_abs[1]
+
+
         for result_abs in list_results_abs:
             try:
                 result_rel = result_abs[1] / sum_results
