@@ -11,16 +11,21 @@
 ## -- 2024-02-25  1.1.0     SK       Visualisation update
 ## -- 2024-04-10  1.2.0     DA/SK    Refactoring
 ## -- 2024-05-28  1.3.0     SK       Refactoring
+## -- 2025-07-18  1.4.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2024-05-28)
+Ver. 1.4.0 (2025-07-18)
 
 This module provides a template class for cluster shrinkage to be used in anomaly detection algorithms.
 """
 
-from mlpro.oa.streams.tasks.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
+from mlpro.oa.streams.tasks.changedetectors.anomalydetectors.anomalies.clusterbased.basics import AnomalyCB
 
+
+
+# Export list for public API
+__all__ = [ 'ClusterShrinkage' ]
 
 
 
@@ -33,6 +38,6 @@ class ClusterShrinkage (AnomalyCB):
     
     """
 
-    C_NAME      = 'Cluster shrinkage'
+    pass
 
 

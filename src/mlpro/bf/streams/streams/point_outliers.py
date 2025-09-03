@@ -10,11 +10,12 @@
 ## -- 2024-04-26  1.1.0     DA       Refactoring: replaced parameter p_outlier_frequency by
 ## --                                p_outlier_rate
 ## -- 2024-06-04  1.1.1     DA       Bugfix: ESpace instead of MSpace
-## -- 2025-06-22  1.2.0     DA       Code cleanup and refactoring
+## -- 2025-06-22  1.2.0     DA       Code cleanup and refactoring#
+## -- 2025-07-22  1.3.0     DA       Outliers are raised as events now
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2024-06-22)
+Ver. 1.3.0 (2025-07-22)
 
 This module provides a multivariate benchmark stream with configurable baselines per feature and
 additional random point outliers.
@@ -25,7 +26,8 @@ additional random point outliers.
 import random
 import math
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
+from mlpro.bf.events import Event, EventManager
 from mlpro.bf.math import Element, MSpace, ESpace
 from mlpro.bf.streams import Feature, Instance
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
@@ -40,7 +42,7 @@ __all__ = [ 'StreamMLProPOutliers' ]
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProPOutliers (StreamMLProBase):
+class StreamMLProPOutliers (StreamMLProBase, EventManager):
     """
     This benchmark stream provides multidimensional instances with configurable baselines 
     per feature. Additionally, random point outliers per feature are induced.
@@ -65,6 +67,7 @@ class StreamMLProPOutliers (StreamMLProBase):
     C_VERSION               = '1.1.0'
     C_SCIREF_ABSTRACT       = 'This benchmark stream provides multidimensional instances with configurable baselines per feature. Additionally, random point outliers per feature are induced.'
     C_BOUNDARIES            = [0,0]
+    C_EVENT_ID_OUTLIER      = 'Outlier'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -89,6 +92,8 @@ class StreamMLProPOutliers (StreamMLProBase):
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
                                   **p_kwargs)
+        
+        EventManager.__init__(self, p_logging=p_logging)    
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -121,17 +126,29 @@ class StreamMLProPOutliers (StreamMLProBase):
 
         values       = []
         feature_data = Element(self._feature_space)     
+        raise_event  = False
 
         for fct_method in self._fct_methods:
             outlier = random.uniform(0,1) <= self.p_outlier_rate
-            values.append( fct_method(self._index, outlier) )   
+            values.append( fct_method(self._index, outlier) )  
+            raise_event = raise_event or outlier
 
         feature_data.set_values(values)
 
         self._index += 1
 
-        return Instance( p_feature_data=feature_data )
-    
+        inst = Instance( p_feature_data =feature_data,
+                         p_tstamp = self.get_tstamp() )
+
+        if raise_event:
+            self._raise_event( p_event_id = self.C_EVENT_ID_OUTLIER,
+                               p_event_object = Event( p_raising_object = self,
+                                                       p_tstamp = inst.tstamp,
+                                                       p_instance = inst ) )
+
+        return inst
+
+
 
 ## -------------------------------------------------------------------------------------------------
     def _fct_sin(self, p_x, p_outlier : bool):
