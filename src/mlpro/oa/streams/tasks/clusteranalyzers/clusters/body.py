@@ -11,10 +11,12 @@
 ## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instances
 ## -- 2025-06-11  0.3.0     DA       - Redefintion of method ClusterBody.update_properties()
 ## --                                - New method ClusterBody._update_density()
+## -- 2025-09-08  0.3.1     DA       Method update_properties(): added call of 
+## --                                self.body.update_deformation_index()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-06-11)
+Ver. 0.3.1 (2025-09-08)
 
 This module provides a template class for clusters with a centroid and a body.
 
@@ -89,3 +91,4 @@ class ClusterBody (ClusterCentroid):
     def update_properties(self, p_tstamp : TStampType):
         super().update_properties( p_tstamp = p_tstamp )
         self._update_density( p_tstamp = p_tstamp )
+        self.body.update_deformation_index( p_tstamp = p_tstamp )
