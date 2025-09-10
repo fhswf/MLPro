@@ -87,7 +87,7 @@ for i in range(cycles):
 
     pos[0] = cos( angle * pi / 180 )
     pos[1] = sin( angle * pi / 180 )
-    my_point.set( p_value = pos, p_time_stamp = time_stamp )
+    my_point.set( p_value = pos, p_tstamp = time_stamp )
     my_point.update_plot()
 
     try:

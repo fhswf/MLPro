@@ -13,10 +13,11 @@
 ## --                                - New method ClusterBody._update_density()
 ## -- 2025-09-08  0.3.1     DA       Method update_properties(): added call of 
 ## --                                self.body.update_deformation_index()
+## -- 2025-09-10  0.4.0     DA       Refactoring (time_stamp -> tstamp)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.1 (2025-09-08)
+Ver. 0.4.0 (2025-09-10)
 
 This module provides a template class for clusters with a centroid and a body.
 
@@ -82,7 +83,7 @@ class ClusterBody (ClusterCentroid):
         
         try:
             density = self.size.value / self.size_geo.value
-            self.density.set( p_value = density, p_time_stamp = p_tstamp )
+            self.density.set( p_value = density, p_tstamp = p_tstamp )
         except:
             pass
 
