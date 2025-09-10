@@ -19,10 +19,11 @@
 ## --                                  per feature
 ## --                                - Bugfix: replaced random.randint with random.uniform for
 ## --                                  random point generation
+## -- 2025-09-10  1.5.0     DS       Outliers are raised as events
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2025-08-19)
+Ver. 1.5.0 (2025-09-10)
 
 This module provides the native stream class StreamMLProClusterGenerator.
 These stream provides instances with self._num_dim dimensional random feature data, placed around
@@ -37,6 +38,7 @@ import math
 import numpy as np
 
 from mlpro.bf import Log
+from mlpro.bf.events import Event, EventManager
 from mlpro.bf.exceptions import ParamError
 from mlpro.bf.math import Element, MSpace, ESpace
 from mlpro.bf.streams import Feature, Instance
@@ -52,7 +54,7 @@ __all__ = [ 'StreamMLProClusterGenerator' ]
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProClusterGenerator (StreamMLProBase):
+class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
     """
     This benchmark stream class generates freely configurable random point clusters of any number,
     dimensionality,  size, velocity, acceleration and distribution_bias.
@@ -133,6 +135,8 @@ class StreamMLProClusterGenerator (StreamMLProBase):
     C_VERSION               = '1.2.1'
     C_SCIREF_ABSTRACT       = 'Demo stream provides self.C_NUM_INSTANCES self._no_dim-dimensional instances randomly positioned around centers which form clusters whose numbers, size, velocity, acceleration and density may or may not change over time.'
     C_BOUNDARIES            = [-1000,1000]
+    C_EVENT_ID_OUTLIER      = 'Outlier'
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -189,6 +193,7 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         self._cluster_ids           = [x + 1 for x in range(self._num_clusters)]
         self._current_cluster       = 1
         self._cycle                 = 1
+        self.num_outliers           = 0
         self.C_NUM_INSTANCES        = p_num_instances
         self._change_in_radius      = self._change_in_property(change=p_change_radii,
                                                                point_of_change=p_points_of_change_radii,
@@ -250,6 +255,9 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
                                   **p_kwargs)
+        
+        EventManager.__init__(self, p_logging=p_logging)    
+
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -388,9 +396,14 @@ class StreamMLProClusterGenerator (StreamMLProBase):
 
         feature_data = Element(self._feature_space)
 
+        raised_outlier = False
+
         if self._outlier_appearance and (random.uniform(0, 1) <= self._outlier_rate):
             point_values = np.array( [random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1]) for _ in range(self._num_dim)] )
        
+            raised_outlier = True
+            self.num_outliers += 1
+
         else:
             point_values = self._generate_random_point_around_cluster(cluster_id)
         
@@ -401,7 +414,16 @@ class StreamMLProClusterGenerator (StreamMLProBase):
         feature_data.set_values(point_values)
 
         self._index += 1
-        return Instance(p_feature_data=feature_data)
+        inst = Instance(p_feature_data=feature_data,
+                        p_tstamp= self.get_tstamp())
+    
+        if raised_outlier:
+            self._raise_event(p_event_id = self.C_EVENT_ID_OUTLIER,
+                              p_event_object = Event(p_raising_object= self,
+                                                     p_tstamp = inst.tstamp,
+                                                     p_instance = inst ))
+            
+        return inst
     
 
 ## -------------------------------------------------------------------------------------------------
