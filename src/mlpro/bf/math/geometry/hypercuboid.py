@@ -13,10 +13,11 @@
 ## -- 2024-07-13  1.3.0     DA       Refactoring
 ## -- 2024-08-20  1.4.0     DA       New method Hypercuboid.check_collision()
 ## -- 2024-12-11  1.4.1     DA       Pseudo classes if matplotlib is not installed
+## -- 2025-09-10  1.5.0     DA       Refactoring (time_stamp -> tstamp)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2024-12-11)
+Ver. 1.5.0 (2025-09-10)
 
 This module provides a property class for the geometric shape 'hypercuboid'.
 
@@ -117,13 +118,13 @@ class Hypercuboid (MultiProperty):
 ## -------------------------------------------------------------------------------------------------
     def set( self, 
              p_value, 
-             p_time_stamp : Union[datetime, int, float] = None,
-             p_upd_time_stamp : bool = True,
+             p_tstamp : Union[datetime, int, float] = None,
+             p_upd_tstamp : bool = True,
              p_upd_derivatives : bool = True ):         
             
         super().set( p_value = p_value, 
-                     p_time_stamp = p_time_stamp,
-                     p_upd_time_stamp = p_upd_time_stamp,
+                     p_tstamp = p_tstamp,
+                     p_upd_tstamp = p_upd_tstamp,
                      p_upd_derivatives = p_upd_derivatives )
 
         if p_value is None:
@@ -134,10 +135,10 @@ class Hypercuboid (MultiProperty):
             val_np = np.array( self.value )
 
             self.center_geo.set( p_value = val_np.mean(axis=1),
-                                 p_time_stamp = p_time_stamp )
+                                 p_tstamp = p_tstamp )
         
             self.size_geo.set( p_value = np.prod( np.diff( val_np, axis=1 ) ), 
-                               p_time_stamp = p_time_stamp )
+                               p_tstamp = p_tstamp )
 
 
 ## -------------------------------------------------------------------------------------------------

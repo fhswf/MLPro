@@ -85,7 +85,7 @@ for i in range(cycles):
 
     pos[0] = cos( angle * pi / 180 )
     pos[1] = sin( angle * pi / 180 )
-    my_crosshair.set( p_value = pos, p_time_stamp = time_stamp )
+    my_crosshair.set( p_value = pos, p_tstamp = time_stamp )
     my_crosshair.update_plot()
 
     time_stamp += time_step
