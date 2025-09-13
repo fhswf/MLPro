@@ -43,7 +43,7 @@ class MyDemo (Properties):
         properties = self.get_properties()
 
         for prop_name, (prop, link) in properties.items():
-            print('Property "' + prop_name + '" at time stamp ', prop.time_stamp)
+            print('Property "' + prop_name + '" at time stamp ', prop.tstamp)
             print('   Value:', prop.value)
             print('   Derivatives:')
             order = 0

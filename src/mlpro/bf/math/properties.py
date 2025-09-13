@@ -40,10 +40,12 @@
 ## -- 2024-07-27  1.7.0     DA       Class Property: introduction of self._value_bak
 ## -- 2024-12-11  1.7.1     DA       Pseudo class Figure if matplotlib is not installed
 ## -- 2025-03-19  1.7.2     DA       Corrections in method Property.set()
+## -- 2025-09-10  1.8.0     DA       - Refactoring: renaming time_stamp to tstamp
+## --                                - Added parent class TStamp to Property
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2025-03-19)
+Ver. 1.8.0 (2025-09-10)
 
 This module provides a systematics for enriched managed properties. MLPro's enriched properties
 store any data like class attributes and they can be used like class attributes. They extend the
@@ -57,8 +59,7 @@ Hint: plot and renormalization functionality is to be implemented in child class
 """
 
 
-from typing import List, Union, Tuple
-from datetime import datetime
+from typing import List, Tuple
 
 import numpy as np
 
@@ -67,7 +68,7 @@ try:
 except:
     class Figure: pass
 
-from mlpro.bf.various import KWArgs
+from mlpro.bf.various import KWArgs, TStampType, TStamp
 from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.math.normalizers import Normalizer, Renormalizable
 
@@ -102,7 +103,7 @@ PropertyDefinitions = List[ PropertyDefinition ]
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Property (Plottable, Renormalizable, KWArgs):
+class Property (Plottable, Renormalizable, TStamp, KWArgs):
     """
     This class implements an enriched managed property. It enables storing a value of any type. In
     case of numeric data (one- or multi-dimensional), an auto-derivation up to a well-defined maximum
@@ -130,7 +131,7 @@ class Property (Plottable, Renormalizable, KWArgs):
         Previous value of the property (readonly).
     dim : int
         Dimensionality of the stored value. In case of strings the length is returned.
-    time_stamp : Union[datetime, float, int]
+    tstamp : TStampType
         Time stamp of the last value update.
     derivative_order_max : DerivativeOrderMax
         Maximum order of auto-generated derivatives (numeric properties only). 
@@ -138,7 +139,7 @@ class Property (Plottable, Renormalizable, KWArgs):
         Current derivatives, stored by order (numeric properties only).
     """
 
-    C_PLOT_STANDALONE               = False
+    C_PLOT_STANDALONE = False
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -149,14 +150,14 @@ class Property (Plottable, Renormalizable, KWArgs):
                   **p_kwargs ):
 
         Plottable.__init__(self, p_visualize=p_visualize)
+        TStamp.__init__(self, p_tstamp=None)
         KWArgs.__init__(self, **p_kwargs)
 
         self.name                   = p_name
         self._value                 = None
         self._value_bak             = None
         self._value_prev            = None
-        self._time_stamp            = None
-        self._time_stamp_prev       = None
+        self._tstamp_prev           = None
         self._derivative_order_max  = p_derivative_order_max
         self._sw_value_prev         = p_value_prev
         self._derivatives           = {}
@@ -176,8 +177,8 @@ class Property (Plottable, Renormalizable, KWArgs):
 ## -------------------------------------------------------------------------------------------------
     def set( self, 
              p_value, 
-             p_time_stamp : Union[datetime, int, float] = None,
-             p_upd_time_stamp : bool = True,
+             p_tstamp : TStampType = None,
+             p_upd_tstamp : bool = True,
              p_upd_derivatives : bool = True ): 
         """
         Sets the value of a property at a given time point.
@@ -188,13 +189,13 @@ class Property (Plottable, Renormalizable, KWArgs):
             Value of the property of any type (numeric, vectorial, textual, list, dict, ...).
             In case of auto-derivation only lists, numpy arrays and scalar numbers are supported. Lists
             are converted to numpy arrays.
-        p_time_stamp : : Union[datetime, int, float]
+        p_tstamp : TStampType = None
             Optional time stamp of type datetime, int or float. If not provided, an internal continuous
             integer time stamp is generated.
-        p_upd_time_stamp : bool
+        p_upd_tstamp : bool
             Boolean switch to enable/disable updating the inner time stamps.
         p_upd_derivatives : bool
-            Boolean swtich to enable/disable updating the derivatives.
+            Boolean switch to enable/disable updating the derivatives.
         """
 
         # 1 Update value
@@ -214,11 +215,11 @@ class Property (Plottable, Renormalizable, KWArgs):
 
 
         # 2 Update time stamps and derivatives
-        if p_upd_time_stamp and ( p_time_stamp is not None ):
+        if p_upd_tstamp and ( p_tstamp is not None ):
 
             # 2.1 Update time stamps
-            self._time_stamp_prev = self._time_stamp
-            self._time_stamp      = p_time_stamp
+            self._tstamp_prev = self._tstamp
+            self._tstamp      = p_tstamp
 
 
             # 2.2 Numeric derivation
@@ -226,7 +227,7 @@ class Property (Plottable, Renormalizable, KWArgs):
 
                 # 2.2.1 Computation of time delta
                 try:
-                    delta_t = self._time_stamp - self._time_stamp_prev
+                    delta_t = self._tstamp - self._tstamp_prev
                 
                     try: 
                         delta_t = delta_t.total_seconds()
@@ -280,15 +281,10 @@ class Property (Plottable, Renormalizable, KWArgs):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_time_stamp(self):
-        return self._time_stamp
-                
-
-## -------------------------------------------------------------------------------------------------
     value       = property( fget = _get, fset = set)
     value_prev  = property( fget = _get_prev )
     dim         = property( fget = _get_dim )
-    time_stamp  = property( fget = _get_time_stamp )
+    tstamp      = property( fget = TStamp.get_tstamp )
     derivatives = property( fget = _get_derivatives )
 
 
