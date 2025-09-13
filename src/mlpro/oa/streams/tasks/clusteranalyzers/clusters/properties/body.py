@@ -8,20 +8,21 @@
 ## -- 2025-03-12  0.1.0     DA       Creation
 ## -- 2025-03-19  0.1.1     DA       Refactoring (cprop_center_geo)
 ## -- 2025-06-06  0.2.0     DA       Refactoring: p_inst -> p_instance/s
+## -- 2025-09-08  0.3.0     DA       New method ClusterBody._update_deformation_index()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2025-06-06)
+Ver. 0.3.0 (2025-09-08)
 
 This module provides a template class for the cluster property 'body'.
 
 """
 
-
+from mlpro.bf import TStampType
 from mlpro.bf.streams import Instance
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.geometry import cprop_size_geo, cprop_center_geo
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_deformation_index
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_deformation_index, cprop_density
 
 
 
@@ -54,7 +55,8 @@ class Body (MultiProperty):
 
     C_PROPERTIES : PropertyDefinitions = [ cprop_center_geo,
                                            cprop_size_geo,
-                                           cprop_deformation_index ]
+                                           cprop_deformation_index,
+                                           cprop_density ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -93,6 +95,15 @@ class Body (MultiProperty):
         """
 
         raise NotImplementedError
+    
+
+## -------------------------------------------------------------------------------------------------
+    def update_deformation_index(self, p_tstamp : TStampType):
+        """
+        Custom method to update the deformation index of the body.
+        """
+
+        pass
   
 
 

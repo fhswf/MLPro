@@ -53,7 +53,6 @@ if __name__ == "__main__":
     step_rate   = 10
     num_dim     = 1
 else:
-    cycle_limit = 5
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     step_rate   = 1
@@ -74,6 +73,9 @@ cycle_time_pt1 = pt1_T / (20 * pt1_K)
 cycle_time_pt2 = 1 / (20 * pt2_w_0)
 simulation_time = 500 *1 / pt2_w_0
 cycle_limit = int(simulation_time / 2)
+
+if __name__ != "__main__":
+    cycle_limit = 10
 
 # init setpoint
 setpoint_value = 40
