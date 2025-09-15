@@ -20,20 +20,32 @@
 ## --                                - Bugfix: replaced random.randint with random.uniform for
 ## --                                  random point generation
 ## -- 2025-09-10  1.5.0     DS       Outliers are raised as events
+## -- 2025-09-15  1.6.0     DA       - introduction of public cluster statistics:
+## --                                  - new classes ClusterInfo and ClusterStatistics
+## --                                  - class StreamMLProClusterGenerator: public attribute 
+## --                                    cluster_statistics
+## --                                - class StreamMLProClusterGenerator: new param p_cluster_centers
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2025-09-10)
+Ver. 1.6.0 (2025-09-15)
 
 This module provides the native stream class StreamMLProClusterGenerator.
-These stream provides instances with self._num_dim dimensional random feature data, placed around
-self._num_clusters number of centers (random). The resulting clusters or clusters may or may not move,
-change size, change density and/or change distribution_bias over time.
+It generates instances with n-dimensional random feature data, placed around
+a variable number of (random) centers. The resulting clusters may or may not 
+
+- move
+- change size
+- change density and/or change distribution_bias 
+
+over time.
 
 """
 
 import random
 import math
+from dataclasses import dataclass, field
+from typing import Dict 
 
 import numpy as np
 
@@ -47,7 +59,42 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 
 # Export list for public API
-__all__ = [ 'StreamMLProClusterGenerator' ]
+__all__ = [ 'ClusterInfo', 'ClusterStatistics', 'StreamMLProClusterGenerator' ]
+
+
+
+@dataclass
+class ClusterInfo:
+    """
+    This class provides information about a single cluster.
+    """
+
+    center : np.array = None
+    size : int = 0
+    radius : float = None
+    velocity : np.array = None
+    roc_of_radius : float = 0.0
+    distribution_bias : int = 1
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+@dataclass
+class ClusterStatistics:
+    """
+    This class provides statistics about the generated clusters.
+    """
+
+    clusters: Dict[int, ClusterInfo] = field(default_factory=dict)
+
+## -------------------------------------------------------------------------------------------------
+    @property
+    def num_clusters(self):
+        return len(self.clusters)
+
 
 
 
@@ -67,6 +114,8 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
         Total number of instances. The value '0' means indefinite. Default = 1000.
     p_num_clusters : int
         Number of clusters. Default = 4.
+    p_cluster_centers : list = None
+        Optional list of cluster centers. If not provided, random centers will be generated.
     p_boundaries_rescale : list = None
         Optional list of alternative boundaries per dimension. The generated clusters will be rescaled
         to fit within these boundaries. If not provided, the boundaries [-1000,1000] will be used for all
@@ -127,6 +176,14 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
         Seeding value for the random generator. Default = None (no seeding).
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+
+
+    Attributes
+    ----------
+    cluster_statistics : ClusterStatistics
+        Public attribute providing statistics about the generated clusters.
+    num_outliers : int
+        Public attribute providing the number of generated outliers.
     """
 
     C_ID                    = 'ClustersNDim'
@@ -137,12 +194,12 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
     C_BOUNDARIES            = [-1000,1000]
     C_EVENT_ID_OUTLIER      = 'Outlier'
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_num_dim : int = 2,
                   p_num_instances : int = 1000,
                   p_num_clusters : int = 4,
+                  p_cluster_centers : list = None,
                   p_boundaries_rescale : list = None,
                   p_outlier_appearance : bool = False,
                   p_outlier_rate : float = 0.05,
@@ -176,24 +233,31 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        if p_seed is not None:
-            self.set_random_seed(p_seed=p_seed)
-        else:
-            random.seed()
-            np.random.seed()
-        
-        # Initialize parameters        
+        # 1 Initialize public attributes
+        self.num_outliers       = 0
+        self.cluster_statistics = ClusterStatistics()
+
+
+        # 2 Initialize private attributes
         self._num_dim               = p_num_dim
         self._num_clusters          = p_num_clusters
+        self._cluster_centers       = p_cluster_centers
+
+        if self._cluster_centers:
+            if len(self._cluster_centers) != self._num_clusters:
+                raise ParamError(f"Number of provided cluster centers ({len(self._cluster_centers)}) does not match number of clusters ({self._num_clusters}).")
+            for center in self._cluster_centers:
+                if len(center) != self._num_dim:
+                    raise ParamError(f"Number of dimensions of provided cluster center ({len(center)}) does not match number of dimensions ({self._num_dim}).")
+
         self._rescaling_params      = self._get_rescaling_params(p_boundaries_rescale)
         self._radii                 = self._extend_property_list(p_radii, self._num_clusters)
         self._velocities            = self._extend_property_list(p_velocities, self._num_clusters)
         self._distribution_bias     = self._extend_property_list(p_distribution_bias, self._num_clusters)
-        self._clusters              = {}
+        self._clusters              = self.cluster_statistics.clusters
         self._cluster_ids           = [x + 1 for x in range(self._num_clusters)]
         self._current_cluster       = 1
         self._cycle                 = 1
-        self.num_outliers           = 0
         self.C_NUM_INSTANCES        = p_num_instances
         self._change_in_radius      = self._change_in_property(change=p_change_radii,
                                                                point_of_change=p_points_of_change_radii,
@@ -251,13 +315,22 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 
         self._outlier_appearance = p_outlier_appearance
         self._outlier_rate       = p_outlier_rate
-    
+
+
+        # 3 Initialize parent classes
         StreamMLProBase.__init__ (self,
                                   p_logging=p_logging,
                                   **p_kwargs)
         
         EventManager.__init__(self, p_logging=p_logging)    
 
+
+        # 4 Initialize seeding
+        if p_seed is not None:
+            self.set_random_seed(p_seed=p_seed)
+        else:
+            random.seed()
+            np.random.seed()
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -359,16 +432,24 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
         Function to define the cluster.
         """
 
-        center = np.array( [random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1]) for _ in range(self._num_dim)] )
-            
+        # 1 Initial cluster center
+        if self._cluster_centers:
+            center = np.array(self._cluster_centers[cluster_id - 1])
+        else:
+            center = np.array( [random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1]) for _ in range(self._num_dim)] )
+
+
+        # 2 Initial cluster velocity
         velocity = self._find_velocity(self._velocities[cluster_id - 1])
-        return {
-            "center": center,
-            "radius": self._radii[cluster_id - 1],
-            "velocity": velocity,
-            "roc_of_radius": 0.0,
-            "distribution_bias": self._distribution_bias[cluster_id - 1]
-        }
+
+
+        # 3 Return cluster info object
+        return ClusterInfo( center=center,
+                            size=0,
+                            radius=self._radii[cluster_id - 1],
+                            velocity=velocity,
+                            roc_of_radius=0.0,
+                            distribution_bias=self._distribution_bias[cluster_id - 1] )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -387,13 +468,20 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
+
+        # 0 Iteration control
         if self.C_NUM_INSTANCES== 0: pass
         elif self._index == self.C_NUM_INSTANCES: raise StopIteration
 
+
+        # 1 Preparation
         self._prepare_clusters_for_changes()
         self._update_cluster_properties()
         cluster_id = self._get_next_cluster()
+        self._clusters[cluster_id].size += 1
 
+
+        # 2 Generate instance
         feature_data = Element(self._feature_space)
 
         raised_outlier = False
@@ -457,11 +545,11 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
                 cluster_id = property_change["clusters"][idx]
 
                 if property_name == "radius":
-                    self._clusters[cluster_id]["roc_of_radius"] = self._clusters[cluster_id]["radius"] * change_value
+                    self._clusters[cluster_id].roc_of_radius = self._clusters[cluster_id].radius * change_value
 
                 elif property_name == "velocity":
                     if property_change["changed_values"]:
-                        self._clusters[cluster_id]["velocity"] = self._find_velocity(velocity=property_change["changed_values"][idx])
+                        self._clusters[cluster_id].velocity = self._find_velocity(velocity=property_change["changed_values"][idx])
                     else:
                         if max(self._velocities)==0 and min(self._velocities)==0:
                             velocity = random.random()*0.25
@@ -471,21 +559,21 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
                                 velocity = max(self._velocities)*random.random()
                             else:
                                 velocity = max(self._velocities)*(1+random.random())
-                        self._clusters[cluster_id]["velocity"] = self._find_velocity(velocity=velocity)
+                        self._clusters[cluster_id].velocity = self._find_velocity(velocity=velocity)
 
                 elif property_name == "distribution_bias":
                     if max(self._distribution_bias)==1 and min(self._distribution_bias)==1:
                         distribution_bias = random.randint(1,10)
                     else:
                         distribution_bias = random.randint(1,max(self._distribution_bias)+2)
-                    self._clusters[cluster_id]["distribution_bias"] = distribution_bias
+                    self._clusters[cluster_id].distribution_bias = distribution_bias
 
         if self._index in property_change["end"]:
             ids = [i for i, x in enumerate(property_change["end"]) if x == self._index]
             for idx in ids:
                 cluster_id = property_change["clusters"][idx]
                 if property_name == "radius":
-                    self._clusters[cluster_id]["roc_of_radius"] = 0
+                    self._clusters[cluster_id].roc_of_radius = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -531,15 +619,15 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 ## -------------------------------------------------------------------------------------------------
     def _handle_split_and_merge(self):
         if self._index < 2:
-            self._center_split = self._clusters[self._split_and_merge_of_clusters["clusters"][0]]["center"]
+            self._center_split = self._clusters[self._split_and_merge_of_clusters["clusters"][0]].center
             for id in self._split_and_merge_of_clusters["clusters"]:
-                self._clusters[id]["velocity"] = np.zeros(self._num_dim)
-                self._clusters[id]["center"] = self._center_split
+                self._clusters[id].velocity = np.zeros(self._num_dim)
+                self._clusters[id].center = self._center_split
 
         if self._index in self._split_and_merge_of_clusters["start"]:
             x = 0
             for id in self._split_and_merge_of_clusters["clusters"]:
-                self._clusters[id]["velocity"] = self._find_velocity(velocity=self._velocities_split[x])
+                self._clusters[id].velocity = self._find_velocity(velocity=self._velocities_split[x])
                 x += 1
 
         if not self._split_of_clusters:
@@ -548,9 +636,9 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
                                   (self._split_and_merge_of_clusters["end"][0] -
                                   self._split_and_merge_of_clusters["start"][0])/2):
                 for id in self._split_and_merge_of_clusters["clusters"]:
-                    initial_point = list(self._clusters[id]["center"])
+                    initial_point = list(self._clusters[id].center)
                     final_point = self._center_split
-                    self._clusters[id]["velocity"] = self._find_velocity(velocity=0,
+                    self._clusters[id].velocity = self._find_velocity(velocity=0,
                                                                      init_point=initial_point,
                                                                      final_point=final_point,
                                                                      steps=int((self._split_and_merge_of_clusters["end"][0] -
@@ -558,17 +646,17 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 
             if self._index in self._split_and_merge_of_clusters["end"]:
                 for id in self._split_and_merge_of_clusters["clusters"]:
-                    self._clusters[id]["velocity"] = np.zeros(self._num_dim)
-                    self._clusters[id]["center"] = self._center_split
+                    self._clusters[id].velocity = np.zeros(self._num_dim)
+                    self._clusters[id].center = self._center_split
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_cluster_properties(self):
         for cluster in self._clusters.values():
-            if cluster["roc_of_radius"] != 0:
-                cluster["radius"] += cluster["roc_of_radius"]
+            if cluster.roc_of_radius != 0:
+                cluster.radius += cluster.roc_of_radius
 
-            cluster["center"] = cluster["center"].astype(float) + cluster["velocity"]
+            cluster.center = cluster.center.astype(float) + cluster.velocity
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -580,7 +668,7 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 
         for i in range(self._current_cluster- 1, self._num_clusters):
 
-            if (self._cycle % self._clusters[self._current_cluster]["distribution_bias"]) == 0:
+            if (self._cycle % self._clusters[self._current_cluster].distribution_bias) == 0:
                 c = i + 1
                 self._current_cluster= i + 2
                 _flag = True
@@ -595,7 +683,7 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
         if _flag == False:
             for i in range(self._current_cluster-1, self._num_clusters):
 
-                if (self._cycle % self._clusters[self._current_cluster]["distribution_bias"]) == 0:
+                if (self._cycle % self._clusters[self._current_cluster].distribution_bias) == 0:
                     c = i + 1
                     self._current_cluster= i + 2
                     break
@@ -608,18 +696,18 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 ## -------------------------------------------------------------------------------------------------
     def _generate_random_point_around_cluster(self, cluster_id):
         cluster = self._clusters[cluster_id]
-        center = cluster["center"]
-        radius = cluster["radius"]
+        center = cluster.center
+        radius = cluster.radius
         point_values = np.zeros(self._num_dim)
 
         if self._num_dim == 2:
-            # 3.1 Generation of a random 2D point within a circle around the center
+            # 1 Generation of a random 2D point within a circle around the center
             radian          = random.random() * 2 * math.pi
             radius_rnd      = radius * random.random()
             point_values[0] = center[0] + math.cos(radian) * radius_rnd
             point_values[1] = center[1] + math.sin(radian) * radius_rnd
         elif self._num_dim == 3:
-            # 3.2 Generation of a random 3D point within a sphere around the center
+            # 2 Generation of a random 3D point within a sphere around the center
             radian1         = random.random() * 2 * math.pi
             radian2         = random.random() * 2 * math.pi
             radius_rnd      = radius * random.random()
@@ -627,7 +715,7 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
             point_values[1] = center[1] + math.sin(radian2) * radius_rnd
             point_values[2] = center[2] + math.sin(radian1) * math.cos(radian2) * radius_rnd
         else:
-            # 3.3 Generation of a random nD point in a hypercube with edge length (2 * radius) around the center
+            # 3 Generation of a random nD point in a hypercube with edge length (2 * radius) around the center
             for d in range(self._num_dim):
                 point_values[d] = center[d] + random.randint(0, int(2 * radius)) - radius
 
