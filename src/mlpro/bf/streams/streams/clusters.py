@@ -90,6 +90,8 @@ class ClusterStatistics:
     This class provides statistics about the generated clusters.
     """
 
+    feature_boundaries : list = None
+    feature_rescale_params : np.array = None
     clusters: Dict[int, ClusterInfo] = field(default_factory=dict)
 
 ## -------------------------------------------------------------------------------------------------
@@ -235,12 +237,7 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
         
-        # 1 Initialize public attributes
-        self.num_outliers       = 0
-        self.cluster_statistics = ClusterStatistics()
-
-
-        # 2 Initialize private attributes
+        # 1 Initialize private attributes
         self._num_dim           = p_num_dim
         self._num_clusters      = p_num_clusters
         self._centers           = p_centers
@@ -256,7 +253,6 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
         self._radii                 = self._extend_property_list(p_radii, self._num_clusters)
         self._velocities            = self._extend_property_list(p_velocities, self._num_clusters)
         self._distribution_bias     = self._extend_property_list(p_distribution_bias, self._num_clusters)
-        self._clusters              = self.cluster_statistics.clusters
         self._cluster_ids           = [x + 1 for x in range(self._num_clusters)]
         self._current_cluster       = 1
         self._cycle                 = 1
@@ -317,6 +313,21 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 
         self._outlier_appearance = p_outlier_appearance
         self._outlier_rate       = p_outlier_rate
+
+
+        # 2 Initialize public attributes
+        self.num_outliers = 0
+
+        if p_boundaries_rescale is not None:
+            feature_boundaries = p_boundaries_rescale
+        else:
+            feature_boundaries = [self.C_BOUNDARIES]*p_num_dim
+
+        self.cluster_statistics = ClusterStatistics( feature_boundaries = feature_boundaries,
+                                                     feature_rescale_params = self._rescaling_params )
+        
+        self._clusters = self.cluster_statistics.clusters
+
 
 
         # 3 Initialize parent classes
