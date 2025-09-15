@@ -24,7 +24,7 @@
 ## --                                  - new classes ClusterInfo and ClusterStatistics
 ## --                                  - class StreamMLProClusterGenerator: public attribute 
 ## --                                    cluster_statistics
-## --                                - class StreamMLProClusterGenerator: new param p_cluster_centers
+## --                                - class StreamMLProClusterGenerator: new param p_centers
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -114,7 +114,7 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
         Total number of instances. The value '0' means indefinite. Default = 1000.
     p_num_clusters : int
         Number of clusters. Default = 4.
-    p_cluster_centers : list = None
+    p_centers : list = None
         Optional list of cluster centers. If not provided, random centers will be generated.
     p_boundaries_rescale : list = None
         Optional list of alternative boundaries per dimension. The generated clusters will be rescaled
@@ -199,7 +199,7 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
                   p_num_dim : int = 2,
                   p_num_instances : int = 1000,
                   p_num_clusters : int = 4,
-                  p_cluster_centers : list = None,
+                  p_centers : list = None,
                   p_boundaries_rescale : list = None,
                   p_outlier_appearance : bool = False,
                   p_outlier_rate : float = 0.05,
@@ -239,14 +239,14 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
 
 
         # 2 Initialize private attributes
-        self._num_dim               = p_num_dim
-        self._num_clusters          = p_num_clusters
-        self._cluster_centers       = p_cluster_centers
+        self._num_dim           = p_num_dim
+        self._num_clusters      = p_num_clusters
+        self._centers           = p_centers
 
-        if self._cluster_centers:
-            if len(self._cluster_centers) != self._num_clusters:
-                raise ParamError(f"Number of provided cluster centers ({len(self._cluster_centers)}) does not match number of clusters ({self._num_clusters}).")
-            for center in self._cluster_centers:
+        if self._centers:
+            if len(self._centers) != self._num_clusters:
+                raise ParamError(f"Number of provided cluster centers ({len(self._centers)}) does not match number of clusters ({self._num_clusters}).")
+            for center in self._centers:
                 if len(center) != self._num_dim:
                     raise ParamError(f"Number of dimensions of provided cluster center ({len(center)}) does not match number of dimensions ({self._num_dim}).")
 
@@ -267,7 +267,7 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
                                                                point_of_change=p_points_of_change_velocities,
                                                                num_clusters_affected=p_num_clusters_for_change_velocities,
                                                                changed_values=p_changed_velocities)
-        self._change_in_distribution_bias= self._change_in_property(change=p_change_distribution_bias,
+        self._change_in_distribution_bias = self._change_in_property(change=p_change_distribution_bias,
                                                                point_of_change=p_points_of_change_distribution_bias,
                                                                num_clusters_affected=p_num_clusters_for_change_distribution_bias)
         self._new_cluster           = self._change_in_property(change=p_appearance_of_clusters,
@@ -433,8 +433,8 @@ class StreamMLProClusterGenerator (StreamMLProBase, EventManager):
         """
 
         # 1 Initial cluster center
-        if self._cluster_centers:
-            center = np.array(self._cluster_centers[cluster_id - 1])
+        if self._centers:
+            center = np.array(self._centers[cluster_id - 1])
         else:
             center = np.array( [random.uniform(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1]) for _ in range(self._num_dim)] )
 

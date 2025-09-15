@@ -51,7 +51,7 @@ class MyScenario (StreamScenario):
         stream = StreamMLProClusterGenerator(p_num_dim= 2,
                                              p_num_instances= 1000,
                                              p_num_clusters= 4,
-                                             p_cluster_centers= [ [-200, 200], [200, 200], [-200, -200], [200, -200] ],
+                                             p_centers= [ [-200, 200], [200, 200], [-200, -200], [200, -200] ],
                                              p_radii= [150, 120, 160, 200],
                                              p_distribution_bias= [1, 2, 3, 1],
                                              p_visualize= p_visualize,
