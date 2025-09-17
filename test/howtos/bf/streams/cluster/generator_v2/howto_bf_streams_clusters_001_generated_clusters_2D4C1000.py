@@ -4,11 +4,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-17  1.0.0     SK       Creation/First implementation
+## -- 2025-09-17  1.0.0     DA       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-17)
+Ver. 1.0.0 (2025-09-17)
 
 This module demonstrates and visualizes the native stream Clusters which generates a
 specified number of n-dimensional instances placed around specified number of centers, resulting in
@@ -47,16 +47,24 @@ class MyScenario (StreamScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
-        # 1 Import a native stream from MLPro
-        stream = StreamMLProClusterGenerator(p_num_dim= 2,
-                                             p_num_instances= 1000,
-                                             p_num_clusters= 4,
-                                             p_centers= [ [-200, 200], [200, 200], [-200, -200], [200, -200] ],
-                                             p_radii= [150, 120, 160, 200],
-                                             p_distribution_bias= [1, 2, 3, 1],
-                                             p_visualize= p_visualize,
-                                             p_seed= 15,
-                                             p_logging= p_logging)
+        # 1 Set up MLPro's cluster generator
+        c1 = ClusterSpec( p_center = [-200, 200], 
+                          p_radii = [50, 50], 
+                          p_velocities = [1.0, 0.0],
+                          p_distribution_bias = 1 )     
+
+        c2 = ClusterSpec( p_center = [200, 200], 
+                          p_radii = [50, 300], 
+                          p_distribution_bias = 1 )     
+
+        stream = StreamMLProClusterGenerator2( p_num_dim = 2,
+                                               p_num_instances = 1500,
+                                               p_num_clusters = 2,
+                                               p_cluster_specs = [c1,c2],
+                                               p_outlier_rate = 0.02,
+                                               p_boundaries_rescale=[[-500,500],[-5,5]],
+                                               p_seed = 15,
+                                               p_logging = p_logging )
 
 
         # 2 Set up a stream workflow

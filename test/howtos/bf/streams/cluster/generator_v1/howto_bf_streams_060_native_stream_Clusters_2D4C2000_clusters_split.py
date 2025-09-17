@@ -55,9 +55,9 @@ class MyScenario (StreamScenario):
                                              p_clusters_split= True,
                                              p_num_clusters_to_split_into= 2,
                                              p_points_of_split=[300],
-                                             p_velocities_after_split=[0.1, 0.08],
+                                             p_velocities_after_split=[1.0, 1.0], #[0.1, 0.08],
                                              p_visualize= p_visualize,
-                                             p_seed= 21,
+                                             p_seed= 1,
                                              p_logging= p_logging)
 
 

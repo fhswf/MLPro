@@ -36,7 +36,7 @@ class MyScenario (StreamScenario):
         stream = StreamMLProClusterGenerator( p_num_dim = 3,
                                               p_num_instances = 2000,
                                               p_num_clusters = 5,
-                                              p_boundaries_rescale = [ [-100,100], [100,200], [-20,-10] ],
+                                              p_feature_boundaries = [ [-100,100], [100,200], [-20,-10] ],
                                               p_outlier_appearance = True,
                                               p_outlier_rate = 0.02,
                                               p_radii = [100, 150, 200, 250, 300],

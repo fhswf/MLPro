@@ -5,3 +5,4 @@ from .csv_file import *
 from .clouds import *
 from .point_outliers import *
 from .clusters import *
+from .clusters2 import *
