@@ -60,6 +60,9 @@ class Cluster:
     center : np.array = None
     size : int = 0
     radii : np.array = None
+    change_radii : bool = False
+    rate_of_change_of_radii : np.array = None
+    points_of_change_radii : list = None
     velocities : np.array = None
     roc_of_radius : float = 0.0
     distribution_bias : int = 1
@@ -82,8 +85,22 @@ class ClusterSpec:
         Optional list of initial center coordinates. If not provided, a random center will be generated.
     p_radii : list[float] = [100.0]
         Optional list of initial radii per dimension. If not provided, a default radius of 100.0 will be used for all dimensions.
+    p_change_radii : bool = False
+        If there are changes in radii of clusters. Default= False.
+    p_rate_of_change_of_radii : list[float] = None
+        Rate of change of radii per cycle. Default = None.
+    p_points_of_change_radii : list = None
+        Instances at which change of radii occur. Default = None.
     p_velocity : list[float] = [0.0]
         Optional list of initial velocities per dimension. If not provided, a default velocity of 0.0 will be used for all dimensions.
+    p_change_velocities : bool
+        If there are changes in velocities of clusters. Default = False.
+    p_points_of_change_velocities : list
+        Instances at which change of velocities occur. Default = None.
+    p_num_clusters_for_change_velocities : list
+        The number of clusters for which the velocity changes. Default = None.
+    p_changed_velocities : list
+        The changed value of velocities. Default = None.
     p_distribution_bias : int = 1
         Optional integer distribution_bias. For example, a value of 2 causes the cluster to be
         flooded with two times more instances than a cluster with distribution_bias 1. Default = 1.
@@ -91,7 +108,14 @@ class ClusterSpec:
 
     p_center : list[float] = None
     p_radii : list[float] = field(default_factory=lambda: [100.0])
+    p_change_radii : bool = False,
+    p_rate_of_change_of_radii : list[float] = None,
+    p_points_of_change_radii : list = None,
     p_velocities : list[float] = field(default_factory=lambda: [0.0])
+    p_change_velocities : bool = False,
+    p_points_of_change_velocities : list = None,
+    p_num_clusters_for_change_velocities : int = None,
+    p_changed_velocities : list = None,
     p_distribution_bias : int = 1
 
 ## -------------------------------------------------------------------------------------------------
@@ -117,6 +141,8 @@ class ClusterSpec:
             radii = np.array(self.p_radii, dtype=float)
         else:
             raise ParamError(f"Number of dimensions of provided cluster radii ({len(self.p_radii)}) does not match number of dimensions ({p_num_dim}).")
+
+        # 2.1 Change in radii
 
 
         # 3 Velocities

@@ -123,12 +123,6 @@ class ChangeObserver (StreamTaskHelper):
                           p_logging = p_logging,
                           p_visualize = p_visualize,
                           **p_kwargs )
-        
-    
-
-            
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -218,8 +212,3 @@ class ChangeObserver (StreamTaskHelper):
             p_settings.axes.legend(title='Changes')
 
         return True
-    
-
-
-
-
