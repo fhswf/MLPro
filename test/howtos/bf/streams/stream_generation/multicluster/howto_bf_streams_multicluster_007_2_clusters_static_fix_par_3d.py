@@ -37,19 +37,18 @@ class MyScenario (StreamScenario):
 
         # 1 Set up MLPro's cluster generator
         stream1 = StreamCluster( p_num_dim = 3, 
-                                 p_num_instances = self._cycle_limit,
-                                 p_center_start  = [-500, -500, 0],
-                                 p_radii_start  = [200, 100, 50] )
+                                 p_seed = 1,
+                                 p_num_instances = self._cycle_limit/2,
+                                 p_states = [ ClusterState( p_center = [-500, -500, -500], p_radii = [200, 100, 50] ) ] )
         
         stream2 = StreamCluster( p_num_dim = 3, 
-                                 p_num_instances = self._cycle_limit,
-                                 p_center_start  = [500, 500, 0],
-                                 p_radii_start  = [100, 200, 150] )
+                                 p_seed = 2,
+                                 p_num_instances = self._cycle_limit/2,
+                                 p_states = [ ClusterState( p_center = [ 500, 500, 500], p_radii = [100, 200, 150] ) ] )
 
         mstream = MultiStream()
         mstream.add_stream( p_stream = stream1, p_batch_size=1, p_start_instance=0 )
         mstream.add_stream( p_stream = stream2, p_batch_size=5, p_start_instance=200 )
-        mstream.set_random_seed(1)
 
 
         # 2 Set up a stream workflow
@@ -93,7 +92,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_3D,
                                                         p_view_autoselect = False,
                                                         p_step_rate = step_rate ) )
     input('Press ENTER to start stream processing...')

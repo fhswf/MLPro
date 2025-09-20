@@ -30,17 +30,14 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = '1 Cluster fix, static'
+    C_NAME      = '1 Cluster random, static'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Set up MLPro's cluster generator
-        stream = StreamCluster( p_num_dim = 2, 
-                                p_num_instances = self._cycle_limit,
-                                p_center_start  = [0, 0],
-                                p_radii_start  = [200, 100] )
-
+        stream = StreamCluster( p_num_dim = 2,
+                                p_states = [ ClusterState( p_center = [ 0, 0], p_radii = [ 100, 200] ) ] )
 
         # 2 Set up a stream workflow
         workflow = StreamWorkflow( p_name='wf1', 

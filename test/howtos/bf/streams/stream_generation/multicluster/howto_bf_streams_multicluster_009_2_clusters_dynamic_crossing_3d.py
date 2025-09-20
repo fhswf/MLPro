@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_multiclusters_012_2_clusters_static_fix_par_2d.py
+## -- Module  : howto_bf_streams_multicluster_009_2_clusters_dynamic_crossing_3d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -37,25 +37,22 @@ class MyScenario (StreamScenario):
 
         # 1 Set up MLPro's cluster generator
         stream1 = StreamCluster( p_num_dim = 3, 
-                                 p_num_instances = self._cycle_limit/4,
-                                 p_center_start = [500, 500, 500],
-                                 p_center_end  = [0, 0, 0],
-                                 p_radii_start = [50,50,50],
-                                 p_radii_end = [50,50,50],
-                                 p_enable_instance_exceeding = True )
-
+                                 p_seed = 1,
+                                 p_states = [ ClusterState( p_center = [500, 400, 500], p_radii = [50, 50, 50] ) ,
+                                              ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
+                                              ClusterState( p_center = [-800, -500, 300], p_radii = [50, 50, 50] ) ],
+                                 p_durations = [self._cycle_limit/4]*2 )
+        
         stream2 = StreamCluster( p_num_dim = 3, 
-                                 p_num_instances = self._cycle_limit/4,
-                                 p_center_start = [-500, 500, -500],
-                                 p_center_end  = [0, 0, 0],
-                                 p_radii_start = [50,50,50],
-                                 p_radii_end = [50,50,50],
-                                 p_enable_instance_exceeding = True )
+                                 p_seed = 2,
+                                 p_states = [ ClusterState( p_center = [-500, 500, -500], p_radii = [50, 50, 50] ) ,
+                                              ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
+                                              ClusterState( p_center = [100, -500, 200], p_radii = [50, 50, 50] ) ],
+                                 p_durations = [self._cycle_limit/4]*2 )
 
         mstream = MultiStream( p_num_instances = self._cycle_limit )
         mstream.add_stream( p_stream = stream1 )
         mstream.add_stream( p_stream = stream2 )
-        mstream.set_random_seed(1)
 
 
         # 2 Set up a stream workflow

@@ -36,12 +36,14 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Set up MLPro's cluster generator
-        stream = StreamCluster( p_num_dim = 2, 
-                                p_num_instances = self._cycle_limit,
-                                p_center_start  = [0, 0],
-                                p_radii_start  = [20, 10],
-                                p_center_end = [1000, 0],
-                                p_radii_end = [100, 200] )
+        stream = StreamCluster( p_num_dim = 2,
+                                p_states = [ ClusterState( p_center = [    0,    0 ], p_radii = [   0,   0 ] ),
+                                             ClusterState( p_center = [  500,    0 ], p_radii = [  50,  50 ] ),
+                                             ClusterState( p_center = [    0,  500 ], p_radii = [ 200, 100 ] ),
+                                             ClusterState( p_center = [ -500,    0 ], p_radii = [  50,  20 ] ),
+                                             ClusterState( p_center = [    0, -500 ], p_radii = [ 200, 100 ] ),
+                                             ClusterState( p_center = [    0,    0 ], p_radii = [   0,   0 ] )  ],
+                                p_durations = [self._cycle_limit/15]*5 )
 
 
         # 2 Set up a stream workflow

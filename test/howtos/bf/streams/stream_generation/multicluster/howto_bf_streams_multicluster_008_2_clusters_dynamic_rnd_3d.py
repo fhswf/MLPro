@@ -37,23 +37,18 @@ class MyScenario (StreamScenario):
 
         # 1 Set up MLPro's cluster generator
         stream1 = StreamCluster( p_num_dim = 3, 
-                                 p_num_instances = self._cycle_limit,
-                                 p_center_start = 'rnd',
-                                 p_center_end  = 'rnd',
-                                 p_radii_start = 'rnd',
-                                 p_radii_end=  'rnd' )
+                                 p_seed = 1,
+                                 p_states = [ ClusterState(), ClusterState() ],
+                                 p_durations = [self._cycle_limit/2] )
         
         stream2 = StreamCluster( p_num_dim = 3, 
-                                 p_num_instances = self._cycle_limit,
-                                 p_center_start = 'rnd',
-                                 p_center_end  = 'rnd',
-                                 p_radii_start = 'rnd',
-                                 p_radii_end=  'rnd' )
+                                 p_seed = 2,
+                                 p_states = [ ClusterState(), ClusterState() ],
+                                 p_durations = [self._cycle_limit/2] )
         
         mstream = MultiStream()
         mstream.add_stream( p_stream = stream1 )
         mstream.add_stream( p_stream = stream2 )
-        mstream.set_random_seed(1)
 
 
         # 2 Set up a stream workflow
