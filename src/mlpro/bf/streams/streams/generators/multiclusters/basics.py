@@ -125,6 +125,8 @@ class StreamGenCluster(StreamGenerator):
         Current rate of change of the radii of the cluster.
     size : int
         Number of instances generated so far.
+    cluster_stats : ClusterStatistics
+        Statistics about the generated cluster.
     """
 
     C_NAME              = 'Cluster'
@@ -191,6 +193,13 @@ class StreamGenCluster(StreamGenerator):
                           p_sampler = p_sampler,
                           p_dtype = p_dtype,
                           p_logging = p_logging )
+
+
+        self.cluster_stats = ClusterStatistics( feature_boundaries = self._boundaries_rescale,
+                                                feature_rescale_params = self._rescaling_params )
+        
+        self.cluster_stats.clusters[self.id] = self
+
 
 
 ## -------------------------------------------------------------------------------------------------
