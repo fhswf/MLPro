@@ -237,8 +237,8 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
-                  P_thres_inst : int = 0,
-                  p_thres_clusters : int = 1,
+                  p_thrs_inst : int = 0,
+                  p_thrs_clusters : int = 1,
                   p_thres_percent : float = 0.05,
                   **p_kwargs ):
 
@@ -255,8 +255,8 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                           p_visualize = p_visualize,
                           p_logging= p_logging,   
                           p_anomaly_buffer_size = p_anomaly_buffer_size,
-                          p_thrs_inst = P_thres_inst,
-                          p_thrs_clusters = p_thres_clusters,                     
+                          p_thrs_inst = p_thrs_inst,
+                          p_thrs_clusters = p_thrs_clusters,                     
                           **p_kwargs)
 
 
@@ -385,7 +385,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
-                  P_thrs_inst : int = 0,
+                  p_thrs_inst : int = 0,
                   p_thrs_clusters : int = 1,
                   **p_kwargs ):
         
@@ -400,7 +400,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                           p_visualize = p_visualize,
                           p_logging= p_logging, 
                           p_anomaly_buffer_size = p_anomaly_buffer_size,
-                          p_thrs_inst = P_thrs_inst,
+                          p_thrs_inst = p_thrs_inst,
                           p_thrs_clusters = p_thrs_clusters,                       
                           **p_kwargs)
 
