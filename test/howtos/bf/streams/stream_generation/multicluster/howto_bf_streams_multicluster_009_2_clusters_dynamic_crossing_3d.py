@@ -1,35 +1,23 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_051_native_stream_Clusters_2D4C1000.py
+## -- Module  : howto_bf_streams_multicluster_009_2_clusters_dynamic_crossing_3d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-06-17  1.0.0     SK       Creation/First implementation
+## -- 2025-09-19  1.0.0     DA       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-06-17)
+Ver. 1.0.0 (2025-09-19)
 
-This module demonstrates and visualizes the native stream Clusters which generates a
-specified number of n-dimensional instances placed around specified number of centers, resulting in
-clouds or clusters whose numbers, size, velocity, acceleration and density can be varied over time.
-
-You will learn:
-
-1) The properties and use of native stream Clusters.
-
-2) How to set up a stream workflow without a stream task.
-
-3) How to set up a stream scenario based on a stream and a processing stream workflow.
-
-4) How to run a stream scenario dark or with default visualization.
+This module demonstrates ...
 
 """
 
 from mlpro.bf.ops import Mode
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.streams.streams import *
+from mlpro.bf.streams.streams.multiclusters import *
 from mlpro.bf.various import Log
 
 
@@ -42,21 +30,29 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'Clusters2D4C1000'
+    C_NAME      = '2 Clusters rnd, static'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
-        # 1 Import a native stream from MLPro
-        stream = StreamMLProClusterGenerator(p_num_dim= 2,
-                                             p_num_instances= 1000,
-                                             p_num_clusters= 4,
-                                             p_centers= [ [-200, 200], [200, 200], [-200, -200], [200, -200] ],
-                                             p_radii= [150, 120, 160, 200],
-                                             p_distribution_bias= [1, 2, 3, 1],
-                                             p_visualize= p_visualize,
-                                             p_seed= 15,
-                                             p_logging= p_logging)
+        # 1 Set up MLPro's cluster generator
+        stream1 = StreamCluster( p_num_dim = 3, 
+                                 p_seed = 1,
+                                 p_states = [ ClusterState( p_center = [500, 400, 500], p_radii = [50, 50, 50] ) ,
+                                              ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
+                                              ClusterState( p_center = [-800, -500, 300], p_radii = [50, 50, 50] ) ],
+                                 p_durations = [self._cycle_limit/4]*2 )
+        
+        stream2 = StreamCluster( p_num_dim = 3, 
+                                 p_seed = 2,
+                                 p_states = [ ClusterState( p_center = [-500, 500, -500], p_radii = [50, 50, 50] ) ,
+                                              ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
+                                              ClusterState( p_center = [100, -500, 200], p_radii = [50, 50, 50] ) ],
+                                 p_durations = [self._cycle_limit/4]*2 )
+
+        mstream = MultiStream( p_num_instances = self._cycle_limit )
+        mstream.add_stream( p_stream = stream1 )
+        mstream.add_stream( p_stream = stream2 )
 
 
         # 2 Set up a stream workflow
@@ -67,7 +63,7 @@ class MyScenario (StreamScenario):
 
 
         # 3 Return stream and workflow
-        return stream, workflow
+        return mstream, workflow
 
 
 
@@ -77,7 +73,7 @@ class MyScenario (StreamScenario):
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 1000
-    logging     = Log.C_LOG_ALL
+    logging     = Log.C_LOG_WE
     visualize   = True
     step_rate   = 2
   
@@ -100,7 +96,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_3D,
                                                         p_view_autoselect = False,
                                                         p_step_rate = step_rate ) )
     input('Press ENTER to start stream processing...')

@@ -1,21 +1,22 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_006_Clouds2D4C1000Static.py
+## -- Module  : howto_bf_streams_051_native_stream_Clusters_2D4C1000.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2024-02-06  1.0.0     DA       Creation/First implementation
+## -- 2025-09-17  1.0.0     DA       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2024-02-06)
+Ver. 1.0.0 (2025-09-17)
 
-This module demonstrates and visualizes the native stream Clouds2D4C1000Static which generates 1000
-2-dimensional random instances that form 4 point clouds.
+This module demonstrates and visualizes the native stream Clusters which generates a
+specified number of n-dimensional instances placed around specified number of centers, resulting in
+clouds or clusters whose numbers, size, velocity, acceleration and density can be varied over time.
 
 You will learn:
 
-1) The properties and use of native stream Clouds2D4C1000Static.
+1) The properties and use of native stream Clusters.
 
 2) How to set up a stream workflow without a stream task.
 
@@ -25,10 +26,11 @@ You will learn:
 
 """
 
-
-from mlpro.bf import Log, Mode
+from mlpro.bf.ops import Mode
+from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
+from mlpro.bf.various import Log
 
 
 
@@ -40,14 +42,29 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'My stream scenario'
+    C_NAME      = 'Clusters2D4C1000'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
-        # 1 Import a native stream from MLPro
-        provider_mlpro = StreamProviderMLPro(p_seed=1, p_logging=p_logging)
-        stream = provider_mlpro.get_stream('Clouds2D4C1000Static', p_mode=p_mode, p_logging=p_logging)
+        # 1 Set up MLPro's cluster generator
+        c1 = ClusterSpec( p_center = [-200, 200], 
+                          p_radii = [50, 50], 
+                          p_velocities = [1.0, 0.0],
+                          p_distribution_bias = 1 )     
+
+        c2 = ClusterSpec( p_center = [200, 200], 
+                          p_radii = [50, 300], 
+                          p_distribution_bias = 1 )     
+
+        stream = StreamMLProClusterGenerator2( p_num_dim = 2,
+                                               p_num_instances = 1500,
+                                               p_num_clusters = 2,
+                                               p_cluster_specs = [c1,c2],
+                                               p_outlier_rate = 0.02,
+                                               p_boundaries_rescale=[[-500,500],[-5,5]],
+                                               p_seed = 15,
+                                               p_logging = p_logging )
 
 
         # 2 Set up a stream workflow
@@ -67,15 +84,17 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 500
+    cycle_limit = 1000
     logging     = Log.C_LOG_ALL
     visualize   = True
+    step_rate   = 2
   
 else:
     # 1.2 Parameters for internal unit test
     cycle_limit = 2
     logging     = Log.C_LOG_NOTHING
     visualize   = False
+    step_rate   = 1
 
 
 # 2 Instantiate the stream scenario
@@ -89,10 +108,14 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
+                                                        p_view_autoselect = False,
+                                                        p_step_rate = step_rate ) )
     input('Press ENTER to start stream processing...')
 
 myscenario.run()
 
 if __name__ == '__main__':
     input('Press ENTER to exit...')
+
+    
