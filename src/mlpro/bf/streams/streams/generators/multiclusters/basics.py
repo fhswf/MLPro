@@ -26,20 +26,21 @@ linearly between the states over the specified number of instances. Overall, the
 """
 
 from typing import Union, Literal, List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Dict 
 
 import numpy as np
 
 from mlpro.bf import Log
 from mlpro.bf.exceptions import ParamError
-from mlpro.bf.math import Element, MSpace, ESpace
-from mlpro.bf.streams import Feature, Instance, Sampler
-from mlpro.bf.streams.streams.generators.basics import StreamGenerator   
+from mlpro.bf.math import Element
+from mlpro.bf.streams import Instance, Sampler, Stream
+from mlpro.bf.streams.streams.generators.basics import *
 
 
 
 # Export list for public API
-__all__ = [ 'ClusterState', 'StreamGenCluster' ]
+__all__ = [ 'ClusterState', 'ClusterStatistics', 'StreamGenCluster', 'MultiStreamGenCluster' ]
 
 
 
@@ -54,6 +55,27 @@ class ClusterState:
     p_center : Union[ Literal['rnd'], list, np.ndarray ] = 'rnd'
     p_radii: Union[ Literal['rnd'], list, np.ndarray ] = 'rnd'
 
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+@dataclass
+class ClusterStatistics:
+    """
+    This class provides statistics about the generated clusters.
+    """
+
+    feature_boundaries : list = None
+    feature_rescale_params : np.array = None
+    clusters: Dict[int, object] = field(default_factory=dict)
+
+## -------------------------------------------------------------------------------------------------
+    @property
+    def num_clusters(self):
+        return len(self.clusters)
+    
 
 
 
@@ -279,3 +301,88 @@ class StreamGenCluster(StreamGenerator):
 
         # 4 Return new instance
         return new_inst
+    
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiStreamGenCluster (MultiStreamGenerator):
+    """
+    Multi-stream generator combining multiple StreamGenCluster instances. Additionally, it provides
+    functionality for rescaling the feature space boundaries and for injecting outliers.
+
+    Parameters
+    ----------
+    p_num_dim : int
+        Number of dimensions (features) of the generated instances.
+    p_name : str = ''
+        Name of the multi-stream generator. Default is ''.
+    p_seed : int = 0
+        Random seed for reproducibility.
+    p_num_instances : int = 0
+        Number of instances to generate per sub-stream. If set to 0, the streams are infinite. 
+        Default is 0.
+    p_sampler : Sampler = None
+        Optional sampler object for sampling instances. Default is None.
+    p_boundaries_rescale : list = None
+        List of tuples specifying different (min, max) boundaries for each dimension to rescale the 
+        generated values. If None, no rescaling is applied. Default is None.
+    p_outlier_rate : float = 0.0
+        Probability of generating an outlier instance (between 0.0 and 1.0). Default is 0.0 (no outliers).
+    p_dtype : type, default: np.float32
+        Data type of the feature values (np.float32 or np.float64). Default is np.float32. 
+    p_logging : int, default: Log.C_LOG_NOTHING
+        Logging level. See :class:`mlpro.bf.Log` for details. Default is Log.C_LOG_NOTHING. 
+
+    Attributes    
+    ----------
+    num_outliers : int
+        Number of outlier instances generated so far.
+    cluster_stats : ClusterStatistics
+        Statistics about the generated clusters.
+    """
+
+    C_NAME = 'Cluster'    
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_num_dim : int,
+                  p_name : str = '',
+                  p_seed : int = 0,
+                  p_num_instances : int = 0,
+                  p_sampler : Sampler = None,
+                  p_boundaries_rescale : list = None,
+                  p_outlier_rate : float = 0.0,
+                  p_dtype : type = np.float32,
+                  p_logging = Log.C_LOG_ALL ):
+
+        super().__init__( p_num_dim = p_num_dim,
+                          p_name = p_name,
+                          p_seed = p_seed,
+                          p_num_instances = p_num_instances,
+                          p_sampler = p_sampler,
+                          p_boundaries_rescale = p_boundaries_rescale,
+                          p_outlier_rate = p_outlier_rate,
+                          p_dtype = p_dtype,
+                          p_logging = p_logging )
+
+        self._cluster_id   = 0
+        self.cluster_stats = ClusterStatistics( feature_boundaries = self._boundaries_rescale,
+                                                feature_rescale_params = self._rescaling_params )  
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_stream( self, 
+                    p_stream : Stream, 
+                    p_batch_size : int = 1,
+                    p_start_instance : int = 0 ):
+        
+        super().add_stream( p_stream = p_stream, 
+                            p_batch_size = p_batch_size, 
+                            p_start_instance = p_start_instance )  
+
+        if isinstance(p_stream, StreamGenCluster):
+            self.cluster_stats.clusters[self._cluster_id] = p_stream
+            self._cluster_id += 1

@@ -33,6 +33,11 @@ class MyScenario (StreamScenario):
     C_NAME      = '2 Clusters rnd, static'
 
 ## -------------------------------------------------------------------------------------------------
+    def _handle_outlier(self, p_event_id, p_event_object):
+        self.log( Log.C_LOG_TYPE_W, 'Outlier generated' )
+
+
+## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Set up MLPro's cluster generator
@@ -41,25 +46,34 @@ class MyScenario (StreamScenario):
                                     p_states = [ ClusterState( p_center = [500, 400, 500], p_radii = [50, 50, 50] ) ,
                                                  ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
                                                  ClusterState( p_center = [-800, -500, 300], p_radii = [50, 50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2 )
+                                    p_durations = [self._cycle_limit/4]*2,
+                                    p_logging = p_logging )
         
         stream2 = StreamGenCluster( p_num_dim = 3, 
                                     p_seed = 2,
                                     p_states = [ ClusterState( p_center = [-500, 500, -500], p_radii = [50, 50, 50] ) ,
                                                  ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
                                                  ClusterState( p_center = [100, -500, 200], p_radii = [50, 50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2 )
+                                    p_durations = [self._cycle_limit/4]*2,
+                                    p_logging = p_logging )
 
-        mstream = MultiStreamGenCluster( p_num_dim = 3, p_num_instances = self._cycle_limit )
+        mstream = MultiStreamGenCluster( p_num_dim = 3,
+                                         p_boundaries_rescale = [ (-10000, 10000), (-1, 1), ( 0.05, 0.06) ],
+                                         p_outlier_rate = 0.05,
+                                         p_logging = p_logging )
+        
         mstream.add_stream( p_stream = stream1 )
         mstream.add_stream( p_stream = stream2 )
 
+        mstream.register_event_handler( p_event_id = StreamGenCluster.C_EVENT_ID_OUTLIER,
+                                        p_event_handler = self._handle_outlier )
+
 
         # 2 Set up a stream workflow
-        workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE, 
-                                   p_visualize=p_visualize,
-                                   p_logging=logging )
+        workflow = StreamWorkflow( p_name = 'wf1',
+                                   p_range_max = StreamWorkflow.C_RANGE_NONE,
+                                   p_visualize = p_visualize,
+                                   p_logging = logging )
 
 
         # 3 Return stream and workflow

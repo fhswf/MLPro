@@ -90,11 +90,13 @@
 ## -- 2025-07-16  3.0.0     DA       New classes StreamHelper, StreamTaskHelper
 ## -- 2025-07-18  3.1.0     DA       Refactoring
 ## -- 2025-09-11  3.2.0     DA       Class Instance: new properties num_features, feature_values
-## -- 2025-09-19  3.3.0     DA       Class MultiStream: new parameter p_start_instance in method add_stream()
+## -- 2025-09-19  3.3.0     DA       Class MultiStream: new parameter p_start_instance in method 
+## --                                add_stream()
+## -- 2025-09-21  3.4.0     DA       Class Stream, MultiStream: adjustments and bugfixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.3.0 (2025-09-19)
+Ver. 3.4.0 (2025-09-21)
 
 This module provides classes for standardized data stream processing. 
 
@@ -949,7 +951,7 @@ class MultiStream (Stream):
         
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp( self ) -> TStampType:
-        return self._streams[0][0].tstamp
+        return self.streams[0][0].tstamp
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ This module demonstrates...
 from mlpro.bf.ops import Mode
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.streams.streams.multiclusters import *
+from mlpro.bf.streams.streams.generators.multiclusters import *
 from mlpro.bf.various import Log
 
 
@@ -36,14 +36,15 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging ):
 
         # 1 Set up MLPro's cluster generator
-        stream = StreamGenCluster( p_num_dim = 3 )
+        stream = StreamGenCluster( p_num_dim = 3,
+                                   p_logging = p_logging )
 
 
         # 2 Set up a stream workflow
-        workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE, 
-                                   p_visualize=p_visualize,
-                                   p_logging=logging )
+        workflow = StreamWorkflow( p_name = 'wf1', 
+                                   p_range_max = StreamWorkflow.C_RANGE_NONE, 
+                                   p_visualize = p_visualize,
+                                   p_logging = logging )
 
 
         # 3 Return stream and workflow

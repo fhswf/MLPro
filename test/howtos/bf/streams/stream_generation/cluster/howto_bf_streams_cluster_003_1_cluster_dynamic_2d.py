@@ -17,7 +17,7 @@ This module demonstrates...
 from mlpro.bf.ops import Mode
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.streams.streams.multiclusters import *
+from mlpro.bf.streams.streams.generators.multiclusters import *
 from mlpro.bf.various import Log
 
 
@@ -43,7 +43,8 @@ class MyScenario (StreamScenario):
                                                 ClusterState( p_center = [ -500,    0 ], p_radii = [  50,  20 ] ),
                                                 ClusterState( p_center = [    0, -500 ], p_radii = [ 200, 100 ] ),
                                                 ClusterState( p_center = [    0,    0 ], p_radii = [   0,   0 ] )  ],
-                                   p_durations = [self._cycle_limit/15]*5 )
+                                   p_durations = [self._cycle_limit/15]*5,
+                                   p_logging = p_logging )
 
 
         # 2 Set up a stream workflow

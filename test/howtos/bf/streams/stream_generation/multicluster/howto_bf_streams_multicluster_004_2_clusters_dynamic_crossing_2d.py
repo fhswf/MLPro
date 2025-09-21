@@ -41,14 +41,16 @@ class MyScenario (StreamScenario):
                                     p_states = [ ClusterState( p_center = [500, 400], p_radii = [50, 50] ) ,
                                                  ClusterState( p_center = [0, 0], p_radii = [50, 50] ),
                                                  ClusterState( p_center = [-800, -500], p_radii = [50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2 )
+                                    p_durations = [self._cycle_limit/4]*2,
+                                    p_logging = p_logging )
 
         stream2 = StreamGenCluster( p_num_dim = 2, 
                                     p_seed = 2,
                                     p_states = [ ClusterState( p_center = [-500, 500], p_radii = [50, 50] ) ,
                                                  ClusterState( p_center = [0, 0], p_radii = [50, 50] ),
                                                  ClusterState( p_center = [100, -500], p_radii = [50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2 )
+                                    p_durations = [self._cycle_limit/4]*2,
+                                    p_logging = p_logging )
 
         mstream = MultiStreamGenCluster( p_num_dim = 2, p_num_instances = self._cycle_limit )
         mstream.add_stream( p_stream = stream1 )
@@ -56,10 +58,10 @@ class MyScenario (StreamScenario):
 
 
         # 2 Set up a stream workflow
-        workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE, 
-                                   p_visualize=p_visualize,
-                                   p_logging=logging )
+        workflow = StreamWorkflow( p_name = 'wf1', 
+                                   p_range_max = StreamWorkflow.C_RANGE_NONE, 
+                                   p_visualize = p_visualize,
+                                   p_logging = logging )
 
 
         # 3 Return stream and workflow

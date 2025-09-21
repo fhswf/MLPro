@@ -232,6 +232,8 @@ class MultiStreamGenerator (MultiStream, StreamGenerator):
         Number of dimensions (features) of the generated instances.
     p_name : str = ''
         Name of the multi-stream generator. Default is ''.
+    p_seed : int = 0
+        Random seed for reproducibility.
     p_num_instances : int = 0
         Number of instances to generate per sub-stream. If set to 0, the streams are infinite. 
         Default is 0.
@@ -254,6 +256,7 @@ class MultiStreamGenerator (MultiStream, StreamGenerator):
     def __init__( self,
                   p_num_dim : int,
                   p_name : str = '',
+                  p_seed : int = 0,
                   p_num_instances : int = 0,
                   p_sampler : Sampler = None,
                   p_boundaries_rescale : list = None,
@@ -272,6 +275,7 @@ class MultiStreamGenerator (MultiStream, StreamGenerator):
         StreamGenerator.__init__( self,
                                   p_num_dim = p_num_dim,
                                   p_id = 0,
+                                  p_seed = p_seed,
                                   p_num_instances = p_num_instances,
                                   p_boundaries_rescale = p_boundaries_rescale,
                                   p_outlier_rate = p_outlier_rate,
@@ -288,3 +292,14 @@ class MultiStreamGenerator (MultiStream, StreamGenerator):
 # -------------------------------------------------------------------------------------------------
     def _setup_label_space(self):
         return StreamGenerator._setup_label_space(self)
+    
+
+# -------------------------------------------------------------------------------------------------
+    def _reset(self):
+        self.set_random_seed(self._seed)
+        MultiStream._reset(self)
+
+
+# -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        StreamGenerator.set_random_seed( self, p_seed = p_seed )

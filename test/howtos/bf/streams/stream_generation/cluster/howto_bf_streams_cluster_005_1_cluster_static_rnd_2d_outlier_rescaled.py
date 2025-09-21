@@ -17,7 +17,7 @@ This module demonstrates...
 from mlpro.bf.ops import Mode
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.streams.streams.multiclusters import *
+from mlpro.bf.streams.streams.generators.multiclusters import *
 from mlpro.bf.various import Log
 
 
@@ -44,7 +44,8 @@ class MyScenario (StreamScenario):
         stream = StreamGenCluster( p_num_dim = 2,
                                    p_states = [ ClusterState( p_center = [0, 0], p_radii = [ 600, 600 ] ) ],
                                    p_boundaries_rescale = [ ( 0, 10000), (-0.01, 0.01) ],
-                                   p_outlier_rate = 0.05 )
+                                   p_outlier_rate = 0.05,
+                                   p_logging = p_logging )
         
         stream.register_event_handler( p_event_id = StreamGenCluster.C_EVENT_ID_OUTLIER, 
                                        p_event_handler = self._handle_outlier )

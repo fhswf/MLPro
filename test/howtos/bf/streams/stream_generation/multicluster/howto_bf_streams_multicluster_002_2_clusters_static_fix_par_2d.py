@@ -38,22 +38,24 @@ class MyScenario (StreamScenario):
         # 1 Set up MLPro's cluster generator
         stream1 = StreamGenCluster( p_num_dim = 2, 
                                     p_seed = 1,
-                                    p_states = [ ClusterState( p_center = [-500, -500], p_radii = [200, 100] ) ] )
+                                    p_states = [ ClusterState( p_center = [-500, -500], p_radii = [200, 100] ) ],
+                                    p_logging = p_logging )
         
         stream2 = StreamGenCluster( p_num_dim = 2, 
                                     p_seed = 2,
-                                    p_states = [ ClusterState( p_center = [ 500, 500], p_radii = [100, 200] ) ] )
-        
+                                    p_states = [ ClusterState( p_center = [ 500, 500], p_radii = [100, 200] ) ],
+                                    p_logging = p_logging )
+
         mstream = MultiStreamGenCluster( p_num_dim = 2 )
         mstream.add_stream( p_stream = stream1, p_batch_size=1, p_start_instance=0 )
         mstream.add_stream( p_stream = stream2, p_batch_size=5, p_start_instance=200 )
 
 
         # 2 Set up a stream workflow
-        workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE, 
-                                   p_visualize=p_visualize,
-                                   p_logging=logging )
+        workflow = StreamWorkflow( p_name = 'wf1', 
+                                   p_range_max = StreamWorkflow.C_RANGE_NONE, 
+                                   p_visualize = p_visualize,
+                                   p_logging = logging )
 
 
         # 3 Return stream and workflow
