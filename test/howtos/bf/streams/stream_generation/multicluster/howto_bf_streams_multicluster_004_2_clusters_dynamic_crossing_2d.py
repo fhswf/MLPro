@@ -17,7 +17,7 @@ This module demonstrates ...
 from mlpro.bf.ops import Mode
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.streams.streams.multiclusters import *
+from mlpro.bf.streams.streams.generators.multiclusters import *
 from mlpro.bf.various import Log
 
 
@@ -36,21 +36,21 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Set up MLPro's cluster generator
-        stream1 = StreamCluster( p_num_dim = 2, 
-                                 p_seed = 1,
-                                 p_states = [ ClusterState( p_center = [500, 400], p_radii = [50, 50] ) ,
-                                              ClusterState( p_center = [0, 0], p_radii = [50, 50] ),
-                                              ClusterState( p_center = [-800, -500], p_radii = [50, 50] ) ],
-                                 p_durations = [self._cycle_limit/4]*2 )
-        
-        stream2 = StreamCluster( p_num_dim = 2, 
-                                 p_seed = 2,
-                                 p_states = [ ClusterState( p_center = [-500, 500], p_radii = [50, 50] ) ,
-                                              ClusterState( p_center = [0, 0], p_radii = [50, 50] ),
-                                              ClusterState( p_center = [100, -500], p_radii = [50, 50] ) ],
-                                 p_durations = [self._cycle_limit/4]*2 )
+        stream1 = StreamGenCluster( p_num_dim = 2, 
+                                    p_seed = 1,
+                                    p_states = [ ClusterState( p_center = [500, 400], p_radii = [50, 50] ) ,
+                                                 ClusterState( p_center = [0, 0], p_radii = [50, 50] ),
+                                                 ClusterState( p_center = [-800, -500], p_radii = [50, 50] ) ],
+                                    p_durations = [self._cycle_limit/4]*2 )
 
-        mstream = MultiStream( p_num_instances = self._cycle_limit )
+        stream2 = StreamGenCluster( p_num_dim = 2, 
+                                    p_seed = 2,
+                                    p_states = [ ClusterState( p_center = [-500, 500], p_radii = [50, 50] ) ,
+                                                 ClusterState( p_center = [0, 0], p_radii = [50, 50] ),
+                                                 ClusterState( p_center = [100, -500], p_radii = [50, 50] ) ],
+                                    p_durations = [self._cycle_limit/4]*2 )
+
+        mstream = MultiStreamGenCluster( p_num_dim = 2, p_num_instances = self._cycle_limit )
         mstream.add_stream( p_stream = stream1 )
         mstream.add_stream( p_stream = stream2 )
 

@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_multicluster_009_2_clusters_dynamic_crossing_3d.py
+## -- Module  : howto_bf_streams_cluster_005_1_cluster_static_rnd_2d_outlier_rescaled.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,14 +10,14 @@
 """
 Ver. 1.0.0 (2025-09-19)
 
-This module demonstrates ...
+This module demonstrates...
 
 """
 
 from mlpro.bf.ops import Mode
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.streams.streams.generators.multiclusters import *
+from mlpro.bf.streams.streams.multiclusters import *
 from mlpro.bf.various import Log
 
 
@@ -30,29 +30,24 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = '2 Clusters rnd, static'
+    C_NAME      = '1 Cluster rnd, static'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize:bool, p_logging):
+    def _handle_outlier(self, p_event_id, p_event_object):
+        self.log( Log.C_LOG_TYPE_W, 'Outlier generated' )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_visualize:bool, p_logging ):
 
         # 1 Set up MLPro's cluster generator
-        stream1 = StreamGenCluster( p_num_dim = 3, 
-                                    p_seed = 1,
-                                    p_states = [ ClusterState( p_center = [500, 400, 500], p_radii = [50, 50, 50] ) ,
-                                                 ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
-                                                 ClusterState( p_center = [-800, -500, 300], p_radii = [50, 50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2 )
+        stream = StreamGenCluster( p_num_dim = 2,
+                                   p_states = [ ClusterState( p_center = [0, 0], p_radii = [ 600, 600 ] ) ],
+                                   p_boundaries_rescale = [ ( 0, 10000), (-0.01, 0.01) ],
+                                   p_outlier_rate = 0.05 )
         
-        stream2 = StreamGenCluster( p_num_dim = 3, 
-                                    p_seed = 2,
-                                    p_states = [ ClusterState( p_center = [-500, 500, -500], p_radii = [50, 50, 50] ) ,
-                                                 ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
-                                                 ClusterState( p_center = [100, -500, 200], p_radii = [50, 50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2 )
-
-        mstream = MultiStreamGenCluster( p_num_dim = 3, p_num_instances = self._cycle_limit )
-        mstream.add_stream( p_stream = stream1 )
-        mstream.add_stream( p_stream = stream2 )
+        stream.register_event_handler( p_event_id = StreamGenCluster.C_EVENT_ID_OUTLIER, 
+                                       p_event_handler = self._handle_outlier )
 
 
         # 2 Set up a stream workflow
@@ -63,7 +58,7 @@ class MyScenario (StreamScenario):
 
 
         # 3 Return stream and workflow
-        return mstream, workflow
+        return stream, workflow
 
 
 
@@ -96,7 +91,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_3D,
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_2D,
                                                         p_view_autoselect = False,
                                                         p_step_rate = step_rate ) )
     input('Press ENTER to start stream processing...')

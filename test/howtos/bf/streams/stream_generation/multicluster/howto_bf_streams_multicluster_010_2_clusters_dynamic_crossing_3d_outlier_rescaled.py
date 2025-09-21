@@ -1,14 +1,14 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Module  : howto_bf_streams_multicluster_009_2_clusters_dynamic_crossing_3d.py
+## -- Module  : howto_bf_streams_multicluster_010_2_clusters_dynamic_crossing_3d_outlier_rescaled.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-09-19  1.0.0     DA       Creation/First implementation
+## -- 2025-09-21  1.0.0     DA       Creation/First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-09-19)
+Ver. 1.0.0 (2025-09-21)
 
 This module demonstrates ...
 

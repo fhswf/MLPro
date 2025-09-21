@@ -5,11 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2025-09-20  1.0.0     DA       Creation 
+## -- 2025-09-21  1.0.0     DA       Creation 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-09-20)
+Ver. 1.0.0 (2025-09-21)
 
 This module provides an elementary stream generator shaping a single cluster of random points in the
 d-dimensional feature space [-1000,1000]^d. The cluster can be static or dynamic (moving and/or changing its size)
@@ -30,15 +30,16 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from mlpro.bf import Log, Mode
+from mlpro.bf import Log
 from mlpro.bf.exceptions import ParamError
 from mlpro.bf.math import Element, MSpace, ESpace
-from mlpro.bf.streams import Feature, Instance, Stream
+from mlpro.bf.streams import Feature, Instance, Sampler
+from mlpro.bf.streams.streams.generators.basics import StreamGenerator   
 
 
 
 # Export list for public API
-__all__ = [ 'ClusterState', 'StreamCluster' ]
+__all__ = [ 'ClusterState', 'StreamGenCluster' ]
 
 
 
@@ -59,7 +60,7 @@ class ClusterState:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamCluster(Stream):
+class StreamGenCluster(StreamGenerator):
     """
     Elementary stream generator shaping a single cluster of random points in the d-dimensional 
     feature space [-1000,1000]^d. The cluster can be static or dynamic (moving and/or changing its size) 
@@ -106,7 +107,6 @@ class StreamCluster(Stream):
 
     C_NAME              = 'Cluster'
     C_RADII_RND_FACTOR  = 0.2           # Factor for random radii generation within boundary range
-    C_BOUNDARIES        = [-1000, 1000] # Boundaries of the feature space
   
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -116,6 +116,9 @@ class StreamCluster(Stream):
                   p_num_instances : int = 0,
                   p_states : List[ClusterState] = [ ClusterState() ],
                   p_durations : List[int] = None,
+                  p_boundaries_rescale : list = None,
+                  p_outlier_rate : float = 0.0,
+                  p_sampler : Sampler = None,
                   p_dtype : type = np.float32,
                   p_logging : int = Log.C_LOG_NOTHING ):
         
@@ -142,11 +145,8 @@ class StreamCluster(Stream):
         
         
         # 2 Init all attributes  
-        self._num_dim                         = p_num_dim
         self._states                          = p_states
         self._durations                       = p_durations
-        self._seed                            = p_seed
-        self._dtype                           = p_dtype
         self._array_centers : np.ndarray      = None
         self._array_velocities : np.ndarray   = None
         self._array_radii : np.ndarray        = None
@@ -160,48 +160,28 @@ class StreamCluster(Stream):
 
 
         # 3 Call parent initializations
-        super().__init__( p_id = p_id,
+        super().__init__( p_num_dim = p_num_dim,
+                          p_id = p_id,
+                          p_seed = p_seed,
                           p_num_instances = p_num_instances,
-                          p_feature_space = self._setup_feature_space(),
-                          p_mode = Mode.C_MODE_SIM,
+                          p_boundaries_rescale = p_boundaries_rescale,
+                          p_outlier_rate = p_outlier_rate,
+                          p_sampler = p_sampler,
+                          p_dtype = p_dtype,
                           p_logging = p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_feature_space(self) -> MSpace:
-        feature_space : MSpace = ESpace()
-
-        for i in range(self._num_dim):
-            feature_space.add_dim( Feature( p_name_short = 'f_' + str(i),
-                                            p_base_set = Feature.C_BASE_SET_R,
-                                            p_name_long = 'Feature #' + str(i),
-                                            p_name_latex = '',
-                                            p_description = '',
-                                            p_symmetrical = False,
-                                            p_logging=Log.C_LOG_NOTHING ) )
-            
-        return feature_space   
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_random_seed(self, p_seed=None):
-        self._rgen = np.random.default_rng( seed = p_seed )
-        
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_rnd_array(self, p_low, p_high, p_size) -> np.array:
-        return self._rgen.uniform( low=p_low, high=p_high, size=p_size ).astype( self._dtype )
-    
-
-## -------------------------------------------------------------------------------------------------
     def _reset(self):
+
+        # 0 Call parent reset
+        super()._reset()
+
 
         # 1 Cluster size and process variables
         self.size                     = 0
         self._current_phase : int  = 0
         self._transition_counter      = 0
-
-        self.set_random_seed( self._seed )
 
 
         # 2 Arrays of centers and radii

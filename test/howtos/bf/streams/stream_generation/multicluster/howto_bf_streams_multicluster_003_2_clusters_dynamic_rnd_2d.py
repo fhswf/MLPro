@@ -17,7 +17,7 @@ This module demonstrates ...
 from mlpro.bf.ops import Mode
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.streams import *
-from mlpro.bf.streams.streams.multiclusters import *
+from mlpro.bf.streams.streams.generators.multiclusters import *
 from mlpro.bf.various import Log
 
 
@@ -36,23 +36,23 @@ class MyScenario (StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
         # 1 Set up MLPro's cluster generator
-        stream1 = StreamCluster( p_num_dim = 2, 
-                                 p_seed = 5,
-                                 p_states = [ ClusterState() ,
-                                              ClusterState(),
-                                              ClusterState(),
-                                              ClusterState() ],
-                                 p_durations = [self._cycle_limit/6]*3 )
-        
-        stream2 = StreamCluster( p_num_dim = 7, 
-                                 p_seed = 2,
-                                 p_states = [ ClusterState() ,
-                                              ClusterState(),
-                                              ClusterState(),
-                                              ClusterState() ],
-                                 p_durations = [self._cycle_limit/6]*3 )
+        stream1 = StreamGenCluster( p_num_dim = 2, 
+                                    p_seed = 5,
+                                    p_states = [ ClusterState() ,
+                                                 ClusterState(),
+                                                 ClusterState(),
+                                                 ClusterState() ],
+                                    p_durations = [self._cycle_limit/6]*3 )
 
-        mstream = MultiStream()
+        stream2 = StreamGenCluster( p_num_dim = 7, 
+                                    p_seed = 2,
+                                    p_states = [ ClusterState() ,
+                                                 ClusterState(),
+                                                 ClusterState(),
+                                                 ClusterState() ],
+                                    p_durations = [self._cycle_limit/6]*3 )
+
+        mstream = MultiStreamGenCluster( p_num_dim = 2 )
         mstream.add_stream( p_stream = stream1 )
         mstream.add_stream( p_stream = stream2 )
 

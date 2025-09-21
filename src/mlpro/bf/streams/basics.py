@@ -863,13 +863,15 @@ class MultiStream (Stream):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        super().__init__( p_id = p_id,
-                          p_name = p_name,
-                          p_num_instances = p_num_instances,
-                          p_version = p_version,
-                          p_sampler = p_sampler,
-                          p_mode = p_mode,
-                          p_logging = p_logging )
+        Stream.__init__( self,
+                         p_id = p_id,
+                         p_name = p_name,
+                         p_num_instances = p_num_instances,
+                         p_version = p_version,
+                         p_sampler = p_sampler,
+                         p_mode = p_mode,
+                         p_logging = p_logging,
+                         **p_kwargs )
 
         self.streams               = {}
         self._iterables            = {}
@@ -954,16 +956,6 @@ class MultiStream (Stream):
     def set_random_seed( self, p_seed = None ):
         for stream_entry in self.streams.values():
             stream_entry[0].set_random_seed( p_seed = p_seed )
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_feature_space( self ) -> MSpace:
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_label_space( self ) -> MSpace:
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
