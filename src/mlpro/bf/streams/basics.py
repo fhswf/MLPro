@@ -946,6 +946,10 @@ class MultiStream (Stream):
                 self._current_stream[3] = None
                 self._switch_stream()
 
+        # Assign unique id and time stamp
+        next_inst.id     = self._next_inst_id
+        next_inst.tstamp = self._next_inst_id
+
         return next_inst
 
         

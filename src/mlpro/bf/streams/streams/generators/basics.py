@@ -190,6 +190,7 @@ class StreamGenerator (Stream, EventManager):
             outlier_data.set_values( outlier_values )
             new_inst            = Instance( p_feature_data = outlier_data, p_tstamp = self.tstamp)
             new_inst.id         = self._next_inst_id
+            new_inst.tstamp     = new_inst.id
             self._next_inst_id += 1
        
             raise_outlier       = True
@@ -198,7 +199,7 @@ class StreamGenerator (Stream, EventManager):
         else:
             # 2 Generate normal instance
             new_inst = super().__next__()
-
+            
 
         # 3 Rescale feature values if required
         if self._rescaling_params is not None:
