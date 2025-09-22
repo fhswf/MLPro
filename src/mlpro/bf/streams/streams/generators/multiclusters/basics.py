@@ -349,7 +349,7 @@ class MultiStreamGenCluster (MultiStreamGenerator):
     ----------
     num_outliers : int
         Number of outlier instances generated so far.
-    cluster_stats : ClusterStatistics
+    cluster_statistics : ClusterStatistics
         Statistics about the generated clusters.
     """
 
@@ -378,8 +378,8 @@ class MultiStreamGenCluster (MultiStreamGenerator):
                           p_logging = p_logging )
 
         self._cluster_id   = 0
-        self.cluster_stats = ClusterStatistics( feature_boundaries = self._boundaries_rescale,
-                                                feature_rescale_params = self._rescaling_params )  
+        self.cluster_statistics = ClusterStatistics( feature_boundaries = self._boundaries_rescale,
+                                                     feature_rescale_params = self._rescaling_params )  
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -393,5 +393,5 @@ class MultiStreamGenCluster (MultiStreamGenerator):
                             p_start_instance = p_start_instance )  
 
         if isinstance(p_stream, StreamGenCluster):
-            self.cluster_stats.clusters[self._cluster_id] = p_stream
+            self.cluster_statistics.clusters[self._cluster_id] = p_stream
             self._cluster_id += 1
