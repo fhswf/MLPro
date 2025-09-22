@@ -207,7 +207,7 @@ class CAObserver (StreamTask):
 
         # 1 Get expected and actual centroids
         expected = [c.center for c in self._cluster_stats.clusters.values()]
-        actual   = [c.centroid.value for c in self._clusterer.clusters.values() if c.size.value > 0]
+        actual   = [c.centroid.value for c in self._clusterer.clusters.values() if c.size.value is not None and c.size.value > 0]
 
 
         # 2 Check cluster number consistency
