@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-09-21  1.0.0     DA       Creation 
+## -- 2025-09-23  1.1.0     DA       Class StreamGenCluster: renamed parameter p_durations to 
+## --                                p_transition_durations
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-09-21)
+Ver. 1.1.0 (2025-09-23)
 
 This module provides an elementary stream generator shaping a single cluster of random points in the
 d-dimensional feature space [-1000,1000]^d. The cluster can be static or dynamic (moving and/or changing its size)
@@ -104,10 +106,11 @@ class StreamGenCluster(StreamGenerator):
         List of states defining the behavior of the cluster over time. Each state defines the center and
         the radii of the cluster at the beginning of the state. If multiple states are provided, the
         cluster will move and/or change its size linearly between the states over the number of instances
-        defined by p_durations. If p_durations is None, the cluster will stay in the first state for all instances.
-    p_durations : List[int], default: None
-        List of durations (number of instances) for each state transition. The length of p_durations must be
-        equal to len(p_states) - 1. If None, the cluster will stay in the first state for all instances.
+        defined by p_transition_durations. If only one state is provided, the cluster will remain static
+        at the defined center and radii.
+    p_transition_durations : List[int], default: None
+        List of durations (number of instances) for each state transition. The length of p_transition_durations 
+        must be equal to len(p_states) - 1. If None, the cluster will stay in the first state for all instances.
     p_dtype : type, default: np.float32
         Data type of the feature values (np.float32 or np.float64).
     p_logging : int, default: Log.C_LOG_NOTHING
@@ -139,7 +142,7 @@ class StreamGenCluster(StreamGenerator):
                   p_seed : int = 0,
                   p_num_instances : int = 0,
                   p_states : List[ClusterState] = [ ClusterState() ],
-                  p_durations : List[int] = None,
+                  p_transition_durations : List[int] = None,
                   p_boundaries_rescale : list = None,
                   p_outlier_rate : float = 0.0,
                   p_sampler : Sampler = None,
@@ -164,13 +167,13 @@ class StreamGenCluster(StreamGenerator):
             
         # 1.2 Durations
         if isinstance(p_states, list) and len(p_states) > 1:
-            if p_durations is None or ( not isinstance(p_durations, list) or len(p_durations) != len(p_states) - 1 ):
-                raise ParamError('If multiple states are provided in p_states, p_durations must be a list of length len(p_states) - 1!')
+            if p_transition_durations is None or ( not isinstance(p_transition_durations, list) or len(p_transition_durations) != len(p_states) - 1 ):
+                raise ParamError('If multiple states are provided in p_states, p_transition_durations must be a list of length len(p_states) - 1!')
         
         
         # 2 Init all attributes  
         self._states                          = p_states
-        self._durations                       = p_durations
+        self._durations                       = p_transition_durations
         self._array_centers : np.ndarray      = None
         self._array_velocities : np.ndarray   = None
         self._array_radii : np.ndarray        = None

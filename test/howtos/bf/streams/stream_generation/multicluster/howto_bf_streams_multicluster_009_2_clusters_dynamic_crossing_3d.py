@@ -41,7 +41,7 @@ class MyScenario (StreamScenario):
                                     p_states = [ ClusterState( p_center = [500, 400, 500], p_radii = [50, 50, 50] ) ,
                                                  ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
                                                  ClusterState( p_center = [-800, -500, 300], p_radii = [50, 50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2,
+                                    p_transition_durations = [self._cycle_limit/4]*2,
                                     p_logging = p_logging )
         
         stream2 = StreamGenCluster( p_num_dim = 3, 
@@ -49,7 +49,7 @@ class MyScenario (StreamScenario):
                                     p_states = [ ClusterState( p_center = [-500, 500, -500], p_radii = [50, 50, 50] ) ,
                                                  ClusterState( p_center = [0, 0, 0], p_radii = [50, 50, 50] ),
                                                  ClusterState( p_center = [100, -500, 200], p_radii = [50, 50, 50] ) ],
-                                    p_durations = [self._cycle_limit/4]*2,
+                                    p_transition_durations = [self._cycle_limit/4]*2,
                                     p_logging = p_logging )
 
         mstream = MultiStreamGenCluster( p_num_dim = 3, p_num_instances = self._cycle_limit )

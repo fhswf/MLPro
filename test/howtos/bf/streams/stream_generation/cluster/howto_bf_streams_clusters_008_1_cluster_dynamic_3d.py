@@ -43,7 +43,7 @@ class MyScenario (StreamScenario):
                                                 ClusterState( p_center = [ -500,    0,  100 ], p_radii = [  50,  20,  10 ] ),
                                                 ClusterState( p_center = [    0, -500,  300 ], p_radii = [ 200, 100, 150 ] ),
                                                 ClusterState( p_center = [    0,    0, -500 ], p_radii = [   0,   0,   0 ] )  ],
-                                   p_durations = [self._cycle_limit/15]*5,
+                                   p_transition_durations = [self._cycle_limit/15]*5,
                                    p_logging = p_logging )
 
 
