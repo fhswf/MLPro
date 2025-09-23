@@ -39,13 +39,13 @@ class MyScenario (StreamScenario):
         stream1 = StreamGenCluster( p_num_dim = 3, 
                                     p_seed = 1,
                                     p_states = [ ClusterState(), ClusterState() ],
-                                    p_transition_durations = [self._cycle_limit/2],
+                                    p_transition_steps = [self._cycle_limit/2],
                                     p_logging = p_logging )
         
         stream2 = StreamGenCluster( p_num_dim = 3, 
                                     p_seed = 2,
                                     p_states = [ ClusterState(), ClusterState() ],
-                                    p_transition_durations = [self._cycle_limit/2],
+                                    p_transition_steps = [self._cycle_limit/2],
                                     p_logging = p_logging )
         
         mstream = MultiStreamGenCluster( p_num_dim = 3 )

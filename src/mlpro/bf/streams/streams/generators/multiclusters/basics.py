@@ -7,7 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-09-21  1.0.0     DA       Creation 
 ## -- 2025-09-23  1.1.0     DA       Class StreamGenCluster: renamed parameter p_durations to 
-## --                                p_transition_durations
+## --                                p_transition_steps
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -106,11 +106,11 @@ class StreamGenCluster(StreamGenerator):
         List of states defining the behavior of the cluster over time. Each state defines the center and
         the radii of the cluster at the beginning of the state. If multiple states are provided, the
         cluster will move and/or change its size linearly between the states over the number of instances
-        defined by p_transition_durations. If only one state is provided, the cluster will remain static
+        defined by p_transition_steps. If only one state is provided, the cluster will remain static
         at the defined center and radii.
-    p_transition_durations : List[int], default: None
-        List of durations (number of instances) for each state transition. The length of p_transition_durations 
-        must be equal to len(p_states) - 1. If None, the cluster will stay in the first state for all instances.
+    p_transition_steps : List[int], default: None
+        List of numbers of instances for each state transition step. The length of p_transition_steps must
+        be equal to len(p_states) - 1. If None, the cluster will stay in the first state for all instances.
     p_dtype : type, default: np.float32
         Data type of the feature values (np.float32 or np.float64).
     p_logging : int, default: Log.C_LOG_NOTHING
@@ -142,7 +142,7 @@ class StreamGenCluster(StreamGenerator):
                   p_seed : int = 0,
                   p_num_instances : int = 0,
                   p_states : List[ClusterState] = [ ClusterState() ],
-                  p_transition_durations : List[int] = None,
+                  p_transition_steps : List[int] = None,
                   p_boundaries_rescale : list = None,
                   p_outlier_rate : float = 0.0,
                   p_sampler : Sampler = None,
@@ -167,13 +167,13 @@ class StreamGenCluster(StreamGenerator):
             
         # 1.2 Durations
         if isinstance(p_states, list) and len(p_states) > 1:
-            if p_transition_durations is None or ( not isinstance(p_transition_durations, list) or len(p_transition_durations) != len(p_states) - 1 ):
+            if p_transition_steps is None or ( not isinstance(p_transition_steps, list) or len(p_transition_steps) != len(p_states) - 1 ):
                 raise ParamError('If multiple states are provided in p_states, p_transition_durations must be a list of length len(p_states) - 1!')
         
         
         # 2 Init all attributes  
         self._states                          = p_states
-        self._durations                       = p_transition_durations
+        self._transition_steps                = p_transition_steps
         self._array_centers : np.ndarray      = None
         self._array_velocities : np.ndarray   = None
         self._array_radii : np.ndarray        = None
@@ -248,12 +248,12 @@ class StreamGenCluster(StreamGenerator):
 
 
         # 3 Array of velocities and rates of change of radii
-        if self._durations is not None:
+        if self._transition_steps is not None:
             if self._array_velocities is None:
-                self._array_velocities    = np.empty( shape = ( len(self._durations), self._num_dim ), dtype=self._dtype )
-                self._array_roc_of_radii  = np.empty( shape = ( len(self._durations), self._num_dim ), dtype=self._dtype )
+                self._array_velocities    = np.empty( shape = ( len(self._transition_steps), self._num_dim ), dtype=self._dtype )
+                self._array_roc_of_radii  = np.empty( shape = ( len(self._transition_steps), self._num_dim ), dtype=self._dtype )
 
-            for i, duration in enumerate(self._durations):
+            for i, duration in enumerate(self._transition_steps):
                 self._array_velocities[i,:]   = ( self._array_centers[i+1,:] - self._array_centers[i,:] ) / ( duration - 1 )
                 self._array_roc_of_radii[i,:] = ( self._array_radii[i+1,:] - self._array_radii[i,:] ) / ( duration - 1 )
 
@@ -277,11 +277,11 @@ class StreamGenCluster(StreamGenerator):
 
 
         # 2 Update process control variables
-        if self._durations is not None:
+        if self._transition_steps is not None:
             self._transition_counter += 1
 
-            if self._transition_counter >= self._durations[self._current_phase]:
-                self._current_phase   = ( self._current_phase + 1 ) % len( self._durations )
+            if self._transition_counter >= self._transition_steps[self._current_phase]:
+                self._current_phase   = ( self._current_phase + 1 ) % len( self._transition_steps )
                 self._transition_counter = 0
 
 
