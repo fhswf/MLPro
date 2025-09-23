@@ -10,10 +10,11 @@
 ## -- 2025-09-22  0.3.0     DA       - Parameters to turn on/off each sub-plot
 ## --                                - Parameter for minimum cluster size
 ## --                                - Bugfix in centroid accuracy calculation
+## -- 2025-09-23  0.3.1     DA       Bugfixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2025-09-22)
+Ver. 0.3.1 (2025-09-23)
 
 This module provides the CAObserver class to be used for observation and visualization of cluster
 analyzers. The class can be applied as a regular stream task. Incoming instances trigger the measurement.
@@ -216,7 +217,7 @@ class CAObserver (StreamTask):
         self._acc_total.append(acc_total)
 
         # 4.4 Max y-value for axis 2 (number of clusters)
-        if self._ax2_active:
+        if self.get_visualization() and self._ax2_active:
             self._plot_ax2_max_y = max( self._plot_ax2_max_y, num_clusters_exp, num_clusters_obs )
 
 
@@ -263,8 +264,13 @@ class CAObserver (StreamTask):
         actual   = np.array(actual)
 
 
+        # # 3 Load feature ranges
+        # ranges = np.array(self._cluster_stats.feature_boundaries)
+        # ranges[ranges == 0] = 1  # avoid division by zero
+
         # 3 Load feature ranges
-        ranges = np.array(self._cluster_stats.feature_boundaries)
+        boundaries = np.array(self._cluster_stats.feature_boundaries)  # shape (d, 2)
+        ranges = boundaries[:, 1] - boundaries[:, 0]                   # shape (d,)
         ranges[ranges == 0] = 1  # avoid division by zero
 
 
