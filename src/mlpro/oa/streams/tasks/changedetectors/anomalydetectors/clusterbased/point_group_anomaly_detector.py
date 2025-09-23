@@ -21,10 +21,11 @@
 ## -- 2025-06-27  0.3.5     DS       Bug fixes
 ## -- 2025-06-30  0.3.6     DS       Bug fixes
 ## -- 2025-07-18  0.4.0     DA       Refactoring
+## -- 2025-09-24  0.4.1     DS       Bug fixes    
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2025-07-18)
+Ver. 0.5.0 (2025-09-24)
 
 This module provides cluster based point and group anomaly detector algorithm.
 """
@@ -306,7 +307,7 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                 if create_anomaly:
                     spatial_group_anomaly = self._cls_spatial_group_anomaly( p_clusters = {cluster.id : cluster},
                                                                              p_tstamp = self._get_tstamp(),
-                                                                             p_visualize = self.get_visualization,
+                                                                             p_visualize = self.get_visualization(),
                                                                              p_raising_object = self)
 
                     # 2.2.2.1 Raise an anomaly event
@@ -417,41 +418,44 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         #3 Process the latest anomaly
         if latest_anomaly is None:
 
+            if self._tga is not None and len(self._tga.clusters) >= 2:
+                self._tga.status = False
+            self._raise_anomaly_event(p_anomaly=self._tga, p_instance = p_instance)
+            self._tga = None
             return
+        
         
         #3.1 Check for the temporal anomaly conditions
         if isinstance(latest_anomaly, (self._cls_point_anomaly, self._cls_spatial_group_anomaly)) and (latest_anomaly.tstamp == p_instance.tstamp):
-                
+            anomaly_clusters = getattr(latest_anomaly, 'clusters', {})
             #3.1.1 If temporal anomaly does not exist, create a new one and add clusters of the latest anomaly to _tga
             if self._tga is None:
 
-                self._tga = self._cls_temporal_group_anomaly(p_clusters = latest_anomaly.clusters,
+                self._tga = self._cls_temporal_group_anomaly(p_clusters = anomaly_clusters,
                                                              p_status = True,
                                                              p_tstamp = p_instance.tstamp,
-                                                             p_visualize = self.get_visualize,
+                                                             p_visualize = self.get_visualization(),
                                                              p_raising_object = self)
                 
-            self._tga.add_clusters(p_clusters= latest_anomaly.clusters)
-            
-            #3.1.2 If the temporal anomaly has only two clusters, raise an anomaly event
-            if len(self._tga.clusters) == 2:
-                
-                self._raise_anomaly_event(p_anomaly = self._tga, 
+            else:
+
+                clusters_before = len(self._tga.clusters)
+                self._tga.add_clusters(p_clusters = anomaly_clusters)
+                clusters_after = len(self._tga.clusters)
+
+                if clusters_before == 1 and clusters_after == 2:
+                    self._raise_anomaly_event(p_anomaly = self._tga, 
                                           p_instance = p_instance)
 
-            return    
-        
-        #3.2 If temporal anomaly conditiod is not met, 
-        elif self._tga is None:
-            return
-               
-        if len(self._tga.clusters) >= 2:
-                    
-            self._tga.status = False
+        else:
+            if self._tga is not None and len(self._tga.clusters) >= 2:
+
+                self._tga.status = False
             self._raise_anomaly_event(p_anomaly=self._tga, p_instance = p_instance)
 
         self._tga = None
 
+        
                     
                   
 ## -------------------------------------------------------------------------------------------------
@@ -469,7 +473,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                 return False
 
             # 1.2 Check if the anomaly is still valid
-            if cluster.id not in self._temporal_anomalies or len(self._temporal_anomalies[cluster.id]) < 2:
+            if self._tga is None or cluster.id not in self._tga.clusters or len(self._tga[cluster.id]) < 2:
                 return False
         
         return True
