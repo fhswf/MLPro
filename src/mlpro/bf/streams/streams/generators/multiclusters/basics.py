@@ -8,10 +8,11 @@
 ## -- 2025-09-21  1.0.0     DA       Creation 
 ## -- 2025-09-23  1.1.0     DA       Class StreamGenCluster: renamed parameter p_durations to 
 ## --                                p_transition_steps
+## -- 2025-09-25  1.2.0     DA       Class StreamGenCluster: new parameter p_distribution
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2025-09-23)
+Ver. 1.2.0 (2025-09-25)
 
 This module provides an elementary stream generator shaping a single cluster of random points in the
 d-dimensional feature space [-1000,1000]^d. The cluster can be static or dynamic (moving and/or changing its size)
@@ -22,8 +23,11 @@ linearly between the states over the specified number of instances. Overall, the
 - number of instances
 - list of states with center and radii
 - list of durations for each state transition
+- distribution
 - random seed
 - data type (float32, float64)
+
+Multiple cluster generators can be combined to a multi-stream.
 
 """
 
@@ -99,6 +103,10 @@ class StreamGenCluster(StreamGenerator):
     p_seed : int = 0    
         Optional random seed for reproducibility. Use different seeds for different streams to avoid identical 
         sequences. Default is 0.
+    p_distribution : float = 2
+        Controls the distribution of the random points within the cluster. A value 1 leads to a equal
+        distribution. Values > 1 cause a centripetal distribution while values in (0,1) cause a centrifugal
+        distribution. Default = 2 (centripetal).
     p_num_instances : int = 0
         Total number of instances to be generated. If 0, the stream will generate instances indefinitely by
         repeating the defined states.
@@ -140,6 +148,7 @@ class StreamGenCluster(StreamGenerator):
                   p_num_dim : int,
                   p_id : int = 0,
                   p_seed : int = 0,
+                  p_distribution : float = 2.0,
                   p_num_instances : int = 0,
                   p_states : List[ClusterState] = [ ClusterState() ],
                   p_transition_steps : List[int] = None,
@@ -172,6 +181,7 @@ class StreamGenCluster(StreamGenerator):
         
         
         # 2 Init all attributes  
+        self._distribution                    = p_distribution
         self._states                          = p_states
         self._transition_steps                = p_transition_steps
         self._array_centers : np.ndarray      = None
@@ -302,7 +312,7 @@ class StreamGenCluster(StreamGenerator):
         # 2 Generate a random point within the cluster
         v  = np.random.normal(size=self._num_dim)
         v /= np.linalg.norm(v)
-        r  = np.random.rand() ** (1.0 / self._num_dim)
+        r  = np.random.rand() ** (self._distribution / self._num_dim)
 
         feature_data.set_values( self.center + v * r * self.radii )
 
