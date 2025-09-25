@@ -21,7 +21,7 @@ from mlpro.bf.math.properties import *
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.basics import cprop_size1
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.body import cprop_size_geo
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties.body import cprop_size_geo1
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBSize, DriftCBSizeGeo
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
 
@@ -103,7 +103,7 @@ class DriftDetectorCBGenGeoSizeChange (DriftDetectorCBGenSingleGradient):
                   p_thrs_clusters : int = 1 ):
 
         super().__init__( p_clusterer = p_clusterer,
-                          p_property = cprop_size_geo,
+                          p_property = cprop_size_geo1,
                           p_thrs_lower = p_thrs_lower,
                           p_thrs_upper = p_thrs_upper,
                           p_cls_drift = p_cls_drift,
