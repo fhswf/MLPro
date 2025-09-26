@@ -16,14 +16,13 @@ Ver. 0.1.0 (2025-07-18)
 This module provides a cluster-based movement detector.
 """
 
-from mlpro.bf.various import Log
+from mlpro.bf import Log
+from mlpro.bf.math.geometry import cprop_center_geo1
 
 from mlpro.oa.streams import OAStreamTask
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
-from mlpro.bf.math.geometry import cprop_center_geo1
 from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_centroid1
-from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBCenterGeo
-from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBMovement
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import DriftCBCenterGeo, DriftCBMovement
 from mlpro.oa.streams.tasks.changedetectors.driftdetectors.clusterbased.generic import DriftDetectorCBGenSingleGradient
 
 
