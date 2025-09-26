@@ -93,10 +93,11 @@
 ## -- 2025-09-19  3.3.0     DA       Class MultiStream: new parameter p_start_instance in method 
 ## --                                add_stream()
 ## -- 2025-09-21  3.4.0     DA       Class Stream, MultiStream: adjustments and bugfixes
+## -- 2025-09-26  3.4.1     DA       Bugfix in method MultiStream._reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.4.0 (2025-09-21)
+Ver. 3.4.1 (2025-09-21)
 
 This module provides classes for standardized data stream processing. 
 
@@ -908,6 +909,7 @@ class MultiStream (Stream):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self):
         for stream_entry in self.streams.values():
+            stream_entry[0].reset()
             stream_entry[3] = iter( stream_entry[0] )
 
         self._stream_cycle = cycle( self.streams.values() )
