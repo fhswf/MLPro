@@ -451,9 +451,9 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
             if self._tga is not None and len(self._tga.clusters) >= 2:
 
                 self._tga.status = False
-            self._raise_anomaly_event(p_anomaly=self._tga, p_instance = p_instance)
+                self._raise_anomaly_event(p_anomaly=self._tga, p_instance = p_instance)
 
-        self._tga = None
+            self._tga = None
 
         
                     
