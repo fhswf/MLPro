@@ -909,7 +909,6 @@ class MultiStream (Stream):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self):
         for stream_entry in self.streams.values():
-            stream_entry[0].reset()
             stream_entry[3] = iter( stream_entry[0] )
 
         self._stream_cycle = cycle( self.streams.values() )
