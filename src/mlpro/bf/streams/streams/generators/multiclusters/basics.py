@@ -9,10 +9,12 @@
 ## -- 2025-09-23  1.1.0     DA       Class StreamGenCluster: renamed parameter p_durations to 
 ## --                                p_transition_steps
 ## -- 2025-09-25  1.2.0     DA       Class StreamGenCluster: new parameter p_distribution
+## -- 2025-09-27  1.2.1     DA       Bugfix in StreamGenCluster._next(): use self._rgen instead of
+## --                                np.random
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-09-25)
+Ver. 1.2.1 (2025-09-27)
 
 This module provides an elementary stream generator shaping a single cluster of random points in the
 d-dimensional feature space [-1000,1000]^d. The cluster can be static or dynamic (moving and/or changing its size)
@@ -214,7 +216,6 @@ class StreamGenCluster(StreamGenerator):
         self.cluster_stats.clusters[self.id] = self
 
 
-
 ## -------------------------------------------------------------------------------------------------
     def _reset(self):
 
@@ -310,9 +311,9 @@ class StreamGenCluster(StreamGenerator):
         
 
         # 2 Generate a random point within the cluster
-        v  = np.random.normal(size=self._num_dim)
+        v  = self._rgen.normal(size=self._num_dim)
         v /= np.linalg.norm(v)
-        r  = np.random.rand() ** (self._distribution / self._num_dim)
+        r  = self._rgen.random() ** (self._distribution / self._num_dim)
 
         feature_data.set_values( self.center + v * r * self.radii )
 
