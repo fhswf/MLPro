@@ -90,10 +90,13 @@
 ## -- 2025-07-16  3.0.0     DA       New classes StreamHelper, StreamTaskHelper
 ## -- 2025-07-18  3.1.0     DA       Refactoring
 ## -- 2025-09-11  3.2.0     DA       Class Instance: new properties num_features, feature_values
+## -- 2025-09-19  3.3.0     DA       Class MultiStream: new parameter p_start_instance in method 
+## --                                add_stream()
+## -- 2025-09-21  3.4.0     DA       Class Stream, MultiStream: adjustments and bugfixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.2.0 (2025-09-11)
+Ver. 3.4.0 (2025-09-21)
 
 This module provides classes for standardized data stream processing. 
 
@@ -549,7 +552,7 @@ class Stream (Mode, Id, TStamp, ScientificObject):
         stream provider and stream itself.
         """
 
-        self._kwargs        = p_kwargs.copy()
+        self._kwargs = p_kwargs.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -655,7 +658,7 @@ class Stream (Mode, Id, TStamp, ScientificObject):
             Next instance of data stream or None.
         """
 
-        if ( self._num_instances > 0) and ( self._next_inst_id == self._num_instances ):
+        if ( self._num_instances > 0 ) and ( self._next_inst_id == self._num_instances ):
             raise StopIteration
 
         
@@ -862,13 +865,15 @@ class MultiStream (Stream):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        super().__init__( p_id = p_id,
-                          p_name = p_name,
-                          p_num_instances = p_num_instances,
-                          p_version = p_version,
-                          p_sampler = p_sampler,
-                          p_mode = p_mode,
-                          p_logging = p_logging )
+        Stream.__init__( self,
+                         p_id = p_id,
+                         p_name = p_name,
+                         p_num_instances = p_num_instances,
+                         p_version = p_version,
+                         p_sampler = p_sampler,
+                         p_mode = p_mode,
+                         p_logging = p_logging,
+                         **p_kwargs )
 
         self.streams               = {}
         self._iterables            = {}
@@ -877,7 +882,10 @@ class MultiStream (Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_stream( self, p_stream : Stream, p_batch_size : int = 1 ):
+    def add_stream( self, 
+                    p_stream : Stream, 
+                    p_batch_size : int = 1,
+                    p_start_instance : int = 0 ):
         """
         Adds a stream object to the multi-stream.
 
@@ -889,16 +897,18 @@ class MultiStream (Stream):
             Number of instances to be taken from the stream in sequence, before moving on to the next
             stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
             the next stream.
+        p_start_instance : int = 0
+            Id of the instance to start with. Default = 0.
         """
 
-        self.streams[self._num_streams] = [p_stream, p_batch_size, None]
+        self.streams[self._num_streams] = [p_stream, p_batch_size, p_start_instance, None]
         self._num_streams += 1
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self):
         for stream_entry in self.streams.values():
-            stream_entry[2] = iter( stream_entry[0] )
+            stream_entry[3] = iter( stream_entry[0] )
 
         self._stream_cycle = cycle( self.streams.values() )
 
@@ -909,9 +919,11 @@ class MultiStream (Stream):
     def _switch_stream(self):
 
         for i in range(self._num_streams):
-            self._current_stream = next( self._stream_cycle )
-            self._current_iterable = self._current_stream[2]
-            if self._current_iterable is None: continue
+            self._current_stream   = next( self._stream_cycle )
+            self._current_iterable = self._current_stream[3]
+
+            if self._current_iterable is None or self._next_inst_id < self._current_stream[2] : continue
+
             self._batch_counter = 0
             self._batch_size    = self._current_stream[1]
             return
@@ -931,31 +943,25 @@ class MultiStream (Stream):
                 self._batch_counter += 1
                 break
             except StopIteration:
-                self._current_stream[2] = None
+                self._current_stream[3] = None
                 self._switch_stream()
+
+        # Assign unique id and time stamp
+        next_inst.id     = self._next_inst_id
+        next_inst.tstamp = self._next_inst_id
 
         return next_inst
 
         
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp( self ) -> TStampType:
-        return self._streams[0][0].tstamp
+        return self.streams[0][0].tstamp
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed( self, p_seed = None ):
         for stream_entry in self.streams.values():
             stream_entry[0].set_random_seed( p_seed = p_seed )
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_feature_space( self ) -> MSpace:
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_label_space( self ) -> MSpace:
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------

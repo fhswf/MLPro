@@ -70,11 +70,12 @@
 ## --                                  - Using PlotSettings._refresh_required for plot refresh on
 ## --                                    demand
 ## -- 2025-06-15  3.4.0     DA       Class PlotSettings: improved methods register(),unregister(),
-## --                                is_last_registered()
+## --                                is_last_registered()#
+## -- 2025-09-26  3.4.1     DA       Bugfix in method Plottable._init_plot_3d(): auto scale removed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.4.0 (2025-06-15)
+Ver. 3.4.1 (2025-09-26)
 
 This module provides various classes related to data plotting.
 
@@ -733,7 +734,7 @@ class Plottable:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id, projection='3d' )
             p_settings.axes.set_proj_type(proj_type='persp', focal_length=0.3)
 
-        p_settings.axes.set_autoscale_on(True)
+        # p_settings.axes.set_autoscale_on(True)
  
 
 ## -------------------------------------------------------------------------------------------------

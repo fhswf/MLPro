@@ -123,12 +123,6 @@ class ChangeObserver (StreamTaskHelper):
                           p_logging = p_logging,
                           p_visualize = p_visualize,
                           **p_kwargs )
-        
-    
-
-            
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -150,9 +144,9 @@ class ChangeObserver (StreamTaskHelper):
     def _update_statistics( self, p_event_object : Change ):
         
         try:
-            self.stat_change_events[p_event_object.get_event_id()] += 1
+            self.stat_change_events[p_event_object.event_id] += 1
         except:
-            self.stat_change_events[p_event_object.get_event_id()] = 1
+            self.stat_change_events[p_event_object.event_id] = 1
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -196,17 +190,17 @@ class ChangeObserver (StreamTaskHelper):
                          **p_kwargs ) -> bool:
 
         try:
-            vlines = self._vlines[p_event_object.subtype]
+            vlines = self._vlines[p_event_object.event_id]
             label  = None
             update_legend = False
         except:
             vlines = []
-            self._vlines[p_event_object.subtype] = vlines
-            label = p_event_object.subtype
+            self._vlines[p_event_object.event_id] = vlines
+            label = p_event_object.event_id
             update_legend = True
 
 
-        color = self._change_colors[p_event_object.get_event_id()]
+        color = self._change_colors[p_event_object.event_id]
 
         vlines.append( p_settings.axes.vlines( x = p_event_object.tstamp,
                                                ymin = 0,

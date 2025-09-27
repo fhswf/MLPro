@@ -22,7 +22,7 @@ from mlpro.bf import TStampType
 from mlpro.bf.streams import Instance
 from mlpro.bf.math.properties import *
 from mlpro.bf.math.geometry import cprop_size_geo, cprop_center_geo
-from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_deformation_index
+from mlpro.oa.streams.tasks.clusteranalyzers.clusters.properties import cprop_deformation_index, cprop_density
 
 
 
@@ -55,7 +55,8 @@ class Body (MultiProperty):
 
     C_PROPERTIES : PropertyDefinitions = [ cprop_center_geo,
                                            cprop_size_geo,
-                                           cprop_deformation_index ]
+                                           cprop_deformation_index,
+                                           cprop_density ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
