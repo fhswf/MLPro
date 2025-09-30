@@ -13,14 +13,16 @@
 ## -- 2025-06-10  0.4.0     DA/DS    New class name: DriftDetectorCBGenSingleGradient
 ## -- 2025-06-11  0.4.1     DA       Bugfixes 
 ## -- 2025-07-18  0.5.0     DA       Refactoring
+## -- 2025-09-30  0.5.1     DA/DS    Bugfix in DriftDetectorCBGenSingleGradient._get_drift_status()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2025-07-18) 
+Ver. 0.5.1 (2025-09-30) 
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
 
+import numpy as np
 
 from mlpro.bf import Log, ImplementationError
 from mlpro.bf.math.properties import *
@@ -100,7 +102,12 @@ class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
 
         # 2 Get the absolute first order derivative from the property
         try:
-            abs_derivative_o1 = abs( prop.derivatives[1] )
+            derivative_o1 = prop.derivatives[1]
+            if derivative_o1 is not None and not np.isnan(derivative_o1):
+                abs_derivative_o1 = abs( derivative_o1 )
+            else:
+                return False
+
         except:
             if prop._derivative_order_max == 0:
                 raise ImplementationError('MLPro: Cluster property "' + p_properties[0][0] + '" needs to provide a maximum derivative order > 0')
