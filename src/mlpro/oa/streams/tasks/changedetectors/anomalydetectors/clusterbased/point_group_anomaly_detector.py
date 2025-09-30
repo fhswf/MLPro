@@ -142,7 +142,7 @@ class AnomalyDetectorCBPA(AnomalyDetectorCB):
 
 
             # 2.1 Check for the point anomalies
-            if (prop_cluster_size.value == 1) and (prop_cluster_size.value_prev is None or prop_cluster_size.value_prev == 0 ):
+            if (prop_cluster_size.value == 1) and ( prop_cluster_size.value_prev is None or prop_cluster_size.value_prev == 0 ):
 
                 # 2.1.1 Check if the cluster is already in the anomaly buffer
                 if cluster_id in self.cb_anomalies:
@@ -461,20 +461,28 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
 ## -------------------------------------------------------------------------------------------------
     def _triage_anomaly( self, p_anomaly : AnomalyCB, **p_kwargs ):
         """
-        Custom method for anomaly triage for temporal group anomalies.
-        This method checks if the temporal group anomaly is still valid.
+        Custom method for anomaly triage for temporal group anomalies (tga).
+        This method checks if the temporal group anomaly is to be removed.
+
+        Return
+        ------
+        True, if the tga shall be removed. False otherwise.
         """
+
         # 1 Check if the anomaly is a temporal group anomaly
         if isinstance(p_anomaly, self._cls_temporal_group_anomaly):
-            try:
-                # 1.1 Get the cluster associated with the anomaly
-                cluster = next(iter(p_anomaly.clusters.values()))
-            except:
-                return False
+            # try:
+            #     # 1.1 Get the cluster associated with the anomaly
+            #     cluster = next(iter(p_anomaly.clusters.values()))
+            # except:
+            #     return True
 
             # 1.2 Check if the anomaly is still valid
-            if self._tga is None or cluster.id not in self._tga.clusters or len(self._tga[cluster.id]) < 2:
-                return False
+            if self._tga is None or self._tga != p_anomaly:
+                return True
+            
+            # if self._tga is None or cluster.id not in self._tga.clusters or len(self._tga[cluster.id]) < 2:
+            #     return False
         
-        return True
+        return False
     
