@@ -198,20 +198,15 @@ class Property (Plottable, Renormalizable, TStamp, KWArgs):
             Boolean switch to enable/disable updating the derivatives.
         """
 
-        # 1 Update value
+        # 1 Update value and previous value
         if self._sw_value_prev:
 
-            try:
-                self._value_prev = self._value_bak.copy()
-                self._value_bak  = p_value.copy()
-            except:
-                self._value_prev = self._value_bak
-                self._value_bak  = p_value
+            if self._value_bak is not None: 
+                self._value_prev = getattr( self._value_bak, 'copy', lambda: self._value_bak )()
 
-        try:
-            self._value = p_value.copy()
-        except:
-            self._value = p_value
+            self._value_bak  = getattr( p_value, 'copy', lambda: p_value )()
+
+        self._value = getattr( p_value, 'copy', lambda: p_value )()
 
 
         # 2 Update time stamps and derivatives
@@ -221,21 +216,15 @@ class Property (Plottable, Renormalizable, TStamp, KWArgs):
             self._tstamp_prev = self._tstamp
             self._tstamp      = p_tstamp
 
+            if self._tstamp_prev is None or self._tstamp_prev == self._tstamp: return
+
 
             # 2.2 Numeric derivation
             if p_upd_derivatives and ( self._derivative_order_max > 0 ):
 
                 # 2.2.1 Computation of time delta
-                try:
-                    delta_t = self._tstamp - self._tstamp_prev
-                
-                    try: 
-                        delta_t = delta_t.total_seconds()
-                    except:
-                        pass
-                    
-                except:
-                    return
+                delta_t = self._tstamp - self._tstamp_prev
+                delta_t = getattr( delta_t, 'total_seconds', lambda: delta_t )()
 
                 
                 # 2.2.2 Derivation
@@ -248,11 +237,10 @@ class Property (Plottable, Renormalizable, TStamp, KWArgs):
                     self._value           = np.array( p_value )
                     self._derivatives[0]  = self._value
 
-                for order in range(self._derivative_order_max):
-                    try:
-                        self._derivatives[order+1] = ( self._derivatives[order] - self._derivatives_prev[order] ) / delta_t
-                    except:
-                        break
+                order_max = min( self._derivative_order_max, len(self._derivatives_prev) ) 
+
+                for order in range(order_max):
+                    self._derivatives[order+1] = ( self._derivatives[order] - self._derivatives_prev[order] ) / delta_t
 
 
 ## -------------------------------------------------------------------------------------------------
