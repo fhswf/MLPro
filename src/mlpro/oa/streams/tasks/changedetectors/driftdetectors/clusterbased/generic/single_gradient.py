@@ -14,10 +14,11 @@
 ## -- 2025-06-11  0.4.1     DA       Bugfixes 
 ## -- 2025-07-18  0.5.0     DA       Refactoring
 ## -- 2025-09-30  0.5.1     DA/DS    Bugfix in DriftDetectorCBGenSingleGradient._get_drift_status()
+## -- 2025-10-02  0.5.2     DA/DS    Bugfix in DriftDetectorCBGenSingleGradient._get_drift_status()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.1 (2025-09-30) 
+Ver. 0.5.2 (2025-10-02) 
 
 This module provides a generic cluster-based drift detector for movement drift detection.
 """
@@ -103,7 +104,7 @@ class DriftDetectorCBGenSingleGradient ( DriftDetectorCBGeneric ):
         # 2 Get the absolute first order derivative from the property
         try:
             derivative_o1 = prop.derivatives[1]
-            if derivative_o1 is not None and not np.isnan(derivative_o1):
+            if derivative_o1 is not None:
                 abs_derivative_o1 = abs( derivative_o1 )
             else:
                 return False
