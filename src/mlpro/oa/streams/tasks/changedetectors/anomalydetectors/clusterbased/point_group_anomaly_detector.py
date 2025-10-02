@@ -214,9 +214,9 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
         The logging level for the anomaly detector.
     p_anomaly_buffer_size : int = 100
         The size of the anomaly buffer.
-    P_thres_inst : int = 0
+    P_thrs_inst : int = 0
         The threshold for the number of instances.
-    p_thres_clusters : int = 1
+    p_thrs_clusters : int = 2
         The threshold for the number of clusters.
     p_thres_percent : float = 0.05
         The threshold percentage for the cluster size.
@@ -239,7 +239,7 @@ class AnomalyDetectorCBSGA(AnomalyDetectorCBPA):
                   p_logging=Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
                   p_thrs_inst : int = 0,
-                  p_thrs_clusters : int = 1,
+                  p_thrs_clusters : int = 2,
                   p_thres_percent : float = 0.05,
                   **p_kwargs ):
 
@@ -368,7 +368,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
         The size of the anomaly buffer.
     P_thrs_inst : int = 0
         The threshold for the number of instances.
-    p_thrs_clusters : int = 1
+    p_thrs_clusters : int = 2
         The threshold for the number of clusters.
     """
 
@@ -387,7 +387,7 @@ class AnomalyDetectorCBTGA(AnomalyDetectorCBSGA):
                   p_logging=Log.C_LOG_ALL,
                   p_anomaly_buffer_size : int = 100,
                   p_thrs_inst : int = 0,
-                  p_thrs_clusters : int = 1,
+                  p_thrs_clusters : int = 2,
                   **p_kwargs ):
         
         self._cls_temporal_group_anomaly = p_cls_temporal_group_anomaly
