@@ -43,10 +43,11 @@
 ## --                                - Class Function: refactoring and extension
 ## --                                - New class Scaler
 ## -- 2025-07-11  3.0.1     DA       Bugfix in method Scaler.rescale()
+## -- 2025-10-02  3.1.0     DA       Refactoring: removed try/except from Function.map()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.1 (2025-07-11)
+Ver. 3.1.0 (2025-10-02)
 
 This module provides basic mathematical classes.
 """
@@ -672,15 +673,19 @@ class Function (KWArgs, ScientificObject):
             Result of the mapping.
         """
 
-        try:
-            meth_name = '_map_' + type(p_input).__name__
-            method    = getattr(self, meth_name)
+        # 1 Determine the related mapping method
+        meth_name = '_map_' + type(p_input).__name__
+        method    = getattr(self, meth_name, None)
+
+
+        # 2 Execute related mapping method
+        if method is not None:
             return method( p_input = p_input, 
-                           p_output = p_output, 
-                           p_dim = p_dim )
+                            p_output = p_output, 
+                            p_dim = p_dim )
         
-        except AttributeError:
-            # Treat parameters as of type Element...
+        else:
+            # 2.1 Fallback: Treat parameters as of type Element...
             output = p_output
             if ( p_output is None ) and self._autocreate_elements:
                 output = self._output_elem_cls(self._output_set)
