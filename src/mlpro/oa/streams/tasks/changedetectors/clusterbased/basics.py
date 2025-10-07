@@ -12,10 +12,11 @@
 ## -- 2025-06-13  1.2.0     DA       Class Change: param p_id is now initialized to -1
 ## -- 2025-07-15  1.2.1     DA       Class ChangeCB: bugfix in 
 ## -- 2025-07-18  1.3.0     DA       Refactoring
+## -- 2025-10-07  1.4.0     DA       Refactoring of methods ChangeCB._update_plot_*
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2025-07-18)
+Ver. 1.4.0 (2025-10-07)
 
 This module provides templates for cluster-based change detection to be used in the context of 
 online-adaptive data stream processing.
@@ -84,7 +85,8 @@ class ChangeCB (Change):
                           **p_kwargs )
 
         self.clusters : dict[Cluster] = p_clusters
-        self.properties : dict       = p_properties
+        self.properties : dict        = p_properties
+        self._cluster_colors : dict   = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -100,43 +102,34 @@ class ChangeCB (Change):
         
         self.clusters.update(p_clusters)
 
+
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings, **p_kwargs):
-        super()._update_plot_2d(p_settings, **p_kwargs)
+    def _update_plot_2d(self, p_settings, **p_kwargs) -> bool:
 
-        cluster : Cluster = None
-
+        if not self.status_changed: return False
+        
         for cluster in self.clusters.values(): 
             if self.status:
-                try:
-                    if cluster.color_bak is None:
-                        cluster.color_bak = cluster.color
-                except:
-                    cluster.color_bak = cluster.color
-
+                self._cluster_colors[cluster.id] = cluster.color
                 cluster.color = "red"
+                
             else:
-                try:
-                    cluster.color     = cluster.color_bak
-                    cluster.color_bak = None
-                except:
-                    pass
+                cluster.color = self._cluster_colors[cluster.id]
+                del self._cluster_colors[cluster.id]
 
+        self.status_changed = False
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings, **p_kwargs):
-        super()._update_plot_3d(p_settings, **p_kwargs)
-
-        cluster : Cluster = None
-
-        for cluster in self.clusters.values(): 
-            color = 'red' if self.status else None
-            if cluster.color != color: cluster.color = color
-            
-        return True
+        return self._update_plot_2d(p_settings = p_settings, **p_kwargs)
     
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings, **p_kwargs):
+        return self._update_plot_2d(p_settings = p_settings, **p_kwargs)
+
 
 
 

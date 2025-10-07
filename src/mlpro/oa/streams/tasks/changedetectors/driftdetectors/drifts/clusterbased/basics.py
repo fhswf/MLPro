@@ -12,10 +12,11 @@
 ## -- 2025-06-11  1.0.1     DA       Corrections
 ## -- 2025-06-13  1.1.0     DA       Class Change: param p_id is now initialized to -1
 ## -- 2025-07-18  1.2.0     DA       Refactoring
+## -- 2025-10-07  1.2.1     DA       Bugfix: set p_id to -1 in DriftCB.__init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2025-07-18) 
+Ver. 1.2.1 (2025-10-07)
 
 This module provides a template class for cluster-based drifts to be used in cluster-based drift 
 detection algorithms.
@@ -64,7 +65,7 @@ class DriftCB (ChangeCB, Drift):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_id : int = 0,
+                  p_id : int = -1,
                   p_status : bool = True,
                   p_tstamp : TStampType = None,
                   p_visualize : bool = False,
