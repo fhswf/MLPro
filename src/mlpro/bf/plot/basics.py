@@ -73,10 +73,11 @@
 ## --                                is_last_registered()#
 ## -- 2025-09-26  3.4.1     DA       Bugfix in method Plottable._init_plot_3d(): auto scale removed
 ## -- 2025-10-07  3.5.0     DA       Class Plottable: code tuning
+## -- 2025-10-22  3.5.1     DA       Bugfix in class Plottable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.5.0 (2025-10-07)
+Ver. 3.5.1 (2025-10-22)
 
 This module provides various classes related to data plotting.
 
@@ -198,7 +199,7 @@ class PlotSettings (KWArgs):
         self.force_fg                   = p_force_fg
         self.id                         = p_id
         self.view_autoselect            = p_view_autoselect
-        self._registered_obj            = set()
+        self._registered_obj            = {} 
         self._last_registered           = None
         self._plot_step_counter         = 0
         self._refresh_required : bool   = False
@@ -222,11 +223,9 @@ class PlotSettings (KWArgs):
             Plotting object to be registered
         """
 
-        self._registered_obj.add(p_plot_obj)
-        self._last_registered = p_plot_obj
-        # if not p_plot_obj in self._registered_obj:
-        #     self._registered_obj[p_plot_obj] = None
-        #     self._last_registered = p_plot_obj
+        self._registered_obj.pop(p_plot_obj, None)
+        self._registered_obj[p_plot_obj] = None
+        self._last_registered            = p_plot_obj
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -240,16 +239,10 @@ class PlotSettings (KWArgs):
             Plotting object to be registered
         """
 
-        self._registered_obj.remove(p_plot_obj)
+        self._registered_obj.pop(p_plot_obj, None)
+
         if self._last_registered == p_plot_obj:
             self._last_registered = next(reversed(self._registered_obj))
-
-        # try:
-        #     del self._registered_obj[p_plot_obj]
-        #     if self._last_registered == p_plot_obj:
-        #         self._last_registered = next(reversed(self._registered_obj.keys()))
-        # except:
-        #     pass
 
 
 ## -------------------------------------------------------------------------------------------------
