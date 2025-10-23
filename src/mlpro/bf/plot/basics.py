@@ -74,10 +74,11 @@
 ## -- 2025-09-26  3.4.1     DA       Bugfix in method Plottable._init_plot_3d(): auto scale removed
 ## -- 2025-10-07  3.5.0     DA       Class Plottable: code tuning
 ## -- 2025-10-22  3.5.1     DA       Bugfix in class Plottable
+## -- 2025-10-23  3.5.2     DA       Bugfix in Plottable._init_plot_2d(): disabled auto scale
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.5.1 (2025-10-22)
+Ver. 3.5.2 (2025-10-23)
 
 This module provides various classes related to data plotting.
 
@@ -706,7 +707,7 @@ class Plottable:
         if p_settings.axes is None:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id )
 
-        p_settings.axes.set_autoscale_on(True)
+        # p_settings.axes.set_autoscale_on(True)
 
 
 ## -------------------------------------------------------------------------------------------------
