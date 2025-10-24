@@ -94,10 +94,11 @@
 ## --                                add_stream()
 ## -- 2025-09-21  3.4.0     DA       Class Stream, MultiStream: adjustments and bugfixes
 ## -- 2025-10-23  3.4.1     DA       Bugfix in StreamTask._update_plot_3d()
+## -- 2025-10-24  3.5.0     DA       Refactoring of plot legend handling in StreamTask._update_plot_nd()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.4.1 (2025-10-23)
+Ver. 3.5.0 (2025-10-24)
 
 This module provides classes for standardized data stream processing. 
 
@@ -1786,7 +1787,7 @@ class StreamTask (Task):
                     feature_plot, = p_settings.axes.plot([], [], lw=1, label = feature.get_name_short() )
                     self._plot_nd_plots.append( [feature_ydata, feature_plot] )
 
-            p_settings.axes.legend(title='Features', alignment='left', loc='upper right', draggable=True)
+            p_settings.create_legend(title='Features', alignment='left', loc='upper right', draggable=True)
 
 
         # 3 Update plot data

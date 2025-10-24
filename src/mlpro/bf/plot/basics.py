@@ -75,10 +75,11 @@
 ## -- 2025-10-07  3.5.0     DA       Class Plottable: code tuning
 ## -- 2025-10-22  3.5.1     DA       Bugfix in class Plottable
 ## -- 2025-10-23  3.5.2     DA       Bugfix in Plottable._init_plot_2d(): disabled auto scale
+## -- 2025-10-24  3.6.0     DA       Class PlotSettings: new method create_legend(), rebuild_legend()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.5.2 (2025-10-23)
+Ver. 3.6.0 (2025-10-24)
 
 This module provides various classes related to data plotting.
 
@@ -100,7 +101,6 @@ from mlpro.bf.data import ConfigFile
 __all__ = [ 'Figure',
             'PlotSettings',
             'Plottable' ]   
-
 
 
 
@@ -204,6 +204,8 @@ class PlotSettings (KWArgs):
         self._last_registered           = None
         self._plot_step_counter         = 0
         self._refresh_required : bool   = False
+        self._legend_title              = None
+        self._legend_kwargs             = None
 
         if ( p_plot_horizon > 0 ) and ( p_data_horizon > 0 ):
             self.plot_horizon = min(p_plot_horizon, p_data_horizon)
@@ -267,6 +269,43 @@ class PlotSettings (KWArgs):
             return p_plot_obj == self._last_registered
         except:
             return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def create_legend(self, p_title, **p_kwargs ):
+        """
+        Creates a legend in the plot with the specified title.
+
+        Parameters
+        ----------
+        p_title : str
+            Title of the legend.
+        **p_kwargs
+            Further named parameters for MatPlotLib legend() method.
+        """
+
+        if self.axes is not None:
+            self.axes.legend( title = p_title, **p_kwargs )
+            self._legend_title = p_title
+            self._legend_kwargs = p_kwargs.copy()
+
+
+## -------------------------------------------------------------------------------------------------
+    def rebuild_legend(self):
+        """
+        Rebuilds the legend in the plot.
+        """
+
+        if self._legend_title is None: return
+
+        legend = self.axes.get_legend()
+        if legend is None: return
+
+        legend.remove()  # alte Legende löschen
+
+        handles, labels = self.axes.get_legend_handles_labels()
+        if handles:
+            self.axes.legend( title = self._legend_title, handles = handles, labels = labels, **self._legend_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -832,7 +871,6 @@ class Plottable:
         """
 
         return False
-
 
 
 ## -------------------------------------------------------------------------------------------------
