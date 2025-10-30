@@ -1787,7 +1787,7 @@ class StreamTask (Task):
                     feature_plot, = p_settings.axes.plot([], [], lw=1, label = feature.get_name_short() )
                     self._plot_nd_plots.append( [feature_ydata, feature_plot] )
 
-            p_settings.create_legend(title='Features', alignment='left', loc='upper right', draggable=True)
+            p_settings.create_legend(p_title='Features', alignment='left', loc='upper right', draggable=True)
 
 
         # 3 Update plot data
