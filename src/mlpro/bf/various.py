@@ -743,6 +743,7 @@ class TStamp:
         self._tstamp = p_tstamp
 
 
+## -------------------------------------------------------------------------------------------------
     tstamp = property( fget=get_tstamp, fset=set_tstamp )
 
 

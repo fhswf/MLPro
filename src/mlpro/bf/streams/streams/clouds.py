@@ -18,15 +18,13 @@
 ## -- 2024-06-04  1.2.3     DA       Bugfix: ESpace instead of MSpace
 ## -- 2025-04-02  1.2.4     DA       Little refactoring
 ## -- 2025-06-06  1.2.5     DA       Little refactoring
+## -- 2025-08-19  1.3.0     DA       Module frozen. See clusters.py
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2025-06-06)
+Ver. 1.3.0 (2025-08-19)
 
-This module provides the native stream classes StreamMLProClouds, StreamMLProClouds2D4C1000Static,
-StreamMLProClouds3D8C2000Static, StreamMLProClouds2D4C5000Dynamic and StreamMLProClouds3D8C10000Dynamic.
-These stream provides instances with self.C_NUM_DIMENSIONS dimensional random feature data, placed around
-centers (can be defined by user) which may or maynot move over time.
+Module retired, maintenance stopped. Please use the successor class StreamMLProClusterGenerator.
 
 """
 
@@ -58,6 +56,9 @@ __all__ = [ 'StreamMLProClouds',
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProClouds (StreamMLProBase):
     """
+    !! This class is retired and not maintained any more. Please use StreamMLProClusterGenerator instead !!
+
+
     This benchmark stream class generates freely configurable random point clouds of any number, size
     and dimensionality. Optionally, the centers of the clouds are static or in motion.
 

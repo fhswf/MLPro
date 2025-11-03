@@ -89,10 +89,11 @@
 ## -- 2025-07-12  2.9.1     DA       Method StreamTask._update_plot_3d(): added explicite ax scaling
 ## -- 2025-07-16  3.0.0     DA       New classes StreamHelper, StreamTaskHelper
 ## -- 2025-07-18  3.1.0     DA       Refactoring
+## -- 2025-09-11  3.2.0     DA       Class Instance: new properties num_features, feature_values
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.1.0 (2025-07-18)
+Ver. 3.2.0 (2025-09-11)
 
 This module provides classes for standardized data stream processing. 
 
@@ -238,6 +239,8 @@ class Instance (Id, TStamp, KWArgs):
 
 ## -------------------------------------------------------------------------------------------------
     id = property( fget=Id.get_id, fset=set_id )
+    num_features = property( fget=lambda self: self._feature_data.get_related_set().get_num_dim() )
+    feature_values = property( fget=lambda self: self._feature_data.get_values(), fset=lambda self, p_values: self._feature_data.set_values(p_values) )
 
 
 

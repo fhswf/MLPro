@@ -91,7 +91,7 @@ for i in range(cycles):
     boundaries[0][1] = boundaries[0][0] + 25
     boundaries[1][1] = boundaries[1][0] + 25
 
-    my_cuboid.set( p_value = boundaries, p_time_stamp = time_stamp )
+    my_cuboid.set( p_value = boundaries, p_tstamp = time_stamp )
     my_cuboid.update_plot()
 
     my_log.log( Log.C_LOG_TYPE_I, 'Geometric center: ', my_cuboid.center_geo.value)
