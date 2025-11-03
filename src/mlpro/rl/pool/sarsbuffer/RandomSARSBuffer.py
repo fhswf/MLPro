@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - The integrative middleware framework for standardized machine learning
-## -- Package : mlpro.pool.sarbuffer
-## -- Module  : RandomSARSBuffer
+## -- Package : mlpro.rl.pool.sarsbuffer
+## -- Module  : RandomSARSBuffer.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
