@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-04-08  0.0.0     SY       Creation
 ## -- 2025-04-08  1.0.0     SY       Release of first version
+## -- 2025-11-03  1.0.1     SY/DA    Review/refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2025-04-08)
+Ver. 1.0.1 (2025-11-03)
 
 This module shows how to train a minimal GRPO policy on MLPro's native 2D collision avoidance
 environment.
@@ -28,7 +29,10 @@ You will learn:
 """
 
 
+from mlpro.bf import Log
+from mlpro.bf.systems import State
 from mlpro.bf.plot import DataPlotting
+from mlpro.bf.ml import Model
 from mlpro.rl import *
 from mlpro.rl.pool.envs.collisionavoidance_2D import DynamicTrajectoryPlanner
 from mlpro.rl.pool.policies.grpo import MinGRPOPolicyNetwork, MinGRPO
@@ -124,7 +128,7 @@ if __name__ == "__main__":
     cycle_limit             = 50000
     cycles_per_epi_limit    = 500
     logging                 = Log.C_LOG_WE
-    visualize               = False
+    visualize               = True #False
     path                    = str(Path.home())
     plotting                = True
 
