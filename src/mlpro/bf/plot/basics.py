@@ -70,11 +70,16 @@
 ## --                                  - Using PlotSettings._refresh_required for plot refresh on
 ## --                                    demand
 ## -- 2025-06-15  3.4.0     DA       Class PlotSettings: improved methods register(),unregister(),
-## --                                is_last_registered()
+## --                                is_last_registered()#
+## -- 2025-09-26  3.4.1     DA       Bugfix in method Plottable._init_plot_3d(): auto scale removed
+## -- 2025-10-07  3.5.0     DA       Class Plottable: code tuning
+## -- 2025-10-22  3.5.1     DA       Bugfix in class Plottable
+## -- 2025-10-23  3.5.2     DA       Bugfix in Plottable._init_plot_2d(): disabled auto scale
+## -- 2025-10-24  3.6.0     DA       Class PlotSettings: new method create_legend(), rebuild_legend()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.4.0 (2025-06-15)
+Ver. 3.6.0 (2025-10-24)
 
 This module provides various classes related to data plotting.
 
@@ -96,7 +101,6 @@ from mlpro.bf.data import ConfigFile
 __all__ = [ 'Figure',
             'PlotSettings',
             'Plottable' ]   
-
 
 
 
@@ -196,10 +200,12 @@ class PlotSettings (KWArgs):
         self.force_fg                   = p_force_fg
         self.id                         = p_id
         self.view_autoselect            = p_view_autoselect
-        self._registered_obj            = {}
+        self._registered_obj            = {} 
         self._last_registered           = None
         self._plot_step_counter         = 0
         self._refresh_required : bool   = False
+        self._legend_title              = None
+        self._legend_kwargs             = None
 
         if ( p_plot_horizon > 0 ) and ( p_data_horizon > 0 ):
             self.plot_horizon = min(p_plot_horizon, p_data_horizon)
@@ -220,9 +226,9 @@ class PlotSettings (KWArgs):
             Plotting object to be registered
         """
 
-        if not p_plot_obj in self._registered_obj:
-            self._registered_obj[p_plot_obj] = None
-            self._last_registered = p_plot_obj
+        self._registered_obj.pop(p_plot_obj, None)
+        self._registered_obj[p_plot_obj] = None
+        self._last_registered            = p_plot_obj
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -236,12 +242,10 @@ class PlotSettings (KWArgs):
             Plotting object to be registered
         """
 
-        try:
-            del self._registered_obj[p_plot_obj]
-            if self._last_registered == p_plot_obj:
-                self._last_registered = next(reversed(self._registered_obj.keys()))
-        except:
-            pass
+        self._registered_obj.pop(p_plot_obj, None)
+
+        if self._last_registered == p_plot_obj:
+            self._last_registered = next(reversed(self._registered_obj))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -265,6 +269,43 @@ class PlotSettings (KWArgs):
             return p_plot_obj == self._last_registered
         except:
             return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def create_legend(self, p_title, **p_kwargs ):
+        """
+        Creates a legend in the plot with the specified title.
+
+        Parameters
+        ----------
+        p_title : str
+            Title of the legend.
+        **p_kwargs
+            Further named parameters for MatPlotLib legend() method.
+        """
+
+        if self.axes is not None:
+            self.axes.legend( title = p_title, **p_kwargs )
+            self._legend_title = p_title
+            self._legend_kwargs = p_kwargs.copy()
+
+
+## -------------------------------------------------------------------------------------------------
+    def rebuild_legend(self):
+        """
+        Rebuilds the legend in the plot.
+        """
+
+        if self._legend_title is None: return
+
+        legend = self.axes.get_legend()
+        if legend is None: return
+
+        legend.remove()  # alte Legende löschen
+
+        handles, labels = self.axes.get_legend_handles_labels()
+        if handles:
+            self.axes.legend( title = self._legend_title, handles = handles, labels = labels, **self._legend_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -538,11 +579,7 @@ class Plottable:
 
 ## -------------------------------------------------------------------------------------------------
     def get_plot_color(self):
-        try:
-            return self._plot_color
-        except:
-            self._plot_color = None
-            return self._plot_color
+        return self._plot_color
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -709,7 +746,7 @@ class Plottable:
         if p_settings.axes is None:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id )
 
-        p_settings.axes.set_autoscale_on(True)
+        # p_settings.axes.set_autoscale_on(True)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -733,7 +770,7 @@ class Plottable:
             p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id, projection='3d' )
             p_settings.axes.set_proj_type(proj_type='persp', focal_length=0.3)
 
-        p_settings.axes.set_autoscale_on(True)
+        # p_settings.axes.set_autoscale_on(True)
  
 
 ## -------------------------------------------------------------------------------------------------
@@ -834,7 +871,6 @@ class Plottable:
         """
 
         return False
-
 
 
 ## -------------------------------------------------------------------------------------------------

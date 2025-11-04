@@ -1,2 +1,3 @@
-from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.basics import DriftDetectorCBGeneric, DriftDetectorCBGenSingle, DriftDetectorCBGenMulti
-from mlpro.oa.streams.tasks.driftdetectors.clusterbased.generic.single_movement import DriftDetectorCBGenSingleMovement
+from .basics import *
+from .single_gradient import *
+                                                                                                       

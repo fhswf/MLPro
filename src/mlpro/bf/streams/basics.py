@@ -90,10 +90,15 @@
 ## -- 2025-07-16  3.0.0     DA       New classes StreamHelper, StreamTaskHelper
 ## -- 2025-07-18  3.1.0     DA       Refactoring
 ## -- 2025-09-11  3.2.0     DA       Class Instance: new properties num_features, feature_values
+## -- 2025-09-19  3.3.0     DA       Class MultiStream: new parameter p_start_instance in method 
+## --                                add_stream()
+## -- 2025-09-21  3.4.0     DA       Class Stream, MultiStream: adjustments and bugfixes
+## -- 2025-10-23  3.4.1     DA       Bugfix in StreamTask._update_plot_3d()
+## -- 2025-10-24  3.5.0     DA       Refactoring of plot legend handling in StreamTask._update_plot_nd()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.2.0 (2025-09-11)
+Ver. 3.5.0 (2025-10-24)
 
 This module provides classes for standardized data stream processing. 
 
@@ -549,7 +554,7 @@ class Stream (Mode, Id, TStamp, ScientificObject):
         stream provider and stream itself.
         """
 
-        self._kwargs        = p_kwargs.copy()
+        self._kwargs = p_kwargs.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -655,7 +660,7 @@ class Stream (Mode, Id, TStamp, ScientificObject):
             Next instance of data stream or None.
         """
 
-        if ( self._num_instances > 0) and ( self._next_inst_id == self._num_instances ):
+        if ( self._num_instances > 0 ) and ( self._next_inst_id == self._num_instances ):
             raise StopIteration
 
         
@@ -862,13 +867,15 @@ class MultiStream (Stream):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        super().__init__( p_id = p_id,
-                          p_name = p_name,
-                          p_num_instances = p_num_instances,
-                          p_version = p_version,
-                          p_sampler = p_sampler,
-                          p_mode = p_mode,
-                          p_logging = p_logging )
+        Stream.__init__( self,
+                         p_id = p_id,
+                         p_name = p_name,
+                         p_num_instances = p_num_instances,
+                         p_version = p_version,
+                         p_sampler = p_sampler,
+                         p_mode = p_mode,
+                         p_logging = p_logging,
+                         **p_kwargs )
 
         self.streams               = {}
         self._iterables            = {}
@@ -877,7 +884,10 @@ class MultiStream (Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_stream( self, p_stream : Stream, p_batch_size : int = 1 ):
+    def add_stream( self, 
+                    p_stream : Stream, 
+                    p_batch_size : int = 1,
+                    p_start_instance : int = 0 ):
         """
         Adds a stream object to the multi-stream.
 
@@ -889,16 +899,18 @@ class MultiStream (Stream):
             Number of instances to be taken from the stream in sequence, before moving on to the next
             stream. Default = 1. A value of 0 causes the entire stream to be read before moving on to 
             the next stream.
+        p_start_instance : int = 0
+            Id of the instance to start with. Default = 0.
         """
 
-        self.streams[self._num_streams] = [p_stream, p_batch_size, None]
+        self.streams[self._num_streams] = [p_stream, p_batch_size, p_start_instance, None]
         self._num_streams += 1
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self):
         for stream_entry in self.streams.values():
-            stream_entry[2] = iter( stream_entry[0] )
+            stream_entry[3] = iter( stream_entry[0] )
 
         self._stream_cycle = cycle( self.streams.values() )
 
@@ -909,9 +921,11 @@ class MultiStream (Stream):
     def _switch_stream(self):
 
         for i in range(self._num_streams):
-            self._current_stream = next( self._stream_cycle )
-            self._current_iterable = self._current_stream[2]
-            if self._current_iterable is None: continue
+            self._current_stream   = next( self._stream_cycle )
+            self._current_iterable = self._current_stream[3]
+
+            if self._current_iterable is None or self._next_inst_id < self._current_stream[2] : continue
+
             self._batch_counter = 0
             self._batch_size    = self._current_stream[1]
             return
@@ -931,31 +945,25 @@ class MultiStream (Stream):
                 self._batch_counter += 1
                 break
             except StopIteration:
-                self._current_stream[2] = None
+                self._current_stream[3] = None
                 self._switch_stream()
+
+        # Assign unique id and time stamp
+        next_inst.id     = self._next_inst_id
+        next_inst.tstamp = self._next_inst_id
 
         return next_inst
 
         
 ## -------------------------------------------------------------------------------------------------
     def get_tstamp( self ) -> TStampType:
-        return self._streams[0][0].tstamp
+        return self.streams[0][0].tstamp
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed( self, p_seed = None ):
         for stream_entry in self.streams.values():
             stream_entry[0].set_random_seed( p_seed = p_seed )
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_feature_space( self ) -> MSpace:
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_label_space( self ) -> MSpace:
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1463,7 +1471,7 @@ class StreamTask (Task):
                         if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
                             self._plot_feature_ids.append(feature_id)
 
-                    if len(self._plot_feature_ids) < 2:
+                    if len(self._plot_feature_ids) != 2:
                         raise Error('Data stream does not provide two numeric features')
 
                 self._plot_2d_xdata.append(x)
@@ -1471,25 +1479,25 @@ class StreamTask (Task):
                 self._plot_inst_ids.append(inst_id)
 
                 if self._plot_2d_xmin is None:
-                    self._plot_2d_xmin = x
-                    self._plot_2d_xmax = x
-                    self._plot_2d_ymin = y
-                    self._plot_2d_ymax = y
+                    self._plot_2d_xmin       = x
+                    self._plot_2d_xmax       = x
+                    self._plot_2d_ymin       = y
+                    self._plot_2d_ymax       = y
                     self._update_ax_limits   = True
                 else:
                     if x < self._plot_2d_xmin: 
-                        self._plot_2d_xmin = x
-                        self._update_ax_limits   = True
+                        self._plot_2d_xmin     = x
+                        self._update_ax_limits = True
                     elif x > self._plot_2d_xmax: 
-                        self._plot_2d_xmax = x
-                        self._update_ax_limits   = True
+                        self._plot_2d_xmax     = x
+                        self._update_ax_limits = True
 
                     if y < self._plot_2d_ymin: 
-                        self._plot_2d_ymin = y
-                        self._update_ax_limits   = True
+                        self._plot_2d_ymin     = y
+                        self._update_ax_limits = True
                     elif y > self._plot_2d_ymax: 
-                        self._plot_2d_ymax = y
-                        self._update_ax_limits   = True
+                        self._plot_2d_ymax     = y
+                        self._update_ax_limits = True
 
             else:
                 if inst_id == self._plot_inst_ids[0]:
@@ -1523,7 +1531,8 @@ class StreamTask (Task):
 
 
         # 5 Plot current data
-        if self._plot_2d_plot is None:            
+        if self._plot_2d_plot is None:         
+
             # 5.1 First plot
             inst_ref    = next(iter(p_instances.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
@@ -1546,10 +1555,10 @@ class StreamTask (Task):
         # 6 Update of ax limits
         if self._update_ax_limits:
             if self._recalc_ax_limits:
-                self._plot_2d_xmin = min(self._plot_2d_xdata)
-                self._plot_2d_xmax = max(self._plot_2d_xdata)
-                self._plot_2d_ymin = min(self._plot_2d_ydata)
-                self._plot_2d_ymax = max(self._plot_2d_ydata)
+                self._plot_2d_xmin     = min(self._plot_2d_xdata)
+                self._plot_2d_xmax     = max(self._plot_2d_xdata)
+                self._plot_2d_ymin     = min(self._plot_2d_ydata)
+                self._plot_2d_ymax     = max(self._plot_2d_ydata)
                 self._recalc_ax_limits = False
 
             p_settings.axes.set_xlim( [ self._plot_2d_xmin, self._plot_2d_xmax ] )
@@ -1617,8 +1626,8 @@ class StreamTask (Task):
                         if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
                             self._plot_feature_ids.append(feature_id)
 
-                    if len(self._plot_feature_ids) < 2:
-                        raise Error('Data stream does not provide two numeric features')
+                    if len(self._plot_feature_ids) != 3:
+                        raise Error('Data stream does not provide three numeric features')
 
                 self._plot_3d_xdata.append(x)
                 self._plot_3d_ydata.append(y)
@@ -1626,34 +1635,34 @@ class StreamTask (Task):
                 self._plot_inst_ids.append(inst_id)
 
                 if self._plot_3d_xmin is None:
-                    self._plot_3d_xmin = x
-                    self._plot_3d_xmax = x
-                    self._plot_3d_ymin = y
-                    self._plot_3d_ymax = y
-                    self._plot_3d_zmin = z
-                    self._plot_3d_zmax = z
-                    self._update_ax_limits   = True
+                    self._plot_3d_xmin     = x
+                    self._plot_3d_xmax     = x
+                    self._plot_3d_ymin     = y
+                    self._plot_3d_ymax     = y
+                    self._plot_3d_zmin     = z
+                    self._plot_3d_zmax     = z
+                    self._update_ax_limits = True
                 else:
                     if x < self._plot_3d_xmin: 
-                        self._plot_3d_xmin = x
-                        self._update_ax_limits   = True
+                        self._plot_3d_xmin     = x
+                        self._update_ax_limits = True
                     elif x > self._plot_3d_xmax: 
-                        self._plot_3d_xmax = x
-                        self._update_ax_limits   = True
+                        self._plot_3d_xmax     = x
+                        self._update_ax_limits = True
 
                     if y < self._plot_3d_ymin: 
-                        self._plot_3d_ymin = y
-                        self._update_ax_limits   = True
+                        self._plot_3d_ymin     = y
+                        self._update_ax_limits = True
                     elif y > self._plot_3d_ymax: 
-                        self._plot_3d_ymax = y
-                        self._update_ax_limits   = True
+                        self._plot_3d_ymax     = y
+                        self._update_ax_limits = True
 
                     if z < self._plot_3d_zmin: 
-                        self._plot_3d_zmin = z
-                        self._update_ax_limits   = True
+                        self._plot_3d_zmin     = z
+                        self._update_ax_limits = True
                     elif z > self._plot_3d_zmax: 
-                        self._plot_3d_zmax = z
-                        self._update_ax_limits   = True
+                        self._plot_3d_zmax     = z
+                        self._update_ax_limits = True
 
             else:
                 if inst_id == self._plot_inst_ids[0]:
@@ -1676,7 +1685,7 @@ class StreamTask (Task):
 
                     if ( not ( ( self._plot_3d_xmin + tol_x ) <= x <= ( self._plot_3d_xmax - tol_x ) ) ) or \
                        ( not ( ( self._plot_3d_ymin + tol_y ) <= y <= ( self._plot_3d_ymax - tol_y ) ) ) or \
-                       ( not ( ( self._plot_3d_ymin + tol_z ) <= z <= ( self._plot_3d_zmax - tol_z ) ) ):
+                       ( not ( ( self._plot_3d_zmin + tol_z ) <= z <= ( self._plot_3d_zmax - tol_z ) ) ):
                         self._update_ax_limits = True
                         self._recalc_ax_limits = True
 
@@ -1690,8 +1699,10 @@ class StreamTask (Task):
                 self._plot_3d_ydata = self._plot_3d_ydata[num_del:]
                 self._plot_3d_zdata = self._plot_3d_zdata[num_del:]
 
+
         # 5 Plot current data
-        if self._plot_3d_plot is None:            
+        if self._plot_3d_plot is None:   
+
             # 5.1 First plot
             inst_ref    = next(iter(p_instances.values()))[1]
             feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
@@ -1714,12 +1725,12 @@ class StreamTask (Task):
         # 6 Update of ax limits
         if self._update_ax_limits:
             if self._recalc_ax_limits:
-                self._plot_3d_xmin = min(self._plot_3d_xdata)
-                self._plot_3d_xmax = max(self._plot_3d_xdata)
-                self._plot_3d_ymin = min(self._plot_3d_ydata)
-                self._plot_3d_ymax = max(self._plot_3d_ydata)
-                self._plot_3d_zmin = min(self._plot_3d_zdata)
-                self._plot_3d_zmax = max(self._plot_3d_zdata)
+                self._plot_3d_xmin     = min(self._plot_3d_xdata)
+                self._plot_3d_xmax     = max(self._plot_3d_xdata)
+                self._plot_3d_ymin     = min(self._plot_3d_ydata)
+                self._plot_3d_ymax     = max(self._plot_3d_ydata)
+                self._plot_3d_zmin     = min(self._plot_3d_zdata)
+                self._plot_3d_zmax     = max(self._plot_3d_zdata)
                 self._recalc_ax_limits = False
 
             p_settings.axes.set_xlim( [ self._plot_3d_xmin, self._plot_3d_xmax ] )
@@ -1776,7 +1787,7 @@ class StreamTask (Task):
                     feature_plot, = p_settings.axes.plot([], [], lw=1, label = feature.get_name_short() )
                     self._plot_nd_plots.append( [feature_ydata, feature_plot] )
 
-            p_settings.axes.legend(title='Features', alignment='left', loc='upper right', draggable=True)
+            p_settings.create_legend(p_title='Features', alignment='left', loc='upper right', draggable=True)
 
 
         # 3 Update plot data

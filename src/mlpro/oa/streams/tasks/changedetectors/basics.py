@@ -15,10 +15,13 @@
 ## -- 2025-06-15  1.5.0     DA       Class ChangeDetector: 
 ## --                                - corrected method update_plot()
 ## --                                - added methods _update_plot_*()
+## -- 2025-06-24  1.5.1     DA/DS    status attribute is changed into a public attribute
+## -- 2025-07-15  1.5.2     DA/DS    Class Change: removed self._event_id
+## -- 2025-10-07  1.6.0     DA       Class Change: new attribute status_changed 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2025-06-15)
+Ver. 1.6.0 (2025-10-07)
 
 This module provides templates for change detection to be used in the context of online adaptivity.
 """
@@ -100,10 +103,9 @@ class Change (Id, Event, Plottable, Renormalizable):
         
         Plottable.__init__( self, p_visualize = p_visualize )
 
-        self._status: bool = p_status
+        self._status : bool        = p_status
+        self.status_changed : bool = True
         
-        self._event_id = self.get_event_id( p_status = p_status )
-
 
 ## -------------------------------------------------------------------------------------------------
     @classmethod
@@ -126,18 +128,24 @@ class Change (Id, Event, Plottable, Renormalizable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _get_event_id(self) -> str:
+        return self.get_event_id( p_status = self.status )
+    
+
+## -------------------------------------------------------------------------------------------------
     def _get_status(self) -> bool:
         return self._status
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_event_id(self) -> str:
-        return self._event_id
+    def _set_status(self, p_status: bool):
+        self.status_changed = self._status != p_status
+        self._status        = p_status
 
 
 ## -------------------------------------------------------------------------------------------------
-    status      = property( fget = _get_status )
-    event_id    = property( fget = _get_event_id )
+    event_id = property( fget = _get_event_id )
+    status   = property( fget = _get_status, fset = _set_status )
 
 
 

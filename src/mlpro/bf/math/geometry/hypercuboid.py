@@ -188,9 +188,9 @@ class Hypercuboid (MultiProperty):
                                                  width = boundaries[0][1] - boundaries[0][0],
                                                  height = boundaries[1][1] - boundaries[1][0],
                                                  fill = self.fill,
-                                                 edgecolor = color,
+                                                 #edgecolor = color,
                                                  color = color,
-                                                 facecolor = color,
+                                                 #facecolor = color,
                                                  linewidth = self.linewidth,
                                                  visible = True,
                                                  alpha = self.alpha )

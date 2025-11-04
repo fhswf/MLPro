@@ -45,10 +45,11 @@
 ## --                                - Method Workflow.init_plot(): Bugfix and optimization
 ## -- 2024-12-11  2.4.0     DA       New method Workflow.remove_plot()
 ## -- 2025-07-18  2.5.0     DA       Refactoring
+## -- 2025-10-09  2.6.0     DA       Method Async._create_so(): additional parameter p_kwargs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2025-07-18)
+Ver. 2.6.0 (2025-10-09)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -342,7 +343,10 @@ class Async (Range, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _create_so(self, p_range:int, p_class_shared) -> Shared:
+    def _create_so( self, 
+                    p_range:int, 
+                    p_class_shared,
+                    **p_kwargs ) -> Shared:
         """
         Internal use. Creates a suitable shared object for the given range.
     
@@ -352,6 +356,8 @@ class Async (Range, Log):
             Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
         p_class_shared
             Class for a shared object (class Shared or a child class of Shared)
+        p_kwargs : dict
+            Additional keyword arguments for the shared object.
 
         Returns
         -------
@@ -363,7 +369,7 @@ class Async (Range, Log):
 
             # Instantiation of shared object
             if p_range in [ self.C_RANGE_NONE, self.C_RANGE_THREAD ]:
-               so = p_class_shared(p_range)
+               so = p_class_shared( p_range = p_range, **p_kwargs)
 
             elif p_range == self.C_RANGE_PROCESS:
                 if self._mpmanager is None:
@@ -371,7 +377,7 @@ class Async (Range, Log):
                     self._mpmanager = BaseManager()
                     self._mpmanager.start()
 
-                so = self._mpmanager.Shared(p_range=p_range)
+                so = self._mpmanager.Shared(p_range=p_range, **p_kwargs)
 
             else:
                 raise NotImplementedError
@@ -428,7 +434,7 @@ class Async (Range, Log):
             A class, method or function to be executed (a)synchronously depending on the actual range
         p_range : int
             Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
-            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
+            range defined during instantiation is taken. Otherwise the minimum range of both is taken.
         p_kwargs : dictionary
             Parameters to be handed over to asynchonous method/instance
 

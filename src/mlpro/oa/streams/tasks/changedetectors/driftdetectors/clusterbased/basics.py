@@ -6,36 +6,46 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2025-02-12  0.1.0     DA       Creation
+## -- 2025-05-05  0.2.0     Ds       Refactoring : DriftDetectorCBSingle, DriftDetectorCBMulti
+## -- 2025-06-09  1.0.0     DA       Refactoring: new parent ChangeDetectorCB
+## -- 2025-06-11  1.0.1     DA       Corrections
+## -- 2025-07-18  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2025-02-12)
+Ver. 1.1.0 (2025-07-18) 
 
-This module provides a template for cluster-based drift detection algorithms to be used in the context of online adaptivity.
+This module provides a template for cluster-based drift detection algorithms.
 """
 
-from mlpro.bf.various import Log
-from mlpro.bf.math.properties import PropertyDefinitions
+from mlpro.bf import Log
+from mlpro.bf.math.properties import *
 
-from mlpro.oa.streams.basics import OAStreamTask
-from mlpro.oa.streams.tasks.driftdetectors.basics import DriftDetector
-from mlpro.oa.streams.tasks.clusteranalyzers.basics import ClusterAnalyzer
+from mlpro.oa.streams.tasks.changedetectors import Change
+from mlpro.oa.streams.tasks.changedetectors.clusterbased import ChangeDetectorCB
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.basics import DriftDetector
+from mlpro.oa.streams.tasks.changedetectors.driftdetectors.drifts.clusterbased import *
+from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer
+
+
+
+# Export list for public API
+__all__ = [ 'DriftDetectorCB' ]
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DriftDetectorCB (DriftDetector):
+class DriftDetectorCB (ChangeDetectorCB, DriftDetector):
     """
-    This is the base class for online-adaptive cluster-based drift detectors. It raises an event 
-    when a drift is detected in a cluster dataset.
+    Base class for cluster-based drift detectors.
 
     Parameters
     ----------
     p_clusterer : ClusterAnalyzer
-        Related cluster analyzer providing its clusters as the basis for drift detection
-    p_name : str
+        Associated cluster analyzer.
+    p_name : str = None
         Optional name of the task. Default is None.
     p_range_max : int
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
@@ -47,37 +57,57 @@ class DriftDetectorCB (DriftDetector):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_drift_buffer_size : int = 100
+        Size of the internal drift buffer self.anomalies. Default = 100.
+    p_thrs_inst : int = 0
+        The algorithm is only executed after this number of instances.
     p_kwargs : dict
         Further optional named parameters.
     """
 
     C_TYPE = 'Cluster-based Drift Detector'
 
-    # List of cluster properties necessary for the algorithm
-    C_REQ_CLUSTER_PROPERTIES : PropertyDefinitions = []
-
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_clusterer : ClusterAnalyzer,
-                  p_name : str = None,
-                  p_range_max = OAStreamTask.C_RANGE_THREAD,
+                  p_name:str = None,
+                  p_range_max = DriftDetector.C_RANGE_THREAD,
                   p_ada : bool = True,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging=Log.C_LOG_ALL,
+                  p_drift_buffer_size : int = 100,
+                  p_thrs_inst : int = 0,
+                  p_thrs_clusters : int = 1,
                   **p_kwargs ):
-
-        super().__init__( p_name = p_name,
-                          p_range_max = p_range_max,
-                          p_ada = p_ada,
-                          p_duplicate_data = p_duplicate_data,
-                          p_visualize = p_visualize,
-                          p_logging = p_logging,
-                          **p_kwargs )
+   
+        ChangeDetectorCB.__init__( self,
+                                   p_clusterer = p_clusterer,
+                                   p_name = p_name,
+                                   p_range_max = p_range_max,
+                                   p_ada = p_ada,
+                                   p_duplicate_data = p_duplicate_data,
+                                   p_visualize = p_visualize,
+                                   p_logging = p_logging,
+                                   p_change_buffer_size = p_drift_buffer_size,
+                                   p_thrs_inst = p_thrs_inst,
+                                   p_thrs_clusters = p_thrs_clusters,
+                                   **p_kwargs )
         
-        self._clusterer = p_clusterer
-        unknown_prop    = self._clusterer.align_cluster_properties(p_properties=self.C_REQ_CLUSTER_PROPERTIES)
-
-        if len(unknown_prop) > 0:
-           raise RuntimeError("The following cluster properties need to be provided by the clusterer: ", unknown_prop)
+        DriftDetector.__init__( self,
+                                p_name = p_name,
+                                p_range_max = p_range_max,
+                                p_ada = p_ada,
+                                p_duplicate_data = p_duplicate_data,
+                                p_visualize = p_visualize,
+                                p_logging = p_logging,
+                                P_drift_buffer_size = p_drift_buffer_size,
+                                p_thrs_inst = p_thrs_inst,
+                                **p_kwargs )
         
+        self.cb_drifts = self.cb_changes
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _triage(self, p_change : Change, **p_kwargs) -> bool:
+        return DriftDetector._triage(self, p_change = p_change, **p_kwargs)

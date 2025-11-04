@@ -180,7 +180,7 @@ class Centroid (Crosshair, Id):
             self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], self._plot_label, ha='center', va='top', color=self.color )
             self._plot_line2_t2 = p_settings.axes.text(centroid[0], ylim[1], self._plot_label, ha='center', va='bottom',color=self.color )
 
-            p_settings.axes.legend(title='Clusters', alignment='left', loc='upper right', draggable=True)
+            p_settings.create_legend(p_title='Clusters', alignment='left', loc='upper right', draggable=True)
 
         else:
             # 4.2 Update color and labels of the crosshair lines
@@ -249,7 +249,7 @@ class Centroid (Crosshair, Id):
             self._plot_line2_t1 = p_settings.axes.text(centroid[0], ylim[0], centroid[2], self._plot_label, ha=l2_t1_ha, va='center', color=self.color )
             self._plot_line3_t1 = p_settings.axes.text(centroid[0], centroid[1], zlim[0], self._plot_label, ha='center', va=l3_t1_va, color=self.color )
 
-            p_settings.axes.legend(title='Clusters', alignment='left', loc='right', draggable=True)
+            p_settings.create_legend( p_title='Clusters', alignment='left', loc='right', draggable=True)
 
         else:
             # 5.2 Update color and labels of the crosshair lines
@@ -273,7 +273,6 @@ class Centroid (Crosshair, Id):
         if self.color is None:
             col_id     = cluster_id % len(Cluster.C_CLUSTER_COLORS)
             self.color = Cluster.C_CLUSTER_COLORS[col_id]
-
 
         
         # 2 Plot the crosshair
@@ -302,7 +301,7 @@ class Centroid (Crosshair, Id):
 
                 self._plot_line_texts.append( p_settings.axes.text( xpos, centroid_pos, plot_label, color=self.color ) )
             
-            p_settings.axes.legend(title='Feat./Clust.', alignment='left', loc='upper right', draggable=True)
+            p_settings.create_legend(p_title='Feat./Clust.', alignment='left', loc='upper right', draggable=True)
 
         else:
             # 4.2 Update color and labels of the crosshair lines
@@ -332,6 +331,8 @@ class Centroid (Crosshair, Id):
         self._plot_line2_t2.remove()
         self._plot_line2_t2 = None
 
+        self.get_plot_settings().rebuild_legend()
+
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_3d(self):
@@ -352,6 +353,8 @@ class Centroid (Crosshair, Id):
         self._plot_line3_t1.remove()
         self._plot_line3_t1 = None
 
+        self.get_plot_settings().rebuild_legend()
+
 
 ## -------------------------------------------------------------------------------------------------
     def _remove_plot_nd(self):
@@ -360,10 +363,12 @@ class Centroid (Crosshair, Id):
 
         for plot_line_text in self._plot_line_texts: 
             plot_line_text.remove()
-
+        
         self._plot_line_texts.clear()
 
         Crosshair._remove_plot_nd(self)
+
+        self.get_plot_settings().rebuild_legend()
   
 
 
