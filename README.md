@@ -2,15 +2,18 @@
 
 ---
 
-### 🧩 Project Status Notice
+### ℹ️ Project Status Notice
 
-This repository represents the original **MLPro** framework, developed at **FH Südwestfalen** as an open research initiative for modular and transparent machine learning.  
-Active development in this repository has ended and is now being **professionally continued by [blueAIC](https://github.com/blueAIC)**.
+This repository contains the original **MLPro** project hosted by **South Westphalia University of Applied Sciences, Germany**. **MLPro 2.1.0 was the final release published under the university's stewardship.**
 
-Under blueAIC, MLPro evolves into a sustainable and professionally maintained platform that continues to support open research while offering **commercial extensions and related services** for advanced machine learning applications.  
-The framework remains **free and open source under the Apache 2.0 license**, ensuring unrestricted use in both academic and industrial contexts.
+The project is now continued by **[blueAIC UG (haftungsbeschränkt)](https://www.blueaic.com)** in a dedicated fork. MLPro remains **free and open source under the Apache 2.0 license**, existing users can continue to use the framework as before, and contributions from researchers and developers remain very welcome. **MLPro continues seamlessly.**
 
-Researchers and developers interested in the latest developments, integrations, and publications are kindly invited to follow:  
-👉 **[blueAIC/MLPro](https://github.com/blueAIC/MLPro)**
+Future project resources:
+
+* **Repository:** https://github.com/blueAIC/MLPro
+* **Online Documentation:** https://mlpro.readthedocs.io/
+* **PyPI:** https://pypi.org/project/mlpro/
+
+This repository is retained as the historical home of the project and will no longer receive updates.
 
 ---
